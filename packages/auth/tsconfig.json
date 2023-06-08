@@ -1,0 +1,10 @@
+{
+  "extends": "@vibefire/tsconfig/base.json",
+  "include": [
+    "src/**/*.ts",
+    "index.ts",
+  ],
+  "exclude": [
+    "node_modules",
+  ]
+}

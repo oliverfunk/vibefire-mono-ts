@@ -1,0 +1,25 @@
+{
+  "extends": [
+    "@tsconfig/next/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ],
+      "~/public/*": [
+        "public/*"
+      ],
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    ".next/types/**/*.ts",
+    "next.config.mjs"
+  ]
+}

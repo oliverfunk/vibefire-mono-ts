@@ -1,18 +1,48 @@
 {
+  "name": "vibefire-mono-babe",
   "private": true,
+  "engines": {
+    "node": ">=v18.16.0"
+  },
+  "packageManager": "pnpm@8.5.1",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "build": "turbo build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo clean",
+    "db:generate": "turbo db:generate",
+    "db:push": "turbo db:push db:generate",
+    "dev": "turbo dev --parallel",
+    "vfa": "turbo dev --parallel --filter vibefire.app",
+    "app": "turbo dev --parallel --filter app.vibefire.native",
+    "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
+    "lint": "turbo lint && manypkg check",
+    "lint:fix": "turbo lint:fix && manypkg fix",
+    "type-check": "turbo type-check"
   },
-  "devDependencies": {
-    "@turbo/gen": "^1.9.7",
-    "eslint": "^7.32.0",
-    "eslint-config-custom": "workspace:*",
-    "prettier": "^2.5.1",
-    "turbo": "^1.9.7"
-  },
-  "packageManager": "pnpm@7.15.0",
-  "name": "vibefire-mono-babe"
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.0.0",
+    "@manypkg/cli": "^0.20.0",
+    "@tanstack/react-query": "^4.29.5",
+    "@trpc/client": "^10.27.1",
+    "@trpc/react-query": "^10.27.1",
+    "@trpc/server": "^10.27.1",
+    "@types/node": "^20.2.5",
+    "@types/prettier": "^2.7.2",
+    "@types/react": "^18.2.7",
+    "@types/react-dom": "^18.2.4",
+    "@vibefire/eslint-config": "*",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.40.0",
+    "eslint-config-custom": "*",
+    "next": "^13.4.4",
+    "postcss": "^8.4.24",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.2.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "superjson": "^1.12.3",
+    "tailwindcss": "^3.3.2",
+    "turbo": "^1.9.8",
+    "typescript": "^5.0.4"
+  }
 }

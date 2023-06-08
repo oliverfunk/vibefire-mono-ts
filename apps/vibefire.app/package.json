@@ -1,0 +1,21 @@
+{
+  "name": "vibefire.app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@headlessui/tailwindcss": "^0.1.3",
+    "@heroicons/react": "^2.0.18"
+  },
+  "devDependencies": {
+    "@tsconfig/next": "^1.0.5",
+    "@vibefire/tailwind": "*",
+    "@vibefire/ui": "*"
+  }
+}
