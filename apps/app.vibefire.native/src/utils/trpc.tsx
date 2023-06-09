@@ -5,13 +5,13 @@ import { httpBatchLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import superjson from "superjson";
 
-import { ENDPOINT, type AppRouter } from "@vibefire/api-v1";
+import type { AppRouter } from "@vibefire/api-v1";
 
 /**
  * A set of typesafe hooks for consuming your API.
  */
 export const api = createTRPCReact<AppRouter>();
-export { type RouterInputs, type RouterOutputs } from "@vibefire/api-v1";
+export type { RouterInputs, RouterOutputs } from "@vibefire/api-v1";
 
 /**
  * Extend this function when going to production by
@@ -52,7 +52,7 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
       transformer: superjson,
       links: [
         httpBatchLink({
-          url: `${getBaseUrl()}${ENDPOINT}`,
+          url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
     }),
