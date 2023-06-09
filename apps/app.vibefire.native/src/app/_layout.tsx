@@ -25,13 +25,13 @@ const RootLayout = () => {
   }
 
   return (
-    <TRPCProvider>
-      <ClerkProvider
-        publishableKey={
-          Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string
-        }
-        tokenCache={tokenCache}
-      >
+    <ClerkProvider
+      publishableKey={
+        Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string
+      }
+      tokenCache={tokenCache}
+    >
+      <TRPCProvider>
         <SafeAreaProvider>
           {/*
                   The Stack component displays the current page.
@@ -55,8 +55,8 @@ const RootLayout = () => {
           </Stack>
           <StatusBar />
         </SafeAreaProvider>
-      </ClerkProvider>
-    </TRPCProvider>
+      </TRPCProvider>
+    </ClerkProvider>
   );
 };
 
