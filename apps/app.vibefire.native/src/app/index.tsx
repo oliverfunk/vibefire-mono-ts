@@ -8,27 +8,13 @@ import React, {
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Link } from "expo-router";
-import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetFooter,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 
-import SignInWithOAuth from "~/components/auth/SignInWithOAuth";
 import EventMap from "~/components/EventMap";
-
-const SignOut = () => {
-  const { isLoaded, signOut } = useAuth();
-  if (!isLoaded) {
-    return null;
-  }
-  return (
-    <View>
-      <Button title="Sign Out" onPress={() => void signOut()} />
-    </View>
-  );
-};
 
 const SafeAreaViewNoTop: FC<PropsWithChildren> = ({ children }) => {
   const insets = useSafeAreaInsets();
@@ -61,9 +47,9 @@ const Home = () => {
 
   const snapPoints = useMemo(() => ["15%", "50%"], []);
 
-  const handleSheetChange = useCallback((index) => {
-    console.log("handleSheetChange", index);
-  }, []);
+  // const handleSheetChange = useCallback((index) => {
+  //   console.log("handleSheetChange", index);
+  // }, []);
 
   // render
   const renderItem = useCallback(
@@ -111,7 +97,7 @@ const Home = () => {
         bottomInset={insets.bottom}
         index={0}
         snapPoints={snapPoints}
-        onChange={handleSheetChange}
+        // onChange={handleSheetChange}
         backdropComponent={renderBackdrop}
         footerComponent={renderFooter}
       >

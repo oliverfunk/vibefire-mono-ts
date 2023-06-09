@@ -1,3 +1,4 @@
+import { log } from "console";
 import React from "react";
 import Constants from "expo-constants";
 import { useAuth } from "@clerk/clerk-expo";
@@ -57,7 +58,7 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
           async headers() {
             const authToken = await getToken();
             return {
-              Authorization: authToken ?? undefined,
+              ...(!!authToken && { Authorization: authToken }),
             };
           },
           url: `${getBaseUrl()}/v1/trpc`,
