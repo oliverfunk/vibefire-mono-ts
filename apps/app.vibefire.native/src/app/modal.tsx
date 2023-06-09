@@ -1,10 +1,23 @@
-import { Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import { Link, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 
-import { api } from "~/utils/trpc";
 import SignInWithOAuth from "~/components/auth/SignInWithOAuth";
 import Idk from "~/components/idk";
+import { api } from "~/apis/trpc";
+
+const SignOut = () => {
+  const { isLoaded, signOut } = useAuth();
+  if (!isLoaded) {
+    return null;
+  }
+  return (
+    <View>
+      <Button title="Sign Out" onPress={() => void signOut()} />
+    </View>
+  );
+};
 
 export default function Modal() {
   const navigation = useNavigation();
@@ -14,7 +27,12 @@ export default function Modal() {
 
   console.log(isPresented);
 
-  const { isLoadingError, data } = api.auth.getSecretMessage.useQuery();
+  const { isLoadingError, data } = api.auth.getSecretMessage.useQuery(
+    undefined,
+    {
+      staleTime: 1000,
+    },
+  );
 
   console.log("REFRESHED BBY");
   console.log(`isLoadingError: ${isLoadingError}`);
@@ -22,7 +40,12 @@ export default function Modal() {
   return (
     <View className="container flex-1 items-center justify-center bg-black">
       <Text className="m-10 text-white">{data ?? "Nuthin"}</Text>
-      <SignInWithOAuth />
+      <SignedIn>
+        <SignOut />
+      </SignedIn>
+      <SignedOut>
+        <SignInWithOAuth />
+      </SignedOut>
     </View>
   );
 }

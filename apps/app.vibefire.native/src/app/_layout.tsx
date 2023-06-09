@@ -7,8 +7,8 @@ import { SplashScreen, Stack } from "expo-router";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 
-import { tokenCache } from "~/utils/cache";
-import { TRPCProvider } from "~/utils/trpc";
+import { tokenCache } from "~/utils/sec-store-cache";
+import { TRPCProvider } from "~/apis/trpc";
 
 // It wraps your pages with the providers they need
 const RootLayout = () => {
