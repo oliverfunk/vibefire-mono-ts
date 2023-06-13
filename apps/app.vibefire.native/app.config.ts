@@ -5,7 +5,7 @@ const CLERK_PUBLISHABLE_KEY =
 
 const defineConfig = (): ExpoConfig => ({
   name: "Vibefire",
-  slug: "vibefire-native",
+  slug: "vibefire-app",
   scheme: "vfire",
   version: "0.1.0",
   orientation: "portrait",
@@ -44,7 +44,16 @@ const defineConfig = (): ExpoConfig => ({
     },
     CLERK_PUBLISHABLE_KEY,
   },
-  plugins: ["./expo-plugins/with-modify-gradle.js"],
+  plugins: [
+    "./expo-plugins/with-modify-gradle.js",
+    [
+      "expo-location",
+      {
+        locationAlwaysAndWhenInUsePermission:
+          "Allow $(PRODUCT_NAME) to use your location.",
+      },
+    ],
+  ],
 });
 
 export default defineConfig;

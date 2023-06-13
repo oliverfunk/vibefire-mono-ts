@@ -12,11 +12,11 @@ export const getBackendAuthContext = (req: Request): AuthContext => {
   if (!authHeader || authHeader === "undefined") {
     return signedOutAuthObject();
   }
-  console.log("authHeader!", authHeader);
   const { payload } = decodeJwt(authHeader);
   return signedInAuthObject(payload, {
     apiUrl: "https://settled-moray-32.clerk.accounts.dev",
     apiVersion: "2023-06-07",
+    // This is a test publishable key. You can find your publishable key in the API Keys section of your Clerk Dashboard.
     token: "***REMOVED***",
   });
 };

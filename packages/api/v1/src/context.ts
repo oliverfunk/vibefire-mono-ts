@@ -2,16 +2,16 @@
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
-import {
-  getBackendAuthContext,
-  type AuthContext,
-} from "@vibefire/auth-backend";
+import { faunaClientInit } from "@vibefire/db";
+
+import { getBackendAuthContext, type AuthContext } from "./auth";
 
 /**
  * Replace this with an object if you want to pass things to createContextInner
  */
-type AuthContextProps = {
+type ContextProps = {
   auth: AuthContext;
+  faunaClient: ReturnType<typeof faunaClientInit>;
 };
 
 /** Use this helper for:
@@ -19,14 +19,23 @@ type AuthContextProps = {
  *  - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://beta.create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
-export const createContextInner = ({ auth }: AuthContextProps) => {
+export const createContextInner = ({ auth, faunaClient }: ContextProps) => {
   return {
     auth,
-    // fauna,
+    faunaClient,
   };
 };
 
-export const createContext = ({ req }: FetchCreateContextFnOptions) => {
-  return createContextInner({ auth: getBackendAuthContext(req) });
+export const createContext = ({
+  req,
+  faunaClientKey,
+}: CreateContextOptions) => {
+  return createContextInner({
+    auth: getBackendAuthContext(req),
+    faunaClient: faunaClientInit(faunaClientKey),
+  });
 };
 export type Context = inferAsyncReturnType<typeof createContext>;
+export type CreateContextOptions = FetchCreateContextFnOptions & {
+  faunaClientKey: string;
+};

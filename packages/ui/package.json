@@ -8,6 +8,6 @@
     "generate:component": "turbo gen react-component"
   },
   "devDependencies": {
-    "@vibefire/tsconfig": "*"
+    "@vibefire/config": "*"
   }
 }

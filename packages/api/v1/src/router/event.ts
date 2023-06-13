@@ -1,4 +1,7 @@
-// import { z } from "zod";
+import { z } from "zod";
+
+import { doAddPublicEvent, doCreatePublicEventsCollection } from "@vibefire/db";
+import { VibefireEvent } from "@vibefire/types";
 
 // import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -25,3 +28,23 @@
 //     return ctx.prisma.post.delete({ where: { id: input } });
 //   }),
 // });
+
+import { authedProcedure, publicProcedure, router } from "../trpc";
+
+export const eventsRouter = router({
+  createCollection: authedProcedure.mutation(async ({ ctx }) => {
+    await doCreatePublicEventsCollection(ctx.faunaClient);
+  }),
+  create: authedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        coord: z.object({ lat: z.number(), lng: z.number() }),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      //   await doAddPublicEvent(ctx.faunaClient, {
+      //     name: input.name,
+      //   });
+    }),
+});

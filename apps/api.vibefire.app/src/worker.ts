@@ -11,9 +11,8 @@ import { appRouter, createContext, ENDPOINT } from "@vibefire/api-v1";
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Env {
+  FAUNA_SECRET: string;
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
   // MY_KV_NAMESPACE: KVNamespace;
   //
@@ -34,9 +33,13 @@ const handler: ExportedHandler<Env> = {
   async fetch(request, env, ctx) {
     return fetchRequestHandler({
       endpoint: ENDPOINT,
-      req: request,
+      req: request as Request,
       router: appRouter,
-      createContext,
+      createContext: (opts) =>
+        createContext({
+          ...opts,
+          faunaClientKey: env.FAUNA_SECRET,
+        }),
     });
   },
 };

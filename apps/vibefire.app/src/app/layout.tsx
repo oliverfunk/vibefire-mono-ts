@@ -28,7 +28,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <head>
         <link rel="icon" href="/favicon.png" />
       </head>
-      <body>{children}</body>
+      <body className="min-h-screen bg-black text-white antialiased">
+        {children}
+      </body>
     </html>
   );
 };

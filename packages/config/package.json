@@ -1,7 +1,6 @@
 {
-  "name": "@vibefire/eslint-config",
+  "name": "@vibefire/config",
   "version": "0.1.0",
-  "main": "index.js",
   "dependencies": {
     "@types/eslint": "^8.37.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
@@ -10,9 +9,5 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-turbo": "^1.9.8",
     "eslint-plugin-react": "7.32.2"
-  },
-  "devDependencies": {
-    "eslint": "^8.40.0",
-    "typescript": "^5.0.4"
   }
 }

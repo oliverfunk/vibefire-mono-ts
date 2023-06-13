@@ -4,7 +4,7 @@ import { Navbar } from "~/components/navbar";
 
 const SupportPage: NextPage = () => {
   return (
-    <div className="body-font min-h-screen bg-black text-white antialiased">
+    <>
       <Navbar active="support" />
       <header className="mx-5 mt-10 flex flex-col items-center gap-1">
         <h1 className="text-4xl font-bold">{"Support"}</h1>
@@ -23,7 +23,7 @@ const SupportPage: NextPage = () => {
           associated with your account.
         </p>
       </header>
-    </div>
+    </>
   );
 };
 export default SupportPage;

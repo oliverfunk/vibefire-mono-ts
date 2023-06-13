@@ -7,7 +7,7 @@ import VibefireIcon from "~/public/Icon_Circle_wOutline.svg";
 
 // import VibefireIcon from "@/public/Icon_Circle_Border.svg";
 interface NavbarProps {
-  active: "none" | "support";
+  active: "none" | "support" | "privacy";
 }
 
 const Navbar: React.FC<NavbarProps> = ({ active }) => {
@@ -29,6 +29,18 @@ const Navbar: React.FC<NavbarProps> = ({ active }) => {
           }
         >
           Support
+        </Link>
+        <Link
+          role="button"
+          href="/privacy"
+          className={
+            "m-1 rounded px-3 py-2 font-semibold " +
+            (active == "privacy"
+              ? "bg-slate-500"
+              : "hover:bg-slate-500 hover:bg-opacity-50")
+          }
+        >
+          Privacy Policy
         </Link>
         <a
           role="button"
