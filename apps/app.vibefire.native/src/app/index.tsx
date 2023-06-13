@@ -1,12 +1,15 @@
 import React, {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
+  useState,
   type FC,
   type PropsWithChildren,
 } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Location from "expo-location";
 import { Link } from "expo-router";
 import BottomSheet, {
   BottomSheetBackdrop,
@@ -85,6 +88,29 @@ const Home = () => {
     ),
     [],
   );
+
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = "Waiting..";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
 
   const insets = useSafeAreaInsets();
 

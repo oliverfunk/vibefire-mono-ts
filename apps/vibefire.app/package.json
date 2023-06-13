@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@tsconfig/next": "^1.0.5",
-    "@vibefire/tailwind": "*",
+    "@vibefire/config": "*",
     "@vibefire/ui": "*"
   }
 }

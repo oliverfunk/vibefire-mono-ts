@@ -10,17 +10,21 @@
     "dev:ios": "expo start --ios",
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.17.6",
     "@expo-google-fonts/inter": "^0.2.3",
     "@gorhom/bottom-sheet": "^4",
-    "expo": "^48.0.7",
+    "expo": "~48.0.18",
     "expo-auth-session": "^4.0.3",
     "expo-constants": "~14.2.1",
     "expo-font": "~11.1.1",
     "expo-linking": "~4.0.1",
+    "expo-location": "~15.1.1",
     "expo-router": "^1.2.0",
     "expo-secure-store": "^12.1.1",
     "expo-splash-screen": "~0.18.2",
@@ -45,8 +49,8 @@
     "@expo/config-plugins": "^6.0.1",
     "@tsconfig/react-native": "^3.0.2",
     "@types/webpack-env": "^1.18.0",
-    "@vibefire/tailwind": "*",
     "@vibefire/api-v1": "*",
+    "@vibefire/config": "*",
     "tailwindcss": "^3.3.2"
   },
   "resolutions": {

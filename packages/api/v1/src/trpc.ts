@@ -59,7 +59,7 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 /**
- * Protected (authed) procedure
+ * Authed procedure
  *
  * If you want a query or mutation to ONLY be accessible to logged in users, use
  * this. It verifies the session is valid and guarantees ctx.session.user is not
@@ -67,4 +67,4 @@ export const publicProcedure = t.procedure;
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(isAuthed);
+export const authedProcedure = t.procedure.use(isAuthed);

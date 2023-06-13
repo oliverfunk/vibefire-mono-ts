@@ -1,7 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
   root: true,
-  extends: ["@vibefire/eslint-config"], // uses the config in `packages/config/eslint`
+  extends: ["@vibefire/config/eslint"], // uses the config in `packages/config/eslint`
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
@@ -14,7 +14,7 @@ const config = {
   },
   settings: {
     next: {
-      rootDir: ["apps/vibefire.app"],
+      rootDir: ["apps/vibefire.app", "apps/manage.vibefire.app"],
     },
   },
 };

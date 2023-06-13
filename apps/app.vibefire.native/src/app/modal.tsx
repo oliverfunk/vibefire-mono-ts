@@ -4,8 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 
 import SignInWithOAuth from "~/components/auth/SignInWithOAuth";
-import Idk from "~/components/idk";
-import { api } from "~/apis/trpc";
+import { trpc } from "~/apis/trpc";
 
 const SignOut = () => {
   const { isLoaded, signOut } = useAuth();
@@ -19,27 +18,46 @@ const SignOut = () => {
   );
 };
 
-export default function Modal() {
-  const navigation = useNavigation();
-  // If the page was reloaded or navigated to directly, then the modal should be presented as
-  // a full screen page. You may need to change the UI to account for this.
-  const isPresented = navigation.canGoBack();
-
-  console.log(isPresented);
-
-  const { isLoadingError, data } = api.auth.getSecretMessage.useQuery(
-    undefined,
-    {
-      staleTime: 1000,
-    },
-  );
-
-  console.log("REFRESHED BBY");
-  console.log(`isLoadingError: ${isLoadingError}`);
+const Modal = () => {
+  const createCollectionMut = trpc.events.createCollection.useMutation();
+  const callSeshInfo = trpc.auth.getSession.useQuery(undefined, {
+    enabled: false,
+  });
 
   return (
     <View className="container flex-1 items-center justify-center bg-black">
-      <Text className="m-10 text-white">{data ?? "Nuthin"}</Text>
+      <Text className="m-10 text-white">
+        Loading:{" "}
+        {createCollectionMut.isLoading
+          ? "createCollectionMut.isLoading: true"
+          : "createCollectionMut.isLoading: false"}
+      </Text>
+      <Text className="m-10 text-white">
+        Sesh info:{"\n"}
+        {callSeshInfo.data !== undefined
+          ? JSON.stringify(callSeshInfo.data, null, 2)
+          : "callSeshInfo got no data"}
+      </Text>
+
+      <Text className="m-10 text-white">
+        {createCollectionMut.data ?? "Nuthin"}
+      </Text>
+      <Button
+        title="Do create coll"
+        onPress={() =>
+          createCollectionMut
+            .mutateAsync()
+            .catch((err) => console.error(`large err: ${err}`))
+        }
+      />
+      <Button
+        title="Get sesh info"
+        onPress={() =>
+          callSeshInfo
+            .refetch()
+            .catch((err) => console.error(`large call sesh err: ${err}`))
+        }
+      />
       <SignedIn>
         <SignOut />
       </SignedIn>
@@ -48,4 +66,5 @@ export default function Modal() {
       </SignedOut>
     </View>
   );
-}
+};
+export default Modal;

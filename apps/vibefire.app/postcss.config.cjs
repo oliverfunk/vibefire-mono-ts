@@ -1,2 +1,2 @@
 // @ts-expect-error - No types for postcss
-module.exports = require("@vibefire/tailwind/postcss");
+module.exports = require("@vibefire/tailwind/config/postcss");

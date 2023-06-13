@@ -6,7 +6,7 @@ import iPhoneMockImage from "~/public/iPhone14-Vibefire-MU.png";
 
 const Home: NextPage = () => {
   return (
-    <div className="min-h-screen  antialiased">
+    <>
       <Navbar active="none" />
       <div className="flex flex-col justify-center gap-7 overflow-x-auto py-10 md:flex-row md:gap-10">
         <div className="flex flex-col justify-center text-center md:justify-start md:pt-20">
@@ -31,7 +31,7 @@ const Home: NextPage = () => {
           ></Image>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 export default Home;

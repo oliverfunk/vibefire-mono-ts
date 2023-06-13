@@ -1,4 +1,3 @@
-import { log } from "console";
 import React from "react";
 import Constants from "expo-constants";
 import { useAuth } from "@clerk/clerk-expo";
@@ -7,13 +6,12 @@ import { httpBatchLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import superjson from "superjson";
 
-import type { AppRouter } from "@vibefire/api-v1";
+import type { AppRouter, RouterInputs, RouterOutputs } from "@vibefire/api-v1";
 
 /**
  * A set of typesafe hooks for consuming your API.
  */
-export const api = createTRPCReact<AppRouter>();
-export type { RouterInputs, RouterOutputs } from "@vibefire/api-v1";
+export const trpc = createTRPCReact<AppRouter>();
 
 /**
  * Extend this function when going to production by
@@ -51,7 +49,7 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
   const { getToken } = useAuth();
   const [queryClient] = React.useState(() => new QueryClient());
   const [trpcClient] = React.useState(() =>
-    api.createClient({
+    trpc.createClient({
       transformer: superjson,
       links: [
         httpBatchLink({
@@ -68,8 +66,8 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </api.Provider>
+    </trpc.Provider>
   );
 };
