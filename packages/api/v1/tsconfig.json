@@ -3,5 +3,14 @@
   "include": [
     "src/**/*.ts",
     "index.ts",
-  ]
+    "../../utils/src/h3/index.ts",
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    }
+  },
 }

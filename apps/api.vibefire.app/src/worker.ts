@@ -13,6 +13,7 @@ import { appRouter, createContext, ENDPOINT } from "@vibefire/api-v1";
  */
 export interface Env {
   FAUNA_SECRET: string;
+  SUPABASE_SECRET: string;
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
   // MY_KV_NAMESPACE: KVNamespace;
   //
@@ -35,10 +36,14 @@ const handler: ExportedHandler<Env> = {
       endpoint: ENDPOINT,
       req: request as Request,
       router: appRouter,
+      onError({ error }) {
+        console.error(error);
+      },
       createContext: (opts) =>
         createContext({
           ...opts,
           faunaClientKey: env.FAUNA_SECRET,
+          supabaseClientKey: env.SUPABASE_SECRET,
         }),
     });
   },

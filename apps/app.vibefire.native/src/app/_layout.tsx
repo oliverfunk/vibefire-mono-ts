@@ -1,27 +1,34 @@
-// This is the main layout of the app
-
+import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Constants from "expo-constants";
-import { SplashScreen, Stack } from "expo-router";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 
 import { tokenCache } from "~/utils/sec-store-cache";
 import { TRPCProvider } from "~/apis/trpc";
+import { JotProvider } from "~/apis/trpc-atom";
 
-// It wraps your pages with the providers they need
+SplashScreen.preventAutoHideAsync();
+
 const RootLayout = () => {
-  // Load the font `Inter_500Medium`
   const [fontsLoaded] = useFonts({
     Inter_500Medium,
   });
 
-  if (!fontsLoaded) {
-    // The native splash screen will stay visible for as long as there
-    // are `<SplashScreen />` components mounted. This component can be nested.
+  useEffect(() => {
+    const load = async () => {
+      if (fontsLoaded) {
+        await SplashScreen.hideAsync();
+      }
+    };
+    load();
+  }, [fontsLoaded]);
 
-    return <SplashScreen />;
+  if (!fontsLoaded) {
+    return null;
   }
 
   return (
@@ -32,29 +39,27 @@ const RootLayout = () => {
       tokenCache={tokenCache}
     >
       <TRPCProvider>
-        <SafeAreaProvider>
-          {/*
-                  The Stack component displays the current page.
-                  It also allows you to configure your screens
-                */}
-          <Stack>
-            <Stack.Screen
-              name="index"
-              options={{
-                // Hide the header for all other routes.
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="modal"
-              options={{
-                // Set the presentation mode to modal for our modal route.
-                presentation: "modal",
-              }}
-            />
-          </Stack>
-          <StatusBar />
-        </SafeAreaProvider>
+        <JotProvider>
+          <SafeAreaProvider>
+            <Stack>
+              <Stack.Screen
+                name="index"
+                options={{
+                  // Hide the header for all other routes.
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="modal"
+                options={{
+                  // Set the presentation mode to modal for our modal route.
+                  presentation: "modal",
+                }}
+              />
+            </Stack>
+            <StatusBar />
+          </SafeAreaProvider>
+        </JotProvider>
       </TRPCProvider>
     </ClerkProvider>
   );

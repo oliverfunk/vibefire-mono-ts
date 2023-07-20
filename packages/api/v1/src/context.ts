@@ -1,41 +1,41 @@
-// import { prisma } from "@acme/db"; will be fauna
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
-import { faunaClientInit } from "@vibefire/db";
+import { faunaClient, supabaseClient } from "@vibefire/db";
 
 import { getBackendAuthContext, type AuthContext } from "./auth";
 
-/**
- * Replace this with an object if you want to pass things to createContextInner
- */
 type ContextProps = {
   auth: AuthContext;
-  faunaClient: ReturnType<typeof faunaClientInit>;
+  faunaClient: ReturnType<typeof faunaClient>;
+  supabaseClient: ReturnType<typeof supabaseClient>;
 };
 
-/** Use this helper for:
- *  - testing, where we dont have to Mock Next.js' req/res
- *  - trpc's `createSSGHelpers` where we don't have req/res
- * @see https://beta.create.t3.gg/en/usage/trpc#-servertrpccontextts
- */
-export const createContextInner = ({ auth, faunaClient }: ContextProps) => {
+export const createContextInner = ({
+  auth,
+  faunaClient,
+  supabaseClient,
+}: ContextProps) => {
   return {
     auth,
     faunaClient,
+    supabaseClient,
   };
 };
 
 export const createContext = ({
   req,
   faunaClientKey,
+  supabaseClientKey,
 }: CreateContextOptions) => {
   return createContextInner({
     auth: getBackendAuthContext(req),
-    faunaClient: faunaClientInit(faunaClientKey),
+    faunaClient: faunaClient(faunaClientKey),
+    supabaseClient: supabaseClient(supabaseClientKey),
   });
 };
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
   faunaClientKey: string;
+  supabaseClientKey: string;
 };

@@ -1,12 +1,13 @@
-import type { ExpoConfig } from "@expo/config";
+import { ConfigContext, ExpoConfig } from "expo/config";
 
 const CLERK_PUBLISHABLE_KEY =
   "pk_test_c2V0dGxlZC1tb3JheS0zMi5jbGVyay5hY2NvdW50cy5kZXYk";
 
-const defineConfig = (): ExpoConfig => ({
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
   name: "Vibefire",
   slug: "vibefire-app",
-  scheme: "vfire",
+  scheme: "vbfr",
   version: "0.1.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -20,6 +21,9 @@ const defineConfig = (): ExpoConfig => ({
     fallbackToCacheTimeout: 0,
   },
   assetBundlePatterns: ["**/*"],
+  web: {
+    bundler: "metro",
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.native",
@@ -28,6 +32,7 @@ const defineConfig = (): ExpoConfig => ({
     },
   },
   android: {
+    package: "app.vibefire.native",
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#010101",
@@ -45,6 +50,7 @@ const defineConfig = (): ExpoConfig => ({
     CLERK_PUBLISHABLE_KEY,
   },
   plugins: [
+    "expo-router",
     "./expo-plugins/with-modify-gradle.js",
     [
       "expo-location",
@@ -56,4 +62,4 @@ const defineConfig = (): ExpoConfig => ({
   ],
 });
 
-export default defineConfig;
+// export default mergeConfig(getDefaultConfig(__dirname), defineConfig());

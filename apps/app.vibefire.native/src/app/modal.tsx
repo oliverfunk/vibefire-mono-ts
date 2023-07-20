@@ -1,4 +1,11 @@
-import { Button, Text, View } from "react-native";
+import {
+  Button,
+  FlatList,
+  Platform,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import { Link, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
@@ -19,45 +26,45 @@ const SignOut = () => {
 };
 
 const Modal = () => {
-  const createCollectionMut = trpc.events.createCollection.useMutation();
-  const callSeshInfo = trpc.auth.getSession.useQuery(undefined, {
-    enabled: false,
-  });
-
   return (
     <View className="container flex-1 items-center justify-center bg-black">
-      <Text className="m-10 text-white">
-        Loading:{" "}
-        {createCollectionMut.isLoading
-          ? "createCollectionMut.isLoading: true"
-          : "createCollectionMut.isLoading: false"}
-      </Text>
-      <Text className="m-10 text-white">
-        Sesh info:{"\n"}
-        {callSeshInfo.data !== undefined
-          ? JSON.stringify(callSeshInfo.data, null, 2)
-          : "callSeshInfo got no data"}
-      </Text>
-
-      <Text className="m-10 text-white">
-        {createCollectionMut.data ?? "Nuthin"}
-      </Text>
-      <Button
-        title="Do create coll"
-        onPress={() =>
-          createCollectionMut
-            .mutateAsync()
-            .catch((err) => console.error(`large err: ${err}`))
-        }
-      />
-      <Button
-        title="Get sesh info"
-        onPress={() =>
-          callSeshInfo
-            .refetch()
-            .catch((err) => console.error(`large call sesh err: ${err}`))
-        }
-      />
+      <View className="h-20 w-[150px]">
+        <FlatList
+          horizontal={true}
+          snapToInterval={100}
+          snapToAlignment="center"
+          className="bg-purple-400 align-middle"
+          // ItemSeparatorComponent={
+          //   Platform.OS !== "android" &&
+          //   (({ highlighted }) => (
+          //     <View
+          //       style={[
+          //         { borderColor: "blue" },
+          //         highlighted && { marginLeft: 0 },
+          //       ]}
+          //     />
+          //   ))
+          // }
+          data={[
+            { title: "Title Text", key: "item1" },
+            { title: "Title Text Another", key: "item2" },
+          ]}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item, index, separators }) => (
+            <TouchableHighlight
+              className="bg-yellow-400 align-middle"
+              key={item.key}
+              onPress={() => console.log("onPress")}
+              onShowUnderlay={separators.highlight}
+              onHideUnderlay={separators.unhighlight}
+            >
+              <View className="p-4" style={{ backgroundColor: "white" }}>
+                <Text>{item.title}</Text>
+              </View>
+            </TouchableHighlight>
+          )}
+        />
+      </View>
       <SignedIn>
         <SignOut />
       </SignedIn>

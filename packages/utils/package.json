@@ -1,0 +1,11 @@
+{
+  "name": "@vibefire/utils",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "h3-js": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vibefire/config": "*"
+  }
+}
