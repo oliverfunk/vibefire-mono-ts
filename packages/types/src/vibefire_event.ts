@@ -17,9 +17,15 @@ type VibefireEventPOI = {
 type VibefireEventLocation = {
   addressDescription: string;
   coord: Coord;
-  h3hash: string;
+  h3: number;
+  h3Parents: number[];
 };
-
+type VibefireLocEvent = {
+  location: VibefireEventLocation;
+  displayTimePeriods: string[];
+  published: boolean;
+  rank: number;
+};
 type VibefireEvent = {
   type: string;
   eventID: string;
@@ -96,6 +102,7 @@ type VibefireUser = {
 
 export type {
   VibefireEvent,
+  VibefireLocEvent,
   VibefireEventManagement,
   VibefireEventAnnouncement,
   VibefireEventOffer,

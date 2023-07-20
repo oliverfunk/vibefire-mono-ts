@@ -1,7 +1,11 @@
-name = "vibefire-api-endpoint"
+name = "vibefire-api-worker"
 main = "src/worker.ts"
 compatibility_date = "2023-05-18"
 workers_dev = false
+
+routes = [
+	{ pattern = "api.vibefire.app", custom_domain = true }
+]
 
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]

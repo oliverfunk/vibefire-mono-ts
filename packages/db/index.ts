@@ -1,29 +1,30 @@
+import { createClient } from "@supabase/supabase-js";
 import { Client } from "fauna";
 
 export * from "./src/fauna/collections/event";
 
-var client: Client | undefined;
-// configure your client
-export const faunaClientInit = (faunaKey: string) => {
+var _supabaseClient: ReturnType<typeof createClient> | undefined;
+export const supabaseClient = (supabaseKey: string) => {
   "use strict";
-  if (!client) {
+  if (!_supabaseClient) {
+    console.debug("Creating new supabase client");
+    _supabaseClient = createClient(
+      "https://hlfwftvznmtrejjxclvr.supabase.co",
+      supabaseKey,
+      { auth: { persistSession: false } },
+    );
+  }
+  return _supabaseClient;
+};
+
+var _faunaClient: Client | undefined;
+export const faunaClient = (faunaKey: string) => {
+  "use strict";
+  if (!_faunaClient) {
     console.debug("Creating new fauna client");
-    client = new Client({
+    _faunaClient = new Client({
       secret: faunaKey,
     });
   }
-  return client;
+  return _faunaClient;
 };
-
-// try {
-//   const colPuiblicEvents = doCreatePublicEventsCollection(faunaClient);
-//   console.log(colPuiblicEvents);
-// } catch (error) {
-//   if (error instanceof FaunaError) {
-//     // handle errors
-//     console.log(error);
-//   }
-// } finally {
-//   // clean up any remaining resources
-//   faunaClient.close();
-// }

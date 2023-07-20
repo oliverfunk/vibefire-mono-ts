@@ -14,11 +14,10 @@
   },
   "include": [
     "expo-plugins",
-    "expo-env.d.ts",
     ".expo",
     "src",
     "*.ts",
     "**/*.js",
-    "index.tsx"
-  ],
+    "index.ts"
+  ]
 }

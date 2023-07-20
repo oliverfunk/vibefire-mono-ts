@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@supabase/supabase-js": "^2.26.0",
     "fauna": "^0.9.1"
   },
   "devDependencies": {

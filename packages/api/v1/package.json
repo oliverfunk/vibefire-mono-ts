@@ -1,10 +1,12 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "@vibefire/api-v1",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@clerk/backend": "^0.23.0",
-    "@vibefire/db": "*"
+    "@vibefire/db": "*",
+    "@vibefire/utils": "*"
   },
   "devDependencies": {
     "@vibefire/config": "*",

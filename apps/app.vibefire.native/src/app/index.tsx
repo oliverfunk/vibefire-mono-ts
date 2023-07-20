@@ -1,4 +1,5 @@
 import React, {
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -34,6 +35,7 @@ const SafeAreaViewNoTop: FC<PropsWithChildren> = ({ children }) => {
     </View>
   );
 };
+const Rsv = memo(SafeAreaViewNoTop);
 
 const Home = () => {
   // hooks
@@ -48,7 +50,7 @@ const Home = () => {
     [],
   );
 
-  const snapPoints = useMemo(() => ["15%", "50%"], []);
+  const snapPoints = useMemo(() => ["10%", "40%"], []);
 
   // const handleSheetChange = useCallback((index) => {
   //   console.log("handleSheetChange", index);
@@ -58,7 +60,9 @@ const Home = () => {
   const renderItem = useCallback(
     (item) => (
       <View key={item} style={styles.itemContainer}>
-        <Text>{item}</Text>
+        <Link className="bg-black text-white" href={"/modal"}>
+          Click {item}
+        </Link>
       </View>
     ),
     [],
@@ -89,8 +93,10 @@ const Home = () => {
     [],
   );
 
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null,
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -115,8 +121,7 @@ const Home = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    // <Stack.Screen options={{ title: "Home Page" }} />
-    <SafeAreaViewNoTop>
+    <Rsv>
       <EventMap />
       <BottomSheet
         ref={sheetRef}
@@ -125,13 +130,12 @@ const Home = () => {
         snapPoints={snapPoints}
         // onChange={handleSheetChange}
         backdropComponent={renderBackdrop}
-        footerComponent={renderFooter}
       >
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
           {data.map(renderItem)}
         </BottomSheetScrollView>
       </BottomSheet>
-    </SafeAreaViewNoTop>
+    </Rsv>
   );
 };
 
@@ -162,11 +166,3 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#fff",
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-// });

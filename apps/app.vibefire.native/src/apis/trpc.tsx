@@ -27,14 +27,11 @@ const getBaseUrl = () => {
    * baseUrl to your production API URL.
    */
   const debuggerHost =
-    Constants.manifest?.debuggerHost ??
+    Constants.expoConfig?.hostUri ??
     Constants.manifest2?.extra?.expoGo?.debuggerHost;
   const localhost = debuggerHost?.split(":")[0];
   if (!localhost) {
-    // return "https://your-production-url.com";
-    throw new Error(
-      "Failed to get localhost. Please point to your production server.",
-    );
+    return "https://api.vibefire.app";
   }
   return `http://${localhost}:8787`;
 };
