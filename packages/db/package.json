@@ -10,6 +10,6 @@
   },
   "devDependencies": {
     "@vibefire/config": "*",
-    "@vibefire/types": "*"
+    "@vibefire/models": "*"
   }
 }

@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@vibefire/config": "*",
-    "@vibefire/types": "*"
+    "@vibefire/models": "*"
   },
   "exports": {
     "./trpc": "./src/trpc/index.ts",
