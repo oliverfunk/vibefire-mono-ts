@@ -11,7 +11,7 @@ import { StatusBar } from "expo-status-bar";
 import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 
 import SignInWithOAuth from "~/components/auth/SignInWithOAuth";
-import { trpc } from "~/apis/trpc";
+import { trpc } from "~/apis/trpc-client";
 
 const SignOut = () => {
   const { isLoaded, signOut } = useAuth();

@@ -9,7 +9,7 @@ import MapView, {
 import { atom, useAtom } from "jotai";
 
 import { SvgIcon } from "~/components/SvgIcon";
-import { trpc } from "~/apis/trpc";
+import { trpc } from "~/apis/trpc-client";
 
 const mapQueryBoxAtom = atom<(BoundingBox & { zoomLevel: number }) | null>(
   null,
@@ -52,16 +52,20 @@ const useMapQuery = () => {
 };
 
 const useMapMarkers = () => {
-  const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
+  const [markers, setMarkers] = useState<
+    { id: string; lat: number; lng: number }[]
+  >([]);
   const mapQueryState = useMapQuery();
   useEffect(() => {
     if (mapQueryState.status === "success") {
+      console.log("mapQueryState.data len", mapQueryState.data.length);
+
       setMarkers(
-        [],
-        // mapQueryState.data.map((event) => ({
-        //   lat: event.location.coord.lat,
-        //   lng: event.location.coord.lng,
-        // })),
+        mapQueryState.data.map((event) => ({
+          id: event.id,
+          lat: event.location.coord.lat,
+          lng: event.location.coord.lng,
+        })),
       );
     }
   }, [mapQueryState.data]);
@@ -71,6 +75,8 @@ const useMapMarkers = () => {
 const EventMap = () => {
   const mvRef = useRef<MapView>(null);
 
+  const trpcContext = trpc.useContext();
+
   const [bbox, setBBox] = useAtom(mapQueryBoxAtom);
   const mapQueryState = useMapQuery();
   const markers = useMapMarkers();
@@ -78,15 +84,17 @@ const EventMap = () => {
 
   const onMapRegionChange = useCallback(async (region: Region) => {
     const _bbox = mvRef.current?.boundingBoxForRegion(region);
-    const _zl = (await mvRef.current?.getCamera())?.zoom;
+    const _zoomLevel = (await mvRef.current?.getCamera())?.zoom;
     if (_bbox === undefined) {
       return;
     }
-    if (_zl === undefined) {
+    if (_zoomLevel === undefined) {
       return;
     }
-    setBBox({ ..._bbox, zoomLevel: _zl });
+    setBBox({ ..._bbox, zoomLevel: _zoomLevel });
   }, []);
+
+  console.log("markers.length", markers.length);
 
   return (
     <>
@@ -104,12 +112,12 @@ const EventMap = () => {
         {markers.length > 0 &&
           markers.map((marker, index) => (
             <Marker
-              key={index}
+              key={marker.id}
               coordinate={{ latitude: marker.lat, longitude: marker.lng }}
               title={"marker.title"}
               description={"marker.description"}
             >
-              <SvgIcon />
+              <SvgIcon idx={index} />
             </Marker>
           ))}
       </MapView>
@@ -135,6 +143,7 @@ const EventMap = () => {
                 lng: (northEast.lng + southWest.lng) / 2,
               },
             });
+            trpcContext.events.queryPublicEventsWhenWhere.invalidate();
           } catch (e) {
             console.log("error adding loc event");
             console.log(e);

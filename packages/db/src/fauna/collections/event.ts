@@ -39,10 +39,9 @@ export const doAddPublicLocEvent = async (
 
 export const queryPublicEventsWhenWhere = async (
   faunaClient: Client,
-  inp: { tp: string; h3p: number }[],
-) => {
-  const q = fql`
-    queryPublicEventsWhenWhere(${inp})
-  `;
+  timePeriodIndex: string,
+  areaH3s: number[],
+): Promise<QuerySuccess<{ data: any[] }>> => {
+  const q = fql`queryPublicEventsAtPeriodInAreas(${timePeriodIndex}, ${areaH3s})`;
   return faunaClient.query(q);
 };
