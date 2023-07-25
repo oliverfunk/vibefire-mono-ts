@@ -1,17 +1,15 @@
-import React from "react";
+import React, { memo } from "react";
 import Constants from "expo-constants";
-import { useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
-import { createTRPCReact } from "@trpc/react-query";
+import { createStore, Provider } from "jotai";
 import superjson from "superjson";
 
-import type { AppRouter, RouterInputs, RouterOutputs } from "@vibefire/api-v1";
+import { BASEPATH_TRPC } from "@vibefire/api/basepaths";
 
-/**
- * A set of typesafe hooks for consuming your API.
- */
-export const trpc = createTRPCReact<AppRouter>();
+import { tokenCache } from "~/utils/sec-store-cache";
+import { trpc } from "~/apis/trpc-client";
 
 /**
  * Extend this function when going to production by
@@ -36,11 +34,9 @@ const getBaseUrl = () => {
   return `http://${localhost}:8787`;
 };
 
-/**
- * A wrapper for your app that provides the TRPC context.
- * Use only in _app.tsx
- */
-export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
+const myStore = createStore();
+
+const _AppProviders: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { getToken } = useAuth();
@@ -56,7 +52,7 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
               ...(!!authToken && { Authorization: authToken }),
             };
           },
-          url: `${getBaseUrl()}/v1/trpc`,
+          url: `${getBaseUrl()}${BASEPATH_TRPC}`,
         }),
       ],
     }),
@@ -64,7 +60,26 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={myStore}>{children}</Provider>
+      </QueryClientProvider>
     </trpc.Provider>
   );
 };
+
+const AppProviders: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return (
+    <ClerkProvider
+      publishableKey={
+        Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string
+      }
+      tokenCache={tokenCache}
+    >
+      <_AppProviders>{children}</_AppProviders>
+    </ClerkProvider>
+  );
+};
+
+export default memo(AppProviders);

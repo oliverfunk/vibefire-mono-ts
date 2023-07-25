@@ -1,5 +1,5 @@
 {
-  "name": "@vibefire/api-endpoint",
+  "name": "@vibefire/api-worker",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,11 +8,8 @@
     "w": "wrangler"
   },
   "dependencies": {
-    "@vibefire/api-v1": "*"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230419.0",
-    "typescript": "^5.0.4",
-    "wrangler": "^3.0.0"
+    "@hono/trpc-server": "^0.1.0",
+    "@vibefire/api": "*",
+    "itty-router": "^4.0.14"
   }
 }

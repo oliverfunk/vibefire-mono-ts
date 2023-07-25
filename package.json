@@ -20,6 +20,7 @@
     "type-check": "turbo type-check"
   },
   "dependencies": {
+    "@cloudflare/workers-types": "^4.20230419.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.0.0",
     "@manypkg/cli": "^0.20.0",
     "@tanstack/react-query": "^4.29.5",
@@ -30,13 +31,13 @@
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.4",
-    "@vibefire/config": "*",
-    "eslint": "^8.40.0",
     "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.23",
+    "eslint": "^8.40.0",
     "eslint-config-custom": "*",
+    "hono": "^3.3.3",
     "jotai": "^2.1.1",
     "next": "^13.4.4",
+    "postcss": "^8.4.23",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.2.8",
     "react": "^18.2.0",
@@ -45,6 +46,10 @@
     "superjson": "^1.12.3",
     "tailwindcss": "^3.3.2",
     "turbo": "^1.9.8",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "wrangler": "^3.0.0"
+  },
+  "devDependencies": {
+    "@vibefire/config": "*"
   }
 }

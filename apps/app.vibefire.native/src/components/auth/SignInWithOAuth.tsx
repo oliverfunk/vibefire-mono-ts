@@ -10,6 +10,8 @@ WebBrowser.maybeCompleteAuthSession();
 const SignInWithOAuth = () => {
   useWarmUpBrowser();
 
+  // const { signIn } = useSignIn();
+
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   const onPress = useCallback(async () => {

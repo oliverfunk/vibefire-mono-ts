@@ -16,7 +16,7 @@ xmlns="http://www.w3.org/2000/svg">
 <path d="M193.182 130.364L194.318 99.1136L167.898 115.875L161.08 103.943L188.92 89.4545L161.08 74.9659L167.898 63.0341L194.318 79.7955L193.182 48.5455H206.818L205.682 79.7955L232.102 63.0341L238.92 74.9659L211.08 89.4545L238.92 103.943L232.102 115.875L205.682 99.1136L206.818 130.364H193.182Z" fill="#FFBB00"/>
 </svg>
 `;
-export const SvgIcon = (props) => (
+export const SvgIcon = ({ idx }: { idx: number }) => (
   <>
     <Svg height="50" width="50" viewBox="0 0 100 100">
       <Circle
@@ -35,7 +35,7 @@ export const SvgIcon = (props) => (
         fontSize="40"
         fill="white"
       >
-        10
+        {idx}
       </Text>
     </Svg>
   </>

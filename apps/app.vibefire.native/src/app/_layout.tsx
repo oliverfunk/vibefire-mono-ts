@@ -7,9 +7,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 
-import { tokenCache } from "~/utils/sec-store-cache";
-import { TRPCProvider } from "~/apis/trpc";
-import { JotProvider } from "~/apis/trpc-atom";
+import AppProviders from "~/providers";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,36 +30,27 @@ const RootLayout = () => {
   }
 
   return (
-    <ClerkProvider
-      publishableKey={
-        Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string
-      }
-      tokenCache={tokenCache}
-    >
-      <TRPCProvider>
-        <JotProvider>
-          <SafeAreaProvider>
-            <Stack>
-              <Stack.Screen
-                name="index"
-                options={{
-                  // Hide the header for all other routes.
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="modal"
-                options={{
-                  // Set the presentation mode to modal for our modal route.
-                  presentation: "modal",
-                }}
-              />
-            </Stack>
-            <StatusBar />
-          </SafeAreaProvider>
-        </JotProvider>
-      </TRPCProvider>
-    </ClerkProvider>
+    <AppProviders>
+      <SafeAreaProvider>
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              // Hide the header for all other routes.
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="modal"
+            options={{
+              // Set the presentation mode to modal for our modal route.
+              presentation: "modal",
+            }}
+          />
+        </Stack>
+        <StatusBar />
+      </SafeAreaProvider>
+    </AppProviders>
   );
 };
 

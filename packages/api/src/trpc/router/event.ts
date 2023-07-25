@@ -16,6 +16,24 @@ import {
 
 import { authedProcedure, publicProcedure, router } from "../trpc";
 
+const CoordSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
+});
+const VibefireEventLocationSchema = z.object({
+  addressDescription: z.string(),
+  coord: CoordSchema,
+  h3: z.number(),
+  h3Parents: z.array(z.number()),
+});
+const VibefireEventSchema = z.object({
+  id: z.string(),
+  location: VibefireEventLocationSchema,
+  displayTimePeriods: z.array(z.string()),
+  published: z.boolean(),
+  rank: z.number(),
+});
+
 export const eventsRouter = router({
   addLocEvent: publicProcedure
     .input(
@@ -72,13 +90,32 @@ export const eventsRouter = router({
         zoomLevel: z.number(),
       }),
     )
+    .output(z.array(VibefireEventSchema))
     .query(async ({ ctx, input }) => {
       var startTime = performance.now();
 
-      console.log("start queryEvents");
-      console.log("lats", Math.abs(input.northEast.lat - input.southWest.lat));
-      console.log("longs", Math.abs(input.northEast.lng - input.southWest.lng));
+      // todo: validate timePeriod
+      const timePeriod = input.timePeriod;
+
+      console.log();
+      console.log("timePeriod", input.timePeriod);
+      console.log("northEast", JSON.stringify(input.northEast, null, 2));
+      console.log("southWest", JSON.stringify(input.southWest, null, 2));
       console.log("zoomLevel", input.zoomLevel);
+      console.log();
+      console.log(
+        "lats delta",
+        Math.abs(input.northEast.lat - input.southWest.lat),
+      );
+      console.log(
+        "longs delta",
+        Math.abs(input.northEast.lng - input.southWest.lng),
+      );
+      console.log();
+
+      // quadrantize the bbox, merge the cells, then query
+
+      const h3Res = zoomLevelToH3Resolution(input.zoomLevel);
 
       const bboxH3sPre = polygonToCells(
         [
@@ -87,31 +124,36 @@ export const eventsRouter = router({
           [input.southWest.lat, input.southWest.lng],
           [input.southWest.lat, input.northEast.lng],
         ],
-        zoomLevelToH3Resolution(input.zoomLevel),
+        h3Res,
       );
-      console.log("bboxH3s pre", bboxH3sPre.length);
-      const bboxH3s = compactCells(bboxH3sPre);
-      console.log("bboxH3s post", bboxH3s.length);
 
+      console.log("bboxH3sPre no", bboxH3sPre.length);
+
+      const bboxH3s = compactCells(bboxH3sPre);
       if (!bboxH3s.length) {
         return [];
       }
 
+      console.log("bboxH3s no", bboxH3s.length);
+
+      const h3ps = bboxH3s.map((h3) => hexToDecimal(h3));
       const res = await queryPublicEventsWhenWhere(
         ctx.faunaClient,
-        bboxH3s.map((h3) => ({
-          tp: input.timePeriod,
-          h3p: hexToDecimal(h3),
-        })),
+        timePeriod,
+        h3ps,
       );
 
-      // console.log("res", JSON.stringify(res, null, 2));
-      // console.log("res", res);
-      // console.log("bboxH3s no", bboxH3s.length);
+      console.log("res.data?.data.length", res.data?.data.length);
+
+      const events = res.data?.data.map((eventData) =>
+        VibefireEventSchema.parse(eventData),
+      );
+
+      console.log("ret.length", events.length);
 
       var endTime = performance.now();
-      console.log("queryEvents, time", endTime - startTime);
+      console.log("### ->queryEvents, time", endTime - startTime);
 
-      return "it happened";
+      return events;
     }),
 });
