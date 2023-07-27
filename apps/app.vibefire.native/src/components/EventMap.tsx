@@ -58,8 +58,6 @@ const useMapMarkers = () => {
   const mapQueryState = useMapQuery();
   useEffect(() => {
     if (mapQueryState.status === "success") {
-      console.log("mapQueryState.data len", mapQueryState.data.length);
-
       setMarkers(
         mapQueryState.data.map((event) => ({
           id: event.id,
@@ -93,8 +91,6 @@ const EventMap = () => {
     }
     setBBox({ ..._bbox, zoomLevel: _zoomLevel });
   }, []);
-
-  console.log("markers.length", markers.length);
 
   return (
     <>

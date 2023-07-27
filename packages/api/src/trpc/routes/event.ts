@@ -14,7 +14,7 @@ import {
   zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
-import { authedProcedure, publicProcedure, router } from "../trpc";
+import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
 const CoordSchema = z.object({
   lat: z.number(),

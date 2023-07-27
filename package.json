@@ -45,7 +45,7 @@
     "react-error-boundary": "^4.0.9",
     "superjson": "^1.12.3",
     "tailwindcss": "^3.3.2",
-    "turbo": "^1.9.8",
+    "turbo": "^1.10.11",
     "typescript": "^5.0.4",
     "wrangler": "^3.0.0"
   },

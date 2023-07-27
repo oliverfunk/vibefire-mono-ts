@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@hono/trpc-server": "^0.1.0",
-    "@vibefire/api": "*",
+    "@vibefire/api": "^0.1.0",
     "itty-router": "^4.0.14"
   }
 }
