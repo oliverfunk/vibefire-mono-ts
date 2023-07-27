@@ -3,15 +3,15 @@ import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 import { faunaClient, supabaseClient } from "@vibefire/db";
 
-import { getBackendAuthContext, type AuthContext } from "./auth";
+import { authRequestWithClerk, type ClerkAuthContext } from "~/auth";
 
 type ContextProps = {
-  auth: AuthContext;
+  auth: ClerkAuthContext;
   faunaClient: ReturnType<typeof faunaClient>;
   supabaseClient: ReturnType<typeof supabaseClient>;
 };
 
-export const createContextInner = ({
+const createContextInner = ({
   auth,
   faunaClient,
   supabaseClient,
@@ -23,19 +23,21 @@ export const createContextInner = ({
   };
 };
 
-export const createContext = ({
+export const createContext = async ({
   req,
+  clerkPemString,
   faunaClientKey,
   supabaseClientKey,
 }: CreateContextOptions) => {
   return createContextInner({
-    auth: getBackendAuthContext(req),
+    auth: await authRequestWithClerk(clerkPemString, req),
     faunaClient: faunaClient(faunaClientKey),
     supabaseClient: supabaseClient(supabaseClientKey),
   });
 };
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
+  clerkPemString: string;
   faunaClientKey: string;
   supabaseClientKey: string;
 };

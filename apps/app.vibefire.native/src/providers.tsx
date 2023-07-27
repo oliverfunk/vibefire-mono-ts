@@ -6,7 +6,7 @@ import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider } from "jotai";
 import superjson from "superjson";
 
-import { BASEPATH_TRPC } from "@vibefire/api/basepaths";
+import { BASEPATH_TRPC } from "@vibefire/api/src/basepaths";
 
 import { tokenCache } from "~/utils/sec-store-cache";
 import { trpc } from "~/apis/trpc-client";
@@ -24,6 +24,7 @@ const getBaseUrl = () => {
    * **NOTE**: This is only for development. In production, you'll want to set the
    * baseUrl to your production API URL.
    */
+  // return "https://api.vibefire.app";
   const debuggerHost =
     Constants.expoConfig?.hostUri ??
     Constants.manifest2?.extra?.expoGo?.debuggerHost;

@@ -1,12 +1,12 @@
 import { createTRPCReact } from "@trpc/react-query";
 
 import type {
-  AppRouter,
+  ApiRouter,
   RouterInputs,
   RouterOutputs,
-} from "@vibefire/api/trpc";
+} from "@vibefire/api/src/trpc";
 
 /**
  * A set of typesafe hooks for consuming your API.
  */
-export const trpc = createTRPCReact<AppRouter>();
+export const trpc = createTRPCReact<ApiRouter>();

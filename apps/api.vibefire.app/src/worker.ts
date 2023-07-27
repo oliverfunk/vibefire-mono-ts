@@ -1,11 +1,9 @@
-import { trpcServer } from "@hono/trpc-server"; // Deno 'npm:@hono/trpc-server'
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 
-// import { error, json, Router } from "itty-router";
-
-import { BASEPATH_TRPC } from "@vibefire/api/basepaths";
-import { appRouter, createContext } from "@vibefire/api/trpc";
+import { BASEPATH_TRPC, BASEPATH_WEBHOOKS } from "@vibefire/api/basepaths";
+import { apiRouter, createContext } from "@vibefire/api/trpc";
+import { webhooksRouter } from "@vibefire/api/webhooks";
 
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
@@ -36,6 +34,7 @@ import { appRouter, createContext } from "@vibefire/api/trpc";
 // }
 
 type Bindings = {
+  CLERK_PEM: string;
   FAUNA_SECRET: string;
   SUPABASE_SECRET: string;
 };
@@ -44,13 +43,14 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
   const trpcHandler = trpcServer({
-    router: appRouter,
+    router: apiRouter,
     onError({ error }) {
       console.error(error);
     },
-    createContext: (opts) =>
-      createContext({
+    createContext: async (opts) =>
+      await createContext({
         ...opts,
+        clerkPemString: c.env.CLERK_PEM,
         faunaClientKey: c.env.FAUNA_SECRET,
         supabaseClientKey: c.env.SUPABASE_SECRET,
       }),
@@ -60,10 +60,6 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
 
 app.all("/rest/*", (c) => c.text("hello"));
 
-app.post("/webhooks/*", async (c) => {
-  const r = await c.req.json();
-  console.log("webhook", JSON.stringify(r, null, 2));
-  return c.json({ status: "success" });
-});
+app.route(`${BASEPATH_WEBHOOKS}`, webhooksRouter);
 
 export default app;
