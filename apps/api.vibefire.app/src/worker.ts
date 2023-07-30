@@ -1,7 +1,13 @@
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 
-import { BASEPATH_TRPC, BASEPATH_WEBHOOKS } from "@vibefire/api/basepaths";
+import {
+  BASEPATH_REST,
+  BASEPATH_TRPC,
+  BASEPATH_WEBHOOKS,
+} from "@vibefire/api/basepaths";
+import { restRouter } from "@vibefire/api/rest";
 import { apiRouter, createContext } from "@vibefire/api/trpc";
 import { webhooksRouter } from "@vibefire/api/webhooks";
 
@@ -35,11 +41,20 @@ import { webhooksRouter } from "@vibefire/api/webhooks";
 
 type Bindings = {
   CLERK_PEM: string;
+  CLERK_ISSUER_API_URL: string;
   FAUNA_SECRET: string;
   SUPABASE_SECRET: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
+
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    // Get the custom response
+    return err.getResponse();
+  }
+  return c.text(err.message, 500);
+});
 
 app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
   const trpcHandler = trpcServer({
@@ -51,6 +66,7 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
       await createContext({
         ...opts,
         clerkPemString: c.env.CLERK_PEM,
+        clerkIssuerApiUrl: c.env.CLERK_ISSUER_API_URL,
         faunaClientKey: c.env.FAUNA_SECRET,
         supabaseClientKey: c.env.SUPABASE_SECRET,
       }),
@@ -58,7 +74,7 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
   return trpcHandler(c, next);
 });
 
-app.all("/rest/*", (c) => c.text("hello"));
+app.route(`${BASEPATH_REST}`, restRouter);
 
 app.route(`${BASEPATH_WEBHOOKS}`, webhooksRouter);
 

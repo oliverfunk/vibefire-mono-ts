@@ -1,4 +1,4 @@
-type Coord = {
+export type Coord = {
   lat: number;
   lng: number;
 };
@@ -20,13 +20,15 @@ type VibefireEventLocation = {
   h3: number;
   h3Parents: number[];
 };
-type VibefireLocEvent = {
+export type VibefireLocEvent = {
   location: VibefireEventLocation;
   displayTimePeriods: string[];
   published: boolean;
+  // public, private (specific people), hidden (will not show on map, need link, can be encrypted)
+  visibility: "public" | "private" | "hidden";
   rank: number;
 };
-type VibefireEvent = {
+export type VibefireEvent = {
   type: string;
   eventID: string;
   organisationID: string;
@@ -55,7 +57,7 @@ type VibefireEvent = {
   isVisible: boolean;
 };
 
-type VibefireEventManagement = {
+export type VibefireEventManagement = {
   organisationID: string;
 
   limitLocationChanges: number;
@@ -73,7 +75,7 @@ type VibefireEventManagement = {
   purchasedDisplayZoomGroup: number;
 };
 
-type VibefireEventOffer = {
+export type VibefireEventOffer = {
   offerID: string;
   organisationID: string;
   description: string;
@@ -85,26 +87,4 @@ type VibefireEventOffer = {
   timeStart: Date | null;
   timeEnd: Date | null;
   totalClaims: number | null;
-};
-
-type VibefireUser = {
-  userID: string;
-  username: string;
-  onboardingComplete: boolean;
-  banned: boolean;
-  name: string | null;
-  contactEmail: string | null;
-  dateOfBirth: Date | null;
-  followedEvents: string[];
-  followedOrganisations: string[];
-  memberOrganisationID: string | null;
-};
-
-export type {
-  VibefireEvent,
-  VibefireLocEvent,
-  VibefireEventManagement,
-  VibefireEventAnnouncement,
-  VibefireEventOffer,
-  VibefireUser,
 };

@@ -1,7 +1,7 @@
 import { ConfigContext, ExpoConfig } from "expo/config";
 
-const CLERK_PUBLISHABLE_KEY =
-  "pk_test_c2V0dGxlZC1tb3JheS0zMi5jbGVyay5hY2NvdW50cy5kZXYk";
+// const CLERK_PUBLISHABLE_KEY =
+//   "pk_test_c2V0dGxlZC1tb3JheS0zMi5jbGVyay5hY2NvdW50cy5kZXYk";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -47,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       // projectId: "your-project-id",
     },
-    CLERK_PUBLISHABLE_KEY,
+    // CLERK_PUBLISHABLE_KEY,
   },
   plugins: [
     "expo-router",
