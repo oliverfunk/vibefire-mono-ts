@@ -26,11 +26,12 @@ const createContextInner = ({
 export const createContext = async ({
   req,
   clerkPemString,
+  clerkIssuerApiUrl,
   faunaClientKey,
   supabaseClientKey,
 }: CreateContextOptions) => {
   return createContextInner({
-    auth: await authRequestWithClerk(clerkPemString, req),
+    auth: await authRequestWithClerk(clerkPemString, clerkIssuerApiUrl, req),
     faunaClient: faunaClient(faunaClientKey),
     supabaseClient: supabaseClient(supabaseClientKey),
   });
@@ -38,6 +39,7 @@ export const createContext = async ({
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
   clerkPemString: string;
+  clerkIssuerApiUrl: string;
   faunaClientKey: string;
   supabaseClientKey: string;
 };

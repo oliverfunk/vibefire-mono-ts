@@ -1,7 +1,6 @@
-import { fql, Query, type Client, type QuerySuccess } from "fauna";
+import { fql, type Client, type QuerySuccess } from "fauna";
 
-import type { VibefireEvent } from "@vibefire/types";
-import { VibefireLocEvent } from "@vibefire/types/src/vibefire_event";
+import type { VibefireEvent, VibefireLocEvent } from "@vibefire/models";
 
 import { CreateCollectionIfDne } from "../utils";
 
@@ -41,7 +40,9 @@ export const queryPublicEventsWhenWhere = async (
   faunaClient: Client,
   timePeriodIndex: string,
   areaH3s: number[],
-): Promise<QuerySuccess<{ data: any[] }>> => {
+) => {
   const q = fql`queryPublicEventsAtPeriodInAreas(${timePeriodIndex}, ${areaH3s})`;
-  return faunaClient.query(q);
+  const res = await faunaClient.query<{ data: any[] }>(q);
+  console.log("res", res);
+  return res.data;
 };

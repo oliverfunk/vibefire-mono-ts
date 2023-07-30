@@ -73,9 +73,7 @@ const AppProviders: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   return (
     <ClerkProvider
-      publishableKey={
-        Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string
-      }
+      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string}
       tokenCache={tokenCache}
     >
       <_AppProviders>{children}</_AppProviders>

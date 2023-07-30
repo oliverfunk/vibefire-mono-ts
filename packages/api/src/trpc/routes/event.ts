@@ -61,6 +61,7 @@ export const eventsRouter = router({
           h3: h3Dec,
           h3Parents: h3ParentsDec,
         },
+        visibility: "public",
         displayTimePeriods: ["20230720/A", "20230720/N"],
         rank: Math.floor(Math.random() * 10),
         published: true,
@@ -143,9 +144,7 @@ export const eventsRouter = router({
         h3ps,
       );
 
-      console.log("res.data?.data.length", res.data?.data.length);
-
-      const events = res.data?.data.map((eventData) =>
+      const events = res.data?.map((eventData) =>
         VibefireEventSchema.parse(eventData),
       );
 

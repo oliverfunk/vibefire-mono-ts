@@ -1,7 +1,2 @@
-export type {
-  VibefireEvent,
-  VibefireEventManagement,
-  VibefireEventAnnouncement,
-  VibefireEventOffer,
-  VibefireUser,
-} from "./src/vibefire_event";
+export * from "./src/vibefire_event";
+export * from "./src/vibefire_user";

@@ -8,7 +8,8 @@ import {
 export type ClerkAuthContext = AuthObject;
 
 export const authRequestWithClerk = async (
-  pemString: string,
+  clerkPemString: string,
+  clerkIssuerApiUrl: string,
   req: Request,
 ): Promise<ClerkAuthContext> => {
   const reqJwtToken = req.headers.get("Authorization");
@@ -17,14 +18,14 @@ export const authRequestWithClerk = async (
   }
 
   const jwtPayload = await verifyToken(reqJwtToken, {
-    issuer: "https://settled-moray-32.clerk.accounts.dev",
-    jwtKey: pemString,
+    issuer: clerkIssuerApiUrl,
+    jwtKey: clerkPemString,
   });
 
   return signedInAuthObject(jwtPayload, {
     // idk why you need these atm,
     // has something to do with loading the Clerk client
-    apiUrl: "https://settled-moray-32.clerk.accounts.dev",
+    apiUrl: clerkIssuerApiUrl,
     apiVersion: "2023-06-07",
     token: reqJwtToken,
   });
