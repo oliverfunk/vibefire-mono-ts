@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { FC, memo, ReactNode, useMemo } from "react";
 import Constants from "expo-constants";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -37,26 +37,26 @@ const getBaseUrl = () => {
 
 const myStore = createStore();
 
-const _AppProviders: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
   const { getToken } = useAuth();
-  const [queryClient] = React.useState(() => new QueryClient());
-  const [trpcClient] = React.useState(() =>
-    trpc.createClient({
-      transformer: superjson,
-      links: [
-        httpBatchLink({
-          async headers() {
-            const authToken = await getToken();
-            return {
-              ...(!!authToken && { Authorization: authToken }),
-            };
-          },
-          url: `${getBaseUrl()}${BASEPATH_TRPC}`,
-        }),
-      ],
-    }),
+  const queryClient = useMemo(() => new QueryClient(), []);
+  const trpcClient = useMemo(
+    () =>
+      trpc.createClient({
+        transformer: superjson,
+        links: [
+          httpBatchLink({
+            async headers() {
+              const authToken = await getToken();
+              return {
+                ...(!!authToken && { Authorization: authToken }),
+              };
+            },
+            url: `${getBaseUrl()}${BASEPATH_TRPC}`,
+          }),
+        ],
+      }),
+    [],
   );
 
   return (

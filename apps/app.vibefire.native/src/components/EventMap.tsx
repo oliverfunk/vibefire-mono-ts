@@ -1,55 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, Text } from "react-native";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { Text } from "react-native";
 import MapView, {
-  BoundingBox,
   Marker,
   PROVIDER_GOOGLE,
   type Region,
 } from "react-native-maps";
-import { atom, useAtom } from "jotai";
+import Toast from "react-native-toast-message";
+import { useSetAtom } from "jotai";
 
+import { Coord } from "@vibefire/models";
+import { mapQueryPositionAtom } from "@vibefire/shared-state";
+
+import { debounce } from "~/utils/debounce";
 import { SvgIcon } from "~/components/SvgIcon";
-import { trpc } from "~/apis/trpc-client";
-
-const mapQueryBoxAtom = atom<(BoundingBox & { zoomLevel: number }) | null>(
-  null,
-);
-const mapQueryTimePeriodAtom = atom<string>("20230720/A");
-
-const useMapQuery = () => {
-  const [bbox, setBBox] = useAtom(mapQueryBoxAtom);
-  const [tp, setTp] = useAtom(mapQueryTimePeriodAtom);
-  const a = trpc.events.queryPublicEventsWhenWhere.useQuery(
-    bbox === null
-      ? {
-          timePeriod: "",
-          northEast: {
-            lat: 0,
-            lng: 0,
-          },
-          southWest: {
-            lat: 0,
-            lng: 0,
-          },
-          zoomLevel: 0,
-        }
-      : {
-          timePeriod: tp,
-          northEast: {
-            lat: bbox.northEast.latitude,
-            lng: bbox.northEast.longitude,
-          },
-          southWest: {
-            lat: bbox.southWest.latitude,
-            lng: bbox.southWest.longitude,
-          },
-          zoomLevel: bbox.zoomLevel,
-        },
-    { enabled: bbox !== null },
-  );
-
-  return a;
-};
+import { useLocationOnce } from "~/hooks/useLocation";
+import { useMapQuery } from "~/hooks/useMapQuery";
 
 const useMapMarkers = () => {
   const [markers, setMarkers] = useState<
@@ -70,15 +35,46 @@ const useMapMarkers = () => {
   return markers;
 };
 
-const EventMap = () => {
+const EventMapComponent = (props: { initialMapPosition?: Coord }) => {
   const mvRef = useRef<MapView>(null);
+  const setBBox = useCallback(
+    debounce(useSetAtom(mapQueryPositionAtom), 1000),
+    [],
+  );
 
-  const trpcContext = trpc.useContext();
+  const { location, locPermDeniedMsg } = useLocationOnce();
 
-  const [bbox, setBBox] = useAtom(mapQueryBoxAtom);
   const mapQueryState = useMapQuery();
   const markers = useMapMarkers();
-  const addLocEvent = trpc.events.addLocEvent.useMutation();
+
+  //#region effects
+  useEffect(() => {
+    if (location !== null) {
+      mvRef.current?.setCamera(
+        {
+          center: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+          zoom: 14,
+        },
+        // { duration: 1 },
+      );
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (locPermDeniedMsg !== null) {
+      Toast.show({
+        type: "error",
+        text1: "Problem getting your location",
+        text2: locPermDeniedMsg,
+        position: "bottom",
+        bottomOffset: 100,
+      });
+    }
+  }, [locPermDeniedMsg]);
+  //#endregion
 
   const onMapRegionChange = useCallback(async (region: Region) => {
     const _bbox = mvRef.current?.boundingBoxForRegion(region);
@@ -89,13 +85,32 @@ const EventMap = () => {
     if (_zoomLevel === undefined) {
       return;
     }
-    setBBox({ ..._bbox, zoomLevel: _zoomLevel });
+
+    setBBox({
+      northEast: {
+        lat: _bbox.northEast.latitude,
+        lng: _bbox.northEast.longitude,
+      },
+      southWest: {
+        lat: _bbox.southWest.latitude,
+        lng: _bbox.southWest.longitude,
+      },
+      zoomLevel: _zoomLevel,
+    });
   }, []);
 
   return (
     <>
       <MapView
         className="h-full w-full"
+        // initialCamera={{
+        //   center: {
+        //     latitude: location.coords.latitude,
+        //     longitude: location.coords.longitude,
+        //   },
+        //   zoom: 14,
+        // }}
+        mapPadding={{ top: 0, right: 0, bottom: 0, left: 0 }}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         onRegionChangeComplete={onMapRegionChange}
@@ -117,38 +132,6 @@ const EventMap = () => {
             </Marker>
           ))}
       </MapView>
-      <Pressable
-        className="absolute bottom-[180px] left-2 rounded-md border-2 border-purple-600 bg-purple-400 p-2"
-        onPress={async () => {
-          if (bbox === null) {
-            return;
-          }
-          const northEast = {
-            lat: bbox!.northEast.latitude,
-            lng: bbox!.northEast.longitude,
-          };
-          const southWest = {
-            lat: bbox!.southWest.latitude,
-            lng: bbox!.southWest.longitude,
-          };
-          console.log("about to add loc event");
-          try {
-            await addLocEvent.mutateAsync({
-              eventPosition: {
-                lat: (northEast.lat + southWest.lat) / 2,
-                lng: (northEast.lng + southWest.lng) / 2,
-              },
-            });
-            trpcContext.events.queryPublicEventsWhenWhere.invalidate();
-          } catch (e) {
-            console.log("error adding loc event");
-            console.log(e);
-          }
-          console.log("finisehd add loc event");
-        }}
-      >
-        <Text>Add Loc events</Text>
-      </Pressable>
 
       <Text className="absolute bottom-[140px] left-2 rounded-md border-2 border-purple-600 bg-black p-2 text-white">
         mapQ: {mapQueryState.status}
@@ -156,6 +139,11 @@ const EventMap = () => {
     </>
   );
 };
+
+const EventMap = () => {
+  return <EventMapComponent />;
+};
+
 // const wrapped = () => (
 //   <ErrorBoundary fallback={<Text>"Error..."</Text>}>
 //     <Suspense fallback={<Text>"Loading..."</Text>}>
@@ -163,4 +151,4 @@ const EventMap = () => {
 //     </Suspense>
 //   </ErrorBoundary>
 // );
-export default EventMap;
+export { EventMap };

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { StatusBar } from "react-native";
+import Toast from "react-native-toast-message";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
@@ -28,6 +29,8 @@ const RootLayout = () => {
 
   return (
     <AppProviders>
+      {/* Idk what this is */}
+      <StatusBar />
       <Stack>
         <Stack.Screen
           name="index"
@@ -36,15 +39,8 @@ const RootLayout = () => {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name="modal"
-          options={{
-            // Set the presentation mode to modal for our modal route.
-            presentation: "modal",
-          }}
-        />
       </Stack>
-      <StatusBar />
+      <Toast />
     </AppProviders>
   );
 };

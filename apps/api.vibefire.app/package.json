@@ -8,8 +8,7 @@
     "w": "wrangler"
   },
   "dependencies": {
-    "@hono/trpc-server": "^0.1.0",
-    "@vibefire/api": "^0.1.0",
-    "itty-router": "^4.0.14"
+    "@cloudflare/workers-types": "^4.20230419.0",
+    "@vibefire/api": "*"
   }
 }
