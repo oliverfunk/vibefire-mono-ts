@@ -1,7 +1,4 @@
-export type Coord = {
-  lat: number;
-  lng: number;
-};
+import { Coord } from "./map-geo";
 
 type VibefireEventAnnouncement = {
   message: string;

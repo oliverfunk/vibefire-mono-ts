@@ -3,5 +3,6 @@
   "include": [
     "src/**/*.ts",
     "index.ts",
+    "../../apps/app.vibefire.native/src/hooks/map-query.ts",
   ]
 }

@@ -93,8 +93,6 @@ export const eventsRouter = router({
     )
     .output(z.array(VibefireEventSchema))
     .query(async ({ ctx, input }) => {
-      var startTime = performance.now();
-
       // todo: validate timePeriod
       const timePeriod = input.timePeriod;
 
@@ -128,13 +126,13 @@ export const eventsRouter = router({
         h3Res,
       );
 
-      console.log("bboxH3sPre no", bboxH3sPre.length);
-
-      const bboxH3s = compactCells(bboxH3sPre);
+      // const bboxH3s = compactCells(bboxH3sPre);
+      const bboxH3s = bboxH3sPre;
       if (!bboxH3s.length) {
         return [];
       }
 
+      console.log("bboxH3sPre no", bboxH3sPre.length);
       console.log("bboxH3s no", bboxH3s.length);
 
       const h3ps = bboxH3s.map((h3) => hexToDecimal(h3));
@@ -148,10 +146,7 @@ export const eventsRouter = router({
         VibefireEventSchema.parse(eventData),
       );
 
-      console.log("ret.length", events.length);
-
-      var endTime = performance.now();
-      console.log("### ->queryEvents, time", endTime - startTime);
+      console.log("events.length", events.length);
 
       return events;
     }),
