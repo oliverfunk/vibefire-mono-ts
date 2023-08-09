@@ -1,3 +1,3 @@
 export * from "./src/vibefire-event";
 export * from "./src/vibefire-user";
-export * from "./src/map-geo";
+export * from "./src/general";

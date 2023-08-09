@@ -1,4 +1,10 @@
-import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -10,7 +16,9 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import { DateTime } from "luxon";
 
+import { EventCard } from "./event/EventCard";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "./SearchHandle";
 
 const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
@@ -19,9 +27,15 @@ const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
   const orgDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
 
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => [SEARCH_HANDLE_HEIGHT, "40%"], []);
+  const snapPoints = useMemo(() => [SEARCH_HANDLE_HEIGHT, "60%"], []);
 
   //#region effects
+  useEffect(() => {
+    if (props.eventID) {
+      // navigate to event on map
+      eventDetailsDisplaySheetRef.current?.present();
+    }
+  }, [props.eventID]);
   useLayoutEffect(() => {
     requestAnimationFrame(() => mapQueryEventsListSheetRef.current?.present());
   }, []);
@@ -44,19 +58,21 @@ const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
   const renderItem = useCallback(
     //@ts-ignore
     (item) => (
-      <View key={item} className="my-1 bg-black py-3">
-        {/* <Link className="self-center text-white" href={""}>
-          {item}
-        </Link> */}
-        <Pressable
-          onPress={() => {
-            router.setParams({ mp: "31.02,-2.0,12" });
-            // eventDetailsDisplaySheetRef.current?.present();
-          }}
-        >
-          <Text className="text-white">Click {item}</Text>
-        </Pressable>
-      </View>
+      <EventCard
+        key={item}
+        event={{
+          bannerImgURL: "https://picsum.photos/1080/1980",
+          title: "Event Title",
+          orgName: "Org Name",
+          orgProfileImgURL: "https://picsum.photos/200/300",
+          addressDescription: "Address Description",
+          timeStart: DateTime.now(),
+          timeEnd: DateTime.now(),
+        }}
+        onPress={() => {
+          // eventDetailsDisplaySheetRef.current?.present();
+        }}
+      />
     ),
     [],
   );
@@ -64,7 +80,7 @@ const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
   // temp
   const data = useMemo(
     () =>
-      Array(50)
+      Array(3)
         .fill(0)
         .map((_, index) => `index-${index}`),
     [],
@@ -93,9 +109,12 @@ const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
       <BottomSheetModal
         ref={eventDetailsDisplaySheetRef}
         bottomInset={insets.bottom}
-        index={1}
-        snapPoints={snapPoints}
-        onDismiss={() => {}}
+        index={0}
+        snapPoints={["80%"]}
+        onDismiss={() => {
+          //#ts-ignore
+          router.setParams({ event: undefined });
+        }}
         // onChange={handleSheetChange}
         backdropComponent={renderBackdrop}
       >

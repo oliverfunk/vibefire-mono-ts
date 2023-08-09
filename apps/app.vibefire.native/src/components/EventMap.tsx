@@ -1,11 +1,13 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import MapView, {
+  Callout,
   Marker,
   PROVIDER_GOOGLE,
   type Region,
 } from "react-native-maps";
 import Toast from "react-native-toast-message";
+import { ErrorBoundary, ErrorBoundaryProps, router } from "expo-router";
 import { useSetAtom } from "jotai";
 
 import { Coord } from "@vibefire/models";
@@ -15,6 +17,40 @@ import { debounce } from "~/utils/debounce";
 import { SvgIcon } from "~/components/SvgIcon";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useMapQuery } from "~/hooks/useMapQuery";
+
+export class Try extends React.Component<
+  {
+    catch: React.ComponentType<ErrorBoundaryProps>;
+    children: React.ReactNode;
+  },
+  { error?: Error }
+> {
+  state = { error: undefined };
+
+  static getDerivedStateFromError(error: Error) {
+    // Force hide the splash screen if an error occurs.
+    // SplashScreen.hideAsync();
+
+    return { error };
+  }
+
+  retry = () => {
+    return new Promise<void>((resolve) => {
+      this.setState({ error: undefined }, () => {
+        resolve();
+      });
+    });
+  };
+
+  render() {
+    const { error } = this.state;
+    const { catch: ErrorBoundary, children } = this.props;
+    if (!error) {
+      return children;
+    }
+    return <ErrorBoundary error={error} retry={this.retry} />;
+  }
+}
 
 const useMapMarkers = () => {
   const [markers, setMarkers] = useState<
@@ -61,7 +97,7 @@ const EventMapComponent = (props: { initialMapPosition?: Coord }) => {
         // { duration: 1 },
       );
     }
-  }, [location]);
+  }, []);
 
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
@@ -125,15 +161,22 @@ const EventMapComponent = (props: { initialMapPosition?: Coord }) => {
             <Marker
               key={marker.id}
               coordinate={{ latitude: marker.lat, longitude: marker.lng }}
-              title={"marker.title"}
-              description={"marker.description"}
+              onPress={() => {
+                // router.setParams({ event: `${marker.id}` });
+              }}
             >
+              <Callout tooltip={true} className="items-center">
+                <View className="bg-white">
+                  <Text className="text-black">This is amaing</Text>
+                </View>
+                <View className="h-0 w-0 border-x-[10px] border-b-0 border-t-[15px] border-x-transparent border-t-white" />
+              </Callout>
               <SvgIcon idx={index} />
             </Marker>
           ))}
       </MapView>
 
-      <Text className="absolute bottom-[140px] left-2 rounded-md border-2 border-purple-600 bg-black p-2 text-white">
+      <Text className="absolute bottom-[140px] left-2 rounded-md border-2 border-orange-400 bg-black p-2 text-white">
         mapQ: {mapQueryState.status}
       </Text>
     </>
@@ -141,14 +184,11 @@ const EventMapComponent = (props: { initialMapPosition?: Coord }) => {
 };
 
 const EventMap = () => {
-  return <EventMapComponent />;
+  return (
+    <Try catch={ErrorBoundary}>
+      <EventMapComponent />
+    </Try>
+  );
 };
 
-// const wrapped = () => (
-//   <ErrorBoundary fallback={<Text>"Error..."</Text>}>
-//     <Suspense fallback={<Text>"Loading..."</Text>}>
-//       <EventMap />
-//     </Suspense>
-//   </ErrorBoundary>
-// );
 export { EventMap };

@@ -8,6 +8,7 @@
       ]
     },
     "types": [
+      "@types/jest",
       "nativewind/types",
       "webpack-env"
     ]
@@ -19,5 +20,8 @@
     "*.ts",
     "**/*.js",
     "index.ts"
+  ],
+  "exclude": [
+    "*.test.ts"
   ]
 }
