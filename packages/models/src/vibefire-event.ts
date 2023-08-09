@@ -1,87 +1,138 @@
-import { Coord } from "./map-geo";
+import { Static, Type as t } from "@sinclair/typebox";
 
-type VibefireEventAnnouncement = {
-  message: string;
-  when: Date;
-  isNotification: boolean;
-  hasNotified: boolean;
-  linkedPoiID: string | null;
-};
-type VibefireEventPOI = {
-  coord: Coord;
-  description: string;
-};
-type VibefireEventLocation = {
-  addressDescription: string;
-  coord: Coord;
-  h3: number;
-  h3Parents: number[];
-};
-export type VibefireLocEvent = {
-  location: VibefireEventLocation;
-  displayTimePeriods: string[];
-  published: boolean;
-  // public, private (specific people), hidden (will not show on map, need link, can be encrypted)
-  visibility: "public" | "private" | "hidden";
-  rank: number;
-};
-export type VibefireEvent = {
-  type: string;
-  eventID: string;
-  organisationID: string;
-  changeID: string;
+import { CoordSchema, TimePeriodSchema } from "./general";
 
-  name: string;
-  description: string;
-  bannerImageURL: string;
-  peekImageURL: string | null;
-  additionalImageURLs: string[];
-  timeStart: Date;
-  timeEnd: Date | null;
+export const VibefireEventOfferSchema = t.Object({
+  id: t.String(),
+  description: t.String(),
+  live: t.Boolean(),
+  claimsTotal: t.Number({ minimum: 1 }),
+  claimsPerUser: t.Number({ minimum: 1 }),
+  claimableBy: t.Optional(t.Array(t.String())),
+  linkedPoi: t.Optional(t.String()),
+  timeStart: t.Optional(t.String({ format: "date-time" })),
+  timeEnd: t.Optional(t.String({ format: "date-time" })),
+});
 
-  announcements: Map<string, VibefireEventAnnouncement> | null;
-  pois: Map<string, VibefireEventPOI> | null;
+export const VibefireEventAnnouncementSchema = t.Object({
+  id: t.String(),
+  message: t.String(),
+  when: t.String(),
+  isNotification: t.Boolean(),
+  hasNotified: t.Boolean(),
+  linkedPoi: t.Optional(t.String()),
+});
+export type VibefireEventAnnouncementT = Static<
+  typeof VibefireEventAnnouncementSchema
+>;
 
-  rank: number;
-  vibe: string;
-  tags: Set<string> | null;
+export const VibefireEventPOISchema = t.Object({
+  id: t.String(),
+  coord: CoordSchema,
+  description: t.String(),
+});
+export type VibefireEventPOIT = Static<typeof VibefireEventPOISchema>;
 
-  location: VibefireEventLocation;
-  timeZone: string;
-  timeDisplayBegin: Date;
-  timeDisplayEnd: Date;
-  zoomGroup: string;
-  isVisible: boolean;
-};
+export const VibefireEventLocationSchema = t.Object({
+  addressDescription: t.String(),
+  coord: CoordSchema,
+  h3: t.Number(),
+  h3Parents: t.Array(t.Number()),
+});
+export type VibefireEventLocationT = Static<typeof VibefireEventLocationSchema>;
 
-export type VibefireEventManagement = {
-  organisationID: string;
+export const VibefireEventImagesSchema = t.Object({
+  banner: t.String({
+    pattern:
+      // this should be vibefire specific image url (i.e. the domain etc.)
+      "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)",
+  }),
+  si1: t.Optional(
+    t.String({
+      format: "uri",
+    }),
+  ),
+  si2: t.Optional(t.String()),
+  si3: t.Optional(t.String()),
+  si4: t.Optional(t.String()),
+  si5: t.Optional(t.String()),
+  si6: t.Optional(t.String()),
+  si7: t.Optional(t.String()),
+  si8: t.Optional(t.String()),
+  si9: t.Optional(t.String()),
+  customIcon: t.Optional(t.String()),
+});
+export type VibefireEventImagesT = Static<typeof VibefireEventImagesSchema>;
 
-  limitLocationChanges: number;
-  limitTimeStartChanges: number;
-  limitNotificationsTotal: number;
-  limitOffersTotal: number;
-  limitPoisTotal: number;
+export const VibefireEventSchema = t.Object({
+  id: t.String(),
+  organisation: t.String(),
 
-  actualLocationChanges: number;
-  actualTimeStartChanges: number;
+  // event info
+  type: t.Union([t.Literal("regular")]),
+  name: t.String(),
+  description: t.String(),
+  images: VibefireEventImagesSchema,
+  timeStart: t.Date(),
+  timeEnd: t.Optional(t.Date()),
+  timeZone: t.String(),
+  vibe: t.Union(
+    [
+      t.Literal(-2), // "Very chilled"
+      t.Literal(-1), // "Cool"
+      t.Literal(0), // "Neutral"
+      t.Literal(1), // "Warm"
+      t.Literal(2), // "Fire"
+    ],
+    { default: 0 },
+  ),
 
-  purchasedRanks: number;
-  purchasedDisplayPriorHours: number;
-  purchasedDisplayPostHours: number;
-  purchasedDisplayZoomGroup: number;
-};
+  announcements: t.Array(VibefireEventAnnouncementSchema),
+  offers: t.Array(VibefireEventOfferSchema),
+  pois: t.Array(VibefireEventPOISchema),
+  tags: t.Array(t.String()),
 
-export type VibefireEventOffer = {
-  offerID: string;
-  organisationID: string;
-  description: string;
-  live: boolean;
-  timesClaimablePerUser: number;
-  claimedBy: string[];
-  claimableBy: string[] | null;
-  linkedPoiID: string | null;
-  timeStart: Date | null;
-  timeEnd: Date | null;
-  totalClaims: number | null;
-};
+  // search related
+  rank: t.Number(),
+  location: VibefireEventLocationSchema,
+  displayZoomGroup: t.Union(
+    [
+      t.Literal(0), // "local"
+      t.Literal(1), // "regional"
+      t.Literal(2), // "national"
+    ],
+    { default: 0 },
+  ),
+  displayTimePeriods: t.Array(TimePeriodSchema),
+  published: t.Boolean(),
+  visibility: t.Union([
+    t.Literal("public"),
+    t.Literal("private"), // only invited people can see
+    t.Literal("hidden"), // only people with link can see, and data is encrypted
+  ]),
+});
+export type VibefireEventT = Static<typeof VibefireEventSchema>;
+
+export const VibefireEventManagementSchema = t.Object({
+  id: t.String(),
+  event: t.String(),
+
+  limitLocationChanges: t.Number({ minimum: 0 }),
+  limitTimeStartChanges: t.Number({ minimum: 0 }),
+  limitNotificationsTotal: t.Number({ minimum: 0 }),
+  limitOffersTotal: t.Number({ minimum: 0 }),
+  limitPoisTotal: t.Number({ minimum: 0 }),
+
+  actualLocationChanges: t.Number({ minimum: 0 }),
+  actualTimeStartChanges: t.Number({ minimum: 0 }),
+
+  purchasedRanks: t.Number({ minimum: 0 }),
+  purchasedDisplayTimePeriods: t.Number({ minimum: 0 }),
+  purchasedDisplayZoomGroup: t.Number({ minimum: 0 }),
+
+  offerClaims: t.Record(t.String(), t.Array(t.String())),
+  offerClaimableBy: t.Record(t.String(), t.Array(t.String())),
+});
+export type VibefireEventManagementT = Static<
+  typeof VibefireEventManagementSchema
+>;

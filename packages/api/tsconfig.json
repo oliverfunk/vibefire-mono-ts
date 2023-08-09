@@ -4,7 +4,13 @@
     "src/**/*.ts",
     "src/basepaths.ts",
   ],
+  "exclude": [
+    "*.test.ts"
+  ],
   "compilerOptions": {
+    "types": [
+      "@types/jest",
+    ],
     "baseUrl": ".",
     "paths": {
       "~/*": [

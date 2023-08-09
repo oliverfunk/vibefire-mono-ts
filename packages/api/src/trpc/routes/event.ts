@@ -1,3 +1,7 @@
+import { Static, Type as t, TSchema } from "@sinclair/typebox";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
+import { ValueErrorIterator } from "@sinclair/typebox/errors";
+import { Value } from "@sinclair/typebox/value";
 import { z } from "zod";
 
 import {
@@ -5,6 +9,7 @@ import {
   doCreatePublicEventsCollection,
   queryPublicEventsWhenWhere,
 } from "@vibefire/db";
+import { CoordSchema } from "@vibefire/models";
 import {
   cellToParent,
   compactCells,
@@ -14,25 +19,8 @@ import {
   zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
+import { v } from "~/utils";
 import { authedProcedure, publicProcedure, router } from "../trpc-router";
-
-const CoordSchema = z.object({
-  lat: z.number(),
-  lng: z.number(),
-});
-const VibefireEventLocationSchema = z.object({
-  addressDescription: z.string(),
-  coord: CoordSchema,
-  h3: z.number(),
-  h3Parents: z.array(z.number()),
-});
-const VibefireEventSchema = z.object({
-  id: z.string(),
-  location: VibefireEventLocationSchema,
-  displayTimePeriods: z.array(z.string()),
-  published: z.boolean(),
-  rank: z.number(),
-});
 
 export const eventsRouter = router({
   addLocEvent: publicProcedure
@@ -84,12 +72,14 @@ export const eventsRouter = router({
     }),
   queryPublicEventsWhenWhere: publicProcedure
     .input(
-      z.object({
-        timePeriod: z.string(),
-        northEast: z.object({ lat: z.number(), lng: z.number() }),
-        southWest: z.object({ lat: z.number(), lng: z.number() }),
-        zoomLevel: z.number(),
-      }),
+      v(
+        t.Object({
+          timePeriod: t.String(),
+          northEast: CoordSchema,
+          southWest: CoordSchema,
+          zoomLevel: t.Number(),
+        }),
+      ),
     )
     .output(z.array(VibefireEventSchema))
     .query(async ({ ctx, input }) => {

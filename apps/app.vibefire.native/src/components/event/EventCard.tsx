@@ -1,33 +1,73 @@
 import {
+  Pressable,
   Text,
   TouchableOpacity,
   View,
   type GestureResponderEvent,
 } from "react-native";
+import { Image } from "expo-image";
+import { DateTime } from "luxon";
 
 type EventCardProps = {
   event: {
+    bannerImgURL: string;
     title: string;
-    description: string;
-    date: string;
-    location: string;
+    orgName: string;
+    orgProfileImgURL: string;
+    addressDescription: string;
+    timeStart: DateTime;
+    timeEnd: DateTime;
   };
-  onPress: (event: Event) => void;
+  onPress: (event: GestureResponderEvent) => void;
 };
 
-const EventCard = ({ event, onPress }: EventCardProps) => {
-  const { title, description, date, location } = event;
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
+export const EventCard = ({ event, onPress }: EventCardProps) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>{date}</Text>
+    <Pressable onPress={onPress}>
+      <View className="border-t bg-white">
+        <View className="ml-2 mt-2 flex flex-row items-center">
+          <Image
+            className="h-10 w-10 rounded-full"
+            source={event.orgProfileImgURL}
+            placeholder={blurhash}
+            contentFit="cover"
+            transition={1000}
+          />
+          <Text className="ml-2 text-lg text-black dark:text-white">
+            {event.orgName}
+          </Text>
         </View>
-        <Text style={styles.description}>{description}</Text>
-        <Text style={styles.location}>{location}</Text>
+        <View className="relative my-1 items-center bg-black">
+          <Image
+            className="aspect-[3/2] w-full"
+            source={event.bannerImgURL}
+            placeholder={blurhash}
+            contentFit="cover"
+            transition={1000}
+          />
+        </View>
+        <View className="mx-2 mb-2 flex flex-row">
+          <View className="flex-[4] justify-evenly">
+            <Text className="text-lg font-bold text-gray-900 dark:text-white">
+              {event.title}
+            </Text>
+            <Text className="text-gray-700 dark:text-gray-400">
+              {event.addressDescription}
+            </Text>
+          </View>
+          <View className="flex-[1] items-center justify-evenly">
+            <Text className="">
+              {event.timeStart.toLocaleString(DateTime.TIME_SIMPLE)}
+            </Text>
+            <Text className="">
+              {event.timeEnd.toLocaleString(DateTime.TIME_SIMPLE)}
+            </Text>
+          </View>
+        </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
