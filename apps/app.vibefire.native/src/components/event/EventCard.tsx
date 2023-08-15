@@ -1,11 +1,11 @@
 import {
   Pressable,
   Text,
-  TouchableOpacity,
   View,
   type GestureResponderEvent,
 } from "react-native";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { DateTime } from "luxon";
 
 type EventCardProps = {
@@ -27,45 +27,60 @@ const blurhash =
 export const EventCard = ({ event, onPress }: EventCardProps) => {
   return (
     <Pressable onPress={onPress}>
-      <View className="border-t bg-white">
-        <View className="ml-2 mt-2 flex flex-row items-center">
+      <View className="mx-5 my-2 rounded-xl border-b-[20px] bg-black">
+        <View className="relative items-center">
           <Image
-            className="h-10 w-10 rounded-full"
-            source={event.orgProfileImgURL}
-            placeholder={blurhash}
-            contentFit="cover"
-            transition={1000}
-          />
-          <Text className="ml-2 text-lg text-black dark:text-white">
-            {event.orgName}
-          </Text>
-        </View>
-        <View className="relative my-1 items-center bg-black">
-          <Image
-            className="aspect-[3/2] w-full"
+            className="aspect-[4/3] w-full rounded-xl"
             source={event.bannerImgURL}
+            cachePolicy={"memory"}
             placeholder={blurhash}
             contentFit="cover"
             transition={1000}
           />
-        </View>
-        <View className="mx-2 mb-2 flex flex-row">
-          <View className="flex-[4] justify-evenly">
-            <Text className="text-lg font-bold text-gray-900 dark:text-white">
-              {event.title}
+
+          <LinearGradient
+            className="absolute left-0 top-0 flex w-full flex-row items-center rounded-t-xl p-2"
+            colors={["rgba(50, 40, 40, 1)", "rgba(0,0,0,0)"]}
+            locations={[0, 1]}
+          >
+            <Image
+              className="h-10 w-10 rounded-full border-2 border-black"
+              source={event.orgProfileImgURL}
+              cachePolicy={"memory"}
+              placeholder={blurhash}
+              contentFit="cover"
+              transition={1000}
+            />
+            <Text className="ml-2 text-lg text-white">{event.orgName}</Text>
+          </LinearGradient>
+
+          <LinearGradient
+            className="absolute bottom-[-20px] left-0 w-full rounded-b-xl p-2 pt-4"
+            colors={["rgba(0,0,0,0)", "rgba(0,0,0,1)"]}
+            locations={[0, 0.8]}
+          >
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              className="text-2xl font-bold text-white"
+            >
+              Really really
             </Text>
-            <Text className="text-gray-700 dark:text-gray-400">
+
+            <View className="flex flex-row">
+              <Text className="text-base text-yellow-400">
+                {event.timeStart.toFormat("LLL d, T")}
+              </Text>
+              <Text className="text-base text-white"> - </Text>
+              <Text className="text-base text-yellow-400">
+                {event.timeEnd.toFormat("LLL d, T")}
+              </Text>
+            </View>
+
+            <Text className="text-base text-white">
               {event.addressDescription}
             </Text>
-          </View>
-          <View className="flex-[1] items-center justify-evenly">
-            <Text className="">
-              {event.timeStart.toLocaleString(DateTime.TIME_SIMPLE)}
-            </Text>
-            <Text className="">
-              {event.timeEnd.toLocaleString(DateTime.TIME_SIMPLE)}
-            </Text>
-          </View>
+          </LinearGradient>
         </View>
       </View>
     </Pressable>

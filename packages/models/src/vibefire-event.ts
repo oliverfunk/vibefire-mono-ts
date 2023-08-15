@@ -13,6 +13,7 @@ export const VibefireEventOfferSchema = t.Object({
   timeStart: t.Optional(t.String({ format: "date-time" })),
   timeEnd: t.Optional(t.String({ format: "date-time" })),
 });
+export type VibefireEventOfferT = Static<typeof VibefireEventOfferSchema>;
 
 export const VibefireEventAnnouncementSchema = t.Object({
   id: t.String(),
@@ -26,12 +27,12 @@ export type VibefireEventAnnouncementT = Static<
   typeof VibefireEventAnnouncementSchema
 >;
 
-export const VibefireEventPOISchema = t.Object({
+export const VibefireEventPoiSchema = t.Object({
   id: t.String(),
   coord: CoordSchema,
   description: t.String(),
 });
-export type VibefireEventPOIT = Static<typeof VibefireEventPOISchema>;
+export type VibefireEventPoiT = Static<typeof VibefireEventPoiSchema>;
 
 export const VibefireEventLocationSchema = t.Object({
   addressDescription: t.String(),
@@ -89,7 +90,7 @@ export const VibefireEventSchema = t.Object({
 
   announcements: t.Array(VibefireEventAnnouncementSchema),
   offers: t.Array(VibefireEventOfferSchema),
-  pois: t.Array(VibefireEventPOISchema),
+  pois: t.Array(VibefireEventPoiSchema),
   tags: t.Array(t.String()),
 
   // search related

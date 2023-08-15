@@ -1,4 +1,4 @@
-import { fql } from "fauna";
+import { Client, fql, Query, QueryValue } from "fauna";
 
 export const CollectionExists = (collectionName: string) =>
   fql`Collection.byName(${collectionName}) != null`;
@@ -13,4 +13,12 @@ export const CreateCollectionIfDne = (collectionName: string) => {
         ${CreateCollection(collectionName)}
     }
 `;
+};
+
+export const dfq = async <R extends QueryValue>(
+  faunaClient: Client,
+  query: Query,
+): Promise<R> => {
+  const qr = await faunaClient.query<R>(query);
+  return qr.data;
 };

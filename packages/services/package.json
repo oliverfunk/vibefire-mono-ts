@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "services",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@clerk/backend": "^0.26.0",
+    "@vibefire/db": "*",
+    "@vibefire/utils": "*",
+    "svix": "^1.7.0",
+    "@vibefire/models": "workspace:*"
+  },
+  "devDependencies": {
+    "@vibefire/config": "*"
+  },
+  "exports": {
+    "./fauna": "./src/fauna/index.ts"
+  }
+}
