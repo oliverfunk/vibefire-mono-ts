@@ -9,7 +9,7 @@ import {
   doCreatePublicEventsCollection,
   queryPublicEventsWhenWhere,
 } from "@vibefire/db";
-import { CoordSchema } from "@vibefire/models";
+import { CoordSchema, VibefireEventSchema } from "@vibefire/models";
 import {
   cellToParent,
   compactCells,
@@ -81,7 +81,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output(z.array(VibefireEventSchema))
+    .output(v(t.Array(VibefireEventSchema)))
     .query(async ({ ctx, input }) => {
       // todo: validate timePeriod
       const timePeriod = input.timePeriod;
@@ -133,7 +133,7 @@ export const eventsRouter = router({
       );
 
       const events = res.data?.map((eventData) =>
-        VibefireEventSchema.parse(eventData),
+        v(VibefireEventSchema)(eventData),
       );
 
       console.log("events.length", events.length);

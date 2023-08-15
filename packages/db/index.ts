@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { Client } from "fauna";
 
-export * from "./src/fauna/collections/event";
+export * from "./src/fauna/collections/Events";
 export * from "./src/fauna/collections/Users";
 
 var _supabaseClient: ReturnType<typeof createClient> | undefined;

@@ -2,10 +2,41 @@ import { Client, DateStub, Document, fql } from "fauna";
 
 import { VibefireUser } from "@vibefire/models";
 
+import { CreateCollectionIfDne, dfq } from "../utils";
+
 type UserInfo = Pick<
   VibefireUser,
   "name" | "phoneNumber" | "contactEmail" | "dateOfBirth"
 >;
+
+export const createUsersCollection = async (faunaClient: Client) =>
+  await dfq(faunaClient, CreateCollectionIfDne("Users"));
+
+export const createUsersUniqueConstraints = async (faunaClient: Client) => {
+  const aidField: keyof VibefireUser = "aid";
+  const q = fql`
+    Users.definition.update({
+      constraints: [
+        { unique: [ ${aidField} ] }
+      ]
+    })
+  `;
+  return await dfq(faunaClient, q);
+};
+
+export const createWithAidIndex = async (faunaClient: Client) => {
+  const aidField: keyof VibefireUser = "aid";
+  const q = fql`
+    Users.definition.update({
+      indexes: {
+        withAid: {
+          terms: [{ field: ${aidField} }],
+        }
+      }
+    })
+  `;
+  return await dfq(faunaClient, q);
+};
 
 export const createUser = async (
   faunaClient: Client,
@@ -31,7 +62,7 @@ export const createUser = async (
       id
     }
   `;
-  return (await faunaClient.query<{ id: string }>(q)).data;
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
 export const updateUserInfo = async (
@@ -47,18 +78,18 @@ export const updateUserInfo = async (
         : DateStub.fromDate(userInfo.dateOfBirth),
   };
   const q = fql`
-    Users.firstWhere(.aid == ${aid}).update(${userSerialized}) {
+    Users.withAid(${aid}).update(${userSerialized}) {
       id
     }
   `;
-  return (await faunaClient.query<{ id: string }>(q)).data;
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
 export const deleteUser = async (faunaClient: Client, aid: string) => {
   const q = fql`
-    Users.firstWhere(.aid == ${aid}).delete()
+    Users.withAid(${aid}).delete()
   `;
-  return (await faunaClient.query<{ id: string }>(q)).data;
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
 export const addFollowedEvent = async (
@@ -67,11 +98,11 @@ export const addFollowedEvent = async (
   eventId: string,
 ) => {
   const q = fql`
-    let u = Users.firstWhere(.aid == ${aid})
+    let u = Users.withAid(${aid})
     let updatedFollowedEvents = u?.followedEvents.append([${eventId}]).distinct()
     u?.update({ followedEvents: updatedFollowedEvents })
   `;
-  return (await faunaClient.query<{ id: string }>(q)).data;
+  return await dfq(faunaClient, q);
 };
 
 // function userByEmail(email) {
