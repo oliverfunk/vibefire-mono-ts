@@ -1,7 +1,15 @@
 {
-  "extends": "@vibefire/config/tsconfig/ts-lib",
+  "extends": "@vibefire/config/tsconfig/ts-lib.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    },
+  },
   "include": [
-    "src/**/*.ts",
     "index.ts",
-  ]
+    "src/**/*.ts"
+  ],
 }

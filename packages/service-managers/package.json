@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@vibefire/service-managers",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@clerk/backend": "^0.26.0",
+    "@vibefire/services": "*",
+    "@vibefire/utils": "*",
+    "svix": "^1.7.0",
+    "@vibefire/models": "*"
+  },
+  "devDependencies": {
+    "@vibefire/config": "*"
+  },
+  "exports": {
+    "./backend": "./src/backend/index.ts"
+  }
+}

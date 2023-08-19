@@ -1,7 +1,0 @@
-{
-  "extends": "@vibefire/config/tsconfig/ts-lib",
-  "include": [
-    "src/**/*.ts",
-    "index.ts",
-  ],
-}

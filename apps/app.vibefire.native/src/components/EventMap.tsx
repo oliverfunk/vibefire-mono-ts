@@ -10,7 +10,7 @@ import Toast from "react-native-toast-message";
 import { ErrorBoundary, ErrorBoundaryProps, router } from "expo-router";
 import { useSetAtom } from "jotai";
 
-import { Coord } from "@vibefire/models";
+import { CoordT } from "@vibefire/models";
 import { mapQueryPositionAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
@@ -71,7 +71,7 @@ const useMapMarkers = () => {
   return markers;
 };
 
-const EventMapComponent = (props: { initialMapPosition?: Coord }) => {
+const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   const mvRef = useRef<MapView>(null);
   const setBBox = useCallback(
     debounce(useSetAtom(mapQueryPositionAtom), 1000),

@@ -15,7 +15,7 @@ export const VibefireEventOfferSchema = t.Object({
 });
 export type VibefireEventOfferT = Static<typeof VibefireEventOfferSchema>;
 
-export const VibefireEventAnnouncementSchema = t.Object({
+export const VibefireEventTimelineElementSchema = t.Object({
   id: t.String(),
   message: t.String(),
   when: t.String(),
@@ -23,20 +23,20 @@ export const VibefireEventAnnouncementSchema = t.Object({
   hasNotified: t.Boolean(),
   linkedPoi: t.Optional(t.String()),
 });
-export type VibefireEventAnnouncementT = Static<
-  typeof VibefireEventAnnouncementSchema
+export type VibefireEventTimelineElementT = Static<
+  typeof VibefireEventTimelineElementSchema
 >;
 
 export const VibefireEventPoiSchema = t.Object({
   id: t.String(),
-  coord: CoordSchema,
+  position: CoordSchema,
   description: t.String(),
 });
 export type VibefireEventPoiT = Static<typeof VibefireEventPoiSchema>;
 
 export const VibefireEventLocationSchema = t.Object({
   addressDescription: t.String(),
-  coord: CoordSchema,
+  position: CoordSchema,
   h3: t.Number(),
   h3Parents: t.Array(t.Number()),
 });
@@ -48,35 +48,29 @@ export const VibefireEventImagesSchema = t.Object({
       // this should be vibefire specific image url (i.e. the domain etc.)
       "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)",
   }),
-  si1: t.Optional(
-    t.String({
-      format: "uri",
-    }),
-  ),
-  si2: t.Optional(t.String()),
-  si3: t.Optional(t.String()),
-  si4: t.Optional(t.String()),
-  si5: t.Optional(t.String()),
-  si6: t.Optional(t.String()),
-  si7: t.Optional(t.String()),
-  si8: t.Optional(t.String()),
-  si9: t.Optional(t.String()),
+  additional: t.Optional(t.Array(t.String(), { default: [], maxItems: 4 })),
   customIcon: t.Optional(t.String()),
 });
 export type VibefireEventImagesT = Static<typeof VibefireEventImagesSchema>;
 
 export const VibefireEventSchema = t.Object({
   id: t.String(),
-  organisation: t.String(),
+  organisationId: t.String(),
 
   // event info
   type: t.Union([t.Literal("regular")]),
-  name: t.String(),
+  title: t.String(),
   description: t.String(),
   images: VibefireEventImagesSchema,
-  timeStart: t.Date(),
-  timeEnd: t.Optional(t.Date()),
+  timeStart: t.Number(),
+  timeEnd: t.Optional(t.Number()),
   timeZone: t.String(),
+
+  timeline: t.Array(VibefireEventTimelineElementSchema, { default: [] }),
+  offers: t.Array(VibefireEventOfferSchema, { default: [] }),
+  pois: t.Array(VibefireEventPoiSchema, { default: [] }),
+  tags: t.Array(t.String(), { default: [] }),
+
   vibe: t.Union(
     [
       t.Literal(-2), // "Very chilled"
@@ -87,11 +81,6 @@ export const VibefireEventSchema = t.Object({
     ],
     { default: 0 },
   ),
-
-  announcements: t.Array(VibefireEventAnnouncementSchema),
-  offers: t.Array(VibefireEventOfferSchema),
-  pois: t.Array(VibefireEventPoiSchema),
-  tags: t.Array(t.String()),
 
   // search related
   rank: t.Number(),
@@ -116,7 +105,7 @@ export type VibefireEventT = Static<typeof VibefireEventSchema>;
 
 export const VibefireEventManagementSchema = t.Object({
   id: t.String(),
-  event: t.String(),
+  eventId: t.String(),
 
   limitLocationChanges: t.Number({ minimum: 0 }),
   limitTimeStartChanges: t.Number({ minimum: 0 }),

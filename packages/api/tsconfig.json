@@ -1,20 +1,15 @@
 {
   "extends": "@vibefire/config/tsconfig/ts-lib.json",
   "compilerOptions": {
-    "types": [
-      "@types/jest",
-    ],
     "baseUrl": ".",
     "paths": {
       "~/*": [
         "./src/*"
       ]
-    }
+    },
   },
   "include": [
     "src/**/*.ts",
-  ],
-  "exclude": [
-    "*.test.ts"
+    "../services/src/clerk/index.ts"
   ],
 }
