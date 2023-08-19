@@ -18,3 +18,11 @@ export const MapQueryInfoSchema = t.Object({
   queryStatus: t.Union([t.Literal("loading"), t.Literal("done")]),
 });
 export type MapQueryInfoT = Static<typeof MapQueryInfoSchema>;
+
+export const MapQuerySchema = t.Object({
+  timePeriod: TimePeriodSchema,
+  northEast: CoordSchema,
+  southWest: CoordSchema,
+  zoomLevel: t.Number({ minimum: 0, maximum: 15 }),
+});
+export type MapQueryT = Static<typeof MapQuerySchema>;

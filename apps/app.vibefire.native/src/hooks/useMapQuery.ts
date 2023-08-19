@@ -13,7 +13,7 @@ export const useMapQuery = () => {
   const mapPos = useAtomValue(mapQueryPositionAtom);
   const tp = useAtomValue(mapQueryTimePeriodAtom);
   const [mqi, setMqi] = useAtom(mapQueryInfo);
-  const mapQuery = trpc.events.queryPublicEventsWhenWhere.useQuery(
+  const mapQuery = trpc.events.mapQueryPublicEvents.useQuery(
     mapPos === null
       ? {
           timePeriod: "",

@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@clerk/backend": "^0.26.0",
-    "@vibefire/db": "*",
+    "@vibefire/service-managers": "*",
+    "@vibefire/services": "*",
     "@vibefire/utils": "*",
     "svix": "^1.7.0"
   },

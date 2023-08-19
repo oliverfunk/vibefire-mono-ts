@@ -2,7 +2,7 @@ import { fql, Query, type Client, type QuerySuccess } from "fauna";
 
 import { dfq } from "../utils";
 
-export const createPublicEventsInPeriodInAreas = async (
+export const createUDFPublicEventsInPeriodInAreas = async (
   faunaClient: Client,
 ) => {
   const q = fql`
@@ -10,7 +10,7 @@ export const createPublicEventsInPeriodInAreas = async (
       name: "publicEventsInPeriodInAreas",
       body: <<-END
         (timePeriod, h3s) => {
-          h3s.toSet().flatMap(h3 => Events.geoTemporal(timePeriodIndex, h3p, 'public', true))
+          h3s.toSet().flatMap(h3 => Events.geoTemporal(timePeriod, h3, 'public', true))
         }
       END
     })

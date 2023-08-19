@@ -1,7 +1,5 @@
 import { Hono } from "hono";
 
-import { faunaClient } from "@vibefire/db";
-
 type Bindings = {
   FAUNA_SECRET: string;
 };

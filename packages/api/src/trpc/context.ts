@@ -1,25 +1,21 @@
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
-import { faunaClient, supabaseClient } from "@vibefire/db";
-
-import { authRequestWithClerk, type ClerkAuthContext } from "~/auth";
+import { getDBServiceManager } from "@vibefire/service-managers/backend";
+import {
+  authRequestWithClerk,
+  type ClerkAuthContext,
+} from "@vibefire/services/clerk";
 
 type ContextProps = {
   auth: ClerkAuthContext;
-  faunaClient: ReturnType<typeof faunaClient>;
-  supabaseClient: ReturnType<typeof supabaseClient>;
+  dbServiceManager: ReturnType<typeof getDBServiceManager>;
 };
 
-const createContextInner = ({
-  auth,
-  faunaClient,
-  supabaseClient,
-}: ContextProps) => {
+const createContextInner = ({ auth, dbServiceManager }: ContextProps) => {
   return {
     auth,
-    faunaClient,
-    supabaseClient,
+    dbServiceManager,
   };
 };
 
@@ -28,12 +24,10 @@ export const createContext = async ({
   clerkPemString,
   clerkIssuerApiUrl,
   faunaClientKey,
-  supabaseClientKey,
 }: CreateContextOptions) => {
   return createContextInner({
     auth: await authRequestWithClerk(clerkPemString, clerkIssuerApiUrl, req),
-    faunaClient: faunaClient(faunaClientKey),
-    supabaseClient: supabaseClient(supabaseClientKey),
+    dbServiceManager: getDBServiceManager(faunaClientKey),
   });
 };
 export type Context = inferAsyncReturnType<typeof createContext>;

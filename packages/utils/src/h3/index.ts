@@ -1,3 +1,7 @@
+import { cellToParent, CoordPair, latLngToCell } from "h3-js";
+
+import { CoordT } from "@vibefire/models";
+
 export {
   compactCells,
   latLngToCell,
@@ -41,4 +45,32 @@ export const zoomLevelToH3Resolution = (zoomLevel: number) => {
   return ZOOM_LVL_TO_H3_RES_MAP[
     zoomLevelInt as keyof typeof ZOOM_LVL_TO_H3_RES_MAP
   ];
+};
+
+export const latLngPositionToH3 = (position: CoordT) => {
+  const h3 = latLngToCell(position.lat, position.lng, 15);
+  const h3Dec = hexToDecimal(h3);
+
+  return {
+    h3,
+    h3Dec,
+  };
+};
+
+export const h3ToH3Parents = (
+  child: string,
+  coarsestRes = 0,
+  finestRes = 15,
+) => {
+  const h3Parents = [];
+  for (let i = finestRes; i >= coarsestRes; i--) {
+    h3Parents.push(cellToParent(child, i));
+  }
+
+  const h3ParentsDec = h3Parents.map((h3) => hexToDecimal(h3));
+
+  return {
+    h3Parents,
+    h3ParentsDec,
+  };
 };

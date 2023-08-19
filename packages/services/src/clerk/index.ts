@@ -3,9 +3,13 @@ import {
   signedOutAuthObject,
   verifyToken,
   type AuthObject,
+  type SignedInAuthObject,
+  type SignedOutAuthObject,
 } from "@clerk/backend";
 
 export type ClerkAuthContext = AuthObject;
+export type ClerkSignedInAuthContext = SignedInAuthObject;
+export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
 export const authRequestWithClerk = async (
   clerkPemString: string,

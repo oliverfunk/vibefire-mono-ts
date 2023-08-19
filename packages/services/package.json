@@ -1,19 +1,18 @@
 {
-  "$schema": "https://json.schemastore.org/package.json",
-  "name": "services",
+  "name": "@vibefire/services",
   "version": "0.1.0",
   "private": true,
+  "scripts": {},
   "dependencies": {
-    "@clerk/backend": "^0.26.0",
-    "@vibefire/db": "*",
-    "@vibefire/utils": "*",
-    "svix": "^1.7.0",
-    "@vibefire/models": "workspace:*"
+    "@supabase/supabase-js": "^2.26.0",
+    "fauna": "^0.9.1"
   },
   "devDependencies": {
-    "@vibefire/config": "*"
+    "@vibefire/config": "*",
+    "@vibefire/models": "*"
   },
   "exports": {
-    "./fauna": "./src/fauna/index.ts"
+    "./fauna": "./src/fauna/index.ts",
+    "./clerk": "./src/clerk/index.ts"
   }
 }
