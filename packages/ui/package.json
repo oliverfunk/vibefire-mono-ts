@@ -5,7 +5,9 @@
   "types": "./index.tsx",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "generate:component": "turbo gen react-component"
+    "generate:component": "turbo gen react-component",
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
   },
   "devDependencies": {
     "@vibefire/config": "*"

@@ -46,7 +46,7 @@ export const createUser = (
     dateOfBirth:
       userData.dateOfBirth == undefined
         ? undefined
-        : DateStub.fromDate(userData.dateOfBirth),
+        : DateStub.from(userData.dateOfBirth),
   };
   const q = fql`
     Users.create(${userDataSer}) {
@@ -66,11 +66,12 @@ export const updateUserInfo = (
     dateOfBirth:
       userData.dateOfBirth == undefined
         ? undefined
-        : DateStub.fromDate(userData.dateOfBirth),
+        : DateStub.from(userData.dateOfBirth),
   };
+  const _userDataSer: Partial<typeof userDataSer> = userDataSer;
 
   const q = fql`
-    Users.withAid(${aid}).update(${userDataSer}) {
+    Users.withAid(${aid}).update(${_userDataSer}) {
       id
     }
   `;

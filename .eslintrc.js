@@ -1,7 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
   root: true,
-  extends: ["@vibefire/config/eslint"], // uses the config in `packages/config/eslint`
+  extends: ["./packages/config/eslint/index.js"], // uses the config in `packages/config/eslint`
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",

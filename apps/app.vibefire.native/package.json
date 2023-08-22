@@ -13,7 +13,9 @@
     "type-check": "tsc --noEmit",
     "start": "expo start --dev-client",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.18.12",

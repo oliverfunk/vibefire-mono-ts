@@ -1,4 +1,4 @@
-import { Static, Type as t } from "@sinclair/typebox";
+import { Type as t, type Static } from "@sinclair/typebox";
 
 export const TimePeriodSchema = t.String({ pattern: `^[0-9]{8}\/[E,M,A,N]$` });
 export type TimePeriodT = Static<typeof TimePeriodSchema>;

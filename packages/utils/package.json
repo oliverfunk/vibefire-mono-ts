@@ -2,9 +2,13 @@
   "name": "@vibefire/utils",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
+  },
   "dependencies": {
-    "h3-js": "^4.1.0",
-    "@vibefire/models": "*"
+    "@vibefire/models": "*",
+    "h3-js": "^4.1.0"
   },
   "devDependencies": {
     "@vibefire/config": "*"

@@ -50,6 +50,8 @@ export const useMapQuery = () => {
         });
         break;
       case "success":
+        const a = mapQuery.data;
+
         setMqi({
           numberOfEvents: mapQuery.data.length,
           queryStatus: "done",

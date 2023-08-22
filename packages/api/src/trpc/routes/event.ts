@@ -1,12 +1,15 @@
-import { Type as t } from "@sinclair/typebox";
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+import { Static, Type as t, TSchema } from "@sinclair/typebox";
 
 import {
   CoordSchema,
   MapQuerySchema,
   VibefireEventSchema,
+  VibefireEventT,
 } from "@vibefire/models";
+import { tbValidator } from "@vibefire/utils";
 
-import { v } from "~/trpc/validator";
+import { v, vv, type Validator } from "~/trpc/validator";
 import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
 export const eventsRouter = router({
@@ -24,11 +27,9 @@ export const eventsRouter = router({
       //   });
     }),
   mapQueryPublicEvents: publicProcedure
-    .input(v(MapQuerySchema))
-    // .output(v(t.Array(VibefireEventSchema)))
+    .input(tbValidator(MapQuerySchema))
+    .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
-      console.log("eventCreateTwo", ctx.dbServiceManager.eventCreateTwo(2));
-
       return await ctx.dbServiceManager.eventsFromMapQuery(input);
     }),
 });
