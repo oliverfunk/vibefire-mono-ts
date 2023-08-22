@@ -1,5 +1,5 @@
 {
-  "extends": "@vibefire/config/tsconfig/react-library.json",
+  "extends": "@vibefire/config/tsconfig/react-lib.json",
   "include": [
     "."
   ],

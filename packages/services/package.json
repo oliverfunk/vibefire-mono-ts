@@ -2,14 +2,18 @@
   "name": "@vibefire/services",
   "version": "0.1.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
+  },
   "dependencies": {
-    "@supabase/supabase-js": "^2.26.0",
-    "fauna": "^0.9.1"
+    "@supabase/supabase-js": "^2.33.1",
+    "@vibefire/models": "*",
+    "@vibefire/utils": "*",
+    "fauna": "^1.0.1"
   },
   "devDependencies": {
-    "@vibefire/config": "*",
-    "@vibefire/models": "*"
+    "@vibefire/config": "*"
   },
   "exports": {
     "./fauna": "./src/fauna/index.ts",

@@ -2,9 +2,14 @@
   "name": "@vibefire/shared-state",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {},
-  "devDependencies": {
-    "@vibefire/config": "*",
+  "scripts": {
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
+  },
+  "dependencies": {
     "@vibefire/models": "*"
+  },
+  "devDependencies": {
+    "@vibefire/config": "*"
   }
 }

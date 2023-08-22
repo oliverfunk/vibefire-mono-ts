@@ -5,7 +5,9 @@
   "scripts": {
     "deploy": "wrangler publish",
     "start": "wrangler dev",
-    "w": "wrangler"
+    "w": "wrangler",
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20230419.0",

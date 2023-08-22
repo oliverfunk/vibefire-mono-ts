@@ -1,23 +1,25 @@
 // import { createClient } from "@supabase/supabase-js";
+import { Value } from "@sinclair/typebox/value";
 import { Client } from "fauna";
 import { DateTime } from "luxon";
 
 import {
-  MapQueryT,
-  VibefireEventImagesT,
-  VibefireEventLocationT,
   VibefireEventSchema,
-  VibefireEventT,
-  VibefireEventTimelineElementT,
-  VibefireUserInfoT,
+  type MapQueryT,
+  type VibefireEventImagesT,
+  type VibefireEventLocationT,
+  type VibefireEventT,
+  type VibefireEventTimelineElementT,
+  type VibefireUserInfoT,
 } from "@vibefire/models";
 import { type ClerkSignedInAuthContext } from "@vibefire/services/clerk";
 import {
   addFollowedEvent,
   callPublicEventsInPeriodInAreas,
-  createPublicEvent,
+  createEvent,
   createUser,
   deleteUser,
+  updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
 import {
@@ -27,9 +29,10 @@ import {
   latLngPositionToH3,
   latLngToCell,
   polygonToCells,
-  Replace,
+  removeUndef,
   tbValidator,
   zoomLevelToH3Resolution,
+  type Replace,
 } from "@vibefire/utils";
 
 import { eventCreateTwo } from "./event";
@@ -50,62 +53,86 @@ export class DBServiceManager {
 
   public eventCreateTwo = eventCreateTwo;
 
+  _checkUserIsPartOfOrg(
+    userAc: ClerkSignedInAuthContext,
+    organisationId?: string,
+  ) {
+    if (organisationId !== undefined) {
+      if (userAc.organization === undefined) {
+        throw new Error("User is not part of an organization");
+      }
+      if (organisationId !== userAc.organization.id) {
+        throw new Error("User is not part of that organization");
+      }
+    }
+  }
+
   // #region Event
   async eventCreate(
     userAc: ClerkSignedInAuthContext,
-    eventCreateData: VibefireEventT,
+    eventCreateData: Pick<VibefireEventT, "title">,
+    organisationId?: string,
   ) {
-    // todo: validate create data
+    this._checkUserIsPartOfOrg(userAc, organisationId);
 
-    if (userAc.organization === undefined) {
-      throw new Error("User is not part of an organization");
-    }
+    const e = Value.Create(VibefireEventSchema);
+    e["organiserId"] = organisationId || userAc.userId;
+    e["title"] = eventCreateData.title;
+
+    removeUndef(e);
+
+    return await createEvent(this.faunaClient, e);
     // if (userAc.organization. === undefined) {
 
-    const { h3, h3Dec } = latLngPositionToH3(eventCreateData.location.position);
-    const { h3ParentsDec } = h3ToH3Parents(h3);
+    // const { h3, h3Dec } = latLngPositionToH3(eventCreateData.location.position);
+    // const { h3ParentsDec } = h3ToH3Parents(h3);
 
-    const eventData: Omit<VibefireEventT, "id"> = {
-      organisationId: userAc.organization.id,
+    // const eventData: Omit<VibefireEventT, "id"> = {
+    //   organisationId: userAc.organization.id,
 
-      type: "regular",
-      title: "test event",
-      description: "test event description",
-      images: {
-        banner: "",
-      },
-      timeStart: DateTime.now().millisecond,
-      timeEnd: DateTime.now().millisecond,
-      timeZone: "UTC+2",
-      vibe: 0,
+    //   type: "regular",
+    //   title: "test event",
+    //   description: "test event description",
+    //   images: {
+    //     banner: "",
+    //   },
+    //   timeStart: DateTime.now().millisecond,
+    //   timeEnd: DateTime.now().millisecond,
+    //   timeZone: "UTC+2",
+    //   vibe: 0,
 
-      timeline: [],
-      offers: [],
-      pois: [],
-      tags: [],
+    //   timeline: [],
+    //   offers: [],
+    //   pois: [],
+    //   tags: [],
 
-      rank: Math.floor(Math.random() * 10),
-      location: {
-        position: eventCreateData.location.position,
-        addressDescription: "Test place desc",
-        h3: h3Dec,
-        h3Parents: h3ParentsDec,
-      },
-      displayZoomGroup: 0,
-      displayTimePeriods: [],
-      published: true,
-      visibility: "public",
-    };
-    const event = tbValidator(VibefireEventSchema)(eventData);
-
-    const id1 = await createPublicEvent(this.faunaClient, event);
+    //   rank: Math.floor(Math.random() * 10),
+    //   location: {
+    //     position: eventCreateData.location.position,
+    //     addressDescription: "Test place desc",
+    //     h3: h3Dec,
+    //     h3Parents: h3ParentsDec,
+    //   },
+    //   displayZoomGroup: 0,
+    //   displayTimePeriods: [],
+    //   published: true,
+    //   visibility: "public",
+    // };
   }
 
   async eventUpdateDescriptions(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    update: Pick<VibefireEventT, "title" | "description" | "tags">,
-  ) {}
+    update: Partial<Pick<VibefireEventT, "title" | "description" | "tags">>,
+  ) {
+    const res = await updateEvent(
+      this.faunaClient,
+      eventId,
+      update,
+      userAc.userId,
+    );
+    return res;
+  }
 
   async eventUpdateTimes(
     userAc: ClerkSignedInAuthContext,
@@ -156,6 +183,8 @@ export class DBServiceManager {
     poiId: string,
     timelineElementId: string,
   ) {}
+
+  async eventFromId(eventId: string) {}
 
   async eventsFromMapQuery(query: MapQueryT) {
     const { northEast, southWest, timePeriod, zoomLevel } = query;

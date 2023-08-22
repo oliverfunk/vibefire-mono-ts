@@ -3,15 +3,19 @@
   "name": "@vibefire/service-managers",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
+  },
   "dependencies": {
-    "@clerk/backend": "^0.26.0",
-    "@vibefire/services": "*",
-    "@vibefire/utils": "*",
-    "svix": "^1.7.0",
-    "@vibefire/models": "*"
+    "@clerk/backend": "^0.27.0",
+    "@vibefire/models": "^0.1.0",
+    "@vibefire/services": "^0.1.0",
+    "@vibefire/utils": "^0.1.0",
+    "svix": "^1.8.1"
   },
   "devDependencies": {
-    "@vibefire/config": "*"
+    "@vibefire/config": "^0.1.0"
   },
   "exports": {
     "./backend": "./src/backend/index.ts"

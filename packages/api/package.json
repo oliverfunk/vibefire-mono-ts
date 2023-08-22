@@ -3,15 +3,19 @@
   "name": "@vibefire/api",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
+  },
   "dependencies": {
+    "@vibefire/models": "*",
     "@vibefire/service-managers": "*",
     "@vibefire/services": "*",
     "@vibefire/utils": "*",
     "svix": "^1.7.0"
   },
   "devDependencies": {
-    "@vibefire/config": "*",
-    "@vibefire/models": "*"
+    "@vibefire/config": "*"
   },
   "exports": {
     "./trpc": "./src/trpc/index.ts",

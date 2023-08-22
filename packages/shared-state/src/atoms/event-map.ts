@@ -1,10 +1,10 @@
 import { atom } from "jotai";
 
-import { MapPositionInfo, MapQueryInfo } from "@vibefire/models";
+import { type MapPositionInfoT, type MapQueryInfoT } from "@vibefire/models";
 
-export const mapQueryPositionAtom = atom<MapPositionInfo | null>(null);
+export const mapQueryPositionAtom = atom<MapPositionInfoT | null>(null);
 export const mapQueryTimePeriodAtom = atom<string>("20230720/A");
-export const mapQueryInfo = atom<MapQueryInfo>({
+export const mapQueryInfo = atom<MapQueryInfoT>({
   numberOfEvents: 0,
   queryStatus: "done",
 });

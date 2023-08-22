@@ -1,4 +1,4 @@
-import { Static, Type as t } from "@sinclair/typebox";
+import { Type as t, type Static } from "@sinclair/typebox";
 
 import { CoordSchema, TimePeriodSchema } from "./general";
 
@@ -34,37 +34,52 @@ export const VibefireEventPoiSchema = t.Object({
 });
 export type VibefireEventPoiT = Static<typeof VibefireEventPoiSchema>;
 
-export const VibefireEventLocationSchema = t.Object({
-  addressDescription: t.String(),
-  position: CoordSchema,
-  h3: t.Number(),
-  h3Parents: t.Array(t.Number()),
-});
+export const VibefireEventLocationSchema = t.Object(
+  {
+    addressDescription: t.String(),
+    position: CoordSchema,
+    h3: t.Number(),
+    h3Parents: t.Array(t.Number()),
+  },
+  { default: undefined },
+);
 export type VibefireEventLocationT = Static<typeof VibefireEventLocationSchema>;
 
-export const VibefireEventImagesSchema = t.Object({
-  banner: t.String({
-    pattern:
-      // this should be vibefire specific image url (i.e. the domain etc.)
-      "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)",
-  }),
-  additional: t.Optional(t.Array(t.String(), { default: [], maxItems: 4 })),
-  customIcon: t.Optional(t.String()),
-});
+export const VibefireEventImagesSchema = t.Object(
+  {
+    banner: t
+      .String
+      //   {
+      //   pattern:
+      //     // this should be vibefire specific image url (i.e. the domain etc.)
+      //     "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)",
+      // }
+      (),
+    additional: t.Optional(t.Array(t.String(), { default: [], maxItems: 4 })),
+    customIcon: t.Optional(t.String()),
+  },
+  { default: undefined },
+);
 export type VibefireEventImagesT = Static<typeof VibefireEventImagesSchema>;
 
 export const VibefireEventSchema = t.Object({
-  id: t.String(),
-  organisationId: t.String(),
+  id: t.String({ default: undefined }),
+  organiserId: t.String({ default: undefined }),
+  state: t.Union(
+    [t.Literal("draft"), t.Literal("ready"), t.Literal("archived")],
+    { default: "draft" },
+  ),
 
   // event info
-  type: t.Union([t.Literal("regular")]),
-  title: t.String(),
-  description: t.String(),
+  type: t.Union([t.Literal("user"), t.Literal("regular")], {
+    default: undefined,
+  }),
+  title: t.String({ default: undefined }),
+  description: t.String({ default: undefined }),
   images: VibefireEventImagesSchema,
-  timeStart: t.Number(),
+  timeStart: t.Number({ default: undefined }),
   timeEnd: t.Optional(t.Number()),
-  timeZone: t.String(),
+  timeZone: t.String({ default: undefined }),
 
   timeline: t.Array(VibefireEventTimelineElementSchema, { default: [] }),
   offers: t.Array(VibefireEventOfferSchema, { default: [] }),
@@ -83,7 +98,7 @@ export const VibefireEventSchema = t.Object({
   ),
 
   // search related
-  rank: t.Number(),
+  rank: t.Number({ default: 0 }),
   location: VibefireEventLocationSchema,
   displayZoomGroup: t.Union(
     [
@@ -93,19 +108,22 @@ export const VibefireEventSchema = t.Object({
     ],
     { default: 0 },
   ),
-  displayTimePeriods: t.Array(TimePeriodSchema),
-  published: t.Boolean(),
-  visibility: t.Union([
-    t.Literal("public"),
-    t.Literal("private"), // only invited people can see
-    t.Literal("hidden"), // only people with link can see, and data is encrypted
-  ]),
+  displayTimePeriods: t.Array(TimePeriodSchema, { default: [] }),
+  published: t.Boolean({ default: false }),
+  visibility: t.Union(
+    [
+      t.Literal("public"),
+      t.Literal("private"), // only invited people can see
+      t.Literal("hidden"), // only people with link can see, and data is encrypted
+    ],
+    { default: undefined },
+  ),
 });
 export type VibefireEventT = Static<typeof VibefireEventSchema>;
 
 export const VibefireEventManagementSchema = t.Object({
-  id: t.String(),
-  eventId: t.String(),
+  id: t.String({ default: undefined }),
+  eventId: t.String({ default: undefined }),
 
   limitLocationChanges: t.Number({ minimum: 0 }),
   limitTimeStartChanges: t.Number({ minimum: 0 }),
@@ -120,8 +138,11 @@ export const VibefireEventManagementSchema = t.Object({
   purchasedDisplayTimePeriods: t.Number({ minimum: 0 }),
   purchasedDisplayZoomGroup: t.Number({ minimum: 0 }),
 
-  offerClaims: t.Record(t.String(), t.Array(t.String())),
-  offerClaimableBy: t.Record(t.String(), t.Array(t.String())),
+  // offer id to x mappings
+  offerClaimedBy: t.Record(t.String(), t.Array(t.String()), {
+    default: {},
+  }),
+  offerClaimableBy: t.Record(t.String(), t.Array(t.String()), { default: {} }),
 });
 export type VibefireEventManagementT = Static<
   typeof VibefireEventManagementSchema
