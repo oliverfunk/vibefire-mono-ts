@@ -1,23 +1,24 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@vibefire/service-managers",
+  "name": "@vibefire/managers",
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "test": "jest",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
     "@clerk/backend": "^0.27.0",
-    "@vibefire/models": "^0.1.0",
-    "@vibefire/services": "^0.1.0",
-    "@vibefire/utils": "^0.1.0",
+    "@vibefire/models": "*",
+    "@vibefire/services": "*",
+    "@vibefire/utils": "*",
     "svix": "^1.8.1"
   },
   "devDependencies": {
-    "@vibefire/config": "^0.1.0"
+    "@vibefire/config": "*"
   },
   "exports": {
-    "./backend": "./src/backend/index.ts"
+    "./api": "./src/api/index.ts"
   }
 }

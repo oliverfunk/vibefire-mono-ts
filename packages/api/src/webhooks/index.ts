@@ -2,7 +2,7 @@ import { UserWebhookEvent } from "@clerk/backend";
 import { Hono } from "hono";
 import { DateTime } from "luxon";
 
-import { DBServiceManager } from "@vibefire/service-managers";
+import { ApiDataQueryManager } from "@vibefire/managers";
 
 import { validateClerkWebhook } from "./utils";
 

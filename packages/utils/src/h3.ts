@@ -1,6 +1,6 @@
-import { cellToParent, CoordPair, latLngToCell } from "h3-js";
+import { cellToParent, latLngToCell } from "h3-js";
 
-import { CoordT } from "@vibefire/models";
+import { type CoordT } from "@vibefire/models";
 
 export {
   compactCells,

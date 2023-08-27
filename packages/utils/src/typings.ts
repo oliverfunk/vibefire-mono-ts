@@ -1,3 +1,5 @@
+import type { PartialDeep } from "type-fest";
+
 type FinalType<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 export type Replace<T, U extends Partial<Record<keyof T, unknown>>> = FinalType<
   Omit<T, keyof U> & U
@@ -6,5 +8,32 @@ export type Replace<T, U extends Partial<Record<keyof T, unknown>>> = FinalType<
 export type WithPartial<T, K extends keyof T> = Omit<T, K> &
   Partial<Pick<T, K>>;
 
-export const removeUndef = (obj: { [key: string]: unknown }) =>
-  Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
+export type PartialExceptRequired<T, K extends keyof T> = Partial<Omit<T, K>> &
+  Required<Pick<T, K>>;
+
+export type PartialDeepExceptRequired<T, K extends keyof T> = PartialDeep<
+  Omit<T, K>
+> &
+  Required<Pick<T, K>>;
+
+export const removeUndef = (obj: { [key: string]: unknown }) => {
+  for (const key in obj) {
+    if (obj[key] === undefined || obj[key] === null) {
+      delete obj[key];
+    } else if (typeof obj[key] === "object") {
+      if (Array.isArray(obj[key])) {
+        obj[key] = (obj[key] as Array<unknown>).filter(
+          (value) => value !== null && value !== undefined && value !== "",
+        );
+      } else {
+        removeUndef(obj[key] as { [key: string]: unknown });
+
+        // if (Object.keys(obj[key]).length === 0) {
+        //   delete obj[key];
+        // } else {
+        // }
+      }
+    }
+  }
+  return obj;
+};

@@ -19,6 +19,7 @@ export const dfq = async <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
 ): Promise<R> => {
+  console.log("query", query);
   const qr = await faunaClient.query<R>(query);
   return qr.data;
 };

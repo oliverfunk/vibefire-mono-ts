@@ -18,8 +18,7 @@
     ".expo",
     "src",
     "*.ts",
-    "**/*.js",
-    "index.ts"
+    "**/*.js"
   ],
   "exclude": [
     "*.test.ts"

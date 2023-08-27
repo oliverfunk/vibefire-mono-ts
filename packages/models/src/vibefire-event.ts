@@ -1,4 +1,4 @@
-import { Type as t, type Static } from "@sinclair/typebox";
+import { Type as t, Type, type Static } from "@sinclair/typebox";
 
 import { CoordSchema, TimePeriodSchema } from "./general";
 
@@ -47,14 +47,7 @@ export type VibefireEventLocationT = Static<typeof VibefireEventLocationSchema>;
 
 export const VibefireEventImagesSchema = t.Object(
   {
-    banner: t
-      .String
-      //   {
-      //   pattern:
-      //     // this should be vibefire specific image url (i.e. the domain etc.)
-      //     "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)",
-      // }
-      (),
+    banner: t.String(),
     additional: t.Optional(t.Array(t.String(), { default: [], maxItems: 4 })),
     customIcon: t.Optional(t.String()),
   },
@@ -64,16 +57,26 @@ export type VibefireEventImagesT = Static<typeof VibefireEventImagesSchema>;
 
 export const VibefireEventSchema = t.Object({
   id: t.String({ default: undefined }),
+  type: t.Union(
+    [
+      t.Literal("one-time"), // one time event
+      t.Literal("recurring"), // same recurring event
+      t.Literal("series"), // part of a series of events
+      t.Literal("multi-day"), // multi day event
+    ],
+    { default: undefined },
+  ),
   organiserId: t.String({ default: undefined }),
+  organiserType: t.Union([t.Literal("user"), t.Literal("organisation")], {
+    default: undefined,
+  }),
+
   state: t.Union(
     [t.Literal("draft"), t.Literal("ready"), t.Literal("archived")],
     { default: "draft" },
   ),
 
   // event info
-  type: t.Union([t.Literal("user"), t.Literal("regular")], {
-    default: undefined,
-  }),
   title: t.String({ default: undefined }),
   description: t.String({ default: undefined }),
   images: VibefireEventImagesSchema,
@@ -112,11 +115,13 @@ export const VibefireEventSchema = t.Object({
   published: t.Boolean({ default: false }),
   visibility: t.Union(
     [
-      t.Literal("public"),
-      t.Literal("private"), // only invited people can see
-      t.Literal("hidden"), // only people with link can see, and data is encrypted
+      t.Literal("public"), // visible to everyone, searchable on the map
+      t.Literal("link-only"), // only visible to those with the link
+      t.Literal("invite-only"), // only visible to those invited
     ],
-    { default: undefined },
+    {
+      default: undefined,
+    },
   ),
 });
 export type VibefireEventT = Static<typeof VibefireEventSchema>;
@@ -125,25 +130,27 @@ export const VibefireEventManagementSchema = t.Object({
   id: t.String({ default: undefined }),
   eventId: t.String({ default: undefined }),
 
-  limitLocationChanges: t.Number({ minimum: 0 }),
-  limitTimeStartChanges: t.Number({ minimum: 0 }),
-  limitNotificationsTotal: t.Number({ minimum: 0 }),
-  limitOffersTotal: t.Number({ minimum: 0 }),
-  limitPoisTotal: t.Number({ minimum: 0 }),
+  limitNotificationsTotal: t.Number({ minimum: 0, default: 3 }),
 
-  actualLocationChanges: t.Number({ minimum: 0 }),
-  actualTimeStartChanges: t.Number({ minimum: 0 }),
-
-  purchasedRanks: t.Number({ minimum: 0 }),
-  purchasedDisplayTimePeriods: t.Number({ minimum: 0 }),
-  purchasedDisplayZoomGroup: t.Number({ minimum: 0 }),
-
-  // offer id to x mappings
+  // only for organisation events
+  limitOffersTotal: t.Number({ minimum: 0, default: 3 }),
+  // offer id to user id (phone number?) mappings
   offerClaimedBy: t.Record(t.String(), t.Array(t.String()), {
     default: {},
   }),
-  offerClaimableBy: t.Record(t.String(), t.Array(t.String()), { default: {} }),
+  offerClaimableBy: t.Record(t.String(), t.Array(t.String()), {
+    default: {},
+  }),
+  limitPoisTotal: t.Number({ minimum: 0, default: 3 }),
+
+  // only for event with vis: "public"
+  purchasedRanks: t.Number({ minimum: 0, default: 0 }),
+  purchasedDisplayTimePeriods: t.Array(t.String(), { default: [] }),
+  purchasedDisplayZoomGroup: t.Number({ minimum: 0, default: 0 }),
+  // only for events with vis: "invite"
+  invited: t.Array(t.String(), { default: [] }),
 });
+
 export type VibefireEventManagementT = Static<
   typeof VibefireEventManagementSchema
 >;

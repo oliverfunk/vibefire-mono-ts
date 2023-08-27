@@ -7,20 +7,20 @@ import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 
 import AppProviders from "~/providers";
 
-SplashScreen.preventAutoHideAsync();
+import "../global.css";
 
+void SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   const [fontsLoaded] = useFonts({
     Inter_500Medium,
   });
 
   useEffect(() => {
-    const load = async () => {
+    void (async () => {
       if (fontsLoaded) {
         await SplashScreen.hideAsync();
       }
-    };
-    load();
+    })();
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {

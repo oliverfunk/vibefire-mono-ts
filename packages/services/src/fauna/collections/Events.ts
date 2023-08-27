@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { fql, Query, type Client, type QuerySuccess } from "fauna";
+import { fql, type Client } from "fauna";
+import type { PartialDeep } from "type-fest";
 
-import type { VibefireEventLocationT, VibefireEventT } from "@vibefire/models";
-import { WithPartial } from "@vibefire/utils";
+import type {
+  VibefireEventLocationT,
+  VibefireEventManagementT,
+  VibefireEventT,
+} from "@vibefire/models";
+import { type PartialDeepExceptRequired } from "@vibefire/utils";
 
 import { CreateCollectionIfDne, dfq } from "../utils";
 
-export const defineEventsCollection = async (faunaClient: Client) =>
+export const defineEventsCollection = async (faunaClient: Client) => {
   await dfq(faunaClient, CreateCollectionIfDne("Events"));
+};
 
 export const defineGeoTemporalIndex = async (faunaClient: Client) => {
   const locField: keyof VibefireEventT = "location";
@@ -49,7 +55,7 @@ export const defineGeoTemporalIndex = async (faunaClient: Client) => {
       }
     })
   `;
-  return await dfq<string>(faunaClient, q);
+  await dfq(faunaClient, q);
 };
 
 export const createEvent = async (
@@ -66,35 +72,33 @@ export const createEvent = async (
 
 export const updateEvent = async (
   faunaClient: Client,
-  eventId: string,
-  updateData: WithPartial<VibefireEventT>,
-  organId: string,
-): Promise<unknown> => {
-  const _organiserField: keyof VibefireEventT = "organiserId";
-  const _typeField: keyof VibefireEventT = "type";
-  const _userType: VibefireEventT["type"] = "user";
+  updateData: PartialDeepExceptRequired<VibefireEventT, "id" | "organiserId">,
+) => {
+  const eventId = updateData.id;
+  const organiserId = updateData.organiserId;
+
+  const newUpdateData: PartialDeep<VibefireEventT> = { ...updateData };
+  delete newUpdateData.id;
+  delete newUpdateData.organiserId;
+
   const q = fql`
     let e = Events.byId(${eventId})
     if (e == null) {
       null
     }
-    let isUserEvent = e.type == ${_userType}
-    if (isUserEvent){
-      if (e.organiserId == ${byUserId}) {
-        e.update(${updateData})
-      }
-    } else {
-      let org = Organisations.byId(e.organiserId)
-      if (org == null) {
-        null
-      }
-      if (org.admins.contains(${byUserId}) && e.organiserId == ${forOrganisationId}) {
-        e.update(${updateData})
+    if (e.organiserId == ${organiserId}) {
+      e.update(${newUpdateData}){
+        id
       }
     }
     null
   `;
-  return await dfq<any>(faunaClient, q);
+
+  const res = await dfq<string | null>(faunaClient, q);
+  if (res === null) {
+    throw new Error("Error updating event");
+  }
+  return res;
 };
 
 export const getPublishedPublicEventFromID = async (
@@ -103,6 +107,9 @@ export const getPublishedPublicEventFromID = async (
 ) => {
   const q = fql`
     let e = Events.byId(${id})
+    if (e == null) {
+      null
+    }
     if (e.visibility == "public" && e.published == true) {
       e
     }
@@ -111,18 +118,25 @@ export const getPublishedPublicEventFromID = async (
   return await dfq<any>(faunaClient, q);
 };
 
-export const getOrganisationEventFromID = async (
+export const getEventFromIDByOrganiser = async (
   faunaClient: Client,
-  orgId: string,
   eventId: string,
+  organiserId: string,
 ) => {
-  // todo: wip
+  const _organiserField: keyof VibefireEventT = "organiserId";
   const q = fql`
     let e = Events.byId(${eventId})
-    if (e.organisationId == ${orgId}}) {
+    if (e == null) {
+      null
+    }
+    if (e.organiserId == ${organiserId}}) {
       e
     }
     null
   `;
-  return await dfq<any>(faunaClient, q);
+  const res = await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
+  if (res === null) {
+    throw new Error("Error getting event");
+  }
+  return res;
 };

@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "test": "jest",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.3.36",
     "@supabase/supabase-js": "^2.33.1",
+    "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@vibefire/models": "*",
     "@vibefire/utils": "*",
     "fauna": "^1.0.1"
@@ -17,6 +20,7 @@
   },
   "exports": {
     "./fauna": "./src/fauna/index.ts",
-    "./clerk": "./src/clerk/index.ts"
+    "./clerk": "./src/clerk/index.ts",
+    "./g-maps": "./src/google-maps/index.ts"
   }
 }

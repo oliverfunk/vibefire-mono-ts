@@ -7,12 +7,12 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@types/eslint": "^8.37.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "@typescript-eslint/parser": "^5.59.2",
-    "eslint-config-next": "^13.4.2",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-config-turbo": "^1.9.8",
-    "eslint-plugin-react": "7.32.2"
+    "@types/eslint": "^8.44.2",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "^6.4.1",
+    "eslint-config-next": "^13.4.19",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-turbo": "^1.10.12",
+    "eslint-plugin-react": "7.33.2"
   }
 }
