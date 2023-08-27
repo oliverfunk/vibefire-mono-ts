@@ -1,17 +1,18 @@
-import { Client, DateStub, Document, fql } from "fauna";
+import { DateStub, fql, type Client } from "fauna";
 
 import {
-  VibefireUserInfoT,
-  VibefireUserNoIdT,
-  VibefireUserT,
+  type VibefireUserInfoT,
+  type VibefireUserNoIdT,
+  type VibefireUserT,
 } from "@vibefire/models";
 
 import { CreateCollectionIfDne, dfq } from "../utils";
 
-export const createUsersCollection = (faunaClient: Client) =>
-  dfq(faunaClient, CreateCollectionIfDne("Users"));
+export const defineUsersCollection = async (faunaClient: Client) => {
+  await dfq(faunaClient, CreateCollectionIfDne("Users"));
+};
 
-export const createUsersUniqueConstraints = (faunaClient: Client) => {
+export const defineUsersUniqueConstraints = async (faunaClient: Client) => {
   const aidField: keyof VibefireUserT = "aid";
   const q = fql`
     Users.definition.update({
@@ -20,10 +21,10 @@ export const createUsersUniqueConstraints = (faunaClient: Client) => {
       ]
     })
   `;
-  return dfq(faunaClient, q);
+  await dfq(faunaClient, q);
 };
 
-export const createWithAidIndex = (faunaClient: Client) => {
+export const defineWithAidIndex = async (faunaClient: Client) => {
   const aidField: keyof VibefireUserT = "aid";
   const q = fql`
     Users.definition.update({
@@ -34,10 +35,10 @@ export const createWithAidIndex = (faunaClient: Client) => {
       }
     })
   `;
-  return dfq(faunaClient, q);
+  await dfq(faunaClient, q);
 };
 
-export const createUser = (
+export const createUser = async (
   faunaClient: Client,
   userData: VibefireUserNoIdT,
 ) => {
@@ -53,10 +54,10 @@ export const createUser = (
       id
     }
   `;
-  return dfq<{ id: string }>(faunaClient, q);
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
-export const updateUserInfo = (
+export const updateUserInfo = async (
   faunaClient: Client,
   aid: string,
   userData: Partial<VibefireUserInfoT>,
@@ -75,17 +76,17 @@ export const updateUserInfo = (
       id
     }
   `;
-  return dfq<{ id: string }>(faunaClient, q);
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
-export const deleteUser = (faunaClient: Client, aid: string) => {
+export const deleteUser = async (faunaClient: Client, aid: string) => {
   const q = fql`
     Users.withAid(${aid}).delete()
   `;
-  return dfq<{ id: string }>(faunaClient, q);
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
-export const addFollowedEvent = (
+export const addFollowedEvent = async (
   faunaClient: Client,
   aid: string,
   eventId: string,
@@ -95,7 +96,7 @@ export const addFollowedEvent = (
     let updatedFollowedEvents = u?.followedEvents.append([${eventId}]).distinct()
     u?.update({ followedEvents: updatedFollowedEvents })
   `;
-  return dfq(faunaClient, q);
+  return await dfq(faunaClient, q);
 };
 
 // function userByEmail(email) {

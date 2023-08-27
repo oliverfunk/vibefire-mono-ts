@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { Static, Type as t, TSchema } from "@sinclair/typebox";
+import { Type as t } from "@sinclair/typebox";
 
-import {
-  CoordSchema,
-  MapQuerySchema,
-  VibefireEventSchema,
-  VibefireEventT,
-} from "@vibefire/models";
+import { MapQuerySchema, type VibefireEventT } from "@vibefire/models";
 import { tbValidator } from "@vibefire/utils";
 
-import { v, vv, type Validator } from "~/trpc/validator";
+import { v } from "~/trpc/validator";
 import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
 export const eventsRouter = router({
@@ -18,18 +13,21 @@ export const eventsRouter = router({
       v(
         t.Object({
           title: t.String(),
+          organisationId: t.Optional(t.String()),
         }),
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      //   await doAddPublicEvent(ctx.faunaClient, {
-      //     name: input.name,
-      //   });
+      return await ctx.apiDataQueryManager.eventCreate(
+        ctx.auth,
+        input.title,
+        input.organisationId,
+      );
     }),
   mapQueryPublicEvents: publicProcedure
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
-      return await ctx.dbServiceManager.eventsFromMapQuery(input);
+      return await ctx.apiDataQueryManager.eventsFromMapQuery(input);
     }),
 });

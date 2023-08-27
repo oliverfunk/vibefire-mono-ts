@@ -62,8 +62,7 @@ const useMapMarkers = () => {
       setMarkers(
         mapQueryState.data.map((event) => ({
           id: event.id,
-          lat: event.location.coord.lat,
-          lng: event.location.coord.lng,
+          ...event.location.position,
         })),
       );
     }

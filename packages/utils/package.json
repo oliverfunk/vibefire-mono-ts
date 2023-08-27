@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "test": "jest",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "*",
+    "@vibefire/models": "^0.1.0",
     "h3-js": "^4.1.0"
   },
   "devDependencies": {
-    "@vibefire/config": "*"
+    "@vibefire/config": "^0.1.0"
   }
 }
