@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { DateTime } from "luxon";
+import { type DateTime } from "luxon";
 
 type EventCardProps = {
   event: {
@@ -27,11 +27,12 @@ const blurhash =
 export const EventCard = ({ event, onPress }: EventCardProps) => {
   return (
     <Pressable onPress={onPress}>
-      <View className="mx-5 my-2 rounded-xl border-b-[20px] bg-black">
+      <View className="mx-5 my-2 rounded-xl border-b-[20px]">
         <View className="relative items-center">
           <Image
             className="aspect-[4/3] w-full rounded-xl"
             source={event.bannerImgURL}
+            alt="Event Banner"
             cachePolicy={"memory"}
             placeholder={blurhash}
             contentFit="cover"
@@ -46,6 +47,7 @@ export const EventCard = ({ event, onPress }: EventCardProps) => {
             <Image
               className="h-10 w-10 rounded-full border-2 border-black"
               source={event.orgProfileImgURL}
+              alt="Event Organizer Profile Picture"
               cachePolicy={"memory"}
               placeholder={blurhash}
               contentFit="cover"

@@ -1,6 +1,6 @@
-import React, { FC, memo, ReactNode, useMemo } from "react";
+import React, { memo, useMemo, type FC, type ReactNode } from "react";
 import Constants from "expo-constants";
-import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+// import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider } from "jotai";
@@ -38,7 +38,7 @@ const getBaseUrl = () => {
 const myStore = createStore();
 
 const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
-  const { getToken } = useAuth();
+  // const { getToken } = useAuth();
   const queryClient = useMemo(() => new QueryClient(), []);
   const trpcClient = useMemo(
     () =>
@@ -47,9 +47,10 @@ const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
         links: [
           httpBatchLink({
             async headers() {
-              const authToken = await getToken();
+              // const authToken = await getToken();
+              const authToken = "";
               return {
-                ...(!!authToken && { Authorization: authToken }),
+                // ...(!!authToken && { Authorization: authToken }),
               };
             },
             url: `${getBaseUrl()}${BASEPATH_TRPC}`,
@@ -68,17 +69,17 @@ const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-const AppProviders: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  return (
-    <ClerkProvider
-      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string}
-      tokenCache={tokenCache}
-    >
-      <_AppProviders>{children}</_AppProviders>
-    </ClerkProvider>
-  );
-};
+// const AppProviders: React.FC<{ children: React.ReactNode }> = ({
+//   children,
+// }) => {
+//   return (
+//     <ClerkProvider
+//       publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string}
+//       tokenCache={tokenCache}
+//     >
+//       <_AppProviders>{children}</_AppProviders>
+//     </ClerkProvider>
+//   );
+// };
 
-export default memo(AppProviders);
+export default memo(_AppProviders);

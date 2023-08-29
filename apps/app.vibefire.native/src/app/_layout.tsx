@@ -7,7 +7,7 @@ import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 
 import AppProviders from "~/providers";
 
-import "../global.css";
+import "~/global.css";
 
 void SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
