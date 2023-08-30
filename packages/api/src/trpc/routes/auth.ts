@@ -1,15 +1,23 @@
-import { authedProcedure, publicProcedure, router } from "../trpc-router";
+import { type AppUserState } from "@vibefire/models";
+
+import { publicProcedure, router } from "../trpc-router";
 
 export const authRouter = router({
-  getSession: authedProcedure.query(({ ctx }) => {
-    return {
-      session: ctx.auth.session,
-      user: ctx.auth.user,
-      userId: ctx.auth.userId,
-      sessionClaims: ctx.auth.sessionClaims,
-    };
-  }),
-  getSecretMessage: authedProcedure.query(() => {
-    return "you can see this secret message!";
+  getSession: publicProcedure.mutation(async ({ ctx }) => {
+    let session: AppUserState;
+    if (!ctx.auth.userId) {
+      session = {
+        state: "unauthenticated",
+        anonId: "anon",
+      };
+    } else {
+      const userInfo = await ctx.apiDataQueryManager.getUserInfo(ctx.auth);
+      session = {
+        state: "authenticated",
+        userId: ctx.auth.userId,
+        userInfo,
+      };
+    }
+    return session;
   }),
 });

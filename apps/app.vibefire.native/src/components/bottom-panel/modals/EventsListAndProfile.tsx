@@ -1,56 +1,163 @@
-import { forwardRef, memo, useCallback, useMemo, type Ref } from "react";
-import { Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { forwardRef, useCallback, useMemo, type Ref } from "react";
 import {
-  BottomSheetBackgroundProps,
+  ActivityIndicator,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
+import {
   BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useFocusEffect } from "@react-navigation/native";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { DateTime } from "luxon";
 
-import SignInWithOAuth from "~/components/auth/SignInWithOAuth";
-import { EventCard } from "~/components/event/EventCard";
-import { profileSelectedAtom, userAtom } from "~/atoms";
-import { AniHandle } from "../AniHandle";
-import CustomBackground from "../CustomBackground";
+import { type VibefireUserT } from "@vibefire/models";
+
+import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
+import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
+import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
+import { SignOut } from "~/components/auth/SignOut";
+import { EventCard } from "~/components/EventCard";
+import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
-  return (
-    <BottomSheetScrollView focusHook={useFocusEffect}>
-      <View className="mt-1 flex flex-col items-center">
-        {user === undefined ? (
-          <>
-            <FontAwesome name="user" size={200} color="#ffaa00" />
-            {/* <FontAwesome name="user-circle-o" size={200} color="black" /> */}
-            {/* <FontAwesome name="user-circle-o" size={200} color="black" /> */}
-            <View className="flex flex-row">
-              <Text className="text-2xl">By signing in...</Text>
+  // const user = { state: "loading" };
+  // const user = { state: "error", error: "GET FUCEKD" };
+  // const user = { state: "unauthenticated" };
+  // const user = {
+  //   state: "authenticated",
+  //   userInfo: {
+  //     name: "John Doe",
+  //     // contactEmail: "oli.readsasddasasdassk@gma.com",
+  //     phoneNumber: "+447716862564",
+  //   },
+  // };
+  const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
+  const insets = useSafeAreaInsets();
+
+  const bottomInsetPlus = useMemo(() => insets.bottom + 11, [insets.bottom]);
+
+  switch (user.state) {
+    case "loading":
+      return (
+        <BottomSheetView focusHook={useFocusEffect}>
+          <View className="flex h-full flex-col items-center justify-center">
+            <ActivityIndicator size="large" color="black" />
+          </View>
+        </BottomSheetView>
+      );
+    case "error":
+      return (
+        <BottomSheetView focusHook={useFocusEffect}>
+          <View className="mt-5 flex h-full flex-col items-center space-y-5">
+            <FontAwesome5 name="user-alt" size={150} color="black" />
+            <View className="flex-col items-center space-y-2">
+              <Text>There was an issue loading your account</Text>
+              <Text>{user.error}</Text>
             </View>
-            <SignInWithOAuth />
-          </>
-        ) : (
-          <>
-            <View className="flex flex-row">
-              <View className="h-20 w-20 items-center justify-center rounded-full bg-black">
-                <Text className="text-2xl text-white">
-                  {user.name.at(0)?.toUpperCase()}.{" "}
-                </Text>
+            <View className="flex-row">
+              <TouchableOpacity
+                className="rounded-lg border px-4 py-2"
+                onPress={() => {
+                  setUserSessionRetry((prev) => !prev);
+                }}
+              >
+                <Text className="text-xl text-blue-500">Retry</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </BottomSheetView>
+      );
+    case "unauthenticated":
+      return (
+        <BottomSheetView focusHook={useFocusEffect}>
+          <View className="mt-5 flex h-full flex-col items-center space-y-5">
+            <FontAwesome5 name="user-alt" size={150} color="black" />
+            <View className="flex-row">
+              <Text className="text-xl">By signing in...</Text>
+            </View>
+            <View className="flex-col space-y-1">
+              <View>
+                <ContinueWithGoogle />
+              </View>
+              <View>
+                <ContinueWithFacebook />
+              </View>
+              {Platform.OS === "ios" && (
+                <View>
+                  <ContinueWithApple />
+                </View>
+              )}
+            </View>
+          </View>
+        </BottomSheetView>
+      );
+    case "authenticated":
+      const userInfo = user.userInfo as VibefireUserT;
+      return (
+        <BottomSheetView focusHook={useFocusEffect}>
+          <View className="mt-5 flex h-full flex-col items-center space-y-10">
+            <View className="w-full flex-col items-center space-y-2">
+              <View className="flex-row">
+                <View className="h-24 w-24 items-center justify-center rounded-full bg-black">
+                  <Text className="text-2xl text-white">
+                    {userInfo.name.at(0)!.toUpperCase()}.{" "}
+                  </Text>
+                </View>
+              </View>
+
+              <View className="w-10/12 flex-col">
+                <Text className="ml-4 text-xl">Email</Text>
+                <View className="rounded-lg bg-slate-200 py-3">
+                  {userInfo.contactEmail ? (
+                    <Text className="ml-4">{userInfo.contactEmail}</Text>
+                  ) : (
+                    <TouchableOpacity onPress={() => {}}>
+                      <Text className="ml-4">Tap to add email</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+
+              <View className="w-10/12 flex-col">
+                <Text className="ml-4 text-xl">Phone number</Text>
+                <View className="rounded-lg bg-slate-200 py-3">
+                  {userInfo.phoneNumber ? (
+                    <Text className="ml-4">{userInfo.phoneNumber}</Text>
+                  ) : (
+                    <TouchableOpacity onPress={() => {}}>
+                      <Text className="ml-4">Tap to add phone number</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
             </View>
-          </>
-        )}
-      </View>
-    </BottomSheetScrollView>
-  );
+
+            <View className="flex-row">
+              <TouchableOpacity
+                className="rounded-lg border px-4 py-2"
+                onPress={() => {}}
+              >
+                <Text className="text-xl text-orange-500">Create event</Text>
+              </TouchableOpacity>
+            </View>
+            <View className="flex-row">
+              <SignOut />
+            </View>
+          </View>
+        </BottomSheetView>
+      );
+  }
 };
 
 const _EventsList = () => {
@@ -84,7 +191,11 @@ const _EventsList = () => {
     [],
   );
 
-  return <BottomSheetScrollView>{data.map(renderItem)}</BottomSheetScrollView>;
+  return (
+    <BottomSheetScrollView focusHook={useFocusEffect}>
+      {data.map(renderItem)}
+    </BottomSheetScrollView>
+  );
 };
 
 const _Control = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {

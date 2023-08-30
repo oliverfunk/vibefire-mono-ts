@@ -9,6 +9,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import {
   BottomSheetTextInput,
+  useBottomSheet,
   type BottomSheetHandleProps,
 } from "@gorhom/bottom-sheet";
 import { useAtom } from "jotai";
@@ -16,7 +17,7 @@ import { styled } from "nativewind";
 
 import { profileSelectedAtom } from "~/atoms";
 
-export const SEARCH_HANDLE_HEIGHT = 70;
+export const SEARCH_HANDLE_HEIGHT = 75;
 
 const StyledBottomSheetTextInput = styled(BottomSheetTextInput);
 
@@ -32,6 +33,7 @@ const SearchHandleComponent = ({
   // state
   const [profileSelected, setProfileSelected] = useAtom(profileSelectedAtom);
   const [value, setValue] = useState(initialValue);
+  const { expand } = useBottomSheet();
 
   // callbacks
   const handleInputChange = useCallback(
@@ -49,7 +51,7 @@ const SearchHandleComponent = ({
 
   // render
   return (
-    <View className="py-2">
+    <View className="py-3">
       <View className="h-1 w-1/12 self-center rounded-full bg-gray-400" />
       <View className="mx-4 mt-2 flex flex-row justify-center space-x-2">
         {/* Search bar */}
@@ -70,7 +72,11 @@ const SearchHandleComponent = ({
             profileSelected ? "bg-black" : "bg-white"
           }`}
           onPress={() => {
-            setProfileSelected(!profileSelected);
+            const showProfile = !profileSelected;
+            setProfileSelected(showProfile);
+            if (showProfile) {
+              expand();
+            }
           }}
         >
           {profileSelected ? (

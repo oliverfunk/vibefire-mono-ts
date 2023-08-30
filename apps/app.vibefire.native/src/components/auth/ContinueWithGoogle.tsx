@@ -1,20 +1,22 @@
 import { useCallback } from "react";
-import { Button } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useOAuth } from "@clerk/clerk-expo";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { useWarmUpBrowser } from "~/hooks/useWarmUpBrowser";
+import { AuthButton } from "./_shared";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const SignInWithOAuth = () => {
+export const ContinueWithGoogle = () => {
   useWarmUpBrowser();
-
-  // const { signIn } = useSignIn();
 
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   const onPress = useCallback(async () => {
+    console.log("onPress");
+
     try {
       const { createdSessionId, signIn, signUp, setActive } =
         await startOAuthFlow({});
@@ -25,14 +27,17 @@ const SignInWithOAuth = () => {
         }
 
         await setActive({ session: createdSessionId });
-      } else {
-        // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {
-      console.error("OAuth error", err);
+      console.error(JSON.stringify(err, null, 2));
     }
   }, [startOAuthFlow]);
 
-  return <Button title="Sign in with Google" onPress={onPress} />;
+  return (
+    <AuthButton
+      icon={<FontAwesome name="google" size={24} color="black" />}
+      text="Continue with Google"
+      onPress={onPress}
+    />
+  );
 };
-export default SignInWithOAuth;
