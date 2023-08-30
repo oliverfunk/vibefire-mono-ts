@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import MapView, {
   Callout,
@@ -7,10 +7,10 @@ import MapView, {
   type Region,
 } from "react-native-maps";
 import Toast from "react-native-toast-message";
-import { ErrorBoundary, ErrorBoundaryProps, router } from "expo-router";
+import { ErrorBoundary, type ErrorBoundaryProps } from "expo-router";
 import { useSetAtom } from "jotai";
 
-import { CoordT } from "@vibefire/models";
+import { type CoordT } from "@vibefire/models";
 import { mapQueryPositionAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
@@ -72,10 +72,13 @@ const useMapMarkers = () => {
 
 const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   const mvRef = useRef<MapView>(null);
-  const setBBox = useCallback(
-    debounce(useSetAtom(mapQueryPositionAtom), 1000),
-    [],
-  );
+
+  const setMapQueryPositionAtom = useSetAtom(mapQueryPositionAtom);
+  const setDbcMapQueryPositionAtom = debounce(setMapQueryPositionAtom, 1000);
+
+  // const setBBox = useCallback(() => {
+  //   setDbcMapQueryPositionAtom()
+  // }, [setDbcMapQueryPositionAtom]);
 
   const { location, locPermDeniedMsg } = useLocationOnce();
 
@@ -96,7 +99,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
         // { duration: 1 },
       );
     }
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
@@ -111,28 +114,31 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   }, [locPermDeniedMsg]);
   //#endregion
 
-  const onMapRegionChange = useCallback(async (region: Region) => {
-    const _bbox = mvRef.current?.boundingBoxForRegion(region);
-    const _zoomLevel = (await mvRef.current?.getCamera())?.zoom;
-    if (_bbox === undefined) {
-      return;
-    }
-    if (_zoomLevel === undefined) {
-      return;
-    }
+  const onMapRegionChange = useCallback(
+    async (region: Region) => {
+      const _bbox = mvRef.current?.boundingBoxForRegion(region);
+      const _zoomLevel = (await mvRef.current?.getCamera())?.zoom;
+      if (_bbox === undefined) {
+        return;
+      }
+      if (_zoomLevel === undefined) {
+        return;
+      }
 
-    setBBox({
-      northEast: {
-        lat: _bbox.northEast.latitude,
-        lng: _bbox.northEast.longitude,
-      },
-      southWest: {
-        lat: _bbox.southWest.latitude,
-        lng: _bbox.southWest.longitude,
-      },
-      zoomLevel: _zoomLevel,
-    });
-  }, []);
+      setDbcMapQueryPositionAtom({
+        northEast: {
+          lat: _bbox.northEast.latitude,
+          lng: _bbox.northEast.longitude,
+        },
+        southWest: {
+          lat: _bbox.southWest.latitude,
+          lng: _bbox.southWest.longitude,
+        },
+        zoomLevel: _zoomLevel,
+      });
+    },
+    [setDbcMapQueryPositionAtom],
+  );
 
   return (
     <>

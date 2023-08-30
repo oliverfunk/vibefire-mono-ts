@@ -1,30 +1,25 @@
-import React, { memo, useMemo, type FC, type ReactNode } from "react";
+import React, {
+  memo,
+  useEffect,
+  useMemo,
+  type FC,
+  type ReactNode,
+} from "react";
 import Constants from "expo-constants";
-// import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
-import { createStore, Provider } from "jotai";
+import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
 import superjson from "superjson";
 
 import { BASEPATH_TRPC } from "@vibefire/api/src/basepaths";
 
 import { tokenCache } from "~/utils/sec-store-cache";
 import { trpc } from "~/apis/trpc-client";
+import { userAtom, userSessionRetryAtom } from "./atoms";
+import { debounce } from "./utils/debounce";
 
-/**
- * Extend this function when going to production by
- * setting the baseUrl to your production API URL.
- */
 const getBaseUrl = () => {
-  /**
-   * Gets the IP address of your host-machine. If it cannot automatically find it,
-   * you'll have to manually set it. NOTE: Port 3000 should work for most but confirm
-   * you don't have anything else running on it, or you'd have to change it.
-   *
-   * **NOTE**: This is only for development. In production, you'll want to set the
-   * baseUrl to your production API URL.
-   */
-  // return "https://api.vibefire.app";
   const debuggerHost =
     Constants.expoConfig?.hostUri ??
     Constants.manifest2?.extra?.expoGo?.debuggerHost;
@@ -37,8 +32,54 @@ const getBaseUrl = () => {
 
 const myStore = createStore();
 
+const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const userSessionRetry = useAtomValue(userSessionRetryAtom);
+  const { isLoaded } = useUser();
+  const getSession = trpc.auth.getSession.useMutation();
+  const getSessionMutDbc = useMemo(
+    () => debounce(getSession.mutate, 1000),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  const getSessionMutDbcLong = useMemo(
+    () => debounce(getSession.mutate, 60000),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  const setUser = useSetAtom(userAtom);
+
+  useEffect(() => {
+    if (isLoaded) {
+      console.log("getting session");
+      getSessionMutDbc();
+    }
+  }, [isLoaded, getSessionMutDbc, userSessionRetry]);
+
+  useEffect(() => {
+    console.log("reading session mut");
+    switch (getSession.status) {
+      case "loading":
+        setUser({ state: "loading" });
+        break;
+      case "error":
+        console.log("error getting session");
+        setUser({ state: "error", error: getSession.error.message });
+        if (!__DEV__) {
+          console.log("calling getSessionMutDbc");
+          getSessionMutDbcLong();
+        }
+        break;
+      case "success":
+        setUser(getSession.data);
+        break;
+    }
+  }, [getSession, getSessionMutDbcLong, setUser]);
+
+  return <>{children}</>;
+};
+
 const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
-  // const { getToken } = useAuth();
+  const { getToken } = useAuth();
   const queryClient = useMemo(() => new QueryClient(), []);
   const trpcClient = useMemo(
     () =>
@@ -47,39 +88,41 @@ const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
         links: [
           httpBatchLink({
             async headers() {
-              // const authToken = await getToken();
-              const authToken = "";
+              const authToken = await getToken();
               return {
-                // ...(!!authToken && { Authorization: authToken }),
+                ...(!!authToken && { Authorization: authToken }),
               };
             },
             url: `${getBaseUrl()}${BASEPATH_TRPC}`,
           }),
         ],
       }),
-    [],
+    [getToken],
   );
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <Provider store={myStore}>{children}</Provider>
+        <Provider store={myStore}>
+          <_UserProvider>{children}</_UserProvider>
+        </Provider>
       </QueryClientProvider>
     </trpc.Provider>
   );
 };
 
-// const AppProviders: React.FC<{ children: React.ReactNode }> = ({
-//   children,
-// }) => {
-//   return (
-//     <ClerkProvider
-//       publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string}
-//       tokenCache={tokenCache}
-//     >
-//       <_AppProviders>{children}</_AppProviders>
-//     </ClerkProvider>
-//   );
-// };
+const AppProviders: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (!clerkKey) {
+    throw new Error("Missing Clerk publishable key");
+  }
+  return (
+    <ClerkProvider publishableKey={clerkKey} tokenCache={tokenCache}>
+      <_AppProviders>{children}</_AppProviders>
+    </ClerkProvider>
+  );
+};
 
-export default memo(_AppProviders);
+export default memo(AppProviders);

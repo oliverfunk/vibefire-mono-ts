@@ -7,6 +7,7 @@ import type { PartialDeep } from "type-fest";
 import {
   VibefireEventManagementSchema,
   VibefireEventSchema,
+  VibefireUserSchema,
   type MapQueryT,
   type VibefireEventImagesT,
   type VibefireEventLocationT,
@@ -23,6 +24,7 @@ import {
   createUser,
   deleteUser,
   getEventFromIDByOrganiser,
+  getUserByAid,
   updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
@@ -447,19 +449,28 @@ export class ApiDataQueryManager {
   // #endregion
 
   // #region User
-  async createUser(
-    userAc: ClerkSignedInAuthContext,
-    userInfo: VibefireUserInfoT,
-  ) {
-    const res = await createUser(this.faunaClient, {
-      ...userInfo,
-      aid: userAc.userId,
-      followedEvents: [],
-      followedOrganisations: [],
-      onboardingComplete: false,
-    });
+  async getUserInfo(userAc: ClerkSignedInAuthContext) {
+    let res = await getUserByAid(this.faunaClient, userAc.userId);
+    if (!res) {
+      throw new Error("User not found");
+    }
+    res = tbValidator(VibefireUserSchema)(res);
     return res;
   }
+
+  // async createUser(
+  //   userAc: ClerkSignedInAuthContext,
+  //   userInfo: VibefireUserInfoT,
+  // ) {
+  //   const res = await createUser(this.faunaClient, {
+  //     ...userInfo,
+  //     aid: userAc.userId,
+  //     followedEvents: [],
+  //     followedOrganisations: [],
+  //     onboardingComplete: false,
+  //   });
+  //   return res;
+  // }
 
   async updateUserInfo(
     userAc: ClerkSignedInAuthContext,

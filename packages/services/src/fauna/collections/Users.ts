@@ -57,6 +57,13 @@ export const createUser = async (
   return await dfq<{ id: string }>(faunaClient, q);
 };
 
+export const getUserByAid = async (faunaClient: Client, aid: string) => {
+  const q = fql`
+    Users.withAid(${aid}).first()
+  `;
+  return await dfq<VibefireUserT | null>(faunaClient, q);
+};
+
 export const updateUserInfo = async (
   faunaClient: Client,
   aid: string,
