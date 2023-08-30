@@ -43,9 +43,6 @@ const _Profile = () => {
   //   },
   // };
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
-  const insets = useSafeAreaInsets();
-
-  const bottomInsetPlus = useMemo(() => insets.bottom + 11, [insets.bottom]);
 
   switch (user.state) {
     case "loading":
@@ -82,11 +79,14 @@ const _Profile = () => {
       return (
         <BottomSheetView focusHook={useFocusEffect}>
           <View className="mt-5 flex h-full flex-col items-center space-y-5">
-            <FontAwesome5 name="user-alt" size={150} color="black" />
-            <View className="flex-row">
-              <Text className="text-xl">By signing in...</Text>
+            <FontAwesome5 name="user-alt" size={150} color="#ee5500" />
+            <View className="mx-10 flex-row">
+              <Text className="text-center">
+                Sign in to create private events, get invites and share events
+                with friends, filter and follow events and organisations.
+              </Text>
             </View>
-            <View className="flex-col space-y-1">
+            <View className="flex-col space-y-2">
               <View>
                 <ContinueWithGoogle />
               </View>
