@@ -135,8 +135,5 @@ export const getEventFromIDByOrganiser = async (
     null
   `;
   const res = await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
-  if (res === null) {
-    throw new Error("Error getting event");
-  }
   return res;
 };
