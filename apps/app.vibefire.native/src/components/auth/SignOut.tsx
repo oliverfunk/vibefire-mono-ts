@@ -1,4 +1,5 @@
 import { Text, TouchableOpacity } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "@clerk/clerk-expo";
 
 export const SignOut = () => {
@@ -6,12 +7,12 @@ export const SignOut = () => {
 
   return (
     <TouchableOpacity
-      className="rounded-lg border px-4 py-2"
+      className="rounded-lg bg-black px-4 py-2"
       onPress={async () => {
         await signOut();
       }}
     >
-      <Text className="text-blue-500">Sign out</Text>
+      <Text className="text-white">Sign out</Text>
     </TouchableOpacity>
   );
 };

@@ -6,12 +6,18 @@ import {
 
 import { EventDetails } from "./modals/EventDetails";
 import { EventsListAndProfile } from "./modals/EventsListAndProfile";
+import { ManageEvent } from "./modals/ManageEvent";
 import { OrgDetails } from "./modals/OrgDetails";
 
-export const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
+export const BottomPanel = (props: {
+  eventID?: string;
+  orgID?: string;
+  manageEvent?: string;
+}) => {
   const mapQueryEventsListSheetRef = useRef<BottomSheetModal>(null);
   const eventDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
   const orgDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
+  const manageEventSheetRef = useRef<BottomSheetModal>(null);
 
   //#region effects
   useEffect(() => {
@@ -21,6 +27,8 @@ export const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
     } else if (props.orgID) {
       // show org details screen
       orgDetailsDisplaySheetRef.current?.present();
+    } else if (props.manageEvent) {
+      manageEventSheetRef.current?.present();
     }
   }, [props]);
 
@@ -37,6 +45,7 @@ export const BottomPanel = (props: { eventID?: string; orgID?: string }) => {
         ref={orgDetailsDisplaySheetRef}
         organisationId={props.orgID}
       />
+      <ManageEvent ref={manageEventSheetRef} manageSelect={props.manageEvent} />
     </BottomSheetModalProvider>
   );
 };

@@ -27,7 +27,7 @@ const blurhash =
 export const EventCard = ({ event, onPress }: EventCardProps) => {
   return (
     <Pressable onPress={onPress}>
-      <View className="mx-5 my-2 rounded-xl border-b-[20px]">
+      <View className="rounded-xl border-b-[20px]">
         <View className="relative items-center">
           <Image
             className="aspect-[4/3] w-full rounded-xl"

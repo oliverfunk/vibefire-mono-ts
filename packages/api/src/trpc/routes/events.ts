@@ -8,15 +8,34 @@ import { v } from "~/trpc/validator";
 import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
 export const eventsRouter = router({
-  create: authedProcedure
+  eventForManagement: authedProcedure
     .input(
-      v(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as Partial<VibefireEventT> | undefined)
+    .query(async ({ ctx, input }) => {
+      return null;
+      return await ctx.apiDataQueryManager.eventForManagement(
+        ctx.auth,
+        input.eventId,
+        input.organisationId,
+      );
+    }),
+  createEvent: authedProcedure
+    .input(
+      tbValidator(
         t.Object({
           title: t.String(),
           organisationId: t.Optional(t.String()),
         }),
       ),
     )
+    .output((value) => value as string)
     .mutation(async ({ ctx, input }) => {
       return await ctx.apiDataQueryManager.eventCreate(
         ctx.auth,

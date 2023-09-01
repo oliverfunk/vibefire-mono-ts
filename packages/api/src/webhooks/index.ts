@@ -1,8 +1,12 @@
-import { UserWebhookEvent } from "@clerk/backend";
+import { type UserWebhookEvent } from "@clerk/backend";
 import { Hono } from "hono";
 import { DateTime } from "luxon";
 
-import { ApiDataQueryManager } from "@vibefire/managers";
+import {
+  createUser,
+  deleteUser,
+  updateUserInfo,
+} from "@vibefire/services/fauna";
 
 import { validateClerkWebhook } from "./utils";
 

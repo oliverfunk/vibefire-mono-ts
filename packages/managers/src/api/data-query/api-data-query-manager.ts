@@ -41,6 +41,8 @@ import {
   zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
+import { safeGet } from "~/utils";
+
 export class ApiDataQueryManager {
   private faunaClient: Client;
   // private supabaseClient: ReturnType<typeof createClient> | undefined;
@@ -71,6 +73,24 @@ export class ApiDataQueryManager {
   }
 
   // #region Event
+  async eventForManagement(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await getEventFromIDByOrganiser(
+      this.faunaClient,
+      eventId,
+      organiserId,
+    );
+
+    return e;
+  }
+
   async eventCreate(
     userAc: ClerkSignedInAuthContext,
     title: VibefireEventT["title"],
@@ -151,10 +171,9 @@ export class ApiDataQueryManager {
     this._checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await getEventFromIDByOrganiser(
-      this.faunaClient,
-      eventId,
-      organiserId,
+    const e = await safeGet(
+      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
+      "Event not found",
     );
 
     if (e.timeZone === undefined) {
@@ -214,10 +233,9 @@ export class ApiDataQueryManager {
     this._checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await getEventFromIDByOrganiser(
-      this.faunaClient,
-      eventId,
-      organiserId,
+    const e = await safeGet(
+      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
+      "Event not found",
     );
 
     const updateData: PartialDeep<VibefireEventT> = {

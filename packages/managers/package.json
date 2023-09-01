@@ -9,11 +9,9 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@clerk/backend": "^0.27.0",
     "@vibefire/models": "*",
     "@vibefire/services": "*",
-    "@vibefire/utils": "*",
-    "svix": "^1.8.1"
+    "@vibefire/utils": "*"
   },
   "devDependencies": {
     "@vibefire/config": "*"

@@ -21,6 +21,7 @@
     "@clerk/clerk-expo": "^0.18.17",
     "@expo-google-fonts/inter": "^0.2.3",
     "@gorhom/bottom-sheet": "^4.4.7",
+    "@react-native-community/datetimepicker": "7.2.0",
     "@th3rdwave/react-navigation-bottom-sheet": "^0.2.7",
     "@vibefire/api": "^0.1.0",
     "@vibefire/models": "^0.1.0",
