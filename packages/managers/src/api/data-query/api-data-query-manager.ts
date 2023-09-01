@@ -117,7 +117,8 @@ export class ApiDataQueryManager {
 
     removeUndef(e);
 
-    return await createEvent(this.faunaClient, e);
+    const res = await createEvent(this.faunaClient, e);
+    return res;
   }
 
   async eventUpdateDescriptions(
@@ -475,20 +476,6 @@ export class ApiDataQueryManager {
     res = tbValidator(VibefireUserSchema)(res);
     return res;
   }
-
-  // async createUser(
-  //   userAc: ClerkSignedInAuthContext,
-  //   userInfo: VibefireUserInfoT,
-  // ) {
-  //   const res = await createUser(this.faunaClient, {
-  //     ...userInfo,
-  //     aid: userAc.userId,
-  //     followedEvents: [],
-  //     followedOrganisations: [],
-  //     onboardingComplete: false,
-  //   });
-  //   return res;
-  // }
 
   async updateUserInfo(
     userAc: ClerkSignedInAuthContext,
