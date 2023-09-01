@@ -14,6 +14,7 @@
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@vibefire/models": "^0.1.0",
     "@vibefire/utils": "^0.1.0",
+    "axios": "0.27.2",
     "fauna": "^1.1.0",
     "svix": "^1.10.0"
   },
