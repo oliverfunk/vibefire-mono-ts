@@ -42,6 +42,7 @@ import { webhooksRouter } from "@vibefire/api/webhooks";
 type Bindings = {
   CLERK_PEM: string;
   CLERK_ISSUER_API_URL: string;
+  CLERK_WEBHOOK_SECRET: string;
   FAUNA_SECRET: string;
   SUPABASE_SECRET: string;
 };
@@ -74,8 +75,8 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
   return trpcHandler(c, next);
 });
 
-app.route(`${BASEPATH_REST}`, restRouter);
+app.route(BASEPATH_REST, restRouter);
 
-app.route(`${BASEPATH_WEBHOOKS}`, webhooksRouter);
+app.route(BASEPATH_WEBHOOKS, webhooksRouter);
 
 export default app;

@@ -1,15 +1,15 @@
 import { Type as t, type Static } from "@sinclair/typebox";
 
 export const VibefireUserSchema = t.Object({
-  id: t.String(),
-  aid: t.String(),
-  onboardingComplete: t.Boolean(),
-  name: t.String(),
+  id: t.String({ default: undefined }),
+  aid: t.String({ default: undefined }),
+  onboardingComplete: t.Boolean({ default: false }),
+  name: t.String({ default: undefined }),
   contactEmail: t.Optional(t.String()),
   phoneNumber: t.Optional(t.String()),
   dateOfBirth: t.Optional(t.String({ format: "date-time" })),
-  followedEvents: t.Array(t.String()),
-  followedOrganisations: t.Array(t.String()),
+  followedEvents: t.Array(t.String(), { default: [] }),
+  followedOrganisations: t.Array(t.String(), { default: [] }),
 });
 
 export type VibefireUserT = Static<typeof VibefireUserSchema>;

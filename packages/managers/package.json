@@ -17,6 +17,7 @@
     "@vibefire/config": "*"
   },
   "exports": {
-    "./api": "./src/api/index.ts"
+    "./api": "./src/api/index.ts",
+    "./webhooks": "./src/webhooks/index.ts"
   }
 }

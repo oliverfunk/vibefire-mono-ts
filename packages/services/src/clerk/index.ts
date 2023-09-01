@@ -6,6 +6,8 @@ import {
   type SignedInAuthObject,
   type SignedOutAuthObject,
 } from "@clerk/backend";
+import type { WebhookEvent } from "@clerk/backend";
+import { Webhook } from "svix";
 
 export type ClerkAuthContext = AuthObject;
 export type ClerkSignedInAuthContext = SignedInAuthObject;
@@ -33,4 +35,19 @@ export const authRequestWithClerk = async (
     apiVersion: "2023-06-07",
     token: reqJwtToken,
   });
+};
+
+export const validateClerkWebhook = <T extends WebhookEvent>(
+  reqHeaders: Record<string, string>,
+  reqPayload: string,
+  webhookSecret: string,
+): T | undefined => {
+  const wh = new Webhook(webhookSecret);
+  let msg = undefined;
+  try {
+    msg = wh.verify(reqPayload, reqHeaders) as T;
+  } catch (err) {
+    console.error(err);
+  }
+  return msg;
 };
