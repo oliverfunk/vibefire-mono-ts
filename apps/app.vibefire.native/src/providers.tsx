@@ -14,10 +14,10 @@ import superjson from "superjson";
 
 import { BASEPATH_TRPC } from "@vibefire/api/src/basepaths";
 
+import { debounce } from "~/utils/debounce";
 import { tokenCache } from "~/utils/sec-store-cache";
 import { trpc } from "~/apis/trpc-client";
-import { userAtom, userSessionRetryAtom } from "./atoms";
-import { debounce } from "./utils/debounce";
+import { userAtom, userSessionRetryAtom } from "~/atoms";
 
 const getBaseUrl = () => {
   const debuggerHost =
@@ -50,13 +50,11 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     if (isLoaded) {
-      console.log("getting session");
       getSessionMutDbc();
     }
   }, [isLoaded, getSessionMutDbc, userSessionRetry]);
 
   useEffect(() => {
-    console.log("reading session mut");
     switch (getSession.status) {
       case "loading":
         setUser({ state: "loading" });

@@ -25,6 +25,7 @@
     "@th3rdwave/react-navigation-bottom-sheet": "^0.2.7",
     "@vibefire/api": "^0.1.0",
     "@vibefire/models": "^0.1.0",
+    "@vibefire/services": "^0.1.0",
     "@vibefire/shared-state": "^0.1.0",
     "expo": "~49.0.8",
     "expo-auth-session": "^5.0.2",

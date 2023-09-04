@@ -67,7 +67,7 @@ export const createEvent = async (
         id
     }
   `;
-  return await dfq<string>(faunaClient, q);
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
 export const updateEvent = async (
@@ -83,18 +83,16 @@ export const updateEvent = async (
 
   const q = fql`
     let e = Events.byId(${eventId})
-    if (e == null) {
-      null
-    }
-    if (e.organiserId == ${organiserId}) {
-      e.update(${newUpdateData}){
+    if (e?.organiserId == ${organiserId}) {
+      e?.update(${newUpdateData}){
         id
       }
+    } else {
+      null
     }
-    null
   `;
 
-  const res = await dfq<string | null>(faunaClient, q);
+  const res = await dfq<{ id: string } | null>(faunaClient, q);
   if (res === null) {
     throw new Error("Error updating event");
   }
@@ -103,19 +101,17 @@ export const updateEvent = async (
 
 export const getPublishedPublicEventFromID = async (
   faunaClient: Client,
-  id: string,
+  eventId: string,
 ) => {
   const q = fql`
-    let e = Events.byId(${id})
-    if (e == null) {
+    let e = Events.byId(${eventId})
+    if (e?.visibility == "public" && e?.published == true) {
+      e
+    } else {
       null
     }
-    if (e.visibility == "public" && e.published == true) {
-      e
-    }
-    null
   `;
-  return await dfq<any>(faunaClient, q);
+  return await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
 };
 
 export const getEventFromIDByOrganiser = async (
@@ -126,13 +122,11 @@ export const getEventFromIDByOrganiser = async (
   const _organiserField: keyof VibefireEventT = "organiserId";
   const q = fql`
     let e = Events.byId(${eventId})
-    if (e == null) {
+    if (e?.organiserId == ${organiserId}) {
+      e
+    } else {
       null
     }
-    if (e.organiserId == ${organiserId}}) {
-      e
-    }
-    null
   `;
   const res = await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
   return res;

@@ -1,4 +1,10 @@
-import { Client, fql, Query, QueryValue } from "fauna";
+import {
+  fql,
+  QueryCheckError,
+  type Client,
+  type Query,
+  type QueryValue,
+} from "fauna";
 
 export const CollectionExists = (collectionName: string) =>
   fql`Collection.byName(${collectionName}) != null`;
@@ -19,7 +25,17 @@ export const dfq = async <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
 ): Promise<R> => {
-  console.log("query", query);
-  const qr = await faunaClient.query<R>(query);
-  return qr.data;
+  try {
+    const qr = await faunaClient.query<R>(query);
+    return qr.data;
+  } catch (e) {
+    if (e instanceof QueryCheckError) {
+      console.error(
+        `###\nQueryCheckError:\n${e.message}\n${e.queryInfo?.summary}\n###`,
+      );
+    } else {
+      console.error(JSON.stringify(e, null, " "));
+    }
+    throw e;
+  }
 };

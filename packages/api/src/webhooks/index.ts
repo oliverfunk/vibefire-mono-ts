@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { logger } from "hono/logger";
 
 import {
   getWebhooksClerkManager,
@@ -14,9 +15,7 @@ type Bindings = {
 
 const webhooksRouter = new Hono<{ Bindings: Bindings }>();
 
-webhooksRouter.use("*", (c, next) => {
-  return next();
-});
+webhooksRouter.use("*", logger());
 
 webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 

@@ -45,16 +45,18 @@ type Bindings = {
   CLERK_WEBHOOK_SECRET: string;
   FAUNA_SECRET: string;
   SUPABASE_SECRET: string;
+  GOOGLE_MAPS_API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.onError((err, c) => {
+  console.error(JSON.stringify(err, null, 2));
   if (err instanceof HTTPException) {
     // Get the custom response
     return err.getResponse();
   }
-  return c.text(err.message, 500);
+  return c.text("internal error", 500);
 });
 
 app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
@@ -70,6 +72,7 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
         clerkIssuerApiUrl: c.env.CLERK_ISSUER_API_URL,
         faunaClientKey: c.env.FAUNA_SECRET,
         supabaseClientKey: c.env.SUPABASE_SECRET,
+        googleMapsApiKey: c.env.GOOGLE_MAPS_API_KEY,
       }),
   });
   return trpcHandler(c, next);

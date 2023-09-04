@@ -30,7 +30,12 @@ import { SignOut } from "~/components/auth/SignOut";
 import { EventCard } from "~/components/EventCard";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
-import { LinearRedPinkView, LoadingSheet } from "./_shared";
+import {
+  LinearRedOrangeView,
+  LoadingSheet,
+  navManageEventEditDescription,
+  navManageEventEditLocation,
+} from "./_shared";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
@@ -142,7 +147,7 @@ const _Profile = () => {
               </View>
             </View>
 
-            <LinearRedPinkView className="w-full flex-row items-center justify-center p-6">
+            <LinearRedOrangeView className="w-full flex-row items-center justify-center p-6">
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
@@ -152,7 +157,19 @@ const _Profile = () => {
               >
                 <Text className="text-xl text-white">Create event</Text>
               </TouchableOpacity>
-            </LinearRedPinkView>
+            </LinearRedOrangeView>
+
+            <LinearRedOrangeView className="w-full flex-row items-center justify-center p-6">
+              <TouchableOpacity
+                className="rounded-lg bg-black px-4 py-2"
+                onPress={() => {
+                  navManageEventEditLocation("374673133350682830");
+                }}
+              >
+                <Text className="text-xl text-white">Set</Text>
+              </TouchableOpacity>
+            </LinearRedOrangeView>
+
             <View className="flex-row">
               <SignOut />
             </View>
@@ -216,8 +233,6 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       ref={ref}
       enableDismissOnClose={false}
       enablePanDownToClose={false}
-      // backdropComponent={({}) => {}}
-      // backgroundComponent={CustomBackground}
       backgroundStyle={{
         backgroundColor: "white",
       }}
@@ -229,7 +244,14 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       handleHeight={SEARCH_HANDLE_HEIGHT}
       handleComponent={SearchHandle}
     >
-      {profileSelected ? <_Profile /> : <_EventsList />}
+      {/* This is supposed to render both
+      profile and events list but only display one */}
+      {
+        {
+          true: <_Profile />,
+          false: <_EventsList />,
+        }[profileSelected ? "true" : "false"]
+      }
     </BottomSheetModal>
   );
 };
