@@ -1,13 +1,29 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Type as t } from "@sinclair/typebox";
 
-import { MapQuerySchema, type VibefireEventT } from "@vibefire/models";
+import {
+  CoordSchema,
+  MapQuerySchema,
+  type VibefireEventT,
+} from "@vibefire/models";
 import { tbValidator } from "@vibefire/utils";
 
-import { v } from "~/trpc/validator";
 import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
 export const eventsRouter = router({
+  positionAddressInfo: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          position: CoordSchema,
+        }),
+      ),
+    )
+    .output((value) => value as string)
+    .query(async ({ ctx, input }) => {
+      return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
+        input.position,
+      );
+    }),
   eventForManagement: authedProcedure
     .input(
       tbValidator(
@@ -19,7 +35,6 @@ export const eventsRouter = router({
     )
     .output((value) => value as Partial<VibefireEventT> | undefined)
     .query(async ({ ctx, input }) => {
-      return null;
       return await ctx.apiDataQueryManager.eventForManagement(
         ctx.auth,
         input.eventId,
@@ -35,11 +50,55 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as string)
+    .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
       return await ctx.apiDataQueryManager.eventCreate(
         ctx.auth,
         input.title,
+        input.organisationId,
+      );
+    }),
+  updateDescriptions: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          title: t.Optional(t.String()),
+          description: t.Optional(t.String()),
+          tags: t.Optional(t.Array(t.String())),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventUpdateDescriptions(
+        ctx.auth,
+        input.eventId,
+        input.title,
+        input.description,
+        input.tags,
+        input.organisationId,
+      );
+    }),
+  updateLocation: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          position: t.Optional(CoordSchema),
+          addressDescription: t.Optional(t.String()),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventUpdateLocation(
+        ctx.auth,
+        input.eventId,
+        input.position,
+        input.addressDescription,
         input.organisationId,
       );
     }),

@@ -21,14 +21,12 @@ import {
   callPublicEventsInPeriodInAreas,
   createEvent,
   createEventManagement,
-  createUser,
   deleteUser,
   getEventFromIDByOrganiser,
   getUserByAid,
   updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
-import { getTimezoneID } from "@vibefire/services/g-maps";
 import {
   epochSecsAtNewTimeZone,
   h3ToH3Parents,
@@ -42,11 +40,15 @@ import {
 } from "@vibefire/utils";
 
 import { safeGet } from "~/utils";
+import { getGoogleMapsManager } from "..";
+import { type GoogleMapsManager } from "../google-maps-manager";
 
 export class ApiDataQueryManager {
+  private googleMapsManager: GoogleMapsManager;
   private faunaClient: Client;
   // private supabaseClient: ReturnType<typeof createClient> | undefined;
-  constructor(faunaKey: string, supabaseKey: string) {
+  constructor(googleMapsApiKey: string, faunaKey: string) {
+    this.googleMapsManager = getGoogleMapsManager(googleMapsApiKey);
     this.faunaClient = new Client({
       secret: faunaKey,
     });
@@ -151,7 +153,96 @@ export class ApiDataQueryManager {
 
     removeUndef(updateData);
 
-    await updateEvent(this.faunaClient, {
+    return await updateEvent(this.faunaClient, {
+      id: eventId,
+      organiserId,
+      ...updateData,
+    });
+  }
+
+  async eventUpdateLocation(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    position?: VibefireEventLocationT["position"],
+    addressDescription?: VibefireEventLocationT["addressDescription"],
+    organisationId?: string,
+  ) {
+    if (!(position && addressDescription)) {
+      return { id: eventId };
+    }
+
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await safeGet(
+      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
+      "Event not found",
+    );
+
+    const updateData: PartialDeep<VibefireEventT> = {
+      timeZone: undefined,
+      timeStart: undefined,
+      timeEnd: undefined,
+    };
+    const updateLocation: Partial<VibefireEventLocationT> = {};
+
+    if (position) {
+      position = tbValidator(
+        VibefireEventSchema.properties.location.properties.position,
+      )(position);
+
+      // update h3's
+      const { h3, h3Dec } = latLngPositionToH3(position);
+      const { h3ParentsDec } = h3ToH3Parents(h3);
+
+      // could validate h3's but nah
+      updateLocation.position = position;
+      updateLocation.h3 = h3Dec;
+      updateLocation.h3Parents = h3ParentsDec;
+
+      // could be made into its own function
+      // inputs: position, e
+
+      // get timezone based on new position
+      const newTZ = await this.googleMapsManager.getTimeZoneInfoFromPosition(
+        position,
+        e.timeStart ?? DateTime.now().toUnixInteger(),
+      );
+      let oldTZ = e.timeZone;
+      if (oldTZ === undefined) {
+        oldTZ = newTZ;
+      }
+
+      // if the time zone has changed, update the times'
+      // timezones (keeping the time the same)
+      if (oldTZ !== newTZ) {
+        updateData.timeZone = newTZ;
+        if (e.timeStart) {
+          updateData.timeStart = epochSecsAtNewTimeZone(
+            e.timeStart,
+            oldTZ,
+            newTZ,
+          );
+        }
+        if (e.timeEnd) {
+          updateData.timeEnd = epochSecsAtNewTimeZone(e.timeEnd, oldTZ, newTZ);
+        }
+        // NB: shouldn't need to update display times
+      }
+    }
+    if (addressDescription) {
+      addressDescription = tbValidator(
+        VibefireEventSchema.properties.location.properties.addressDescription,
+      )(addressDescription);
+      updateLocation.addressDescription = addressDescription;
+    }
+
+    updateData.location = updateLocation;
+    removeUndef(updateData);
+
+    // ! NB: if e.state == 'ready', could merge updateData with e and validate
+
+    return await updateEvent(this.faunaClient, {
       id: eventId,
       organiserId,
       ...updateData,
@@ -212,96 +303,6 @@ export class ApiDataQueryManager {
     }
 
     removeUndef(updateData);
-
-    await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async eventUpdateLocation(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    position?: VibefireEventLocationT["position"],
-    addressDescription?: VibefireEventLocationT["addressDescription"],
-    organisationId?: string,
-  ) {
-    if (!(position && addressDescription)) {
-      return;
-    }
-
-    this._checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const e = await safeGet(
-      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
-      "Event not found",
-    );
-
-    const updateData: PartialDeep<VibefireEventT> = {
-      timeZone: undefined,
-      timeStart: undefined,
-      timeEnd: undefined,
-    };
-    const updateLocation: Partial<VibefireEventLocationT> = {};
-
-    if (position) {
-      position = tbValidator(
-        VibefireEventSchema.properties.location.properties.position,
-      )(position);
-
-      // update h3's
-      const { h3, h3Dec } = latLngPositionToH3(position);
-      const { h3ParentsDec } = h3ToH3Parents(h3);
-
-      // could validate h3's but nah
-      updateLocation.position = position;
-      updateLocation.h3 = h3Dec;
-      updateLocation.h3Parents = h3ParentsDec;
-
-      // could be made into its own function
-      // inputs: position, e
-
-      // get timezone based on new position
-      const newTZ = await getTimezoneID(
-        position.lat,
-        position.lng,
-        e.timeStart ?? DateTime.now().toUnixInteger(),
-      );
-      let oldTZ = e.timeZone;
-      if (oldTZ === undefined) {
-        oldTZ = newTZ;
-      }
-
-      // if the time zone has changed, update the times'
-      // timezones (keeping the time the same)
-      if (oldTZ !== newTZ) {
-        updateData.timeZone = newTZ;
-        if (e.timeStart) {
-          updateData.timeStart = epochSecsAtNewTimeZone(
-            e.timeStart,
-            oldTZ,
-            newTZ,
-          );
-        }
-        if (e.timeEnd) {
-          updateData.timeEnd = epochSecsAtNewTimeZone(e.timeEnd, oldTZ, newTZ);
-        }
-        // NB: shouldn't need to update display times
-      }
-    }
-    if (addressDescription) {
-      addressDescription = tbValidator(
-        VibefireEventSchema.properties.location.properties.addressDescription,
-      )(addressDescription);
-      updateLocation.addressDescription = addressDescription;
-    }
-
-    updateData.location = updateLocation;
-    removeUndef(updateData);
-
-    // ! NB: if e.state == 'ready', could merge updateData with e and validate
 
     await updateEvent(this.faunaClient, {
       id: eventId,

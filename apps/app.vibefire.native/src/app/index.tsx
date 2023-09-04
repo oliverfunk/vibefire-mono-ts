@@ -5,13 +5,16 @@ import { EventMap } from "~/components/EventMap";
 import { NoTopContainer } from "~/components/NoTopContainer";
 
 const Home = () => {
-  // hooks
   const params = useLocalSearchParams<{
     eventId?: string;
     orgId?: string;
     manageEvent?: string;
     mp?: string;
   }>();
+
+  // const params = {
+  //   manageEvent: "374673133350682830,edit",
+  // };
 
   console.log("routing params");
   console.log(JSON.stringify(params, null, 2));

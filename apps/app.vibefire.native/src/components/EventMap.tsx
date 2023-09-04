@@ -58,6 +58,7 @@ const useMapMarkers = () => {
   >([]);
   const mapQueryState = useMapQuery();
   useEffect(() => {
+    console.log("mapQueryState.status", mapQueryState.status);
     if (mapQueryState.status === "success") {
       setMarkers(
         mapQueryState.data.map((event) => ({
@@ -66,23 +67,20 @@ const useMapMarkers = () => {
         })),
       );
     }
-  }, [mapQueryState.data]);
+  }, [mapQueryState.status, mapQueryState.data]);
   return markers;
 };
 
 const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   const mvRef = useRef<MapView>(null);
 
-  const setMapQueryPositionAtom = useSetAtom(mapQueryPositionAtom);
-  const setDbcMapQueryPositionAtom = debounce(setMapQueryPositionAtom, 1000);
-
-  // const setBBox = useCallback(() => {
-  //   setDbcMapQueryPositionAtom()
-  // }, [setDbcMapQueryPositionAtom]);
+  const setMapQueryPositionAtomDbc = debounce(
+    useSetAtom(mapQueryPositionAtom),
+    1000,
+  );
 
   const { location, locPermDeniedMsg } = useLocationOnce();
 
-  const mapQueryState = useMapQuery();
   const markers = useMapMarkers();
 
   //#region effects
@@ -125,7 +123,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
         return;
       }
 
-      setDbcMapQueryPositionAtom({
+      setMapQueryPositionAtomDbc({
         northEast: {
           lat: _bbox.northEast.latitude,
           lng: _bbox.northEast.longitude,
@@ -137,54 +135,47 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
         zoomLevel: _zoomLevel,
       });
     },
-    [setDbcMapQueryPositionAtom],
+    [setMapQueryPositionAtomDbc],
   );
 
   return (
-    <>
-      <MapView
-        className="h-full w-full"
-        // initialCamera={{
-        //   center: {
-        //     latitude: location.coords.latitude,
-        //     longitude: location.coords.longitude,
-        //   },
-        //   zoom: 14,
-        // }}
-        mapPadding={{ top: 0, right: 0, bottom: 0, left: 0 }}
-        provider={PROVIDER_GOOGLE}
-        showsUserLocation={true}
-        onRegionChangeComplete={onMapRegionChange}
-        moveOnMarkerPress
-        rotateEnabled={false}
-        maxZoomLevel={20}
-        minZoomLevel={3}
-        ref={mvRef}
-      >
-        {markers.length > 0 &&
-          markers.map((marker, index) => (
-            <Marker
-              key={marker.id}
-              coordinate={{ latitude: marker.lat, longitude: marker.lng }}
-              onPress={() => {
-                // router.setParams({ event: `${marker.id}` });
-              }}
-            >
-              <Callout tooltip={true} className="items-center">
-                <View className="bg-white">
-                  <Text className="text-black">This is amaing</Text>
-                </View>
-                <View className="h-0 w-0 border-x-[10px] border-b-0 border-t-[15px] border-x-transparent border-t-white" />
-              </Callout>
-              <SvgIcon idx={index} />
-            </Marker>
-          ))}
-      </MapView>
-
-      <Text className="absolute bottom-[140px] left-2 rounded-md border-2 border-orange-400 bg-black p-2 text-white">
-        mapQ: {mapQueryState.status}
-      </Text>
-    </>
+    <MapView
+      className="h-full w-full"
+      // initialCamera={{
+      //   center: {
+      //     latitude: location.coords.latitude,
+      //     longitude: location.coords.longitude,
+      //   },
+      //   zoom: 14,
+      // }}
+      provider={PROVIDER_GOOGLE}
+      showsUserLocation={true}
+      onRegionChangeComplete={onMapRegionChange}
+      moveOnMarkerPress
+      rotateEnabled={false}
+      maxZoomLevel={20}
+      minZoomLevel={3}
+      ref={mvRef}
+    >
+      {markers.length > 0 &&
+        markers.map((marker, index) => (
+          <Marker
+            key={marker.id}
+            coordinate={{ latitude: marker.lat, longitude: marker.lng }}
+            onPress={() => {
+              // router.setParams({ event: `${marker.id}` });
+            }}
+          >
+            <Callout tooltip={true} className="items-center">
+              <View className="bg-white">
+                <Text className="text-black">This is amaing</Text>
+              </View>
+              <View className="h-0 w-0 border-x-[10px] border-b-0 border-t-[15px] border-x-transparent border-t-white" />
+            </Callout>
+            <SvgIcon idx={index} />
+          </Marker>
+        ))}
+    </MapView>
   );
 };
 
