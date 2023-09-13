@@ -8,9 +8,9 @@ import {
   manageEventSheetSnapIdxAtom,
   manageEventSheetSnapPointsAtom,
 } from "~/atoms";
+import { LoadingSheet, navManageEventClose } from "../_shared";
 import { ManageEventCreate } from "../views/ManageEventCreate";
 import { ManageEventEdit } from "../views/ManageEventEdit";
-import { LoadingSheet, navManageEventClose } from "./_shared";
 
 type ManageEventViewLoading = {
   state: "loading";
@@ -24,7 +24,7 @@ type ManageEventViewCreate = {
 type ManageEventViewEdit = {
   state: "edit";
   eventId: string;
-  formSelect: "description" | "location";
+  formSelect: "description" | "location" | "times";
 };
 type ManageEventViewManage = {
   state: "manage";
@@ -58,7 +58,11 @@ const _ViewControl = (props: { manageSelect?: string }) => {
       setViewState({ state: "create" });
     } else if (isEdit) {
       const formSelect = selectParts[2];
-      if (formSelect === "description" || formSelect === "location") {
+      if (
+        formSelect === "description" ||
+        formSelect === "location" ||
+        formSelect === "times"
+      ) {
         setViewState({ state: "edit", eventId: eventIdOrCreate, formSelect });
       } else {
         console.error(`Invalid formSelect value: ${formSelect}`);

@@ -149,12 +149,12 @@ importers:
       '@vibefire/models':
         specifier: ^0.1.0
         version: link:../../packages/models
-      '@vibefire/services':
-        specifier: ^0.1.0
-        version: link:../../packages/services
       '@vibefire/shared-state':
         specifier: ^0.1.0
         version: link:../../packages/shared-state
+      '@vibefire/utils':
+        specifier: ^0.1.0
+        version: link:../../packages/utils
       expo:
         specifier: ~49.0.8
         version: 49.0.8(@babel/core@7.22.10)

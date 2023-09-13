@@ -1,22 +1,24 @@
 import { DateTime } from "luxon";
 
-export const isoStrToEpochSeconds = (isoStr: string, timeZone?: string) => {
-  return DateTime.fromISO(isoStr, {
-    zone: timeZone,
-  }).toUnixInteger();
+export const isoNTZToTZEpochSecs = (isoStr: string, timeZone: string) => {
+  return isoNTZToDTAtTZ(isoStr, timeZone).toUnixInteger();
 };
 
-export const epochSecsToDateTime = (epoch: number, timeZone: string) =>
-  DateTime.fromSeconds(epoch, {
-    zone: timeZone,
+export const isoNTZToDTAtTZ = (isoStr: string, timeZone: string) => {
+  return DateTime.fromISO(isoStr, { zone: "utc" }).setZone(timeZone, {
+    keepLocalTime: true,
   });
-
-export const epochSecsAtNewTimeZone = (
-  epoch: number,
-  oldTimeZone: string,
-  newTimeZone: string,
-) => {
-  const dateTime = epochSecsToDateTime(epoch, oldTimeZone);
-  const newTZDateTime = dateTime.setZone(newTimeZone, { keepLocalTime: true });
-  return newTZDateTime.toUnixInteger();
 };
+
+export const nowAsUTC = () =>
+  DateTime.now().setZone("utc", { keepLocalTime: true });
+
+// export const epochSecsAtNewTimeZone = (
+//   epoch: number,
+//   oldTimeZone: string,
+//   newTimeZone: string,
+// ) => {
+//   const dateTime = epochSecsToTZDateTime(epoch, oldTimeZone);
+//   const newTZDateTime = dateTime.setZone(newTimeZone, { keepLocalTime: true });
+//   return newTZDateTime.toUnixInteger();
+// };

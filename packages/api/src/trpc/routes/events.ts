@@ -102,6 +102,27 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
+  updateTimes: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          timeStartIsoNTZ: t.Optional(t.String()),
+          timeEndIsoNTZ: t.Optional(t.String()),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventUpdateTimes(
+        ctx.auth,
+        input.eventId,
+        input.timeStartIsoNTZ,
+        input.timeEndIsoNTZ,
+        input.organisationId,
+      );
+    }),
   mapQueryPublicEvents: publicProcedure
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
