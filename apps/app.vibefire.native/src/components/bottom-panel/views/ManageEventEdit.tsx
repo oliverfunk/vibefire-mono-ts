@@ -1,13 +1,14 @@
 import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { ErrorSheet, LoadingSheet } from "../modals/_shared";
+import { ErrorSheet, LoadingSheet } from "../_shared";
 import { ManageEventEditDescriptionsForm } from "./ManageEventEditDescriptionsForm";
 import { ManageEventEditLocationForm } from "./ManageEventEditLocationForm";
+import { ManageEventEditTimesForm } from "./ManageEventEditTimesForm";
 
 export const ManageEventEdit = (props: {
   eventId: string;
-  formSelect: "description" | "location";
+  formSelect: "description" | "location" | "times";
 }) => {
   const { eventId, formSelect } = props;
   const eventForManagement = trpc.events.eventForManagement.useQuery({
@@ -34,6 +35,16 @@ export const ManageEventEdit = (props: {
         case "location":
           return (
             <ManageEventEditLocationForm
+              eventId={eventId}
+              currentEventData={
+                eventForManagement.data as Partial<VibefireEventT> | undefined
+              }
+              dataRefetch={eventForManagement.refetch}
+            />
+          );
+        case "times":
+          return (
+            <ManageEventEditTimesForm
               eventId={eventId}
               currentEventData={
                 eventForManagement.data as Partial<VibefireEventT> | undefined

@@ -8,7 +8,7 @@ import {
   navManageEventClose,
   navManageEventEditDescription,
   ScrollViewSheet,
-} from "../modals/_shared";
+} from "../_shared";
 
 export const ManageEventCreate = () => {
   const { close } = useBottomSheet();

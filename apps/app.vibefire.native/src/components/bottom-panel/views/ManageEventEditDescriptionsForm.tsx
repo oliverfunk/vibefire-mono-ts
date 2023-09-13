@@ -13,7 +13,7 @@ import {
   navManageEventClose,
   navManageEventEditLocation,
   ScrollViewSheet,
-} from "../modals/_shared";
+} from "../_shared";
 
 export const ManageEventEditDescriptionsForm = (props: {
   eventId: string;
@@ -23,18 +23,19 @@ export const ManageEventEditDescriptionsForm = (props: {
   const { eventId, currentEventData, dataRefetch } = props;
 
   const { close } = useBottomSheet();
-  const updateDescriptions = trpc.events.updateDescriptions.useMutation();
 
   const [editDetailsEventState, setEditDetailsEventState] =
     useState(currentEventData);
   const hasEdited = !_.isEqual(editDetailsEventState, currentEventData);
 
+  const updateDescriptionsMut = trpc.events.updateDescriptions.useMutation();
+
   useEffect(() => {
-    if (updateDescriptions.status === "success") {
+    if (updateDescriptionsMut.status === "success") {
       console.log("calling refetch");
       dataRefetch();
     }
-  }, [updateDescriptions.status, dataRefetch]);
+  }, [updateDescriptionsMut.status, dataRefetch]);
 
   useEffect(() => {
     setEditDetailsEventState(currentEventData);
@@ -56,7 +57,8 @@ export const ManageEventEditDescriptionsForm = (props: {
           <Text className="mx-5 text-lg">Event title:</Text>
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
-              className="ml-4 py-2 text-4xl"
+              className="ml-4 py-2"
+              style={{ fontSize: 36 }}
               placeholderTextColor={"#000000FF"}
               onChangeText={(text) =>
                 setEditDetailsEventState((v) => ({
@@ -75,7 +77,8 @@ export const ManageEventEditDescriptionsForm = (props: {
           <Text className="mx-5 text-lg">Event description:</Text>
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
-              className="ml-4 py-2 text-xl"
+              className="ml-4 py-2"
+              style={{ fontSize: 20 }}
               placeholderTextColor={"#000000FF"}
               multiline={true}
               onChangeText={(text) =>
@@ -109,7 +112,7 @@ export const ManageEventEditDescriptionsForm = (props: {
               if (!hasEdited) {
                 return;
               }
-              updateDescriptions.mutate({
+              updateDescriptionsMut.mutate({
                 eventId,
                 title: editDetailsEventState?.title,
                 description: editDetailsEventState?.description,

@@ -24,7 +24,7 @@ export const LocationSelectionMap = (props: {
     },
     {
       enabled:
-        selectedPosition !== undefined ||
+        selectedPosition !== undefined &&
         // run only after a selection is made
         currentSelectedPosition !== selectedPosition,
     },
@@ -40,23 +40,27 @@ export const LocationSelectionMap = (props: {
   }, [positionAddressInfoQuery.status]);
 
   useEffect(() => {
+    // the timeouts improve stability on android
     if (currentSelectedPosition !== undefined) {
-      mvRef.current?.setCamera({
-        center: {
-          latitude: currentSelectedPosition.lat,
-          longitude: currentSelectedPosition.lng,
-        },
-        zoom: 16,
-      });
+      setTimeout(() => {
+        mvRef.current?.setCamera({
+          center: {
+            latitude: currentSelectedPosition.lat,
+            longitude: currentSelectedPosition.lng,
+          },
+          zoom: 16,
+        });
+      }, 100);
     } else if (location !== null) {
-      console.log("setting camera to user position");
-      mvRef.current?.setCamera({
-        center: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
-        zoom: 16,
-      });
+      setTimeout(() => {
+        mvRef.current?.setCamera({
+          center: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+          zoom: 16,
+        });
+      }, 100);
     }
   }, [location, currentSelectedPosition]);
 

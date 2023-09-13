@@ -86,18 +86,34 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   //#region effects
   useEffect(() => {
     if (location !== null) {
-      mvRef.current?.setCamera(
-        {
-          center: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-          zoom: 14,
-        },
-        // { duration: 1 },
-      );
+      void mvRef.current?.getCamera().then((camera) => {
+        if (camera !== null) {
+          mvRef.current?.setCamera({
+            center: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+            zoom: 14,
+          });
+        }
+      });
     }
-  }, [location]);
+
+    // const a = mvRef.current;
+
+    // if (a !== null && location !== null) {
+    //   void (async () => {
+    //     const _camera = await a.getCamera();
+    //     a.setCamera({
+    //       center: {
+    //         latitude: location.coords.latitude,
+    //         longitude: location.coords.longitude,
+    //       },
+    //       zoom: 14,
+    //     });
+    //   })();
+    // }
+  }, [location, mvRef.current]);
 
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
@@ -141,13 +157,6 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   return (
     <MapView
       className="h-full w-full"
-      // initialCamera={{
-      //   center: {
-      //     latitude: location.coords.latitude,
-      //     longitude: location.coords.longitude,
-      //   },
-      //   zoom: 14,
-      // }}
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
       onRegionChangeComplete={onMapRegionChange}

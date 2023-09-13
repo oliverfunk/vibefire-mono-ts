@@ -1,4 +1,3 @@
-// import { createClient } from "@supabase/supabase-js";
 import { Value } from "@sinclair/typebox/value";
 import { Client } from "fauna";
 import { DateTime } from "luxon";
@@ -28,10 +27,9 @@ import {
   updateUserInfo,
 } from "@vibefire/services/fauna";
 import {
-  epochSecsAtNewTimeZone,
   h3ToH3Parents,
   hexToDecimal,
-  isoStrToEpochSeconds,
+  isoNTZToTZEpochSecs,
   latLngPositionToH3,
   polygonToCells,
   removeUndef,
@@ -174,7 +172,7 @@ export class ApiDataQueryManager {
     this._checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await safeGet(
+    const dbE = await safeGet(
       getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
       "Event not found",
     );
@@ -200,41 +198,31 @@ export class ApiDataQueryManager {
       updateLocation.h3 = h3Dec;
       updateLocation.h3Parents = h3ParentsDec;
 
-      // could be made into its own function
-      // inputs: position, e
-
       // get timezone based on new position
-      const newTZ = await this.googleMapsManager.getTimeZoneInfoFromPosition(
+      const posTZ = await this.googleMapsManager.getTimeZoneFromPosition(
         position,
-        e.timeStart ?? DateTime.now().toUnixInteger(),
+        dbE.timeStart ?? DateTime.now().toUnixInteger(),
       );
-      let oldTZ = e.timeZone;
-      if (oldTZ === undefined) {
-        oldTZ = newTZ;
+
+      // todo: it's probabaly fine to assume utc if no timezone is found
+
+      if (!posTZ) {
+        throw new Error("Could not get timezone from position");
       }
 
-      // if the time zone has changed, update the times'
-      // timezones (keeping the time the same)
-      if (oldTZ !== newTZ) {
-        updateData.timeZone = newTZ;
-        if (e.timeStart) {
-          updateData.timeStart = epochSecsAtNewTimeZone(
-            e.timeStart,
-            oldTZ,
-            newTZ,
-          );
-        }
-        if (e.timeEnd) {
-          updateData.timeEnd = epochSecsAtNewTimeZone(e.timeEnd, oldTZ, newTZ);
-        }
-        // NB: shouldn't need to update display times
+      if (dbE.timeStartIsoNTZ && dbE.timeStart) {
+        updateData.timeStart = isoNTZToTZEpochSecs(dbE.timeStartIsoNTZ, posTZ);
       }
+      if (dbE.timeEndIsoNTZ && dbE.timeEnd) {
+        updateData.timeEnd = isoNTZToTZEpochSecs(dbE.timeEndIsoNTZ, posTZ);
+      }
+      updateData.timeZone = posTZ;
     }
+
     if (addressDescription) {
-      addressDescription = tbValidator(
+      updateLocation.addressDescription = tbValidator(
         VibefireEventSchema.properties.location.properties.addressDescription,
       )(addressDescription);
-      updateLocation.addressDescription = addressDescription;
     }
 
     updateData.location = updateLocation;
@@ -252,12 +240,12 @@ export class ApiDataQueryManager {
   async eventUpdateTimes(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    timeStart?: VibefireEventT["timeStart"] | string,
-    timeEnd?: VibefireEventT["timeEnd"] | string,
+    timeStartIsoNTZ?: string,
+    timeEndIsoNTZ?: string,
     organisationId?: string,
   ) {
-    if (!(timeStart && timeEnd)) {
-      return;
+    if (!(timeStartIsoNTZ && timeEndIsoNTZ)) {
+      return { id: eventId };
     }
 
     this._checkUserIsPartOfOrg(userAc, organisationId);
@@ -272,39 +260,41 @@ export class ApiDataQueryManager {
       throw new Error("A timezone/location must be set before setting times");
     }
 
+    const tz = e.timeZone;
+
     const updateData: Partial<VibefireEventT> = {
       timeStart: e.timeStart,
+      timeStartIsoNTZ: e.timeStartIsoNTZ,
       timeEnd: e.timeEnd,
+      timeEndIsoNTZ: e.timeEndIsoNTZ,
     };
 
     // could check if UTC iso string
 
-    if (timeStart) {
-      if (typeof timeStart === "string") {
-        timeStart = isoStrToEpochSeconds(timeStart);
-      }
-      timeStart = tbValidator(VibefireEventSchema.properties.timeStart)(
-        timeStart,
-      );
-      updateData.timeStart = timeStart;
+    if (timeStartIsoNTZ) {
+      timeStartIsoNTZ = tbValidator(
+        VibefireEventSchema.properties.timeStartIsoNTZ,
+      )(timeStartIsoNTZ);
+      updateData.timeStartIsoNTZ = timeStartIsoNTZ;
+      updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
     }
-    if (timeEnd) {
-      if (typeof timeEnd === "string") {
-        timeEnd = isoStrToEpochSeconds(timeEnd);
-      }
-      timeEnd = tbValidator(VibefireEventSchema.properties.timeEnd)(timeEnd);
-      updateData.timeEnd = timeEnd;
+    if (timeEndIsoNTZ) {
+      timeEndIsoNTZ = tbValidator(VibefireEventSchema.properties.timeEndIsoNTZ)(
+        timeEndIsoNTZ,
+      );
+      updateData.timeEndIsoNTZ = timeEndIsoNTZ;
+      updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ, tz);
     }
 
     if (updateData.timeStart && updateData.timeEnd) {
-      if (updateData.timeStart > updateData.timeEnd) {
+      if (updateData.timeStart >= updateData.timeEnd) {
         throw new Error("timeStart must be before timeEnd");
       }
     }
 
     removeUndef(updateData);
 
-    await updateEvent(this.faunaClient, {
+    return await updateEvent(this.faunaClient, {
       id: eventId,
       organiserId,
       ...updateData,

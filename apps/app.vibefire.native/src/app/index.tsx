@@ -12,10 +12,6 @@ const Home = () => {
     mp?: string;
   }>();
 
-  // const params = {
-  //   manageEvent: "374673133350682830,edit",
-  // };
-
   console.log("routing params");
   console.log(JSON.stringify(params, null, 2));
 

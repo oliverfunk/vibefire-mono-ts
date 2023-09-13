@@ -81,7 +81,9 @@ export const VibefireEventSchema = t.Object({
   description: t.String({ default: undefined }),
   images: VibefireEventImagesSchema,
   timeStart: t.Number({ default: undefined }),
+  timeStartIsoNTZ: t.String({ default: undefined }),
   timeEnd: t.Optional(t.Number()),
+  timeEndIsoNTZ: t.Optional(t.String()),
   timeZone: t.String({ default: undefined }),
 
   timeline: t.Array(VibefireEventTimelineElementSchema, { default: [] }),

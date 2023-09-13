@@ -29,13 +29,14 @@ import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
 import { EventCard } from "~/components/EventCard";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 import {
   LinearRedOrangeView,
   LoadingSheet,
   navManageEventEditDescription,
   navManageEventEditLocation,
-} from "./_shared";
+  navManageEventEditTimes,
+} from "../_shared";
+import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
@@ -163,7 +164,7 @@ const _Profile = () => {
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  navManageEventEditLocation("374673133350682830");
+                  navManageEventEditTimes("374673133350682830");
                 }}
               >
                 <Text className="text-xl text-white">Set</Text>

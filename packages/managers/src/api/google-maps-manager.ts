@@ -16,17 +16,24 @@ export class GoogleMapsManager {
   async getTimeZoneInfoFromPosition(
     position: CoordT,
     timestampSeconds: number,
-  ): Promise<string> {
+  ) {
     const res = await getTimezoneInfo(this.googleMapsClient, {
       lat: position.lat,
       lng: position.lng,
       timestampSeconds,
     });
     if (res.status !== Status.OK) {
-      // todo: is there a better way?
-      throw new Error("Failed to get timezone info");
+      return undefined;
     }
-    return res.timeZoneId;
+    return res;
+  }
+
+  async getTimeZoneFromPosition(position: CoordT, timestampSeconds: number) {
+    const res = await this.getTimeZoneInfoFromPosition(
+      position,
+      timestampSeconds,
+    );
+    return res?.timeZoneId;
   }
 
   async getBestStreetAddressFromPosition(position: CoordT): Promise<string> {
@@ -35,7 +42,6 @@ export class GoogleMapsManager {
       lng: position.lng,
     });
     if (res.status !== Status.OK) {
-      console.error(JSON.stringify(res, null, 2));
       return "";
     }
     if (res.results.length === 0) {

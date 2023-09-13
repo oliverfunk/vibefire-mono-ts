@@ -33,8 +33,10 @@ const getBaseUrl = () => {
 const myStore = createStore();
 
 const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  // for manually proc'ing a retry
   const userSessionRetry = useAtomValue(userSessionRetryAtom);
-  const { isLoaded } = useUser();
+
+  const { isLoaded, isSignedIn } = useUser();
   const getSession = trpc.auth.getSession.useMutation();
   const getSessionMutDbc = useMemo(
     () => debounce(getSession.mutate, 1000),
@@ -52,7 +54,7 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (isLoaded) {
       getSessionMutDbc();
     }
-  }, [isLoaded, getSessionMutDbc, userSessionRetry]);
+  }, [isLoaded, getSessionMutDbc, userSessionRetry, isSignedIn]);
 
   useEffect(() => {
     switch (getSession.status) {

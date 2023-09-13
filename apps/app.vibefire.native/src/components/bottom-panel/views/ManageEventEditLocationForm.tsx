@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
+import _ from "lodash";
 import { type PartialDeep } from "type-fest";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
@@ -12,7 +13,7 @@ import {
   navManageEventEditDescription,
   navManageEventEditTimes,
   ScrollViewSheet,
-} from "../modals/_shared";
+} from "../_shared";
 
 export const ManageEventEditLocationForm = (props: {
   eventId: string;
@@ -21,17 +22,17 @@ export const ManageEventEditLocationForm = (props: {
 }) => {
   const { eventId, currentEventData, dataRefetch } = props;
 
-  const updateLocation = trpc.events.updateLocation.useMutation();
-
   const [editDetailsEventState, setEditDetailsEventState] =
     useState(currentEventData);
-  const hasEdited = editDetailsEventState !== currentEventData;
+  const hasEdited = !_.isEqual(editDetailsEventState, currentEventData);
+
+  const updateLocationMut = trpc.events.updateLocation.useMutation();
 
   useEffect(() => {
-    if (updateLocation.status === "success") {
+    if (updateLocationMut.status === "success") {
       dataRefetch();
     }
-  }, [updateLocation.status, dataRefetch]);
+  }, [updateLocationMut.status, dataRefetch]);
 
   useEffect(() => {
     setEditDetailsEventState(currentEventData);
@@ -50,13 +51,11 @@ export const ManageEventEditLocationForm = (props: {
         </LinearRedOrangeView>
         {/* Form */}
         <View className="h-[300] w-full flex-col">
-          <Text className="mx-5 text-lg">
-            Tap on the map to select a location:
-          </Text>
+          <Text className="mx-5 text-lg">Tap to select a location:</Text>
           <View className="mx-4 border-2 border-slate-200">
             <LocationSelectionMap
               currentSelectedPosition={
-                currentEventData?.location?.position ?? undefined
+                (currentEventData?.location?.position as CoordT) ?? undefined
               }
               onPositionInfo={(position, addressDescription) => {
                 setEditDetailsEventState((v) => ({
@@ -76,7 +75,8 @@ export const ManageEventEditLocationForm = (props: {
           <Text className="mx-5 text-lg">Address description:</Text>
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
-              className="ml-4 py-2 text-xl"
+              className="ml-4 py-2"
+              style={{ fontSize: 20 }}
               placeholderTextColor={"#000000FF"}
               onChangeText={(text) => {
                 setEditDetailsEventState((v) => ({
@@ -103,9 +103,9 @@ export const ManageEventEditLocationForm = (props: {
               if (!hasEdited) {
                 return;
               }
-              updateLocation.mutate({
+              updateLocationMut.mutate({
                 eventId,
-                position: editDetailsEventState?.location?.position,
+                position: editDetailsEventState?.location?.position as CoordT,
                 addressDescription:
                   editDetailsEventState?.location?.addressDescription,
               });
