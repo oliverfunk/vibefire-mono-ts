@@ -58,7 +58,6 @@ const useMapMarkers = () => {
   >([]);
   const mapQueryState = useMapQuery();
   useEffect(() => {
-    console.log("mapQueryState.status", mapQueryState.status);
     if (mapQueryState.status === "success") {
       setMarkers(
         mapQueryState.data.map((event) => ({

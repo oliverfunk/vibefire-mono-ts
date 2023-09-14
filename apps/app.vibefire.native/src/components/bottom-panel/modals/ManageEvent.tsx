@@ -24,7 +24,7 @@ type ManageEventViewCreate = {
 type ManageEventViewEdit = {
   state: "edit";
   eventId: string;
-  formSelect: "description" | "location" | "times";
+  formSelect: "description" | "location" | "times" | "images" | "review";
 };
 type ManageEventViewManage = {
   state: "manage";
@@ -61,7 +61,9 @@ const _ViewControl = (props: { manageSelect?: string }) => {
       if (
         formSelect === "description" ||
         formSelect === "location" ||
-        formSelect === "times"
+        formSelect === "times" ||
+        formSelect === "images" ||
+        formSelect === "review"
       ) {
         setViewState({ state: "edit", eventId: eventIdOrCreate, formSelect });
       } else {

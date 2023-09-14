@@ -3,10 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker, {
-  DateTimePickerAndroid,
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import _, { set } from "lodash";
+import _ from "lodash";
 import { DateTime } from "luxon";
 import { type PartialDeep } from "type-fest";
 
@@ -18,6 +17,7 @@ import {
   BackSaveNextFormButtons,
   ErrorSheet,
   LinearRedOrangeView,
+  navManageEventEditImages,
   navManageEventEditLocation,
   ScrollViewSheet,
 } from "../_shared";
@@ -87,15 +87,6 @@ const _TimeSelectionAndDisplayAnd = (props: {
         className="rounded-lg bg-gray-200 px-4 py-1"
         onPress={() => {
           setShowDatePicker(true);
-          // DateTimePickerAndroid.open({
-          //   value: currentDate,
-          //   mode: "date",
-          //   is24Hour: true,
-          //   onChange: onChange,
-          //   minuteInterval: 15,
-          //   maximumDate: new Date(2030, 1, 1),
-          //   minimumDate: new Date(2020, 1, 1),
-          // });
         }}
       >
         <Text className="text-lg text-black">
@@ -125,15 +116,6 @@ const _TimeSelectionAndDisplayAnd = (props: {
         className="rounded-lg bg-gray-200 px-4 py-1"
         onPress={() => {
           setShowTimePicker(true);
-          // DateTimePickerAndroid.open({
-          //   value: currentDate,
-          //   mode: "time",
-          //   display: "spinner",
-          //   onChange: onChange,
-          //   minuteInterval: 15,
-          //   maximumDate: new Date(2030, 1, 1),
-          //   minimumDate: new Date(2020, 1, 1),
-          // });
         }}
       >
         <Text className="text-lg text-black">
@@ -179,7 +161,7 @@ export const ManageEventEditTimesForm = (props: {
   const currentEventFormData = useMemo(
     () => ({
       timeStartIsoNTZ: currentEventData?.timeStartIsoNTZ ?? nowAsUTC().toISO()!,
-      timeEndIsoNTZ: currentEventData?.timeEndIsoNTZ,
+      timeEndIsoNTZ: currentEventData?.timeEndIsoNTZ ?? null,
     }),
     [currentEventData],
   );
@@ -203,8 +185,6 @@ export const ManageEventEditTimesForm = (props: {
   const onTimeStartSelect = useCallback(
     (event: DateTimePickerEvent, selectedDate?: Date) => {
       if (selectedDate) {
-        console.log("timeStartIsoNTZ:");
-        console.log(JSON.stringify(selectedDate.toISOString(), null, 2));
         setSelectedFormData((v) => ({
           ...v,
           timeStartIsoNTZ: selectedDate.toISOString(),
@@ -301,7 +281,7 @@ export const ManageEventEditTimesForm = (props: {
                 onPress={() => {
                   setSelectedFormData({
                     ...selectedFormData,
-                    timeEndIsoNTZ: undefined,
+                    timeEndIsoNTZ: null,
                   });
                 }}
               >
@@ -359,7 +339,9 @@ export const ManageEventEditTimesForm = (props: {
                 timeEndIsoNTZ: selectedFormData?.timeEndIsoNTZ,
               });
             }}
-            onPressNext={() => {}}
+            onPressNext={() => {
+              navManageEventEditImages(eventId);
+            }}
           />
         </View>
       </View>

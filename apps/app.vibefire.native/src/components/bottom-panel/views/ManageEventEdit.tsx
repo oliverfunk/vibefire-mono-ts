@@ -3,12 +3,13 @@ import { type VibefireEventT } from "@vibefire/models";
 import { trpc } from "~/apis/trpc-client";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { ManageEventEditDescriptionsForm } from "./ManageEventEditDescriptionsForm";
+import { ManageEventEditImagesForm } from "./ManageEventEditImagesForm";
 import { ManageEventEditLocationForm } from "./ManageEventEditLocationForm";
 import { ManageEventEditTimesForm } from "./ManageEventEditTimesForm";
 
 export const ManageEventEdit = (props: {
   eventId: string;
-  formSelect: "description" | "location" | "times";
+  formSelect: "description" | "location" | "times" | "images" | "review";
 }) => {
   const { eventId, formSelect } = props;
   const eventForManagement = trpc.events.eventForManagement.useQuery({
@@ -52,9 +53,9 @@ export const ManageEventEdit = (props: {
               dataRefetch={eventForManagement.refetch}
             />
           );
-        default:
+        case "images":
           return (
-            <ManageEventEditDescriptionsForm
+            <ManageEventEditImagesForm
               eventId={eventId}
               currentEventData={
                 eventForManagement.data as Partial<VibefireEventT> | undefined
@@ -62,6 +63,16 @@ export const ManageEventEdit = (props: {
               dataRefetch={eventForManagement.refetch}
             />
           );
+        // case "review":
+        //   return (
+        //     <ManageEventEditReview
+        //       eventId={eventId}
+        //       currentEventData={
+        //         eventForManagement.data as Partial<VibefireEventT> | undefined
+        //       }
+        //       dataRefetch={eventForManagement.refetch}
+        //     />
+        //   );
       }
   }
 };

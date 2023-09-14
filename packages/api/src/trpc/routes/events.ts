@@ -108,7 +108,28 @@ export const eventsRouter = router({
         t.Object({
           eventId: t.String(),
           timeStartIsoNTZ: t.Optional(t.String()),
-          timeEndIsoNTZ: t.Optional(t.String()),
+          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventUpdateTimes(
+        ctx.auth,
+        input.eventId,
+        input.timeStartIsoNTZ,
+        input.timeEndIsoNTZ,
+        input.organisationId,
+      );
+    }),
+  updateImages: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          timeStartIsoNTZ: t.Optional(t.String()),
+          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
           organisationId: t.Optional(t.String()),
         }),
       ),

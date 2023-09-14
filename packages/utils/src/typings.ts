@@ -18,10 +18,11 @@ export type PartialDeepExceptRequired<T, K extends keyof T> = PartialDeep<
 
 export const removeUndef = (obj: { [key: string]: unknown }) => {
   for (const key in obj) {
-    if (obj[key] === undefined || obj[key] === null) {
+    if (obj[key] === undefined) {
       delete obj[key];
     } else if (typeof obj[key] === "object") {
       if (Array.isArray(obj[key])) {
+        // filter out null, undefined, and empty string from the array
         obj[key] = (obj[key] as Array<unknown>).filter(
           (value) => value !== null && value !== undefined && value !== "",
         );

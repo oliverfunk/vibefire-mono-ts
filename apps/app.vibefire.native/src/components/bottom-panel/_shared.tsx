@@ -21,6 +21,12 @@ export const navManageEventEditLocation = (eventId: string) => {
 export const navManageEventEditTimes = (eventId: string) => {
   router.setParams({ manageEvent: `${eventId},edit,times` });
 };
+export const navManageEventEditImages = (eventId: string) => {
+  router.setParams({ manageEvent: `${eventId},edit,images` });
+};
+export const navManageEventEditReview = (eventId: string) => {
+  router.setParams({ manageEvent: `${eventId},edit,review` });
+};
 export const navManageEventCreate = () => {
   router.setParams({ manageEvent: "create" });
 };
