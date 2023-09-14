@@ -32,7 +32,6 @@ export const ManageEventEditDescriptionsForm = (props: {
 
   useEffect(() => {
     if (updateDescriptionsMut.status === "success") {
-      console.log("calling refetch");
       dataRefetch();
     }
   }, [updateDescriptionsMut.status, dataRefetch]);

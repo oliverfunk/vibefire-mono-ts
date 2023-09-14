@@ -33,6 +33,7 @@ import {
   LinearRedOrangeView,
   LoadingSheet,
   navManageEventEditDescription,
+  navManageEventEditImages,
   navManageEventEditLocation,
   navManageEventEditTimes,
 } from "../_shared";
@@ -152,7 +153,6 @@ const _Profile = () => {
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  console.log("create event");
                   router.setParams({ manageEvent: "create" });
                 }}
               >
@@ -164,7 +164,7 @@ const _Profile = () => {
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  navManageEventEditTimes("374673133350682830");
+                  navManageEventEditImages("374673133350682830");
                 }}
               >
                 <Text className="text-xl text-white">Set</Text>

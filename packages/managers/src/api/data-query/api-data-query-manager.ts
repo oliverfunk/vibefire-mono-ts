@@ -241,12 +241,14 @@ export class ApiDataQueryManager {
     userAc: ClerkSignedInAuthContext,
     eventId: string,
     timeStartIsoNTZ?: string,
-    timeEndIsoNTZ?: string,
+    timeEndIsoNTZ?: string | null,
     organisationId?: string,
   ) {
-    if (!(timeStartIsoNTZ && timeEndIsoNTZ)) {
+    if (!(timeStartIsoNTZ && timeEndIsoNTZ !== undefined)) {
       return { id: eventId };
     }
+
+    // todo: round the time to the nearest 15 mins
 
     this._checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
@@ -278,12 +280,17 @@ export class ApiDataQueryManager {
       updateData.timeStartIsoNTZ = timeStartIsoNTZ;
       updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
     }
-    if (timeEndIsoNTZ) {
-      timeEndIsoNTZ = tbValidator(VibefireEventSchema.properties.timeEndIsoNTZ)(
-        timeEndIsoNTZ,
-      );
-      updateData.timeEndIsoNTZ = timeEndIsoNTZ;
-      updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ, tz);
+    if (timeEndIsoNTZ !== undefined) {
+      if (timeEndIsoNTZ === null) {
+        updateData.timeEndIsoNTZ = null;
+        updateData.timeEnd = null;
+      } else {
+        timeEndIsoNTZ = tbValidator(
+          VibefireEventSchema.properties.timeEndIsoNTZ,
+        )(timeEndIsoNTZ);
+        updateData.timeEndIsoNTZ = timeEndIsoNTZ;
+        updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ, tz);
+      }
     }
 
     if (updateData.timeStart && updateData.timeEnd) {
