@@ -40,7 +40,8 @@ export const ManageEventCreate = () => {
           <View className="w-full bg-black p-4">
             <Text className="text-lg text-white">
               To get started, set an event title and press start. This will
-              create a draft event which you can add to anytime!
+              create a draft event which you can add to anytime! After the event
+              is ready, it can be published and shared.
             </Text>
           </View>
         </LinearRedOrangeView>
@@ -50,12 +51,10 @@ export const ManageEventCreate = () => {
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
               className="ml-4 py-2 text-4xl"
-              // style={{ fontSize: 80 }}
               placeholderTextColor={"#000000FF"}
               onChangeText={(text) => setCreateEventState({ title: text })}
               value={createEventState.title}
               placeholder=""
-              // autoFocus={true}
             />
           </View>
         </View>

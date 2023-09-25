@@ -5,30 +5,16 @@ import React, {
   type FC,
   type ReactNode,
 } from "react";
-import Constants from "expo-constants";
 import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
 import superjson from "superjson";
 
-import { BASEPATH_TRPC } from "@vibefire/api/src/basepaths";
-
 import { debounce } from "~/utils/debounce";
 import { tokenCache } from "~/utils/sec-store-cache";
-import { trpc } from "~/apis/trpc-client";
+import { trpc, trpcUrl } from "~/apis/trpc-client";
 import { userAtom, userSessionRetryAtom } from "~/atoms";
-
-const getBaseUrl = () => {
-  const debuggerHost =
-    Constants.expoConfig?.hostUri ??
-    Constants.manifest2?.extra?.expoGo?.debuggerHost;
-  const localhost = debuggerHost?.split(":")[0];
-  if (!localhost) {
-    return "https://api.vibefire.app";
-  }
-  return `http://${localhost}:8787`;
-};
 
 const myStore = createStore();
 
@@ -62,10 +48,8 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setUser({ state: "loading" });
         break;
       case "error":
-        console.log("error getting session");
         setUser({ state: "error", error: getSession.error.message });
         if (!__DEV__) {
-          console.log("calling getSessionMutDbc");
           getSessionMutDbcLong();
         }
         break;
@@ -93,7 +77,7 @@ const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
                 ...(!!authToken && { Authorization: authToken }),
               };
             },
-            url: `${getBaseUrl()}${BASEPATH_TRPC}`,
+            url: trpcUrl,
           }),
         ],
       }),

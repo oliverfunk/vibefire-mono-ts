@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { fql, type Client } from "fauna";
 import type { PartialDeep } from "type-fest";
 
-import type {
-  VibefireEventLocationT,
-  VibefireEventManagementT,
-  VibefireEventT,
-} from "@vibefire/models";
+import type { VibefireEventLocationT, VibefireEventT } from "@vibefire/models";
 import { type PartialDeepExceptRequired } from "@vibefire/utils";
 
 import { CreateCollectionIfDne, dfq } from "../utils";
@@ -128,6 +122,5 @@ export const getEventFromIDByOrganiser = async (
       null
     }
   `;
-  const res = await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
-  return res;
+  return await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
 };

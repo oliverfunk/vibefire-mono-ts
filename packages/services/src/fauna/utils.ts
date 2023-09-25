@@ -31,7 +31,7 @@ export const dfq = async <R extends QueryValue>(
   } catch (e) {
     if (e instanceof QueryCheckError) {
       console.error(
-        `###\nQueryCheckError:\n${e.message}\n${e.queryInfo?.summary}\n###`,
+        `-----------\n${e.name} [${e.code}]:\n${e.message}\n${e.queryInfo?.summary}\n-----------\n`,
       );
     } else {
       console.error(JSON.stringify(e, null, " "));

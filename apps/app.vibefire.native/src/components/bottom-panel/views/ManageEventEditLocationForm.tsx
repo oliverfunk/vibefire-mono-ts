@@ -8,10 +8,10 @@ import { type CoordT, type VibefireEventT } from "@vibefire/models";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
 import {
-  BackSaveNextFormButtons,
   LinearRedOrangeView,
   navManageEventEditDescription,
   navManageEventEditTimes,
+  ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";
 
@@ -94,11 +94,9 @@ export const ManageEventEditLocationForm = (props: {
         </View>
 
         <View className="w-full">
-          <BackSaveNextFormButtons
-            hasEdited={hasEdited}
-            onPressBack={() => {
-              navManageEventEditDescription(eventId);
-            }}
+          <ReviewSaveNextFormButtons
+            eventId={eventId}
+            savedEnabled={hasEdited}
             onPressSave={() => {
               if (!hasEdited) {
                 return;

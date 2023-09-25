@@ -70,28 +70,28 @@ export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
   </BottomSheetScrollView>
 );
 
-export const BackSaveNextFormButtons = (props: {
-  onPressBack: () => void;
+export const ReviewSaveNextFormButtons = (props: {
+  eventId: string;
   onPressSave: () => void;
   onPressNext: () => void;
-  hasEdited: boolean;
-  backText?: string;
-  nextText?: string;
+  savedEnabled: boolean;
 }) => {
   return (
     <View className="flex-row justify-around">
       <TouchableOpacity
         className="rounded-lg border bg-white px-4 py-2"
-        onPress={props.onPressBack}
+        onPress={() => {
+          navManageEventEditReview(props.eventId);
+        }}
       >
-        <Text className="text-xl text-black">{props.backText ?? "Back"}</Text>
+        <Text className="text-xl text-black">Review</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         className={`rounded-lg px-4 py-2 ${
-          props.hasEdited ? "bg-red-500" : "bg-gray-300"
+          props.savedEnabled ? "bg-red-500" : "bg-gray-300"
         }`}
-        disabled={!props.hasEdited}
+        disabled={!props.savedEnabled}
         onPress={props.onPressSave}
       >
         <Text className="text-xl text-white">Save</Text>
@@ -101,7 +101,7 @@ export const BackSaveNextFormButtons = (props: {
         className="rounded-lg bg-black px-4 py-2"
         onPress={props.onPressNext}
       >
-        <Text className="text-xl text-white">{props.nextText ?? "Next"}</Text>
+        <Text className="text-xl text-white">Next</Text>
       </TouchableOpacity>
     </View>
   );

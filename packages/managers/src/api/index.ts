@@ -1,5 +1,8 @@
+import { type R2Bucket } from "@cloudflare/workers-types";
+
 import { ApiDataQueryManager } from "./data-query/api-data-query-manager";
 import { GoogleMapsManager } from "./google-maps-manager";
+import { ImagesManager } from "./images-manager";
 
 let _ApiDataQueryManager: ApiDataQueryManager | undefined;
 export const getApiDataQueryManager = (
@@ -24,4 +27,14 @@ export const getGoogleMapsManager = (
     _GoogleMapsManager = new GoogleMapsManager(googleMapsApiKey);
   }
   return _GoogleMapsManager;
+};
+
+let _imagesManager: ImagesManager | undefined;
+export const getImagesManager = (bucketImagesEU: R2Bucket): ImagesManager => {
+  "use strict";
+  if (!_imagesManager) {
+    console.debug("Creating new ImagesManager");
+    _imagesManager = new ImagesManager(bucketImagesEU);
+  }
+  return _imagesManager;
 };

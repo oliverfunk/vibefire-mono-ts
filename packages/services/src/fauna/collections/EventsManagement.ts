@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { fql, type Client } from "fauna";
 
 import type { VibefireEventManagementT } from "@vibefire/models";
@@ -52,14 +50,19 @@ export const createEventManagement = async (
   return await dfq<string>(faunaClient, q);
 };
 
-export const getEventManagementByID = async (
+export const getEventManagementFromEventIDByOrganiser = async (
   faunaClient: Client,
-  createData: Partial<VibefireEventManagementT>,
+  eventId: string,
+  organiserId: string,
 ) => {
+  const _organiserField: keyof VibefireEventManagementT = "organiserId";
   const q = fql`
-    EventsManagement.byId(${createData}) {
-      id
+    let e = EventsManagement.fromEventId(${eventId}).first()
+    if (e?.organiserId == ${organiserId}) {
+      e
+    } else {
+      null
     }
   `;
-  return await dfq<string>(faunaClient, q);
+  return await dfq<Partial<VibefireEventManagementT> | null>(faunaClient, q);
 };

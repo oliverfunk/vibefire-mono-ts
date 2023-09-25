@@ -23,6 +23,6 @@ export const MapQuerySchema = t.Object({
   timePeriod: TimePeriodSchema,
   northEast: CoordSchema,
   southWest: CoordSchema,
-  zoomLevel: t.Number({ minimum: 0, maximum: 15 }),
+  zoomLevel: t.Number({ minimum: 0, maximum: 24 }),
 });
 export type MapQueryT = Static<typeof MapQuerySchema>;

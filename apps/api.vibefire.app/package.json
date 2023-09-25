@@ -10,7 +10,6 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^4.20230821.0",
     "@vibefire/api": "^0.1.0"
   }
 }

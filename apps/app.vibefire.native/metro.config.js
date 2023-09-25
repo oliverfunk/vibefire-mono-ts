@@ -15,6 +15,9 @@ config.resolver.alias = {
   "~": path.resolve(projectRoot, "src"),
 };
 
+// support package.json "exports"
+config.resolver.unstable_enablePackageExports = true;
+
 // Add the additional `cjs` extension to the resolver
 config.resolver.sourceExts.push("cjs");
 

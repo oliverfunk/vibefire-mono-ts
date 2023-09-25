@@ -11,9 +11,33 @@ import { type ValueErrorIterator } from "@sinclair/typebox/errors";
 import { Value } from "@sinclair/typebox/value";
 
 export class SchemaValidationError extends Error {
-  constructor(errors: ValueErrorIterator | string) {
-    const msg = typeof errors === "string" ? errors : errors.First();
-    super(`Schema validation failed:\n${JSON.stringify(msg, null, 2)}`);
+  constructor(errors: ValueErrorIterator | string, schemaTitle?: string) {
+    let msg = "";
+    if (typeof errors === "string") {
+      msg = errors;
+    } else {
+      const msgHolder: { [key: string]: string } = {};
+      for (const error of errors) {
+        if (Object.keys(msgHolder).length >= 5) {
+          break;
+        }
+        msgHolder[error.path] =
+          (msgHolder[error.path] ?? `Got ${error.value} -> `) +
+          error.message +
+          ", ";
+      }
+      msg = Object.entries(msgHolder)
+        .map(([path, message]) => `${path}: ${message}`)
+        .join("\n");
+      if (Object.keys(msgHolder).length >= 5) {
+        msg += "\n...";
+      }
+    }
+    let forTitle = "";
+    if (schemaTitle) {
+      forTitle = `[for ${schemaTitle}]`;
+    }
+    super(`Schema validation failed:${forTitle}\n${msg}`);
   }
 }
 
@@ -37,6 +61,7 @@ export const tbValidator = <S extends TSchema>(
       if (typeof discriminantValue !== "string") {
         throw new SchemaValidationError(
           `No discriminant key '${unionDiscriminantKey}' found in value input or is not a string`,
+          sch.title,
         );
       }
 
@@ -50,6 +75,7 @@ export const tbValidator = <S extends TSchema>(
         ) {
           throw new SchemaValidationError(
             `Discriminant key schema for '${unionDiscriminantKey}' does not exist or is a non string literal. Add '${unionDiscriminantKey}' to the schema as a string literal.`,
+            sch.title,
           );
         }
         return (
@@ -66,7 +92,7 @@ export const tbValidator = <S extends TSchema>(
       sch = _schema;
     }
     if (Value.Check(sch, value)) return value as Static<S>;
-    throw new SchemaValidationError(Value.Errors(sch, value));
+    throw new SchemaValidationError(Value.Errors(sch, value), sch.title);
   };
 };
 
@@ -74,6 +100,6 @@ export const tbValidatorWithCompile = <S extends TSchema>(schema: S) => {
   const check = TypeCompiler.Compile(schema);
   return (value: unknown) => {
     if (check.Check(value)) return value;
-    throw new SchemaValidationError(check.Errors(value));
+    throw new SchemaValidationError(check.Errors(value), schema.title);
   };
 };
