@@ -3,6 +3,7 @@ import { Type as t } from "@sinclair/typebox";
 import {
   CoordSchema,
   MapQuerySchema,
+  type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";
 import { tbValidator } from "@vibefire/utils";
@@ -24,7 +25,7 @@ export const eventsRouter = router({
         input.position,
       );
     }),
-  eventForManagement: authedProcedure
+  eventForEdit: authedProcedure
     .input(
       tbValidator(
         t.Object({
@@ -33,9 +34,32 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as Partial<VibefireEventT> | undefined)
+    .output((value) => value as Partial<VibefireEventT>)
     .query(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventForManagement(
+      return await ctx.apiDataQueryManager.eventForEdit(
+        ctx.auth,
+        input.eventId,
+        input.organisationId,
+      );
+    }),
+  eventAllInfoForManagement: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output(
+      (value) =>
+        value as {
+          event: VibefireEventT;
+          eventManagement: VibefireEventManagementT;
+        },
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventAllInfoForManagement(
         ctx.auth,
         input.eventId,
         input.organisationId,
@@ -123,25 +147,72 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
-  updateImages: authedProcedure
+  uploadBannerImage: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
-          timeStartIsoNTZ: t.Optional(t.String()),
-          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
-          organisationId: t.Optional(t.String()),
+          b64_image: t.String(),
         }),
       ),
     )
-    .output((value) => value as { id: string })
+    // .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateTimes(
+      return await ctx.apiDataQueryManager.eventUpdateUploadBannerImage(
+        ctx.imagesManager,
         ctx.auth,
         input.eventId,
-        input.timeStartIsoNTZ,
-        input.timeEndIsoNTZ,
-        input.organisationId,
+        input.b64_image,
+      );
+    }),
+  uploadAdditionalImage: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          b64_image: t.String(),
+        }),
+      ),
+    )
+    // .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventUpdateUploadAdditionalImage(
+        ctx.imagesManager,
+        ctx.auth,
+        input.eventId,
+        input.b64_image,
+      );
+    }),
+  removeAdditionalImage: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          additionalImageKey: t.String(),
+        }),
+      ),
+    )
+    // .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventUpdateRemoveAdditionalImage(
+        ctx.imagesManager,
+        ctx.auth,
+        input.eventId,
+        input.additionalImageKey,
+      );
+    }),
+  setReady: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventSetReady(
+        ctx.auth,
+        input.eventId,
       );
     }),
   mapQueryPublicEvents: publicProcedure

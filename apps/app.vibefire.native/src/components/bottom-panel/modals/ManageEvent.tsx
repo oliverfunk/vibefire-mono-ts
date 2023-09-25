@@ -2,15 +2,11 @@ import { forwardRef, useEffect, useMemo, useState, type Ref } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { useAtomValue } from "jotai";
 
-import {
-  manageEventSheetSnapIdxAtom,
-  manageEventSheetSnapPointsAtom,
-} from "~/atoms";
 import { LoadingSheet, navManageEventClose } from "../_shared";
 import { ManageEventCreate } from "../views/ManageEventCreate";
 import { ManageEventEdit } from "../views/ManageEventEdit";
+import { ManageEventManagement } from "../views/ManageEventManagement";
 
 type ManageEventViewLoading = {
   state: "loading";
@@ -86,6 +82,8 @@ const _ViewControl = (props: { manageSelect?: string }) => {
           formSelect={viewState.formSelect}
         />
       );
+    case "manage":
+      return <ManageEventManagement eventId={viewState.eventId} />;
   }
 };
 
@@ -94,8 +92,8 @@ const _PreControl = (
   ref: Ref<BottomSheetModalMethods>,
 ) => {
   const insets = useSafeAreaInsets();
-  const snapPoints = useAtomValue(manageEventSheetSnapPointsAtom);
-  const snapIdx = useAtomValue(manageEventSheetSnapIdxAtom);
+  const snapPoints = useMemo(() => ["80%"], []);
+  const snapIdx = useMemo(() => 0, []);
 
   return (
     <BottomSheetModal

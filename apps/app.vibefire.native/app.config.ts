@@ -1,9 +1,6 @@
-import { ConfigContext, ExpoConfig } from "expo/config";
+import { type ConfigContext, type ExpoConfig } from "expo/config";
 
-// const CLERK_PUBLISHABLE_KEY =
-//   "***REMOVED***";
-
-export default ({ config }: ConfigContext): ExpoConfig => ({
+const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "Vibefire",
   slug: "vibefire-app",
@@ -59,7 +56,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           "Allow $(PRODUCT_NAME) to use your location.",
       },
     ],
+    [
+      "expo-image-picker",
+      {
+        photosPermission: "Allow $(PRODUCT_NAME) to accesses your photos.",
+      },
+    ],
   ],
 });
-
-// export default mergeConfig(getDefaultConfig(__dirname), defineConfig());
+export default expoConfig;

@@ -14,11 +14,11 @@ import { nowAsUTC } from "@vibefire/utils";
 
 import { trpc } from "~/apis/trpc-client";
 import {
-  BackSaveNextFormButtons,
   ErrorSheet,
   LinearRedOrangeView,
   navManageEventEditImages,
   navManageEventEditLocation,
+  ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";
 
@@ -220,7 +220,7 @@ export const ManageEventEditTimesForm = (props: {
         <View className="w-full flex-col ">
           <View className="mx-4 flex-row items-center justify-center rounded-lg border py-2">
             <Text className="text-lg">
-              Time zone: {currentEventData?.timeZone}
+              Time zone: {currentEventData?.timeZone ?? "Not set"}
             </Text>
           </View>
         </View>
@@ -307,11 +307,9 @@ export const ManageEventEditTimesForm = (props: {
         </View>
 
         <View className="w-full">
-          <BackSaveNextFormButtons
-            hasEdited={hasEdited}
-            onPressBack={() => {
-              navManageEventEditLocation(eventId);
-            }}
+          <ReviewSaveNextFormButtons
+            eventId={eventId}
+            savedEnabled={hasEdited}
             onPressSave={() => {
               if (!hasEdited) {
                 return;

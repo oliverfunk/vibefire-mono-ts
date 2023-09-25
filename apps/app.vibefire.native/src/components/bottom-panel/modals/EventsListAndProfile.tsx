@@ -32,9 +32,11 @@ import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import {
   LinearRedOrangeView,
   LoadingSheet,
+  navManageEvent,
   navManageEventEditDescription,
   navManageEventEditImages,
   navManageEventEditLocation,
+  navManageEventEditReview,
   navManageEventEditTimes,
 } from "../_shared";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
@@ -164,7 +166,7 @@ const _Profile = () => {
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  navManageEventEditImages("374673133350682830");
+                  navManageEvent("374673133350682830");
                 }}
               >
                 <Text className="text-xl text-white">Set</Text>
@@ -187,7 +189,7 @@ const _EventsList = () => {
     (item: React.Key) => (
       <View key={item}>
         <EventCard
-          event={{
+          eventInfo={{
             bannerImgURL: "https://picsum.photos/1080/1980",
             title: "Event Title",
             orgName: "Org Name",

@@ -22,6 +22,7 @@ import {
   createEventManagement,
   deleteUser,
   getEventFromIDByOrganiser,
+  getEventManagementFromEventIDByOrganiser,
   getUserByAid,
   updateEvent,
   updateUserInfo,
@@ -40,6 +41,7 @@ import {
 import { safeGet } from "~/utils";
 import { getGoogleMapsManager } from "..";
 import { type GoogleMapsManager } from "../google-maps-manager";
+import { type ImagesManager } from "../images-manager";
 
 export class ApiDataQueryManager {
   private googleMapsManager: GoogleMapsManager;
@@ -73,7 +75,7 @@ export class ApiDataQueryManager {
   }
 
   // #region Event
-  async eventForManagement(
+  async eventForEdit(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
     organisationId?: string,
@@ -87,8 +89,42 @@ export class ApiDataQueryManager {
       eventId,
       organiserId,
     );
+    if (!e) {
+      throw new Error("Event not found");
+    }
 
     return e;
+  }
+
+  async eventAllInfoForManagement(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+
+    const organiserId = organisationId || userAc.userId;
+
+    const event = await getEventFromIDByOrganiser(
+      this.faunaClient,
+      eventId,
+      organiserId,
+    );
+    console.log("eventId", eventId);
+    const eventMang = await getEventManagementFromEventIDByOrganiser(
+      this.faunaClient,
+      eventId,
+      organiserId,
+    );
+    // const eOrg
+
+    const e = tbValidator(VibefireEventSchema)(event);
+    const em = tbValidator(VibefireEventManagementSchema)(eventMang);
+
+    return {
+      event: e,
+      eventManagement: em,
+    };
   }
 
   async eventCreate(
@@ -114,6 +150,7 @@ export class ApiDataQueryManager {
       e.organiserType = "organisation";
       e.visibility = "public"; // by default
     }
+    e.type = "one-time"; // by default
 
     removeUndef(e);
 
@@ -177,11 +214,7 @@ export class ApiDataQueryManager {
       "Event not found",
     );
 
-    const updateData: PartialDeep<VibefireEventT> = {
-      timeZone: undefined,
-      timeStart: undefined,
-      timeEnd: undefined,
-    };
+    const updateData: PartialDeep<VibefireEventT> = {};
     const updateLocation: Partial<VibefireEventLocationT> = {};
 
     if (position) {
@@ -289,7 +322,7 @@ export class ApiDataQueryManager {
           VibefireEventSchema.properties.timeEndIsoNTZ,
         )(timeEndIsoNTZ);
         updateData.timeEndIsoNTZ = timeEndIsoNTZ;
-        updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ, tz);
+        updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ!, tz);
       }
     }
 
@@ -308,17 +341,118 @@ export class ApiDataQueryManager {
     });
   }
 
-  async eventUpdateSetBannerImage(
+  async eventUpdateUploadBannerImage(
+    imageManager: ImagesManager,
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    update: Partial<Pick<VibefireEventImagesT, "banner">>,
-  ) {}
+    b64_image: string,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
 
-  async eventUpdateSetAdditionalImages(
+    const updateData: PartialDeep<VibefireEventT> = {};
+    const updateImages: PartialDeep<VibefireEventImagesT> = {};
+
+    const imgPath = await imageManager.eventImageSet(
+      eventId,
+      b64_image,
+      "banner",
+    );
+    updateImages.banner = imgPath;
+    updateData.images = updateImages;
+
+    removeUndef(updateData);
+
+    return await updateEvent(this.faunaClient, {
+      id: eventId,
+      organiserId,
+      ...updateData,
+    });
+  }
+
+  async eventUpdateUploadAdditionalImage(
+    imageManager: ImagesManager,
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    update: Partial<Pick<VibefireEventImagesT, "additional">>,
-  ) {}
+    b64_image: string,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await safeGet(
+      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
+      "Event not found",
+    );
+
+    const updateData: PartialDeep<VibefireEventT> = {};
+    const updateImages: PartialDeep<VibefireEventImagesT> = {
+      additional: e.images?.additional ?? [],
+    };
+    const addi = updateImages.additional;
+    if (!Array.isArray(addi) || addi.length >= 5) {
+      console.error(
+        "Cannot add more than 5 additional images, eventId: " + eventId,
+      );
+      return;
+    }
+
+    const imgPath = await imageManager.eventImageSet(
+      eventId,
+      b64_image,
+      "additional",
+    );
+
+    addi.push(imgPath);
+    updateData.images = updateImages;
+
+    removeUndef(updateData);
+
+    return await updateEvent(this.faunaClient, {
+      id: eventId,
+      organiserId,
+      ...updateData,
+    });
+  }
+
+  async eventUpdateRemoveAdditionalImage(
+    imageManager: ImagesManager,
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    imageKey: string,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await safeGet(
+      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
+      "Event not found",
+    );
+
+    const updateData: PartialDeep<VibefireEventT> = {};
+    const updateImages: PartialDeep<VibefireEventImagesT> = {
+      additional: e.images?.additional ?? [],
+    };
+    const addi = updateImages.additional;
+    if (!Array.isArray(addi) || addi.length === 0) {
+      return;
+    }
+
+    await imageManager.eventImageRemove(imageKey);
+
+    updateImages.additional = addi.filter((i) => i !== imageKey);
+    updateData.images = updateImages;
+
+    removeUndef(updateData);
+
+    return await updateEvent(this.faunaClient, {
+      id: eventId,
+      organiserId,
+      ...updateData,
+    });
+  }
 
   async eventUpdateTimeline(
     userAc: ClerkSignedInAuthContext,
@@ -358,10 +492,21 @@ export class ApiDataQueryManager {
 
     // create management doc based on event type
     let em = Value.Create(VibefireEventManagementSchema);
+
+    em.id = ""; // temporary
     em.eventId = event.id;
-    removeUndef(em);
+    em.organiserId = event.organiserId;
+    em.organiserType = event.organiserType;
+
+    removeUndef(em, false);
+
     // should validate successfully
     em = tbValidator(VibefireEventManagementSchema)(em);
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: id must be unset here.
+    em.id = undefined;
+
     await createEventManagement(this.faunaClient, em);
 
     const updateData: Partial<VibefireEventT> = {

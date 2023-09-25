@@ -3,9 +3,7 @@ main = "src/worker.ts"
 compatibility_date = "2023-05-18"
 workers_dev = false
 
-routes = [
-	{ pattern = "api.vibefire.app", custom_domain = true }
-]
+routes = [{ pattern = "api.vibefire.app", custom_domain = true }]
 
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]
@@ -18,10 +16,10 @@ routes = [
 # class_name = "MyDurableObject"
 
 # # Bucket binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv#bucket
-# [[buckets]]
-# binding = "MY_BUCKET"
-# name = "my-bucket"
-# bucket_id = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+[[r2_buckets]]
+binding = "BUCKET_IMAGES_EU"
+bucket_name = "images-test-eu"
+preview_bucket_name = "images-test-eu-preview"
 
 # # Service binding - For more information: https://developers.cloudflare.com/workers/platform/services
 # [[routes]]

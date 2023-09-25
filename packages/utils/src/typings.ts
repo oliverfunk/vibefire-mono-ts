@@ -16,7 +16,10 @@ export type PartialDeepExceptRequired<T, K extends keyof T> = PartialDeep<
 > &
   Required<Pick<T, K>>;
 
-export const removeUndef = (obj: { [key: string]: unknown }) => {
+export const removeUndef = (
+  obj: { [key: string]: unknown },
+  removeEmpty = true,
+) => {
   for (const key in obj) {
     if (obj[key] === undefined) {
       delete obj[key];
@@ -29,10 +32,9 @@ export const removeUndef = (obj: { [key: string]: unknown }) => {
       } else {
         removeUndef(obj[key] as { [key: string]: unknown });
 
-        // if (Object.keys(obj[key]).length === 0) {
-        //   delete obj[key];
-        // } else {
-        // }
+        if (removeEmpty && Object.keys(obj[key]).length === 0) {
+          delete obj[key];
+        }
       }
     }
   }

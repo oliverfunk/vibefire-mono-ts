@@ -1,9 +1,11 @@
+import { type R2Bucket } from "@cloudflare/workers-types";
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 import {
   getApiDataQueryManager,
   getGoogleMapsManager,
+  getImagesManager,
 } from "@vibefire/managers/api";
 import {
   authRequestWithClerk,
@@ -14,18 +16,7 @@ type ContextProps = {
   auth: ClerkAuthContext;
   googleMapsManager: ReturnType<typeof getGoogleMapsManager>;
   apiDataQueryManager: ReturnType<typeof getApiDataQueryManager>;
-};
-
-const createContextInner = ({
-  auth,
-  googleMapsManager,
-  apiDataQueryManager,
-}: ContextProps) => {
-  return {
-    auth,
-    googleMapsManager,
-    apiDataQueryManager,
-  };
+  imagesManager: ReturnType<typeof getImagesManager>;
 };
 
 export const createContext = async ({
@@ -34,15 +25,17 @@ export const createContext = async ({
   clerkPemString,
   clerkIssuerApiUrl,
   faunaClientKey,
+  bucketImagesEU,
 }: CreateContextOptions) => {
-  return createContextInner({
+  return {
     auth: await authRequestWithClerk(clerkPemString, clerkIssuerApiUrl, req),
     googleMapsManager: getGoogleMapsManager(googleMapsApiKey),
     apiDataQueryManager: getApiDataQueryManager(
       googleMapsApiKey,
       faunaClientKey,
     ),
-  });
+    imagesManager: getImagesManager(bucketImagesEU),
+  } as ContextProps;
 };
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
@@ -51,4 +44,5 @@ export type CreateContextOptions = FetchCreateContextFnOptions & {
   clerkIssuerApiUrl: string;
   faunaClientKey: string;
   supabaseClientKey: string;
+  bucketImagesEU: R2Bucket;
 };

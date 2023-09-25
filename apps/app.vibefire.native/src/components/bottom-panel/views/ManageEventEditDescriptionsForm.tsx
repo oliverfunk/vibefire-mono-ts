@@ -7,11 +7,11 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
 import {
-  BackSaveNextFormButtons,
   LinearRedOrangeView,
   navManageEvent,
   navManageEventClose,
   navManageEventEditLocation,
+  ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";
 
@@ -67,7 +67,6 @@ export const ManageEventEditDescriptionsForm = (props: {
               }
               value={editDetailsEventState?.title}
               placeholder=""
-              // autoFocus={true}
             />
           </View>
         </View>
@@ -94,19 +93,9 @@ export const ManageEventEditDescriptionsForm = (props: {
         </View>
 
         <View className="w-full">
-          <BackSaveNextFormButtons
-            hasEdited={hasEdited}
-            onPressBack={() => {
-              if (
-                currentEventData?.state === undefined ||
-                currentEventData.state === "draft"
-              ) {
-                navManageEventClose();
-                close();
-              } else {
-                navManageEvent(eventId);
-              }
-            }}
+          <ReviewSaveNextFormButtons
+            eventId={eventId}
+            savedEnabled={hasEdited}
             onPressSave={() => {
               if (!hasEdited) {
                 return;
