@@ -11,8 +11,14 @@ export const LocationSelectionMap = (props: {
   currentSelectedPosition?: CoordT;
   onPositionSelected?: (position: CoordT) => void;
   onPositionInfo?: (position: CoordT, addressDescription: string) => void;
+  fixed?: boolean;
 }) => {
-  const { currentSelectedPosition, onPositionInfo, onPositionSelected } = props;
+  const {
+    currentSelectedPosition,
+    onPositionInfo,
+    onPositionSelected,
+    fixed = false,
+  } = props;
 
   const mvRef = useRef<MapView>(null);
   const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
@@ -81,6 +87,12 @@ export const LocationSelectionMap = (props: {
       ref={mvRef}
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
+      zoomEnabled={!fixed}
+      scrollEnabled={!fixed}
+      zoomControlEnabled={false}
+      pitchEnabled={false}
+      toolbarEnabled={false}
+      loadingEnabled={true}
       showsUserLocation={true}
       moveOnMarkerPress
       rotateEnabled={false}

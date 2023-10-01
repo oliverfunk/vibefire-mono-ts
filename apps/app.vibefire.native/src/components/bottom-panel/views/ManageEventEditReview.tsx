@@ -58,7 +58,7 @@ export const ManageEventEditReview = (props: {
 
   return (
     <ScrollViewSheet>
-      <View className="mt-5 flex h-full flex-col items-center space-y-14">
+      <View className="mt-5 flex h-full flex-col items-center space-y-10">
         {/* Heading */}
         <LinearRedOrangeView className="flex-row p-4">
           <View className="w-full bg-black p-4">
@@ -111,6 +111,7 @@ export const ManageEventEditReview = (props: {
                 currentSelectedPosition={
                   (currentEventData?.location?.position as CoordT) ?? undefined
                 }
+                fixed={true}
               />
             </View>
           </View>
@@ -238,9 +239,12 @@ export const ManageEventEditReview = (props: {
               <View className="items-center">
                 <Carousel
                   width={width}
-                  height={width * (3 / 4)}
+                  height={width}
                   loop={false}
                   defaultIndex={0}
+                  panGestureHandlerProps={{
+                    activeOffsetX: [-10, 10],
+                  }}
                   data={currentEventData?.images?.additional?.map(
                     (imgKey) => vfImgUrlDebug(imgKey)!,
                   )}

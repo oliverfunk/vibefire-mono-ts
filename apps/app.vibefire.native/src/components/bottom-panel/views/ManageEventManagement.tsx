@@ -1,8 +1,14 @@
 import { useEffect, useMemo } from "react";
-import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import Carousel from "react-native-reanimated-carousel";
+import {
+  Dimensions,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { DateTime } from "luxon";
-import { type PartialDeep } from "type-fest";
 
 import {
   type VibefireEventManagementT,
@@ -11,6 +17,7 @@ import {
 
 import { EventCard } from "~/components/EventCard";
 import { EventImage } from "~/components/EventImage";
+import { EventTimeline } from "~/components/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
@@ -22,6 +29,7 @@ import {
   navManageEventEditDescription,
   navManageEventEditImages,
   navManageEventEditLocation,
+  navManageEventEditReview,
   navManageEventEditTimes,
   ScrollViewSheet,
 } from "../_shared";
@@ -31,32 +39,149 @@ const _ManagementView = (props: {
   eventManagement: VibefireEventManagementT;
 }) => {
   const { event, eventManagement } = props;
+
   return (
     <ScrollViewSheet>
-      <View className="my-5 flex h-full flex-col items-center space-y-14">
-        {/* Heading */}
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-center text-2xl font-bold text-white">
-              Manage
-            </Text>
-          </View>
-        </LinearRedOrangeView>
+      {/* Heading */}
+      <LinearRedOrangeView className="flex-row p-4">
+        <View className="w-full bg-black p-4">
+          <Text className="text-center text-2xl font-bold text-white">
+            Manage
+          </Text>
+        </View>
+      </LinearRedOrangeView>
 
-        <EventCard
-          eventInfo={{
-            title: event.title,
-            addressDescription: event.location.addressDescription,
-            orgName: "a name",
-            bannerImgURL: "",
-            orgProfileImgURL: "",
-            timeStart: DateTime.fromISO(event.timeStartIsoNTZ, { zone: "utc" }),
-            timeEnd: event.timeEndIsoNTZ
-              ? DateTime.fromISO(event.timeEndIsoNTZ, { zone: "utc" })
-              : undefined,
-          }}
-          onPress={() => {}}
-        />
+      {/* Main col */}
+      <View className="flex-col space-y-5 p-2">
+        {/* Shareability */}
+        <View className="flex-col space-y-2">
+          {(event.visibility === "public" && (
+            <Text>
+              This event is public and can seen on the map by anyone when
+              published.
+            </Text>
+          )) ||
+            (event.visibility === "invite-only" && (
+              <Text>
+                This event is invite-only and can only be seen by those you
+                invite.
+              </Text>
+            )) ||
+            (event.visibility === "link-only" && (
+              <>
+                <Text className="text-lg">
+                  This event is link-only and can be seen by anyone with the
+                  link.
+                </Text>
+                <Pressable
+                  className="flex-row border bg-orange-100"
+                  onPress={() => {
+                    console.log("copy link");
+                  }}
+                >
+                  <View className="items-center justify-center bg-black px-4 py-2">
+                    <FontAwesome5 name="link" size={20} color="white" />
+                  </View>
+                  <View className="inline-block justify-center px-2">
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      selectable={true}
+                      className="text-center text-lg text-black"
+                    >
+                      https://vifr.io/{parseInt(event.id).toString(32)}
+                    </Text>
+                  </View>
+                </Pressable>
+
+                {/* <Text className="text-center">(Tap to copy)</Text> */}
+                {/* Change share btn */}
+                {/* <View className="items-center">
+                <TouchableOpacity
+                  className="items-center rounded-lg bg-black px-4 py-2"
+                  onPress={() => {
+                    navManageEventEditReview(event.id);
+                  }}
+                >
+                  <Text className="text-xl text-white">Make invite-only</Text>
+                </TouchableOpacity>
+              </View> */}
+              </>
+            ))}
+        </View>
+
+        <View className="border-b" />
+
+        {/* Event card */}
+        <View className="flex-col space-y-2">
+          {/* <Text className="text-xl">Event Card (tap to preview)</Text> */}
+          <View>
+            <EventCard
+              eventInfo={{
+                title: event.title,
+                addressDescription: event.location.addressDescription,
+                orgName: "a name",
+                bannerImgURL: "",
+                orgProfileImgURL: "",
+                timeStart: DateTime.fromISO(event.timeStartIsoNTZ, {
+                  zone: "utc",
+                }),
+                timeEnd: event.timeEndIsoNTZ
+                  ? DateTime.fromISO(event.timeEndIsoNTZ, { zone: "utc" })
+                  : undefined,
+              }}
+              onPress={() => {}}
+            />
+          </View>
+          <View className="items-center">
+            <TouchableOpacity
+              className="items-center rounded-lg bg-black px-4 py-2"
+              onPress={() => {
+                navManageEventEditReview(event.id);
+              }}
+            >
+              <Text className="text-xl text-white">Edit details</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View className="border-b" />
+
+        {/* Timeline */}
+        <View className="flex-col">
+          <EventTimeline
+            timelineElements={event.timeline}
+            timeStartIsoNTZ={event.timeStartIsoNTZ}
+            timeEndIsoNTZ={event.timeEndIsoNTZ}
+          />
+        </View>
+        <View className="items-center">
+          <TouchableOpacity
+            className="items-center rounded-lg bg-black px-4 py-2"
+            onPress={() => {
+              navManageEventEditReview(event.id);
+            }}
+          >
+            <Text className="text-xl text-white">Edit timeline</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View className="w-full flex-col items-center justify-center space-y-5 bg-black px-5 py-5">
+        <Text className="text-xl text-white">
+          {event.published
+            ? "To hide this event, tap the button below"
+            : "This event is currently hidden. When you're ready, tap the button below to publish it and make it visible 🔥"}
+        </Text>
+        {event.published ? (
+          <TouchableOpacity className="w-min items-center rounded-lg bg-orange-400 px-6 py-4">
+            <Text className="text-xl font-bold text-white">Hide</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity className="w-min items-center rounded-lg bg-green-400 px-6 py-4">
+            <Text className="text-xl font-bold text-white">Publish</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollViewSheet>
   );

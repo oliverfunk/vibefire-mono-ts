@@ -45,7 +45,7 @@ export const ManageEventEditLocationForm = (props: {
         <LinearRedOrangeView className="flex-row p-4">
           <View className="w-full bg-black p-4">
             <Text className="text-center text-2xl font-bold text-white">
-              Edit event
+              Edit
             </Text>
           </View>
         </LinearRedOrangeView>

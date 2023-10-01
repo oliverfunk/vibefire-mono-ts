@@ -110,7 +110,6 @@ export class ApiDataQueryManager {
       eventId,
       organiserId,
     );
-    console.log("eventId", eventId);
     const eventMang = await getEventManagementFromEventIDByOrganiser(
       this.faunaClient,
       eventId,

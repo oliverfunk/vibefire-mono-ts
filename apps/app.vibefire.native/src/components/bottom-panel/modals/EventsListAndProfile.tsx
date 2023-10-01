@@ -1,21 +1,9 @@
-import { forwardRef, useCallback, useMemo, useRef, type Ref } from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  Text,
-  TouchableOpacity,
-  View,
-  type ViewProps,
-} from "react-native";
+import { forwardRef, useCallback, useMemo, type Ref } from "react";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
-import {
-  BottomSheetModal,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -29,16 +17,7 @@ import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
 import { EventCard } from "~/components/EventCard";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import {
-  LinearRedOrangeView,
-  LoadingSheet,
-  navManageEvent,
-  navManageEventEditDescription,
-  navManageEventEditImages,
-  navManageEventEditLocation,
-  navManageEventEditReview,
-  navManageEventEditTimes,
-} from "../_shared";
+import { LinearRedOrangeView, LoadingSheet, navManageEvent } from "../_shared";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 
 const _Profile = () => {
@@ -86,7 +65,7 @@ const _Profile = () => {
       return (
         <BottomSheetScrollView focusHook={useFocusEffect}>
           <View className="mt-5 flex h-full flex-col items-center space-y-5">
-            <FontAwesome5 name="user-alt" size={150} color="#ee5500" />
+            <FontAwesome5 name="user-alt" size={150} />
             <View className="mx-10 flex-row">
               <Text className="text-center">
                 Sign in to create private events, get invites and share events
@@ -187,7 +166,7 @@ const _EventsList = () => {
 
   const renderItem = useCallback(
     (item: React.Key) => (
-      <View key={item}>
+      <View className="" key={item}>
         <EventCard
           eventInfo={{
             bannerImgURL: "https://picsum.photos/1080/1980",
@@ -218,7 +197,7 @@ const _EventsList = () => {
 
   return (
     <BottomSheetScrollView focusHook={useFocusEffect}>
-      <View className="mx-2 my-2 flex flex-col space-y-4">
+      <View className="flex-col space-y-5 px-2 pb-5">
         {data.map(renderItem)}
       </View>
     </BottomSheetScrollView>
@@ -227,7 +206,7 @@ const _EventsList = () => {
 
 const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => [SEARCH_HANDLE_HEIGHT, "60%"], []);
+  const snapPoints = useMemo(() => [SEARCH_HANDLE_HEIGHT, "80%"], []);
 
   const profileSelected = useAtomValue(profileSelectedAtom);
 

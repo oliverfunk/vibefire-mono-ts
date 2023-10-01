@@ -33,7 +33,7 @@ export const ManageEventCreate = () => {
       <View className="my-5 flex h-full flex-col items-center space-y-10">
         {/* Heading */}
         <View className="mt-5 flex-row">
-          <Text className="text-center text-2xl font-bold">Create event</Text>
+          <Text className="text-center text-2xl font-bold">Create</Text>
         </View>
 
         <LinearRedOrangeView className="flex-row p-4">

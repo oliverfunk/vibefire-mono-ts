@@ -26,7 +26,15 @@ export const StandardImage = ({
 export const EventImage = ({
   source,
   alt,
+  rounded = false,
 }: {
   source: ImageProps["source"];
   alt: ImageProps["alt"];
-}) => <StandardImage cn="aspect-[4/3] w-full" source={source} alt={alt} />;
+  rounded?: boolean;
+}) => (
+  <StandardImage
+    cn={`aspect-[4/4] w-full ${rounded ? "rounded-xl" : ""}`}
+    source={source}
+    alt={alt}
+  />
+);

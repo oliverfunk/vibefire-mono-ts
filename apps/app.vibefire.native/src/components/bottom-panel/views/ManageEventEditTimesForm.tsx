@@ -183,7 +183,7 @@ export const ManageEventEditTimesForm = (props: {
   }, [currentEventFormData]);
 
   const onTimeStartSelect = useCallback(
-    (event: DateTimePickerEvent, selectedDate?: Date) => {
+    (_event: DateTimePickerEvent, selectedDate?: Date) => {
       if (selectedDate) {
         setSelectedFormData((v) => ({
           ...v,
@@ -194,7 +194,7 @@ export const ManageEventEditTimesForm = (props: {
     [],
   );
   const onTimeEndSelect = useCallback(
-    (event: DateTimePickerEvent, selectedDate?: Date) => {
+    (_event: DateTimePickerEvent, selectedDate?: Date) => {
       if (selectedDate) {
         setSelectedFormData((v) => ({
           ...v,
@@ -212,7 +212,7 @@ export const ManageEventEditTimesForm = (props: {
         <LinearRedOrangeView className="flex-row p-4">
           <View className="w-full bg-black p-4">
             <Text className="text-center text-2xl font-bold text-white">
-              Edit event
+              Edit
             </Text>
           </View>
         </LinearRedOrangeView>

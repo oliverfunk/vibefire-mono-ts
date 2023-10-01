@@ -19,7 +19,7 @@ export type VibefireEventOfferT = Static<typeof VibefireEventOfferSchema>;
 export const VibefireEventTimelineElementSchema = t.Object({
   id: t.String(),
   message: t.String(),
-  when: t.String(),
+  timeIsoNTZ: t.String(),
   isNotification: t.Boolean(),
   hasNotified: t.Boolean(),
   linkedPoi: t.Optional(t.String()),

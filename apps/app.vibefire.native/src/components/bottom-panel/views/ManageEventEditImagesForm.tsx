@@ -107,7 +107,7 @@ export const ManageEventEditImagesForm = (props: {
         <LinearRedOrangeView className="flex-row p-4">
           <View className="w-full bg-black p-4">
             <Text className="text-center text-2xl font-bold text-white">
-              Edit event
+              Edit
             </Text>
           </View>
         </LinearRedOrangeView>
@@ -143,7 +143,7 @@ export const ManageEventEditImagesForm = (props: {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              className="aspect-[4/3] w-full items-center justify-center bg-slate-200"
+              className="aspect-[4/4] w-full items-center justify-center bg-slate-200"
               onPress={async () => {
                 const img_b64 = await selectImage();
                 if (!img_b64) {
@@ -167,15 +167,18 @@ export const ManageEventEditImagesForm = (props: {
           <View className="items-center">
             <Carousel
               width={width}
-              height={width * (3 / 4)}
+              height={width}
               defaultIndex={0}
               loop={false}
               data={selectedAdditionalImages}
+              panGestureHandlerProps={{
+                activeOffsetX: [-10, 10],
+              }}
               renderItem={({ index, item }) => {
                 if (item === "") {
                   return (
                     <TouchableOpacity
-                      className="aspect-[4/3] w-full items-center justify-center bg-slate-200"
+                      className="aspect-[4/4] w-full items-center justify-center bg-slate-200"
                       onPress={async () => {
                         const img_b64 = await selectImage();
                         if (!img_b64) {

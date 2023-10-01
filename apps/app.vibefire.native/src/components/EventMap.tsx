@@ -158,6 +158,10 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
+      pitchEnabled={false}
+      zoomControlEnabled={false}
+      toolbarEnabled={false}
+      loadingEnabled={true}
       onRegionChangeComplete={onMapRegionChange}
       moveOnMarkerPress
       rotateEnabled={false}
