@@ -17,7 +17,7 @@ import { styled } from "nativewind";
 
 import { profileSelectedAtom } from "~/atoms";
 
-export const SEARCH_HANDLE_HEIGHT = 75;
+export const SEARCH_HANDLE_HEIGHT = 70;
 
 const StyledBottomSheetTextInput = styled(BottomSheetTextInput);
 
@@ -51,40 +51,42 @@ const SearchHandleComponent = ({
 
   // render
   return (
-    <View className="py-3">
+    <View className="py-2">
       <View className="h-1 w-1/12 self-center rounded-full bg-gray-400" />
-      <View className="mx-4 mt-2 flex flex-row justify-center space-x-2">
-        {/* Search bar */}
-        <StyledBottomSheetTextInput
-          className="h-10 grow rounded-full bg-gray-200 p-2 pl-4"
-          style={{
-            fontSize: 16,
-          }}
-          value={value}
-          textContentType="location"
-          placeholderTextColor="rgba(0, 10, 10, 1)"
-          placeholder="Search for a place"
-          onChange={handleInputChange}
-        />
-        {/* Profile button */}
-        <Pressable
-          className={`h-10 w-10 items-center justify-center rounded-full border ${
-            profileSelected ? "bg-black" : "bg-white"
-          }`}
-          onPress={() => {
-            const showProfile = !profileSelected;
-            setProfileSelected(showProfile);
-            if (showProfile) {
-              expand();
-            }
-          }}
-        >
-          {profileSelected ? (
-            <FontAwesome name="close" size={20} color="white" />
-          ) : (
-            <FontAwesome5 name="user-alt" size={20} color="black" />
-          )}
-        </Pressable>
+      <View className="px-4 py-2">
+        <View className="flex flex-row justify-center space-x-2">
+          {/* Search bar */}
+          <StyledBottomSheetTextInput
+            className="h-10 grow rounded-full bg-gray-200 p-2 pl-4"
+            style={{
+              fontSize: 16,
+            }}
+            value={value}
+            textContentType="location"
+            placeholderTextColor="rgba(0, 10, 10, 1)"
+            placeholder="Search for a place"
+            onChange={handleInputChange}
+          />
+          {/* Profile button */}
+          <Pressable
+            className={`h-10 w-10 items-center justify-center rounded-full border ${
+              profileSelected ? "bg-black" : "bg-white"
+            }`}
+            onPress={() => {
+              const showProfile = !profileSelected;
+              setProfileSelected(showProfile);
+              if (showProfile) {
+                expand();
+              }
+            }}
+          >
+            {profileSelected ? (
+              <FontAwesome name="close" size={20} color="white" />
+            ) : (
+              <FontAwesome5 name="user-alt" size={20} color="black" />
+            )}
+          </Pressable>
+        </View>
       </View>
     </View>
   );
