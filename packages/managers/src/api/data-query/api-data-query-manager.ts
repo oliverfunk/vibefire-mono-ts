@@ -6,6 +6,7 @@ import type { PartialDeep } from "type-fest";
 import {
   VibefireEventManagementSchema,
   VibefireEventSchema,
+  VibefireEventTimelineElementSchema,
   VibefireUserSchema,
   type MapQueryT,
   type VibefireEventImagesT,
@@ -434,14 +435,15 @@ export class ApiDataQueryManager {
     const updateImages: PartialDeep<VibefireEventImagesT> = {
       additional: e.images?.additional ?? [],
     };
-    const addi = updateImages.additional;
-    if (!Array.isArray(addi) || addi.length === 0) {
+
+    const additionalImgs = updateImages.additional;
+    if (!Array.isArray(additionalImgs) || additionalImgs.length === 0) {
       return;
     }
 
     await imageManager.eventImageRemove(imageKey);
 
-    updateImages.additional = addi.filter((i) => i !== imageKey);
+    updateImages.additional = additionalImgs.filter((i) => i !== imageKey);
     updateData.images = updateImages;
 
     removeUndef(updateData);
@@ -456,13 +458,46 @@ export class ApiDataQueryManager {
   async eventUpdateTimeline(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    updateAdd: Pick<VibefireEventTimelineElementT, "when" | "message">[] = [],
-    updateEdit: Pick<
-      VibefireEventTimelineElementT,
-      "id" | "when" | "message"
-    >[] = [],
-    updateRemove: Pick<VibefireEventTimelineElementT, "id">[] = [],
-  ) {}
+    setTimeline: {
+      id: string;
+      timeIsoNTZ: string;
+      message: string;
+    }[] = [],
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await safeGet(
+      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
+      "Event not found",
+    );
+    // could use e to get the timezone to set a notification
+    // also to check if has announced etc. for removed elements
+    // but for now don't need it
+
+    const updateData: PartialDeep<VibefireEventT> = {};
+    const updateTimeline: VibefireEventTimelineElementT[] = [];
+
+    for (const el of setTimeline) {
+      let tle = Value.Create(VibefireEventTimelineElementSchema);
+      tle.id = el.id;
+      tle.timeIsoNTZ = el.timeIsoNTZ;
+      tle.message = el.message;
+      tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
+      updateTimeline.push(tle);
+    }
+
+    updateData.timeline = updateTimeline;
+
+    removeUndef(updateData);
+
+    return await updateEvent(this.faunaClient, {
+      id: eventId,
+      organiserId,
+      ...updateData,
+    });
+  }
 
   async eventUpdateTimelineLinkPOI(
     userAc: ClerkSignedInAuthContext,

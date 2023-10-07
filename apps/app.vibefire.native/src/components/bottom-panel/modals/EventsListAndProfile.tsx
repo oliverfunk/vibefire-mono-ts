@@ -17,7 +17,8 @@ import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
 import { EventCard } from "~/components/EventCard";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import { LinearRedOrangeView, LoadingSheet, navManageEvent } from "../_shared";
+import { navManageEvent } from "~/nav";
+import { LinearRedOrangeView, LoadingSheet } from "../_shared";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 
 const _Profile = () => {

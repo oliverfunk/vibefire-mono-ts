@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import DateTimePicker, {
-  type DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import { type PartialDeep } from "type-fest";
@@ -12,136 +10,19 @@ import { type PartialDeep } from "type-fest";
 import { type VibefireEventT } from "@vibefire/models";
 import { nowAsUTC } from "@vibefire/utils";
 
+import { PlatformSelect } from "~/components/PlatformSelect";
+import {
+  TimeSelectionAndDisplayAnd,
+  TimeSelectionAndDisplayIos,
+} from "~/components/TimeSelection";
 import { trpc } from "~/apis/trpc-client";
+import { navManageEventEditImages } from "~/nav";
 import {
   ErrorSheet,
   LinearRedOrangeView,
-  navManageEventEditImages,
-  navManageEventEditLocation,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";
-
-const PlatformSelect = (props: {
-  android?: JSX.Element;
-  ios?: JSX.Element;
-}) => {
-  const { android, ios } = props;
-  switch (Platform.OS) {
-    case "android":
-      return android;
-    case "ios":
-      return ios;
-    default:
-      throw new Error(`Platform not supported: ${Platform.OS}`);
-  }
-};
-
-const _TimeSelectionAndDisplayIos = (props: {
-  currentDate: Date;
-  onChange?: (event: DateTimePickerEvent, date?: Date) => void;
-}) => {
-  const { currentDate, onChange } = props;
-
-  return (
-    <>
-      <DateTimePicker
-        value={currentDate}
-        mode={"date"}
-        timeZoneOffsetInMinutes={0}
-        is24Hour={true}
-        onChange={onChange}
-        minuteInterval={15}
-        maximumDate={new Date(2030, 1, 1)}
-        minimumDate={new Date(2020, 1, 1)}
-      />
-      <DateTimePicker
-        value={currentDate}
-        mode={"time"}
-        timeZoneOffsetInMinutes={0}
-        minuteInterval={15}
-        is24Hour={true}
-        onChange={onChange}
-      />
-    </>
-  );
-};
-
-const _TimeSelectionAndDisplayAnd = (props: {
-  currentDate: Date;
-  onChange: (event: DateTimePickerEvent, date?: Date) => void;
-}) => {
-  const { currentDate, onChange } = props;
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-
-  const dt = useMemo(
-    () => DateTime.fromJSDate(currentDate, { zone: "utc" }),
-    [currentDate],
-  );
-
-  return (
-    <>
-      <TouchableOpacity
-        className="rounded-lg bg-gray-200 px-4 py-1"
-        onPress={() => {
-          setShowDatePicker(true);
-        }}
-      >
-        <Text className="text-lg text-black">
-          {showDatePicker && (
-            <DateTimePicker
-              value={currentDate}
-              mode={"date"}
-              timeZoneOffsetInMinutes={0}
-              is24Hour={true}
-              onChange={(event, date) => {
-                setShowDatePicker(false);
-                onChange(event, date);
-              }}
-              onError={(_) => {
-                setShowDatePicker(false);
-              }}
-              minuteInterval={15}
-              maximumDate={new Date(2030, 1, 1)}
-              minimumDate={new Date(2020, 1, 1)}
-            />
-          )}
-          {dt.toLocaleString(DateTime.DATE_MED)}
-        </Text>
-      </TouchableOpacity>
-      <View className="w-3" />
-      <TouchableOpacity
-        className="rounded-lg bg-gray-200 px-4 py-1"
-        onPress={() => {
-          setShowTimePicker(true);
-        }}
-      >
-        <Text className="text-lg text-black">
-          {showTimePicker && (
-            <DateTimePicker
-              value={currentDate}
-              mode={"time"}
-              display="spinner"
-              timeZoneOffsetInMinutes={0}
-              minuteInterval={15}
-              is24Hour={true}
-              onChange={(event, date) => {
-                setShowTimePicker(false);
-                onChange(event, date);
-              }}
-              onError={(_) => {
-                setShowTimePicker(false);
-              }}
-            />
-          )}
-          {dt.toLocaleString(DateTime.TIME_SIMPLE)}
-        </Text>
-      </TouchableOpacity>
-    </>
-  );
-};
 
 export const ManageEventEditTimesForm = (props: {
   eventId: string;
@@ -242,13 +123,13 @@ export const ManageEventEditTimesForm = (props: {
           <View className="mx-4 flex-row items-center py-2">
             <PlatformSelect
               android={
-                <_TimeSelectionAndDisplayAnd
+                <TimeSelectionAndDisplayAnd
                   currentDate={new Date(selectedFormData.timeStartIsoNTZ)}
                   onChange={onTimeStartSelect}
                 />
               }
               ios={
-                <_TimeSelectionAndDisplayIos
+                <TimeSelectionAndDisplayIos
                   currentDate={new Date(selectedFormData.timeStartIsoNTZ)}
                   onChange={onTimeStartSelect}
                 />
@@ -263,13 +144,13 @@ export const ManageEventEditTimesForm = (props: {
             <View className="mx-4 flex-row items-center py-2">
               <PlatformSelect
                 android={
-                  <_TimeSelectionAndDisplayAnd
+                  <TimeSelectionAndDisplayAnd
                     currentDate={new Date(selectedFormData.timeEndIsoNTZ)}
                     onChange={onTimeEndSelect}
                   />
                 }
                 ios={
-                  <_TimeSelectionAndDisplayIos
+                  <TimeSelectionAndDisplayIos
                     currentDate={new Date(selectedFormData.timeEndIsoNTZ)}
                     onChange={onTimeEndSelect}
                   />

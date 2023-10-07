@@ -6,11 +6,18 @@ import { ManageEventEditDescriptionsForm } from "./ManageEventEditDescriptionsFo
 import { ManageEventEditImagesForm } from "./ManageEventEditImagesForm";
 import { ManageEventEditLocationForm } from "./ManageEventEditLocationForm";
 import { ManageEventEditReview } from "./ManageEventEditReview";
+import { ManageEventEditTimeline } from "./ManageEventEditTimeline";
 import { ManageEventEditTimesForm } from "./ManageEventEditTimesForm";
 
 export const ManageEventEdit = (props: {
   eventId: string;
-  formSelect: "description" | "location" | "times" | "images" | "review";
+  formSelect:
+    | "description"
+    | "location"
+    | "times"
+    | "images"
+    | "review"
+    | "timeline";
 }) => {
   const { eventId, formSelect } = props;
   const eventForEdit = trpc.events.eventForEdit.useQuery({
@@ -60,6 +67,14 @@ export const ManageEventEdit = (props: {
         case "review":
           return (
             <ManageEventEditReview
+              eventId={eventId}
+              currentEventData={eventData}
+              dataRefetch={eventForEdit.refetch}
+            />
+          );
+        case "timeline":
+          return (
+            <ManageEventEditTimeline
               eventId={eventId}
               currentEventData={eventData}
               dataRefetch={eventForEdit.refetch}

@@ -7,10 +7,9 @@ import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
+import { navManageEventEditTimes } from "~/nav";
 import {
   LinearRedOrangeView,
-  navManageEventEditDescription,
-  navManageEventEditTimes,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";

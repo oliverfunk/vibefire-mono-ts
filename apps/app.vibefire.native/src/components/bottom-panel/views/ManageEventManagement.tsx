@@ -1,12 +1,4 @@
-import { useEffect, useMemo } from "react";
-import {
-  Dimensions,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { DateTime } from "luxon";
 
@@ -16,21 +8,17 @@ import {
 } from "@vibefire/models";
 
 import { EventCard } from "~/components/EventCard";
-import { EventImage } from "~/components/EventImage";
 import { EventTimeline } from "~/components/EventTimeline";
-import { LocationSelectionMap } from "~/components/LocationSelectionMap";
-import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
+import {
+  navManageEventEditReview,
+  navManageEventEditTimeline,
+  navViewEvent,
+} from "~/nav";
 import {
   ErrorSheet,
   LinearRedOrangeView,
   LoadingSheet,
-  navManageEvent,
-  navManageEventEditDescription,
-  navManageEventEditImages,
-  navManageEventEditLocation,
-  navManageEventEditReview,
-  navManageEventEditTimes,
   ScrollViewSheet,
 } from "../_shared";
 
@@ -130,7 +118,9 @@ const _ManagementView = (props: {
                   ? DateTime.fromISO(event.timeEndIsoNTZ, { zone: "utc" })
                   : undefined,
               }}
-              onPress={() => {}}
+              onPress={() => {
+                navViewEvent(event.id);
+              }}
             />
           </View>
           <View className="items-center">
@@ -154,27 +144,30 @@ const _ManagementView = (props: {
             timeStartIsoNTZ={event.timeStartIsoNTZ}
             timeEndIsoNTZ={event.timeEndIsoNTZ}
           />
+          <View className="items-center">
+            <TouchableOpacity
+              className="items-center rounded-lg bg-black px-4 py-2"
+              onPress={() => {
+                navManageEventEditTimeline(event.id);
+              }}
+            >
+              <Text className="text-xl text-white">Edit timeline</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View className="items-center">
-          <TouchableOpacity
-            className="items-center rounded-lg bg-black px-4 py-2"
-            onPress={() => {
-              navManageEventEditReview(event.id);
-            }}
-          >
-            <Text className="text-xl text-white">Edit timeline</Text>
-          </TouchableOpacity>
-        </View>
+
+        {/* Adds the right spacing for the message/btn below */}
+        <View />
       </View>
 
-      <View className="w-full flex-col items-center justify-center space-y-5 bg-black px-5 py-5">
+      <View className="flex-col items-center justify-center space-y-5 bg-black px-5 py-5">
         <Text className="text-xl text-white">
           {event.published
             ? "To hide this event, tap the button below"
             : "This event is currently hidden. When you're ready, tap the button below to publish it and make it visible 🔥"}
         </Text>
         {event.published ? (
-          <TouchableOpacity className="w-min items-center rounded-lg bg-orange-400 px-6 py-4">
+          <TouchableOpacity className="w-min items-center rounded-lg bg-red-400 px-6 py-4">
             <Text className="text-xl font-bold text-white">Hide</Text>
           </TouchableOpacity>
         ) : (
@@ -203,6 +196,7 @@ export const ManageEventManagement = (props: { eventId: string }) => {
         <_ManagementView
           event={eventForManagement.data.event}
           eventManagement={eventForManagement.data.eventManagement}
+          // dataRefetch={eventForManagement.refetch}
         />
       );
   }

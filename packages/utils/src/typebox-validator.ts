@@ -51,10 +51,11 @@ export const tbCompiledValidator = <S extends TSchema>(check: TypeCheck<S>) => {
 export const tbValidator = <S extends TSchema>(
   schema: S,
   unionDiscriminantKey: string = "type",
+  isUnion: boolean = false,
 ) => {
   return (value: unknown) => {
     let sch: TSchema = schema;
-    if (schema[Kind] === "Union") {
+    if (isUnion && schema[Kind] === "Union") {
       const discriminantValue: unknown = (value as Record<string, unknown>)[
         unionDiscriminantKey
       ];

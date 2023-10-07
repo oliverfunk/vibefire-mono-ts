@@ -1,43 +1,17 @@
-import { on } from "events";
-import React, { type ComponentType } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   type ViewProps,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useFocusEffect } from "@react-navigation/native";
 
-export const navManageEventEditDescription = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,description` });
-};
-export const navManageEventEditLocation = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,location` });
-};
-export const navManageEventEditTimes = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,times` });
-};
-export const navManageEventEditImages = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,images` });
-};
-export const navManageEventEditReview = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,review` });
-};
-export const navManageEventCreate = () => {
-  router.setParams({ manageEvent: "create" });
-};
-export const navManageEvent = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId}` });
-};
-export const navManageEventClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ manageEvent: undefined });
-};
+import { navManageEventEditReview } from "~/nav";
 
 export const LoadingSheet = () => {
   return (
@@ -58,6 +32,27 @@ export const ErrorSheet = (props: { message: string | undefined }) => {
         </Text>
       </View>
     </BottomSheetView>
+  );
+};
+
+export const FormTextInput = (props: {
+  currentValue: string;
+  onChange: (text: string) => void;
+  placeholder?: string;
+  fontSize?: number;
+}) => {
+  return (
+    <View className="rounded-lg border-4 border-slate-200 bg-white">
+      <TextInput
+        className="p-2"
+        multiline={true}
+        style={{ fontSize: props.fontSize ?? 18 }}
+        placeholderTextColor={"#000000FF"}
+        onChangeText={props.onChange}
+        value={props.currentValue}
+        placeholder={props.placeholder}
+      />
+    </View>
   );
 };
 
