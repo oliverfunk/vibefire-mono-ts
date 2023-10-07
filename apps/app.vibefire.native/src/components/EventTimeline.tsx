@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import Timeline from "react-native-timeline-flatlist";
+import _ from "lodash";
 
 import { type VibefireEventTimelineElementT } from "@vibefire/models";
 import { isoNTZToDateTime, MONTH_DATE_TIME_LB_FORMAT } from "@vibefire/utils";
@@ -19,26 +20,45 @@ export const EventTimeline = (props: {
   } = props;
 
   const data = useMemo(() => {
-    const rtn = [];
+    let rtn = [];
     rtn.push({
+      ts: isoNTZToDateTime(timeStartIsoNTZ).toUnixInteger(),
       time: isoNTZToDateTime(timeStartIsoNTZ).toFormat(
         MONTH_DATE_TIME_LB_FORMAT,
       ),
       title: "Start",
+      dotColor: undefined,
     });
-    timelineElements.map((element) => ({
-      time: isoNTZToDateTime(element.timeIsoNTZ).toFormat(
-        MONTH_DATE_TIME_LB_FORMAT,
-      ),
-      title: element.message,
-    }));
-    rtn.push({
-      time: timeEndIsoNTZ
-        ? isoNTZToDateTime(timeEndIsoNTZ).toFormat(MONTH_DATE_TIME_LB_FORMAT)
-        : "",
-      title: "End",
-      dotColor: timeEndIsoNTZ ? "white" : "orange",
-    });
+    timelineElements.forEach((element) =>
+      rtn.push({
+        ts: isoNTZToDateTime(element.timeIsoNTZ).toUnixInteger(),
+        time: isoNTZToDateTime(element.timeIsoNTZ).toFormat(
+          MONTH_DATE_TIME_LB_FORMAT,
+        ),
+        title: element.message,
+        dotColor: undefined,
+      }),
+    );
+    if (timeEndIsoNTZ) {
+      rtn.push({
+        ts: isoNTZToDateTime(timeEndIsoNTZ).toUnixInteger(),
+        time: isoNTZToDateTime(timeEndIsoNTZ).toFormat(
+          MONTH_DATE_TIME_LB_FORMAT,
+        ),
+        title: "End",
+        dotColor: "white",
+      });
+      rtn = _.sortBy(rtn, ["ts"]);
+    } else {
+      rtn = _.sortBy(rtn, ["ts"]);
+      rtn.push({
+        time: "",
+        title: "End",
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        dotColor: "orange",
+      });
+    }
     return rtn;
   }, [timelineElements, timeStartIsoNTZ, timeEndIsoNTZ]);
 

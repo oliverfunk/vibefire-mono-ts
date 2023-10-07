@@ -17,12 +17,12 @@ export const VibefireEventOfferSchema = t.Object({
 export type VibefireEventOfferT = Static<typeof VibefireEventOfferSchema>;
 
 export const VibefireEventTimelineElementSchema = t.Object({
-  id: t.String(),
-  message: t.String(),
-  timeIsoNTZ: t.String(),
-  isNotification: t.Boolean(),
-  hasNotified: t.Boolean(),
-  linkedPoi: t.Optional(t.String()),
+  id: t.String({ default: undefined }),
+  message: t.String({ default: undefined }),
+  timeIsoNTZ: t.String({ default: undefined }),
+  isNotification: t.Boolean({ default: false }),
+  hasNotified: t.Boolean({ default: false }),
+  linkedPoi: t.Optional(t.String({ default: undefined })),
 });
 export type VibefireEventTimelineElementT = Static<
   typeof VibefireEventTimelineElementSchema

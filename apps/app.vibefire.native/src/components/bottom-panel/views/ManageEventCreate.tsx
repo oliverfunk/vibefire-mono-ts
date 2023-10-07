@@ -3,12 +3,8 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
-import {
-  LinearRedOrangeView,
-  navManageEventClose,
-  navManageEventEditDescription,
-  ScrollViewSheet,
-} from "../_shared";
+import { navManageEventClose, navManageEventEditDescription } from "~/nav";
+import { LinearRedOrangeView, ScrollViewSheet } from "../_shared";
 
 export const ManageEventCreate = () => {
   const { close } = useBottomSheet();

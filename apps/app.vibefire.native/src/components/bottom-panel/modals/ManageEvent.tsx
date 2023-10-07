@@ -3,7 +3,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
-import { LoadingSheet, navManageEventClose } from "../_shared";
+import { navManageEventClose } from "~/nav";
+import { LoadingSheet } from "../_shared";
 import { ManageEventCreate } from "../views/ManageEventCreate";
 import { ManageEventEdit } from "../views/ManageEventEdit";
 import { ManageEventManagement } from "../views/ManageEventManagement";
@@ -20,7 +21,13 @@ type ManageEventViewCreate = {
 type ManageEventViewEdit = {
   state: "edit";
   eventId: string;
-  formSelect: "description" | "location" | "times" | "images" | "review";
+  formSelect:
+    | "description"
+    | "location"
+    | "times"
+    | "images"
+    | "review"
+    | "timeline";
 };
 type ManageEventViewManage = {
   state: "manage";
@@ -59,7 +66,8 @@ const _ViewControl = (props: { manageSelect?: string }) => {
         formSelect === "location" ||
         formSelect === "times" ||
         formSelect === "images" ||
-        formSelect === "review"
+        formSelect === "review" ||
+        formSelect === "timeline"
       ) {
         setViewState({ state: "edit", eventId: eventIdOrCreate, formSelect });
       } else {

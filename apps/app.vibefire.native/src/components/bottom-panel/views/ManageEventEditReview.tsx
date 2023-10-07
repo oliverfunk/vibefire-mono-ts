@@ -11,14 +11,13 @@ import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
 import {
-  LinearRedOrangeView,
   navManageEvent,
   navManageEventEditDescription,
   navManageEventEditImages,
   navManageEventEditLocation,
   navManageEventEditTimes,
-  ScrollViewSheet,
-} from "../_shared";
+} from "~/nav";
+import { LinearRedOrangeView, ScrollViewSheet } from "../_shared";
 
 export const ManageEventEditReview = (props: {
   eventId: string;
@@ -279,8 +278,8 @@ export const ManageEventEditReview = (props: {
           </View>
         </View>
 
-        <View className="w-full flex-col items-center justify-center space-y-5 bg-black px-5 py-5">
-          <Text className="text-center text-xl text-white">
+        <View className="w-full flex-col items-center space-y-5 bg-black px-5 py-5">
+          <Text className="text-xl text-white">
             {(readyState === "draft" &&
               "Get your event ready by setting a title and description, the location and starting time and adding a banner image.") ||
               (readyState === "now-ready" &&

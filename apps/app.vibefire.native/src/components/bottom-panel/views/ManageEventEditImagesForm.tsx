@@ -11,10 +11,9 @@ import { type VibefireEventT } from "@vibefire/models";
 import { EventImage } from "~/components/EventImage";
 import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
+import { navManageEventEditReview } from "~/nav";
 import {
   LinearRedOrangeView,
-  navManageEventEditReview,
-  navManageEventEditTimes,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";

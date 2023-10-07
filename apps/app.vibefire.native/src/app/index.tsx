@@ -9,7 +9,6 @@ const Home = () => {
     eventId?: string;
     orgId?: string;
     manageEvent?: string;
-    mp?: string;
   }>();
 
   console.log("routing params");

@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
 import _ from "lodash";
 
 import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
+import { navManageEventEditLocation } from "~/nav";
 import {
   LinearRedOrangeView,
-  navManageEvent,
-  navManageEventClose,
-  navManageEventEditLocation,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
 } from "../_shared";
@@ -21,8 +18,6 @@ export const ManageEventEditDescriptionsForm = (props: {
   dataRefetch: () => void;
 }) => {
   const { eventId, currentEventData, dataRefetch } = props;
-
-  const { close } = useBottomSheet();
 
   const [editDetailsEventState, setEditDetailsEventState] =
     useState(currentEventData);
