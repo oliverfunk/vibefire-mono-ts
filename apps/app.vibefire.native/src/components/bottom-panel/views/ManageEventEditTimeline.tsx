@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import _ from "lodash";
+import _, { set } from "lodash";
 import { type PartialDeep } from "type-fest";
 
 import {
@@ -34,15 +34,16 @@ const _TimelineElementView = (props: {
   timeIsoNTZ: string;
   message: string;
   onRemove: () => void;
+  onMessageEdit: (message: string) => void;
 }) => {
-  const { timeIsoNTZ, message, onRemove } = props;
+  const { timeIsoNTZ, message, onRemove, onMessageEdit } = props;
   return (
     <View className="flex-row items-center space-x-5">
       <View className="flex-none rounded-lg bg-slate-200 p-2">
         <Text className="text-lg">{timeIsoNTZ}</Text>
       </View>
       <View className="flex-1">
-        <FormTextInput currentValue={message} onChange={() => {}} />
+        <FormTextInput currentValue={message} onChange={onMessageEdit} />
       </View>
       <View className="flex-none pr-1">
         <TouchableOpacity
@@ -56,19 +57,22 @@ const _TimelineElementView = (props: {
   );
 };
 
-const _TimelineElementAdd = (props: { timeStartIsoNTZ: string }) => {
-  const { timeStartIsoNTZ } = props;
+const _TimelineElementAdd = (props: {
+  timeStartIsoNTZ: string;
+  onAdd: (timeIsoNTZ: string, message: string) => void;
+}) => {
+  const { timeStartIsoNTZ, onAdd } = props;
 
   const [message, setMessage] = useState("");
   const [selectedTimeIsoNTZ, setSelectedTimeIsoNTZ] =
     useState<string>(timeStartIsoNTZ);
 
   const hasEdited = useMemo(() => {
-    return !_.isEqual(
-      { t: selectedTimeIsoNTZ, m: message },
-      { t: timeStartIsoNTZ, m: "" },
-    );
-  }, [message, selectedTimeIsoNTZ, timeStartIsoNTZ]);
+    if (message === "" || message.length < 2) {
+      return false;
+    }
+    return true;
+  }, [message]);
 
   return (
     <View className="flex-col ">
@@ -88,7 +92,7 @@ const _TimelineElementAdd = (props: { timeStartIsoNTZ: string }) => {
             }
             ios={
               <TimeSelectionAndDisplayIos
-                currentDate={isoNTZToDateTime(props.timeStartIsoNTZ).toJSDate()}
+                currentDate={isoNTZToDateTime(selectedTimeIsoNTZ).toJSDate()}
                 onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
                   if (selectedDate) {
                     setSelectedTimeIsoNTZ(selectedDate.toISOString());
@@ -115,7 +119,11 @@ const _TimelineElementAdd = (props: { timeStartIsoNTZ: string }) => {
       <View className="pt-4">
         <TouchableOpacity
           className={`rounded-lg ${hasEdited ? "bg-black" : "bg-slate-200"}`}
-          onPress={() => {}}
+          onPress={() => {
+            onAdd(selectedTimeIsoNTZ, message);
+            setMessage("");
+            setSelectedTimeIsoNTZ(timeStartIsoNTZ);
+          }}
         >
           <Text
             className={`py-2 text-center text-lg ${
@@ -220,9 +228,19 @@ export const ManageEventEditTimeline = (props: {
               <_TimelineElementView
                 timeIsoNTZ={tl.timeStr}
                 message={tl.message}
+                onMessageEdit={(message) => {
+                  setSelectedEventTimeline((prev) => {
+                    return prev.map((preTle) => {
+                      if (preTle.id === tl.id) {
+                        return { ...preTle, message };
+                      }
+                      return preTle;
+                    });
+                  });
+                }}
                 onRemove={() => {
                   setSelectedEventTimeline((prev) => {
-                    return _.remove(prev, (v) => v.id !== tl.id);
+                    return _.remove(prev, (preTle) => preTle.id !== tl.id);
                   });
                 }}
               />
@@ -234,6 +252,20 @@ export const ManageEventEditTimeline = (props: {
         <View>
           <_TimelineElementAdd
             timeStartIsoNTZ={currentEventFormData.timeStartIsoNTZ}
+            onAdd={(timeIsoNTZ, message) => {
+              setSelectedEventTimeline((prev) => {
+                return [
+                  ...prev,
+                  {
+                    id: nowAsUTC().toUnixInteger().toString(),
+                    timeIsoNTZ,
+                    message,
+                    isNotification: false,
+                    hasNotified: false,
+                  },
+                ];
+              });
+            }}
           />
         </View>
 

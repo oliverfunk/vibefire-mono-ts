@@ -14,12 +14,10 @@ export const apiBaseUrl = () => {
 };
 
 export const vfImgUrl = (
-  eventId: string,
   imageKey: string,
-  belonging: "banner" | "additional" | "icon",
   bucket: "images-eu" | "images-us",
 ) => {
-  return `https://${bucket}.vibefire.app/${eventId}/${belonging}/${imageKey}`;
+  return `https://${bucket}.vibefire.app/${imageKey}`;
 };
 
 export const vfImgUrlDebug = (imageKey?: string) => {

@@ -219,7 +219,7 @@ export const ManageEventEditReview = (props: {
             <Text className="mx-5 text-lg">Banner image</Text>
             {currentEventData?.images?.banner ? (
               <EventImage
-                source={vfImgUrlDebug(currentEventData?.images?.banner)}
+                vfImgKey={currentEventData?.images?.banner}
                 alt="Event Banner"
               />
             ) : (
@@ -244,13 +244,11 @@ export const ManageEventEditReview = (props: {
                   panGestureHandlerProps={{
                     activeOffsetX: [-10, 10],
                   }}
-                  data={currentEventData?.images?.additional?.map(
-                    (imgKey) => vfImgUrlDebug(imgKey)!,
-                  )}
-                  renderItem={({ index, item }) => {
+                  data={currentEventData?.images?.additional}
+                  renderItem={({ index, item: addImgKey }) => {
                     return (
                       <EventImage
-                        source={item}
+                        vfImgKey={addImgKey}
                         alt={`Additional Image ${index}`}
                       />
                     );

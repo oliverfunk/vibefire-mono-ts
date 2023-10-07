@@ -123,8 +123,8 @@ export const ManageEventEditImagesForm = (props: {
           </View>
         )}
 
-        <View className="w-full flex-col">
-          <Text className="mx-5 text-lg">Banner image</Text>
+        <View className="w-full flex-col space-y-2">
+          <Text className="mx-5 text-lg">Banner image (tap to change):</Text>
           {selectedFormData.banner ? (
             <TouchableOpacity
               onPress={async () => {
@@ -138,7 +138,10 @@ export const ManageEventEditImagesForm = (props: {
                 });
               }}
             >
-              <EventImage source={selectedFormData.banner} alt="Event Banner" />
+              <EventImage
+                vfImgKey={selectedFormData.banner}
+                alt="Event Banner"
+              />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -161,8 +164,8 @@ export const ManageEventEditImagesForm = (props: {
           )}
         </View>
 
-        <View className="w-full flex-col">
-          <Text className="mx-5 text-lg">Additional images</Text>
+        <View className="w-full flex-col space-y-2">
+          <Text className="mx-5 text-lg">Additional images:</Text>
           <View className="items-center">
             <Carousel
               width={width}
@@ -201,7 +204,7 @@ export const ManageEventEditImagesForm = (props: {
                 return (
                   <View className="relative items-center">
                     <EventImage
-                      source={item}
+                      vfImgKey={item}
                       alt={`Additional Image ${index}`}
                     />
                     <TouchableOpacity

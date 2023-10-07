@@ -23,6 +23,8 @@ export const removeUndef = (
   for (const key in obj) {
     if (obj[key] === undefined) {
       delete obj[key];
+    } else if (obj[key] === null) {
+      // leave it
     } else if (typeof obj[key] === "object") {
       if (Array.isArray(obj[key])) {
         // filter out null, undefined, and empty string from the array

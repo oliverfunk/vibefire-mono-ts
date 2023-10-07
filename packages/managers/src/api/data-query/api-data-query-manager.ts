@@ -277,7 +277,7 @@ export class ApiDataQueryManager {
     timeEndIsoNTZ?: string | null,
     organisationId?: string,
   ) {
-    if (!(timeStartIsoNTZ && timeEndIsoNTZ !== undefined)) {
+    if (!timeStartIsoNTZ || timeEndIsoNTZ === undefined) {
       return { id: eventId };
     }
 

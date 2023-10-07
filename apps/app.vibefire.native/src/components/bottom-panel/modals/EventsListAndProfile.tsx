@@ -170,7 +170,7 @@ const _EventsList = () => {
       <View className="" key={item}>
         <EventCard
           eventInfo={{
-            bannerImgURL: "https://picsum.photos/1080/1980",
+            bannerImgKey: "https://picsum.photos/1080/1980",
             title: "Event Title",
             orgName: "Org Name",
             orgProfileImgURL: "https://picsum.photos/200/300",

@@ -212,6 +212,8 @@ export const ManageEventEditTimesForm = (props: {
                 }
               }
               setFormErrors([]);
+              console.log("updateTimes.mutate");
+              console.log(JSON.stringify(selectedFormData, null, 2));
               updateTimes.mutate({
                 eventId,
                 timeStartIsoNTZ: selectedFormData?.timeStartIsoNTZ,

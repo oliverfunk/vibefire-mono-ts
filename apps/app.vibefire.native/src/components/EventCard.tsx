@@ -17,7 +17,7 @@ type EventCardProps = {
     addressDescription: string;
     timeStart: DateTime;
     timeEnd?: DateTime;
-    bannerImgURL: string;
+    bannerImgKey: string;
   };
   onPress: (event: GestureResponderEvent) => void;
 };
@@ -27,7 +27,7 @@ export const EventCard = ({ eventInfo: event, onPress }: EventCardProps) => {
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
       <EventImage
         rounded={true}
-        source={event.bannerImgURL}
+        vfImgKey={event.bannerImgKey}
         alt="Event Banner"
       />
 
