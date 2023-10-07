@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { Image, type ImageProps } from "expo-image";
+
+import { vfImgUrl, vfImgUrlDebug } from "~/apis/base-urls";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -24,17 +27,29 @@ export const StandardImage = ({
 );
 
 export const EventImage = ({
-  source,
+  vfImgKey,
   alt,
   rounded = false,
 }: {
-  source: ImageProps["source"];
+  vfImgKey: string;
   alt: ImageProps["alt"];
   rounded?: boolean;
-}) => (
-  <StandardImage
-    cn={`aspect-[4/4] w-full ${rounded ? "rounded-xl" : ""}`}
-    source={source}
-    alt={alt}
-  />
-);
+}) => {
+  const imgKey = useMemo(() => {
+    if (vfImgKey.startsWith("http")) {
+      return vfImgKey;
+    }
+    if (__DEV__) {
+      return vfImgUrlDebug(vfImgKey);
+    }
+    return vfImgUrl(vfImgKey, "images-eu");
+  }, [vfImgKey]);
+
+  return (
+    <StandardImage
+      cn={`aspect-[4/4] w-full ${rounded ? "rounded-xl" : ""}`}
+      source={imgKey}
+      alt={alt}
+    />
+  );
+};

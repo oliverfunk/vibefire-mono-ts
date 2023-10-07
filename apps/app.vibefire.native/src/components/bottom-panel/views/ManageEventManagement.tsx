@@ -101,15 +101,15 @@ const _ManagementView = (props: {
         <View className="border-b" />
 
         {/* Event card */}
-        <View className="flex-col space-y-2">
-          {/* <Text className="text-xl">Event Card (tap to preview)</Text> */}
+        <View className="flex-col space-y-4">
+          <Text className="text-lg font-bold">Event Card (tap to preview)</Text>
           <View>
             <EventCard
               eventInfo={{
                 title: event.title,
                 addressDescription: event.location.addressDescription,
                 orgName: "a name",
-                bannerImgURL: "",
+                bannerImgKey: event.images.banner,
                 orgProfileImgURL: "",
                 timeStart: DateTime.fromISO(event.timeStartIsoNTZ, {
                   zone: "utc",
@@ -138,7 +138,7 @@ const _ManagementView = (props: {
         <View className="border-b" />
 
         {/* Timeline */}
-        <View className="flex-col">
+        <View className="flex-col space-y-2">
           <EventTimeline
             timelineElements={event.timeline}
             timeStartIsoNTZ={event.timeStartIsoNTZ}
