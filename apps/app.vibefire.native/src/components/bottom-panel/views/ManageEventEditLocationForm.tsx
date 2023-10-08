@@ -49,9 +49,9 @@ export const ManageEventEditLocationForm = (props: {
           </View>
         </LinearRedOrangeView>
         {/* Form */}
-        <View className="h-[300] w-full flex-col">
+        <View className=" w-full flex-col">
           <Text className="mx-5 text-lg">Tap to select a location:</Text>
-          <View className="mx-4 border-2 border-slate-200">
+          <View className="mx-4 aspect-[4/4] border-2 border-slate-200">
             <LocationSelectionMap
               currentSelectedPosition={
                 (currentEventData?.location?.position as CoordT) ?? undefined

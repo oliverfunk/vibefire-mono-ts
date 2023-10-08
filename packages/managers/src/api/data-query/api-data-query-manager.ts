@@ -24,6 +24,7 @@ import {
   deleteUser,
   getEventFromIDByOrganiser,
   getEventManagementFromEventIDByOrganiser,
+  getPublishedEventFromID,
   getUserByAid,
   updateEvent,
   updateUserInfo,
@@ -127,6 +128,68 @@ export class ApiDataQueryManager {
     };
   }
 
+  async eventFromIDByOrganiser(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await getEventFromIDByOrganiser(
+      this.faunaClient,
+      eventId,
+      organiserId,
+    );
+    if (!e) {
+      throw new Error("Event not found");
+    }
+    const event = tbValidator(VibefireEventSchema)(e);
+
+    return event;
+  }
+
+  async publishedEventForExternalView(userId: string, eventId: string) {
+    console.log("event id", JSON.stringify(eventId, null, 2));
+    const e = await getPublishedEventFromID(this.faunaClient, eventId);
+    if (!e) {
+      throw new Error("Event unavailable [1]");
+    }
+    const event = tbValidator(VibefireEventSchema)(e);
+
+    const em = await getEventManagementFromEventIDByOrganiser(
+      this.faunaClient,
+      eventId,
+      event.organiserId,
+    );
+    if (!em) {
+      throw new Error("Event management unavailable");
+    }
+    const eventManagement = tbValidator(VibefireEventManagementSchema)(em);
+
+    if (event.organiserType === "organisation") {
+      // get the organisation profile data
+    } else if (event.organiserType === "user") {
+      // get the relevant user profile data
+    } else {
+      throw new Error("Unknown organiserType");
+    }
+
+    if (e.visibility === "invite-only") {
+      if (userId === "anon") {
+        throw new Error("User not signed in");
+      }
+      // check if the user has been added
+      const rs = eventManagement.invited.find((i) => i === userId);
+      if (!rs) {
+        throw new Error("Event unavailable [2]");
+      }
+    }
+
+    return event;
+  }
+
   async eventCreate(
     userAc: ClerkSignedInAuthContext,
     title: VibefireEventT["title"],
@@ -177,7 +240,7 @@ export class ApiDataQueryManager {
     }
     if (description) {
       description = tbValidator(VibefireEventSchema.properties.description)(
-        description,
+        description.trim(),
       );
       updateData.description = description;
     }
@@ -255,7 +318,7 @@ export class ApiDataQueryManager {
     if (addressDescription) {
       updateLocation.addressDescription = tbValidator(
         VibefireEventSchema.properties.location.properties.addressDescription,
-      )(addressDescription);
+      )(addressDescription.trim());
     }
 
     updateData.location = updateLocation;
@@ -483,7 +546,7 @@ export class ApiDataQueryManager {
       let tle = Value.Create(VibefireEventTimelineElementSchema);
       tle.id = el.id;
       tle.timeIsoNTZ = el.timeIsoNTZ;
-      tle.message = el.message;
+      tle.message = el.message.trim();
       tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
       updateTimeline.push(tle);
     }

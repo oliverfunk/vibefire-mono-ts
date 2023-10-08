@@ -13,7 +13,7 @@ import { trpc } from "~/apis/trpc-client";
 import {
   navManageEventEditReview,
   navManageEventEditTimeline,
-  navViewEvent,
+  navViewEventAsPreview,
 } from "~/nav";
 import {
   ErrorSheet,
@@ -119,7 +119,7 @@ const _ManagementView = (props: {
                   : undefined,
               }}
               onPress={() => {
-                navViewEvent(event.id);
+                navViewEventAsPreview(event.id);
               }}
             />
           </View>

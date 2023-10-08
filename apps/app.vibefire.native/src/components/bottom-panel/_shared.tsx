@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   ActivityIndicator,
   Text,
@@ -8,7 +8,12 @@ import {
   type ViewProps,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { navManageEventEditReview } from "~/nav";
@@ -32,6 +37,20 @@ export const ErrorSheet = (props: { message: string | undefined }) => {
         </Text>
       </View>
     </BottomSheetView>
+  );
+};
+
+export const useSheetBackdrop = () => {
+  return useCallback(
+    (props: BottomSheetDefaultBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={0}
+        appearsOnIndex={1}
+        pressBehavior={"collapse"}
+      />
+    ),
+    [],
   );
 };
 
