@@ -103,9 +103,9 @@ export const ManageEventEditReview = (props: {
         {/* Location */}
         <View className="w-full flex-col space-y-5">
           {/* For some reason, spacing isn't working */}
-          <View className="mb-5 h-[300] flex-col">
+          <View className="mb-5 flex-col">
             <Text className="mx-5 text-lg">Event location</Text>
-            <View className="mx-4 border-2 border-slate-200">
+            <View className="mx-4 aspect-[4/4] border-2 border-slate-200">
               <LocationSelectionMap
                 currentSelectedPosition={
                   (currentEventData?.location?.position as CoordT) ?? undefined

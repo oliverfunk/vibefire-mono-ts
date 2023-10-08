@@ -93,13 +93,17 @@ export const updateEvent = async (
   return res;
 };
 
-export const getPublishedPublicEventFromID = async (
+export const getPublishedEventFromID = async (
   faunaClient: Client,
   eventId: string,
 ) => {
+  // this method is somewhat insecure because it would allow anyone to get the event
+  // even if it's invite-only
+  const _stateField: keyof VibefireEventT = "state";
+  const _publishedField: keyof VibefireEventT = "published";
   const q = fql`
     let e = Events.byId(${eventId})
-    if (e?.visibility == "public" && e?.published == true) {
+    if (e?.state == "ready" && e?.published == true) {
       e
     } else {
       null

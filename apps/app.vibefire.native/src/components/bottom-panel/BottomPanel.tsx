@@ -40,7 +40,12 @@ export const BottomPanel = (props: {
   return (
     <BottomSheetModalProvider>
       <EventsListAndProfile ref={mapQueryEventsListSheetRef} />
-      <EventDetails ref={eventDetailsDisplaySheetRef} eventId={props.eventID} />
+      {props.eventID && (
+        <EventDetails
+          ref={eventDetailsDisplaySheetRef}
+          eventQuery={props.eventID}
+        />
+      )}
       <OrgDetails
         ref={orgDetailsDisplaySheetRef}
         organisationId={props.orgID}

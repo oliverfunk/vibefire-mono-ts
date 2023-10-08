@@ -3,6 +3,9 @@ import { router } from "expo-router";
 export const navViewEvent = (eventId: string) => {
   router.setParams({ eventId: eventId });
 };
+export const navViewEventAsPreview = (eventId: string) => {
+  router.setParams({ eventId: `${eventId},preview` });
+};
 export const navViewEventClose = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

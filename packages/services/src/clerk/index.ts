@@ -5,8 +5,8 @@ import {
   type AuthObject,
   type SignedInAuthObject,
   type SignedOutAuthObject,
+  type WebhookEvent,
 } from "@clerk/backend";
-import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
 
 export type ClerkAuthContext = AuthObject;

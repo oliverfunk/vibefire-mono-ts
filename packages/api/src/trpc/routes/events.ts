@@ -65,6 +65,42 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
+  eventForReadyPreview: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as VibefireEventT)
+    .query(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventFromIDByOrganiser(
+        ctx.auth,
+        input.eventId,
+        input.organisationId,
+      );
+    }),
+  eventForExternalView: publicProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+        }),
+      ),
+    )
+    .output((value) => value as VibefireEventT)
+    .query(async ({ ctx, input }) => {
+      let userId = "anon";
+      if (ctx.auth.userId) {
+        userId = ctx.auth.userId;
+      }
+      return await ctx.apiDataQueryManager.publishedEventForExternalView(
+        userId,
+        input.eventId,
+      );
+    }),
   createEvent: authedProcedure
     .input(
       tbValidator(

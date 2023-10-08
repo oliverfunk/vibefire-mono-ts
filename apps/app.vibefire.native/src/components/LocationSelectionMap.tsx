@@ -12,12 +12,14 @@ export const LocationSelectionMap = (props: {
   onPositionSelected?: (position: CoordT) => void;
   onPositionInfo?: (position: CoordT, addressDescription: string) => void;
   fixed?: boolean;
+  onPress?: () => void;
 }) => {
   const {
     currentSelectedPosition,
     onPositionInfo,
     onPositionSelected,
     fixed = false,
+    onPress,
   } = props;
 
   const mvRef = useRef<MapView>(null);
@@ -89,6 +91,7 @@ export const LocationSelectionMap = (props: {
       provider={PROVIDER_GOOGLE}
       zoomEnabled={!fixed}
       scrollEnabled={!fixed}
+      zoomTapEnabled={!fixed}
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
@@ -98,24 +101,36 @@ export const LocationSelectionMap = (props: {
       rotateEnabled={false}
       maxZoomLevel={20}
       minZoomLevel={3}
-      onPress={(event) => {
-        const { latitude, longitude } = event.nativeEvent.coordinate;
-        setSelectedPosition({
-          lat: latitude,
-          lng: longitude,
-        });
-      }}
-      onPoiClick={(event) => {
-        const { latitude, longitude } = event.nativeEvent.coordinate;
-        setSelectedPosition({
-          lat: latitude,
-          lng: longitude,
-        });
-        onPositionSelected?.({
-          lat: latitude,
-          lng: longitude,
-        });
-      }}
+      onPress={
+        onPress
+          ? onPress
+          : fixed
+          ? undefined
+          : (event) => {
+              const { latitude, longitude } = event.nativeEvent.coordinate;
+              setSelectedPosition({
+                lat: latitude,
+                lng: longitude,
+              });
+            }
+      }
+      onPoiClick={
+        onPress
+          ? onPress
+          : fixed
+          ? undefined
+          : (event) => {
+              const { latitude, longitude } = event.nativeEvent.coordinate;
+              setSelectedPosition({
+                lat: latitude,
+                lng: longitude,
+              });
+              onPositionSelected?.({
+                lat: latitude,
+                lng: longitude,
+              });
+            }
+      }
     >
       {selectedPosition && (
         <Marker
