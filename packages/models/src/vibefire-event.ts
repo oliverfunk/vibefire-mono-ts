@@ -49,7 +49,7 @@ export type VibefireEventLocationT = Static<typeof VibefireEventLocationSchema>;
 export const VibefireEventImagesSchema = t.Object(
   {
     banner: t.String(),
-    additional: t.Optional(t.Array(t.String(), { default: [], maxItems: 4 })),
+    additional: t.Array(t.String(), { default: [], maxItems: 4 }),
     customIcon: t.Optional(t.String()),
   },
   { default: undefined },
