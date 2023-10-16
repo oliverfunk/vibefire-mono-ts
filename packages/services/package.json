@@ -8,7 +8,7 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@clerk/backend": "^0.27.0",
+    "@clerk/backend": "^0.29.2",
     "@googlemaps/google-maps-services-js": "^3.3.36",
     "@supabase/supabase-js": "^2.33.1",
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
