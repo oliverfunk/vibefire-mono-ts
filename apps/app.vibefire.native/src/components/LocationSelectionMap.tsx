@@ -89,6 +89,7 @@ export const LocationSelectionMap = (props: {
       ref={mvRef}
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
+      pointerEvents={fixed ? "none" : undefined}
       zoomEnabled={!fixed}
       scrollEnabled={!fixed}
       zoomTapEnabled={!fixed}
