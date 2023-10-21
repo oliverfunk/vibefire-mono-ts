@@ -7,8 +7,8 @@ import { type PartialDeep } from "type-fest";
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { EventImage } from "~/components/EventImage";
+import { EventImageCarousel } from "~/components/EventImageCarousel";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
-import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
 import {
   navManageEvent,
@@ -236,23 +236,9 @@ export const ManageEventEditReview = (props: {
             {currentEventData?.images?.additional &&
             currentEventData?.images?.additional.length > 0 ? (
               <View className="items-center">
-                <Carousel
+                <EventImageCarousel
+                  vfImgKeys={currentEventData?.images?.additional}
                   width={width}
-                  height={width}
-                  loop={false}
-                  defaultIndex={0}
-                  panGestureHandlerProps={{
-                    activeOffsetX: [-10, 10],
-                  }}
-                  data={currentEventData?.images?.additional}
-                  renderItem={({ index, item: addImgKey }) => {
-                    return (
-                      <EventImage
-                        vfImgKey={addImgKey}
-                        alt={`Additional Image ${index}`}
-                      />
-                    );
-                  }}
                 />
               </View>
             ) : (

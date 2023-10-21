@@ -139,11 +139,13 @@ const _ManagementView = (props: {
 
         {/* Timeline */}
         <View className="flex-col space-y-2">
-          <EventTimeline
-            timelineElements={event.timeline}
-            timeStartIsoNTZ={event.timeStartIsoNTZ}
-            timeEndIsoNTZ={event.timeEndIsoNTZ}
-          />
+          <View className="bg-black p-4">
+            <EventTimeline
+              timelineElements={event.timeline}
+              timeStartIsoNTZ={event.timeStartIsoNTZ}
+              timeEndIsoNTZ={event.timeEndIsoNTZ}
+            />
+          </View>
           <View className="items-center">
             <TouchableOpacity
               className="items-center rounded-lg bg-black px-4 py-2"

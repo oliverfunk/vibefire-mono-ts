@@ -1,31 +1,30 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
+import { View } from "react-native";
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { type BottomSheetBackgroundProps } from "@gorhom/bottom-sheet";
 
-const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({
+const CustomBackgroundComponent: React.FC<BottomSheetBackgroundProps> = ({
   style,
   animatedIndex,
 }) => {
-  //#region styles
-  const containerAnimatedStyle = useAnimatedStyle(() => ({
-    // @ts-ignore
-    backgroundColor: interpolateColor(
-      animatedIndex.value,
-      [0, 1],
-      ["#ffffff", "#FF1515"],
-    ),
-  }));
+  // const containerAnimatedStyle = useAnimatedStyle(() => ({
+  //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //   // @ts-ignore
+  //   backgroundColor: interpolateColor(
+  //     animatedIndex.value,
+  //     [0, 1],
+  //     ["#ffffff", "#FF1515"],
+  //   ),
+  // }));
   const containerStyle = useMemo(
-    () => [style, containerAnimatedStyle],
-    [style, containerAnimatedStyle],
+    () => [style, { backgroundColor: "#000000" }],
+    [style],
   );
-  //#endregion
 
   // render
-  return <Animated.View pointerEvents="none" style={containerStyle} />;
+  return <View pointerEvents="none" style={containerStyle} />;
 };
-
-export default CustomBackground;
+export const CustomBackground = memo(CustomBackgroundComponent);

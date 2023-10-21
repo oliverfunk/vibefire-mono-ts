@@ -9,6 +9,7 @@ import { type PartialDeep } from "type-fest";
 import { type VibefireEventT } from "@vibefire/models";
 
 import { EventImage } from "~/components/EventImage";
+import { EventImageCarousel } from "~/components/EventImageCarousel";
 import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditReview } from "~/nav";
@@ -167,15 +168,9 @@ export const ManageEventEditImagesForm = (props: {
         <View className="w-full flex-col space-y-2">
           <Text className="mx-5 text-lg">Additional images:</Text>
           <View className="items-center">
-            <Carousel
+            <EventImageCarousel
               width={width}
-              height={width}
-              defaultIndex={0}
-              loop={false}
-              data={selectedAdditionalImages}
-              panGestureHandlerProps={{
-                activeOffsetX: [-10, 10],
-              }}
+              vfImgKeys={selectedAdditionalImages}
               renderItem={({ index, item }) => {
                 if (item === "") {
                   return (
@@ -186,8 +181,6 @@ export const ManageEventEditImagesForm = (props: {
                         if (!img_b64) {
                           return;
                         }
-
-                        console.log("uploading additional image");
 
                         uploadAdditionalImage.mutate({
                           eventId,

@@ -16,7 +16,7 @@ export const EventTimeline = (props: {
     timelineElements,
     timeStartIsoNTZ,
     timeEndIsoNTZ,
-    elementSpacing = 10,
+    elementSpacing = 12,
   } = props;
 
   const data = useMemo(() => {
@@ -56,7 +56,7 @@ export const EventTimeline = (props: {
         title: "End",
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        dotColor: "orange",
+        dotColor: "red",
       });
     }
     return rtn;
@@ -68,8 +68,8 @@ export const EventTimeline = (props: {
       isUsingFlatlist={false}
       innerCircle="dot"
       dotSize={5}
-      circleColor="orange"
-      lineColor="black"
+      circleColor="red"
+      lineColor="white"
       renderFullLine={true}
       circleStyle={{ alignSelf: "center" }}
       timeContainerStyle={{
@@ -77,16 +77,17 @@ export const EventTimeline = (props: {
         marginRight: -10,
         height: "100%",
         justifyContent: "center",
-        width: 60,
+        width: 70,
       }}
       timeStyle={{
         alignSelf: "center",
         fontWeight: "500",
-        fontSize: 14,
+        fontSize: 16,
+        color: "white",
       }}
       eventContainerStyle={{
         // gets rid of weird connector edge
-        marginTop: -1,
+        marginTop: -2,
         paddingTop: elementSpacing,
         paddingBottom: elementSpacing,
         paddingLeft: 10,
@@ -102,13 +103,15 @@ export const EventTimeline = (props: {
         paddingBottom: 10,
         paddingLeft: 10,
         paddingRight: 10,
-        fontWeight: "500",
-        fontSize: 14,
+        fontWeight: "400",
+        fontSize: 18,
+        lineHeight: 22,
         alignSelf: "flex-start",
         backgroundColor: "black",
         color: "white",
         // defines the border
-        borderColor: "orange",
+        // borderColor: "black",
+        borderBottomColor: "white",
         borderWidth: 2,
         borderRadius: 2,
         overflow: "hidden",

@@ -213,11 +213,13 @@ export const ManageEventEditTimeline = (props: {
         </Text>
 
         <View className="flex-col">
-          <EventTimeline
-            timelineElements={timelineElements}
-            timeStartIsoNTZ={currentEventFormData.timeStartIsoNTZ}
-            timeEndIsoNTZ={currentEventFormData.timeEndIsoNTZ}
-          />
+          <View className="bg-black p-4">
+            <EventTimeline
+              timelineElements={timelineElements}
+              timeStartIsoNTZ={currentEventFormData.timeStartIsoNTZ}
+              timeEndIsoNTZ={currentEventFormData.timeEndIsoNTZ}
+            />
+          </View>
         </View>
 
         <View className="border-b" />
