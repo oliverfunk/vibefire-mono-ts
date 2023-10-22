@@ -21,6 +21,7 @@ import { EventImageCarousel } from "~/components/EventImageCarousel";
 import { EventTimeline } from "~/components/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
+import { navViewEventClose } from "~/nav";
 import {
   ErrorSheet,
   LoadingSheet,
@@ -84,10 +85,10 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
       {/* Header */}
       <View className="relative">
         {/* Background image */}
-        {imgs.length > 1 ? (
-          <EventImageCarousel vfImgKeys={imgs} width={width} />
-        ) : (
+        {imgs.length === 1 ? (
           <EventImage vfImgKey={imgs[0]} alt="Event Banner" />
+        ) : (
+          <EventImageCarousel vfImgKeys={imgs} width={width} />
         )}
 
         <LinearGradient
@@ -155,29 +156,6 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
             <Text className="text-lg text-white">Share</Text>
           </View>
         </View>
-        {/* Add. images */}
-        {/* {event.images.additional && (
-          <Carousel
-            width={width}
-            height={width}
-            defaultIndex={0}
-            loop={false}
-            data={event.images.additional}
-            panGestureHandlerProps={{
-              activeOffsetX: [-10, 10],
-            }}
-            renderItem={({ index, item }) => {
-              return (
-                <View className="relative items-center">
-                  <EventImage
-                    vfImgKey={item}
-                    alt={`Additional Image ${index}`}
-                  />
-                </View>
-              );
-            }}
-          />
-        )} */}
       </View>
     </ScrollViewSheet>
   );
@@ -239,9 +217,7 @@ const _EventDetails = (
       snapPoints={snapPoints}
       handleComponent={null}
       onDismiss={() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        router.setParams({ eventId: undefined });
+        navViewEventClose();
       }}
     >
       {preview ? (

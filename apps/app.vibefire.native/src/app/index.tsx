@@ -9,6 +9,7 @@ const Home = () => {
     eventId?: string;
     orgId?: string;
     manageEvent?: string;
+    eventsBy?: string;
   }>();
 
   console.log("routing params");
@@ -21,6 +22,7 @@ const Home = () => {
         eventID={params.eventId}
         orgID={params.orgId}
         manageEvent={params.manageEvent}
+        eventsBy={params.eventsBy}
       />
     </NoTopContainer>
   );

@@ -10,15 +10,22 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { DateTime } from "luxon";
 
 import { type VibefireUserT } from "@vibefire/models";
+import { mapQueryResult } from "@vibefire/shared-state";
 
 import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
 import { EventCard } from "~/components/EventCard";
+import { EventsList } from "~/components/EventList";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import { navManageEvent } from "~/nav";
-import { LinearRedOrangeView, LoadingSheet } from "../_shared";
+import { useMapQuery } from "~/hooks/useMapQuery";
+import {
+  navManageEvent,
+  navManageEventCreate,
+  navViewEventsByOrganiser,
+} from "~/nav";
+import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "../_shared";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 
 const _Profile = () => {
@@ -42,7 +49,7 @@ const _Profile = () => {
       return <LoadingSheet />;
     case "error":
       return (
-        <BottomSheetScrollView focusHook={useFocusEffect}>
+        <ScrollViewSheet>
           <View className="mt-5 flex h-full flex-col items-center space-y-5">
             <FontAwesome5 name="user-alt" size={150} color="black" />
             <View className="flex-col items-center space-y-2">
@@ -60,11 +67,11 @@ const _Profile = () => {
               </TouchableOpacity>
             </View>
           </View>
-        </BottomSheetScrollView>
+        </ScrollViewSheet>
       );
     case "unauthenticated":
       return (
-        <BottomSheetScrollView focusHook={useFocusEffect}>
+        <ScrollViewSheet>
           <View className="mt-5 flex h-full flex-col items-center space-y-5">
             <FontAwesome5 name="user-alt" size={150} />
             <View className="mx-10 flex-row">
@@ -87,20 +94,18 @@ const _Profile = () => {
               )}
             </View>
           </View>
-        </BottomSheetScrollView>
+        </ScrollViewSheet>
       );
     case "authenticated":
       const userInfo = user.userInfo as VibefireUserT;
       return (
-        <BottomSheetScrollView focusHook={useFocusEffect}>
-          <View className="my-5 flex h-full flex-col items-center space-y-10">
+        <ScrollViewSheet>
+          <View className="my-5 flex h-full flex-col items-center space-y-5">
             <View className="w-10/12 flex-col items-center space-y-2">
               {/* Name ball */}
-              <View className="flex-row">
-                <View className="h-24 w-24 items-center justify-center rounded-full bg-black">
-                  <Text className="text-2xl text-white">
-                    {userInfo.name.at(0)!.toUpperCase()}.{" "}
-                  </Text>
+              <View className="flex-row items-center justify-center space-x-1">
+                <View className="rounded-lg bg-black p-4">
+                  <Text className="text-2xl text-white">{userInfo.name}</Text>
                 </View>
               </View>
 
@@ -135,7 +140,7 @@ const _Profile = () => {
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  router.setParams({ manageEvent: "create" });
+                  navManageEventCreate();
                 }}
               >
                 <Text className="text-xl text-white">Create event</Text>
@@ -146,62 +151,33 @@ const _Profile = () => {
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  navManageEvent("374673133350682830");
+                  // navManageEvent("374673133350682830");
+                  navViewEventsByOrganiser();
                 }}
               >
-                <Text className="text-xl text-white">Set</Text>
+                <Text className="text-xl text-white">Your events</Text>
               </TouchableOpacity>
             </LinearRedOrangeView>
 
-            <View className="flex-row">
+            <View className="flex-row pt-20">
               <SignOut />
             </View>
           </View>
-        </BottomSheetScrollView>
+        </ScrollViewSheet>
       );
   }
 };
 
 const _EventsList = () => {
   // call userQuery here
-
-  const renderItem = useCallback(
-    (item: React.Key) => (
-      <View className="" key={item}>
-        <EventCard
-          eventInfo={{
-            bannerImgKey: "https://picsum.photos/1080/1980",
-            title: "Event Title",
-            orgName: "Org Name",
-            orgProfileImgURL: "https://picsum.photos/200/300",
-            addressDescription: "Address Description",
-            timeStart: DateTime.now(),
-            timeEnd: DateTime.now(),
-          }}
-          onPress={() => {
-            router.setParams({ eventId: item.toString() });
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  // temp
-  const data = useMemo(
-    () =>
-      Array(3)
-        .fill(0)
-        .map((_, index) => `index-${index}`),
-    [],
-  );
+  const mqr = useAtomValue(mapQueryResult);
 
   return (
-    <BottomSheetScrollView focusHook={useFocusEffect}>
-      <View className="flex-col space-y-5 px-2 pb-5">
-        {data.map(renderItem)}
+    <ScrollViewSheet>
+      <View className="px-2 pb-5">
+        <EventsList events={mqr} onEventPress={(eventId) => {}} />
       </View>
-    </BottomSheetScrollView>
+    </ScrollViewSheet>
   );
 };
 

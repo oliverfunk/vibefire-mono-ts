@@ -1,5 +1,14 @@
 import { router } from "expo-router";
 
+export const navViewEventsByOrganiser = (organiserId?: string) => {
+  router.setParams({ eventsBy: organiserId ?? "personal" });
+};
+export const navViewEventsByOrganiserClose = () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  router.setParams({ eventsBy: undefined });
+};
+
 export const navViewEvent = (eventId: string) => {
   router.setParams({ eventId: eventId });
 };

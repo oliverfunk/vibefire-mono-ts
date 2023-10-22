@@ -3,7 +3,10 @@ import Timeline from "react-native-timeline-flatlist";
 import _ from "lodash";
 
 import { type VibefireEventTimelineElementT } from "@vibefire/models";
-import { isoNTZToDateTime, MONTH_DATE_TIME_LB_FORMAT } from "@vibefire/utils";
+import {
+  isoNTZToUTCDateTime,
+  MONTH_DATE_TIME_LB_FORMAT,
+} from "@vibefire/utils";
 
 export const EventTimeline = (props: {
   timelineElements: VibefireEventTimelineElementT[];
@@ -22,8 +25,8 @@ export const EventTimeline = (props: {
   const data = useMemo(() => {
     let rtn = [];
     rtn.push({
-      ts: isoNTZToDateTime(timeStartIsoNTZ).toUnixInteger(),
-      time: isoNTZToDateTime(timeStartIsoNTZ).toFormat(
+      ts: isoNTZToUTCDateTime(timeStartIsoNTZ).toUnixInteger(),
+      time: isoNTZToUTCDateTime(timeStartIsoNTZ).toFormat(
         MONTH_DATE_TIME_LB_FORMAT,
       ),
       title: "Start",
@@ -31,8 +34,8 @@ export const EventTimeline = (props: {
     });
     timelineElements.forEach((element) =>
       rtn.push({
-        ts: isoNTZToDateTime(element.timeIsoNTZ).toUnixInteger(),
-        time: isoNTZToDateTime(element.timeIsoNTZ).toFormat(
+        ts: isoNTZToUTCDateTime(element.timeIsoNTZ).toUnixInteger(),
+        time: isoNTZToUTCDateTime(element.timeIsoNTZ).toFormat(
           MONTH_DATE_TIME_LB_FORMAT,
         ),
         title: element.message,
@@ -41,8 +44,8 @@ export const EventTimeline = (props: {
     );
     if (timeEndIsoNTZ) {
       rtn.push({
-        ts: isoNTZToDateTime(timeEndIsoNTZ).toUnixInteger(),
-        time: isoNTZToDateTime(timeEndIsoNTZ).toFormat(
+        ts: isoNTZToUTCDateTime(timeEndIsoNTZ).toUnixInteger(),
+        time: isoNTZToUTCDateTime(timeEndIsoNTZ).toFormat(
           MONTH_DATE_TIME_LB_FORMAT,
         ),
         title: "End",

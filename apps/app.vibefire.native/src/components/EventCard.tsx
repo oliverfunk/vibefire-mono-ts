@@ -7,41 +7,63 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { type DateTime } from "luxon";
 
+import { type VibefireEventT } from "@vibefire/models";
+
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
+  state: VibefireEventT["state"];
   eventInfo: {
     title: string;
-    orgName: string;
-    orgProfileImgURL: string;
-    addressDescription: string;
-    timeStart: DateTime;
+    organiserName: string;
+    organiserProfileUrl?: string;
+    addressDescription?: string;
+    timeStart?: DateTime;
     timeEnd?: DateTime;
-    bannerImgKey: string;
+    bannerImgKey?: string;
   };
   onPress: (event: GestureResponderEvent) => void;
 };
 
-export const EventCard = ({ eventInfo: event, onPress }: EventCardProps) => {
+export const EventCard: React.FC<EventCardProps> = ({
+  state,
+  eventInfo: event,
+  onPress,
+}) => {
   return (
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
       <EventImage
         rounded={true}
-        vfImgKey={event.bannerImgKey}
+        vfImgKey={event.bannerImgKey ?? "http"}
         alt="Event Banner"
       />
+
+      {state == "draft" && (
+        <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
+          <Text className="text-2xl font-bold text-white">Draft</Text>
+        </View>
+      )}
 
       <LinearGradient
         className="absolute left-0 top-0 w-full flex-row items-center rounded-t-xl p-2"
         colors={["rgba(50, 40, 40, 1)", "rgba(0,0,0,0)"]}
         locations={[0, 1]}
       >
-        <StandardImage
-          cn="h-10 w-10 rounded-full border-2 border-black"
-          source={event.orgProfileImgURL}
-          alt="Event Organizer Profile Picture"
-        />
-        <Text className="ml-2 text-lg text-white">{event.orgName}</Text>
+        {event.organiserProfileUrl ? (
+          <StandardImage
+            cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
+            source={event.organiserProfileUrl}
+            alt="Event Organizer Profile Picture"
+          />
+        ) : (
+          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-red-600">
+            <Text className="text-lg text-white">
+              {event.organiserName.at(0)!.toUpperCase()}
+              {"."}
+            </Text>
+          </View>
+        )}
+        <Text className="ml-2 text-lg text-white">{event.organiserName}</Text>
       </LinearGradient>
 
       <LinearGradient
@@ -59,7 +81,9 @@ export const EventCard = ({ eventInfo: event, onPress }: EventCardProps) => {
 
         <View className="flex-row">
           <Text className="text-base text-yellow-400">
-            {event.timeStart.toFormat("LLL d, T")}
+            {event.timeStart
+              ? event.timeStart.toFormat("LLL d, T")
+              : "<Start Time>"}
           </Text>
           {event.timeEnd && (
             <>
@@ -71,7 +95,9 @@ export const EventCard = ({ eventInfo: event, onPress }: EventCardProps) => {
           )}
         </View>
 
-        <Text className="text-base text-white">{event.addressDescription}</Text>
+        <Text className="text-base text-white">
+          {event.addressDescription ?? "<Address>"}
+        </Text>
       </LinearGradient>
     </Pressable>
   );

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { DateTime } from "luxon";
@@ -20,6 +21,7 @@ import {
   LinearRedOrangeView,
   LoadingSheet,
   ScrollViewSheet,
+  ScrollViewSheetWithHeader,
 } from "../_shared";
 
 const _ManagementView = (props: {
@@ -29,16 +31,7 @@ const _ManagementView = (props: {
   const { event, eventManagement } = props;
 
   return (
-    <ScrollViewSheet>
-      {/* Heading */}
-      <LinearRedOrangeView className="flex-row p-4">
-        <View className="w-full bg-black p-4">
-          <Text className="text-center text-2xl font-bold text-white">
-            Manage
-          </Text>
-        </View>
-      </LinearRedOrangeView>
-
+    <ScrollViewSheetWithHeader header="Manage">
       {/* Main col */}
       <View className="flex-col space-y-5 p-2">
         {/* Shareability */}
@@ -105,12 +98,13 @@ const _ManagementView = (props: {
           <Text className="text-lg font-bold">Event Card (tap to preview)</Text>
           <View>
             <EventCard
+              state="ready"
               eventInfo={{
                 title: event.title,
                 addressDescription: event.location.addressDescription,
-                orgName: "a name",
+                organiserName: "a name",
                 bannerImgKey: event.images.banner,
-                orgProfileImgURL: "",
+                organiserProfileUrl: "",
                 timeStart: DateTime.fromISO(event.timeStartIsoNTZ, {
                   zone: "utc",
                 }),
@@ -178,7 +172,7 @@ const _ManagementView = (props: {
           </TouchableOpacity>
         )}
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };
 

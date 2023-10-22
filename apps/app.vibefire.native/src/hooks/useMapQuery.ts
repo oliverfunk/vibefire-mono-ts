@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from "jotai";
 import {
   mapQueryInfo,
   mapQueryPositionAtom,
+  mapQueryResult,
   mapQueryTimePeriodAtom,
 } from "@vibefire/shared-state";
 
@@ -13,6 +14,7 @@ export const useMapQuery = () => {
   const mapPos = useAtomValue(mapQueryPositionAtom);
   const tp = useAtomValue(mapQueryTimePeriodAtom);
   const [mqi, setMqi] = useAtom(mapQueryInfo);
+  const [_mqr, setMqr] = useAtom(mapQueryResult);
   const mapQuery = trpc.events.mapQueryPublicEvents.useQuery(
     mapPos === null
       ? {
@@ -54,8 +56,13 @@ export const useMapQuery = () => {
           numberOfEvents: mapQuery.data.length,
           queryStatus: "done",
         });
+        setMqr(mapQuery.data);
         break;
     }
   }, [mapQuery.status]);
   return mapQuery;
+};
+
+export const useMapQueryCts = () => {
+  const mq = useMapQuery();
 };

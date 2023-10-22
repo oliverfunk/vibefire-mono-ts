@@ -1,5 +1,7 @@
 import { fql, Query, type Client, type QuerySuccess } from "fauna";
 
+import { type VibefireEventT } from "@vibefire/models";
+
 import { dfq } from "../utils";
 
 export const createUDFPublicEventsInPeriodInAreas = async (
@@ -27,5 +29,5 @@ export const callPublicEventsInPeriodInAreas = async (
       ${timePeriodIndex}, ${areaH3s}
     )
   `;
-  return (await dfq<{ data: any[] }>(faunaClient, q)).data;
+  return (await dfq<{ data: VibefireEventT[] }>(faunaClient, q)).data;
 };

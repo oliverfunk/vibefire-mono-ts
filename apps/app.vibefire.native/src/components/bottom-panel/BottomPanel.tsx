@@ -5,6 +5,7 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import { EventDetails } from "./modals/EventDetails";
+import { EventsByOrganiser } from "./modals/EventsByOrganiser";
 import { EventsListAndProfile } from "./modals/EventsListAndProfile";
 import { ManageEvent } from "./modals/ManageEvent";
 import { OrgDetails } from "./modals/OrgDetails";
@@ -13,11 +14,13 @@ export const BottomPanel = (props: {
   eventID?: string;
   orgID?: string;
   manageEvent?: string;
+  eventsBy?: string;
 }) => {
   const mapQueryEventsListSheetRef = useRef<BottomSheetModal>(null);
   const eventDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
   const orgDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
   const manageEventSheetRef = useRef<BottomSheetModal>(null);
+  const eventsBySheetRef = useRef<BottomSheetModal>(null);
 
   //#region effects
   useEffect(() => {
@@ -29,6 +32,8 @@ export const BottomPanel = (props: {
       orgDetailsDisplaySheetRef.current?.present();
     } else if (props.manageEvent) {
       manageEventSheetRef.current?.present();
+    } else if (props.eventsBy) {
+      eventsBySheetRef.current?.present();
     }
   }, [props]);
 
@@ -46,11 +51,19 @@ export const BottomPanel = (props: {
           eventQuery={props.eventID}
         />
       )}
-      <OrgDetails
-        ref={orgDetailsDisplaySheetRef}
-        organisationId={props.orgID}
-      />
-      <ManageEvent ref={manageEventSheetRef} manageSelect={props.manageEvent} />
+      {props.orgID && (
+        <OrgDetails
+          ref={orgDetailsDisplaySheetRef}
+          organisationId={props.orgID}
+        />
+      )}
+      {props.manageEvent && (
+        <ManageEvent
+          ref={manageEventSheetRef}
+          manageSelect={props.manageEvent}
+        />
+      )}
+      {props.eventsBy && <EventsByOrganiser ref={eventsBySheetRef} />}
     </BottomSheetModalProvider>
   );
 };
