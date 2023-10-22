@@ -24,6 +24,7 @@ import {
   deleteUser,
   getEventFromIDByOrganiser,
   getEventManagementFromEventIDByOrganiser,
+  getEventsByOrganiser,
   getPublishedEventFromID,
   getUserByAid,
   updateEvent,
@@ -77,6 +78,18 @@ export class ApiDataQueryManager {
   }
 
   // #region Event
+  async eventsByOrganiser(
+    userAc: ClerkSignedInAuthContext,
+    organisationId?: string,
+  ) {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+
+    const organiserId = organisationId || userAc.userId;
+
+    const res = await getEventsByOrganiser(this.faunaClient, organiserId);
+    return res;
+  }
+
   async eventForEdit(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
@@ -696,6 +709,11 @@ export class ApiDataQueryManager {
       h3ps,
     );
 
+    console.log("res", JSON.stringify(res, null, 2));
+
+    // the extent to which this is necessary is questionable,
+    // given the data comes from our db,
+    // esp given the critical path nature of this function
     const events = res.map((eventData) =>
       tbValidator(VibefireEventSchema)(eventData),
     );

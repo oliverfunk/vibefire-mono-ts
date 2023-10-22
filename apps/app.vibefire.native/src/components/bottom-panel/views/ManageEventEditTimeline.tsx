@@ -11,7 +11,7 @@ import {
   type VibefireEventTimelineElementT,
 } from "@vibefire/models";
 import {
-  isoNTZToDateTime,
+  isoNTZToUTCDateTime,
   MONTH_DATE_TIME_LB_FORMAT,
   nowAsUTC,
 } from "@vibefire/utils";
@@ -82,7 +82,7 @@ const _TimelineElementAdd = (props: {
           <PlatformSelect
             android={
               <TimeSelectionAndDisplayAnd
-                currentDate={isoNTZToDateTime(selectedTimeIsoNTZ).toJSDate()}
+                currentDate={isoNTZToUTCDateTime(selectedTimeIsoNTZ).toJSDate()}
                 onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
                   if (selectedDate) {
                     setSelectedTimeIsoNTZ(selectedDate.toISOString());
@@ -92,7 +92,7 @@ const _TimelineElementAdd = (props: {
             }
             ios={
               <TimeSelectionAndDisplayIos
-                currentDate={isoNTZToDateTime(selectedTimeIsoNTZ).toJSDate()}
+                currentDate={isoNTZToUTCDateTime(selectedTimeIsoNTZ).toJSDate()}
                 onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
                   if (selectedDate) {
                     setSelectedTimeIsoNTZ(selectedDate.toISOString());
@@ -187,10 +187,10 @@ export const ManageEventEditTimeline = (props: {
   const timelineElements = useMemo(() => {
     const tlWithTime = selectedEventTimeline.map((tl) => ({
       ...tl,
-      timeStr: isoNTZToDateTime(tl.timeIsoNTZ).toFormat(
+      timeStr: isoNTZToUTCDateTime(tl.timeIsoNTZ).toFormat(
         MONTH_DATE_TIME_LB_FORMAT,
       ),
-      ts: isoNTZToDateTime(tl.timeIsoNTZ).toUnixInteger(),
+      ts: isoNTZToUTCDateTime(tl.timeIsoNTZ).toUnixInteger(),
     }));
     return _.sortBy(tlWithTime, ["ts"]);
   }, [selectedEventTimeline]);

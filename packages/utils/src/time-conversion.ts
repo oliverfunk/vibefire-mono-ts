@@ -7,26 +7,16 @@ export const H24_TIME_FORMAT = "T";
 export const nowAsUTC = () =>
   DateTime.now().setZone("utc", { keepLocalTime: true });
 
-export const isoNTZToDateTime = (isoStr: string) => {
+export const isoNTZToUTCDateTime = (isoStr: string) => {
   return DateTime.fromISO(isoStr, { zone: "utc" });
 };
 
-export const isoNTZToDateTimeAtTZ = (isoStr: string, timeZone: string) => {
+export const isoNTZToTZDateTime = (isoStr: string, timeZone: string) => {
   return DateTime.fromISO(isoStr, { zone: "utc" }).setZone(timeZone, {
     keepLocalTime: true,
   });
 };
 
 export const isoNTZToTZEpochSecs = (isoStr: string, timeZone: string) => {
-  return isoNTZToDateTimeAtTZ(isoStr, timeZone).toUnixInteger();
+  return isoNTZToTZDateTime(isoStr, timeZone).toUnixInteger();
 };
-
-// export const epochSecsAtNewTimeZone = (
-//   epoch: number,
-//   oldTimeZone: string,
-//   newTimeZone: string,
-// ) => {
-//   const dateTime = epochSecsToTZDateTime(epoch, oldTimeZone);
-//   const newTZDateTime = dateTime.setZone(newTimeZone, { keepLocalTime: true });
-//   return newTZDateTime.toUnixInteger();
-// };

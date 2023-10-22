@@ -52,6 +52,24 @@ export const defineGeoTemporalIndex = async (faunaClient: Client) => {
   await dfq(faunaClient, q);
 };
 
+export const defineByOrganiserIDIndex = async (faunaClient: Client) => {
+  const organiserIdField: keyof VibefireEventT = "organiserId";
+  const q = fql`
+    Events.definition.update({
+      indexes: {
+        byOrganiserID: {
+          terms: [
+            {
+              field: ${organiserIdField},
+            }
+          ],
+        },
+      }
+    })
+  `;
+  await dfq(faunaClient, q);
+};
+
 export const createEvent = async (
   faunaClient: Client,
   createData: Partial<VibefireEventT>,
@@ -127,4 +145,16 @@ export const getEventFromIDByOrganiser = async (
     }
   `;
   return await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
+};
+
+export const getEventsByOrganiser = async (
+  faunaClient: Client,
+  organiserId: string,
+) => {
+  const _organiserField: keyof VibefireEventT = "organiserId";
+  const q = fql`
+    Events.byOrganiserID(${organiserId})
+  `;
+  return (await dfq<{ data: PartialDeep<VibefireEventT>[] }>(faunaClient, q))
+    .data;
 };

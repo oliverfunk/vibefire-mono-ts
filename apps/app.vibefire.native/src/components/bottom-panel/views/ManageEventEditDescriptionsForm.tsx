@@ -10,6 +10,7 @@ import {
   LinearRedOrangeView,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
+  ScrollViewSheetWithHeader,
 } from "../_shared";
 
 export const ManageEventEditDescriptionsForm = (props: {
@@ -36,16 +37,8 @@ export const ManageEventEditDescriptionsForm = (props: {
   }, [currentEventData]);
 
   return (
-    <ScrollViewSheet>
+    <ScrollViewSheetWithHeader header="Edit">
       <View className="my-5 flex h-full flex-col items-center space-y-10">
-        {/* Heading */}
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-center text-2xl font-bold text-white">
-              Edit
-            </Text>
-          </View>
-        </LinearRedOrangeView>
         {/* Form */}
         <View className="w-full flex-col">
           <Text className="mx-5 text-lg">Event title:</Text>
@@ -107,6 +100,6 @@ export const ManageEventEditDescriptionsForm = (props: {
           />
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };

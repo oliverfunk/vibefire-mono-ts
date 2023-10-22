@@ -1,4 +1,5 @@
 import { Type as t } from "@sinclair/typebox";
+import { type PartialDeep } from "type-fest";
 
 import {
   CoordSchema,
@@ -23,6 +24,21 @@ export const eventsRouter = router({
     .query(async ({ ctx, input }) => {
       return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
         input.position,
+      );
+    }),
+  eventsByOrganiser: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as PartialDeep<VibefireEventT>[])
+    .query(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventsByOrganiser(
+        ctx.auth,
+        input.organisationId,
       );
     }),
   eventForEdit: authedProcedure

@@ -17,6 +17,7 @@ import { debounce } from "~/utils/debounce";
 import { SvgIcon } from "~/components/SvgIcon";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useMapQuery } from "~/hooks/useMapQuery";
+import { navViewEvent } from "~/nav";
 
 export class Try extends React.Component<
   {
@@ -112,13 +113,13 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
     //     });
     //   })();
     // }
-  }, [location, mvRef.current]);
+  }, [location]);
 
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
       Toast.show({
         type: "error",
-        text1: "Problem getting your location",
+        text1: "Could not get your location",
         text2: locPermDeniedMsg,
         position: "bottom",
         bottomOffset: 100,
@@ -175,7 +176,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
             key={marker.id}
             coordinate={{ latitude: marker.lat, longitude: marker.lng }}
             onPress={() => {
-              // router.setParams({ event: `${marker.id}` });
+              navViewEvent(marker.id);
             }}
           >
             <Callout tooltip={true} className="items-center">

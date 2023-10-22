@@ -84,6 +84,25 @@ export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
   </BottomSheetScrollView>
 );
 
+export const ScrollViewSheetWithHeader = (props: {
+  header: string;
+  children: React.ReactNode;
+}) => (
+  <BottomSheetScrollView
+    automaticallyAdjustKeyboardInsets={true}
+    focusHook={useFocusEffect}
+  >
+    <LinearRedOrangeView className="flex-row p-4">
+      <View className="w-full bg-black p-4">
+        <Text className="text-center text-2xl font-bold text-white">
+          {props.header}
+        </Text>
+      </View>
+    </LinearRedOrangeView>
+    {props.children}
+  </BottomSheetScrollView>
+);
+
 export const ReviewSaveNextFormButtons = (props: {
   eventId: string;
   onPressSave: () => void;
