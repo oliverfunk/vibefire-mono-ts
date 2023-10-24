@@ -267,6 +267,34 @@ export const eventsRouter = router({
         input.eventId,
       );
     }),
+  setPublished: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventSetPublished(
+        ctx.auth,
+        input.eventId,
+      );
+    }),
+  setUnpublished: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.apiDataQueryManager.eventSetUnpublished(
+        ctx.auth,
+        input.eventId,
+      );
+    }),
   updateTimeline: authedProcedure
     .input(
       tbValidator(

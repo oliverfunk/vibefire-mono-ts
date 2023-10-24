@@ -22,6 +22,7 @@ import {
   LinearRedOrangeView,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
+  ScrollViewSheetWithHeader,
 } from "../_shared";
 
 export const ManageEventEditTimesForm = (props: {
@@ -87,18 +88,10 @@ export const ManageEventEditTimesForm = (props: {
   );
 
   return (
-    <ScrollViewSheet>
-      <View className="my-5 flex h-full flex-col items-center space-y-10">
-        {/* Heading */}
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-center text-2xl font-bold text-white">
-              Edit
-            </Text>
-          </View>
-        </LinearRedOrangeView>
+    <ScrollViewSheetWithHeader header="Edit">
+      <View className="my-5 flex-col space-y-10">
         {/* Form */}
-        <View className="w-full flex-col ">
+        <View className="flex-col ">
           <View className="mx-4 flex-row items-center justify-center rounded-lg border py-2">
             <Text className="text-lg">
               Time zone: {currentEventData?.timeZone ?? "Not set"}
@@ -107,7 +100,7 @@ export const ManageEventEditTimesForm = (props: {
         </View>
 
         {formErrors.length > 0 && (
-          <View className="w-full flex-col">
+          <View className="flex-col">
             <View className="mx-4 space-y-2 rounded-lg bg-slate-200 p-4">
               {formErrors.map((error) => (
                 <Text key={error} className="text-lg text-red-500">
@@ -118,7 +111,7 @@ export const ManageEventEditTimesForm = (props: {
           </View>
         )}
 
-        <View className="w-full flex-col">
+        <View className="flex-col">
           <Text className="mx-5 text-lg">Starting time:</Text>
           <View className="mx-4 flex-row items-center py-2">
             <PlatformSelect
@@ -138,7 +131,7 @@ export const ManageEventEditTimesForm = (props: {
           </View>
         </View>
 
-        <View className="w-full flex-col">
+        <View className="flex-col">
           <Text className="mx-5 text-lg">Ending time:</Text>
           {selectedFormData?.timeEndIsoNTZ ? (
             <View className="mx-4 flex-row items-center py-2">
@@ -187,7 +180,7 @@ export const ManageEventEditTimesForm = (props: {
           )}
         </View>
 
-        <View className="w-full">
+        <View>
           <ReviewSaveNextFormButtons
             eventId={eventId}
             savedEnabled={hasEdited}
@@ -226,6 +219,6 @@ export const ManageEventEditTimesForm = (props: {
           />
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };

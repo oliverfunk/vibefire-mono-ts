@@ -222,6 +222,8 @@ export class ApiDataQueryManager {
       // a user event, so set the type to user
       e.organiserType = "user";
       e.visibility = "link-only"; // by default
+      const userInfo = await this.getUserInfo(userAc);
+      e.organiserName = userInfo.name;
     } else {
       e.organiserType = "organisation";
       e.visibility = "public"; // by default
@@ -653,6 +655,27 @@ export class ApiDataQueryManager {
 
     const updateData: Partial<VibefireEventT> = {
       published: true,
+    };
+
+    removeUndef(updateData);
+
+    await updateEvent(this.faunaClient, {
+      id: eventId,
+      organiserId,
+      ...updateData,
+    });
+  }
+
+  async eventSetUnpublished(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ): Promise<void> {
+    this._checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const updateData: Partial<VibefireEventT> = {
+      published: false,
     };
 
     removeUndef(updateData);

@@ -27,8 +27,23 @@ import {
 const _ManagementView = (props: {
   event: VibefireEventT;
   eventManagement: VibefireEventManagementT;
+  dataRefetch: () => void;
 }) => {
-  const { event, eventManagement } = props;
+  const { event, eventManagement, dataRefetch } = props;
+
+  const setPublishedMut = trpc.events.setPublished.useMutation();
+  const setUnpublishedMut = trpc.events.setUnpublished.useMutation();
+
+  useEffect(() => {
+    if (setPublishedMut.status === "success") {
+      dataRefetch();
+    }
+  }, [setPublishedMut.status, dataRefetch]);
+  useEffect(() => {
+    if (setUnpublishedMut.status === "success") {
+      dataRefetch();
+    }
+  }, [setUnpublishedMut.status, dataRefetch]);
 
   return (
     <ScrollViewSheetWithHeader header="Manage">
@@ -37,13 +52,13 @@ const _ManagementView = (props: {
         {/* Shareability */}
         <View className="flex-col space-y-2">
           {(event.visibility === "public" && (
-            <Text>
+            <Text className="text-lg">
               This event is public and can seen on the map by anyone when
               published.
             </Text>
           )) ||
             (event.visibility === "invite-only" && (
-              <Text>
+              <Text className="text-lg">
                 This event is invite-only and can only be seen by those you
                 invite.
               </Text>
@@ -99,12 +114,14 @@ const _ManagementView = (props: {
           <View>
             <EventCard
               state="ready"
+              published={event.published}
               eventInfo={{
                 title: event.title,
                 addressDescription: event.location.addressDescription,
-                organiserName: "a name",
+                organiserId: event.organiserId,
+                organiserType: event.organiserType,
+                organiserName: event.organiserName,
                 bannerImgKey: event.images.banner,
-                organiserProfileUrl: "",
                 timeStart: DateTime.fromISO(event.timeStartIsoNTZ, {
                   zone: "utc",
                 }),
@@ -163,11 +180,25 @@ const _ManagementView = (props: {
             : "This event is currently hidden. When you're ready, tap the button below to publish it and make it visible 🔥"}
         </Text>
         {event.published ? (
-          <TouchableOpacity className="w-min items-center rounded-lg bg-red-400 px-6 py-4">
+          <TouchableOpacity
+            onPress={() => {
+              setUnpublishedMut.mutate({
+                eventId: event.id,
+              });
+            }}
+            className="w-min items-center rounded-lg bg-red-400 px-6 py-4"
+          >
             <Text className="text-xl font-bold text-white">Hide</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity className="w-min items-center rounded-lg bg-green-400 px-6 py-4">
+          <TouchableOpacity
+            onPress={() => {
+              setPublishedMut.mutate({
+                eventId: event.id,
+              });
+            }}
+            className="w-min items-center rounded-lg bg-green-400 px-6 py-4"
+          >
             <Text className="text-xl font-bold text-white">Publish</Text>
           </TouchableOpacity>
         )}
@@ -192,7 +223,7 @@ export const ManageEventManagement = (props: { eventId: string }) => {
         <_ManagementView
           event={eventForManagement.data.event}
           eventManagement={eventForManagement.data.eventManagement}
-          // dataRefetch={eventForManagement.refetch}
+          dataRefetch={eventForManagement.refetch}
         />
       );
   }

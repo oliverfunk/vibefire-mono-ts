@@ -17,6 +17,7 @@ import {
   LinearRedOrangeView,
   ReviewSaveNextFormButtons,
   ScrollViewSheet,
+  ScrollViewSheetWithHeader,
 } from "../_shared";
 
 const selectImage = async () => {
@@ -101,17 +102,8 @@ export const ManageEventEditImagesForm = (props: {
   const width = Dimensions.get("window").width;
 
   return (
-    <ScrollViewSheet>
-      <View className="my-5 flex h-full flex-col items-center space-y-10">
-        {/* Heading */}
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-center text-2xl font-bold text-white">
-              Edit
-            </Text>
-          </View>
-        </LinearRedOrangeView>
-        {/* Form */}
+    <ScrollViewSheetWithHeader header="Edit">
+      <View className="flex-col items-center space-y-10 py-5">
         {formErrors.length > 0 && (
           <View className="w-full flex-col">
             <View className="mx-4 space-y-2 rounded-lg bg-slate-200 p-4">
@@ -242,6 +234,6 @@ export const ManageEventEditImagesForm = (props: {
           />
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };

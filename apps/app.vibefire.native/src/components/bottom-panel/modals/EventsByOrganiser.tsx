@@ -37,6 +37,7 @@ const EventsByOrganiserView: React.FC<{
               // should nav to edit if in draft
             }
           }}
+          showPublishedBanner={true}
         />
       </View>
     </ScrollViewSheetWithHeader>

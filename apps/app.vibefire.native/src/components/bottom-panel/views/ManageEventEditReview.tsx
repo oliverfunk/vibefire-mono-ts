@@ -17,7 +17,11 @@ import {
   navManageEventEditLocation,
   navManageEventEditTimes,
 } from "~/nav";
-import { LinearRedOrangeView, ScrollViewSheet } from "../_shared";
+import {
+  LinearRedOrangeView,
+  ScrollViewSheet,
+  ScrollViewSheetWithHeader,
+} from "../_shared";
 
 export const ManageEventEditReview = (props: {
   eventId: string;
@@ -56,20 +60,10 @@ export const ManageEventEditReview = (props: {
   }, [setReadyMut.status, dataRefetch, eventId]);
 
   return (
-    <ScrollViewSheet>
-      <View className="mt-5 flex h-full flex-col items-center space-y-10">
-        {/* Heading */}
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-center text-2xl font-bold text-white">
-              Review
-            </Text>
-          </View>
-        </LinearRedOrangeView>
-        {/* Form */}
-
+    <ScrollViewSheetWithHeader header="Review">
+      <View className="flex-col space-y-10 pt-5">
         {/* Descriptions */}
-        <View className="w-full flex-col space-y-5">
+        <View className="flex-col space-y-5">
           <View className="flex-col">
             <Text className="mx-5 text-lg">Event title</Text>
             <View className="mx-4 rounded-lg bg-slate-200">
@@ -101,7 +95,7 @@ export const ManageEventEditReview = (props: {
         </View>
 
         {/* Location */}
-        <View className="w-full flex-col space-y-5">
+        <View className="flex-col space-y-5">
           {/* For some reason, spacing isn't working */}
           <View className="mb-5 flex-col">
             <Text className="mx-5 text-lg">Event location</Text>
@@ -138,7 +132,7 @@ export const ManageEventEditReview = (props: {
         </View>
 
         {/* Times */}
-        <View className="w-full flex-col space-y-5">
+        <View className="flex-col space-y-5">
           <View className="flex-col ">
             <View className="mx-4 flex-row items-center justify-center rounded-lg border py-2">
               <Text className="text-lg">
@@ -214,7 +208,7 @@ export const ManageEventEditReview = (props: {
         </View>
 
         {/* Images */}
-        <View className="w-full flex-col space-y-5">
+        <View className="flex-col space-y-5">
           <View className="flex-col">
             <Text className="mx-5 text-lg">Banner image</Text>
             {currentEventData?.images?.banner ? (
@@ -262,7 +256,7 @@ export const ManageEventEditReview = (props: {
           </View>
         </View>
 
-        <View className="w-full flex-col items-center space-y-5 bg-black px-5 py-5">
+        <View className="flex-col items-center space-y-5 bg-black px-5 py-5">
           <Text className="text-xl text-white">
             {(readyState === "draft" &&
               "Get your event ready by setting a title and description, the location and starting time and adding a banner image.") ||
@@ -300,6 +294,6 @@ export const ManageEventEditReview = (props: {
             ))}
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };
