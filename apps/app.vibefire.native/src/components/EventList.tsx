@@ -10,13 +10,13 @@ import { EventCard } from "./EventCard";
 type EventsListProps = {
   events: PartialDeep<VibefireEventT>[];
   onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void;
-  showPublishedBanner?: boolean;
+  showStatusBanner?: boolean;
 };
 
 export const EventsList = ({
   events,
   onEventPress,
-  showPublishedBanner = false,
+  showStatusBanner = false,
 }: EventsListProps) => {
   const renderItem = useCallback(
     (event: PartialDeep<VibefireEventT>, item: React.Key) => (
@@ -42,11 +42,11 @@ export const EventsList = ({
           onPress={() => {
             onEventPress(event.id!, event);
           }}
-          showPublishedBanner={showPublishedBanner}
+          showStatusBanner={showStatusBanner}
         />
       </View>
     ),
-    [onEventPress, showPublishedBanner],
+    [onEventPress, showStatusBanner],
   );
   return (
     <View className="flex-col space-y-5">

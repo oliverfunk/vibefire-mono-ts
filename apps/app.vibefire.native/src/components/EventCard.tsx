@@ -26,7 +26,7 @@ type EventCardProps = {
     bannerImgKey?: string;
   };
   onPress: (event: GestureResponderEvent) => void;
-  showPublishedBanner?: boolean;
+  showStatusBanner?: boolean;
 };
 
 export const EventCard = ({
@@ -34,7 +34,7 @@ export const EventCard = ({
   published,
   eventInfo: event,
   onPress,
-  showPublishedBanner = false,
+  showStatusBanner = false,
 }: EventCardProps) => {
   return (
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
@@ -44,15 +44,17 @@ export const EventCard = ({
         alt="Event Banner"
       />
 
-      {state == "draft" && (
+      {showStatusBanner && (
         <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
-          <Text className="text-2xl font-bold text-white">Draft</Text>
-        </View>
-      )}
-
-      {published && showPublishedBanner && (
-        <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
-          <Text className="text-2xl font-bold text-white">Published</Text>
+          <Text className="text-2xl font-bold text-white">
+            {state == "draft"
+              ? "Draft"
+              : state === "ready"
+              ? published
+                ? "Published"
+                : "Ready"
+              : "Archived"}
+          </Text>
         </View>
       )}
 
