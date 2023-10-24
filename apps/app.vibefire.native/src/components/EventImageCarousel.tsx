@@ -10,13 +10,14 @@ import { type CarouselRenderItemInfo } from "react-native-reanimated-carousel/li
 
 import { EventImage } from "./EventImage";
 
-const PaginationItem: React.FC<{
+const PaginationItem = (props: {
   index: number;
   length: number;
   animValue: Animated.SharedValue<number>;
-}> = (props) => {
+}) => {
+  // if I ever come back
   const { animValue, index, length } = props;
-  const width = 10;
+  const width = 1;
 
   const animStyle = useAnimatedStyle(() => {
     let inputRange = [index - 1, index, index + 1];
@@ -52,17 +53,10 @@ const PaginationItem: React.FC<{
   }, [animValue, index, length, width]);
 
   return (
-    <View
-      className={`h-[${width}px] w-[${width}px] overflow-hidden rounded-full bg-white`}
-    >
+    <View className={`overflow-hidden rounded-full bg-white p-[${width}px]`}>
       <Animated.View
-        className="bg-black"
-        style={[
-          {
-            flex: 1,
-          },
-          animStyle,
-        ]}
+        className={`rounded-full bg-black p-1`}
+        style={animStyle}
       />
     </View>
   );

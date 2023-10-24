@@ -4,7 +4,11 @@ import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventClose, navManageEventEditDescription } from "~/nav";
-import { LinearRedOrangeView, ScrollViewSheet } from "../_shared";
+import {
+  LinearRedOrangeView,
+  ScrollViewSheet,
+  ScrollViewSheetWithHeader,
+} from "../_shared";
 
 export const ManageEventCreate = () => {
   const { close } = useBottomSheet();
@@ -25,26 +29,19 @@ export const ManageEventCreate = () => {
     }
   }, [createEventMS]);
   return (
-    <ScrollViewSheet>
-      <View className="my-5 flex h-full flex-col items-center space-y-10">
-        {/* Heading */}
-        <View className="mt-5 flex-row">
-          <Text className="text-center text-2xl font-bold">Create</Text>
+    <ScrollViewSheetWithHeader header="Your Events">
+      <View className="my-5 flex-col items-center space-y-10">
+        <View className="p-4">
+          <Text className="text-lg">
+            To get started, set an event title and press start. This will create
+            a draft event which you can add to anytime! After the event is
+            ready, it can be published and shared.
+          </Text>
         </View>
 
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-lg text-white">
-              To get started, set an event title and press start. This will
-              create a draft event which you can add to anytime! After the event
-              is ready, it can be published and shared.
-            </Text>
-          </View>
-        </LinearRedOrangeView>
-
-        <View className="w-full flex-col">
-          <Text className="mx-5 text-lg">Event title:</Text>
-          <View className="mx-4 rounded-lg bg-slate-200">
+        <View className="w-full flex-col px-4">
+          <Text className="px-2 text-lg">Event title:</Text>
+          <View className="rounded-lg bg-slate-200 p-2">
             <TextInput
               className="ml-4 py-2 text-4xl"
               placeholderTextColor={"#000000FF"}
@@ -79,6 +76,6 @@ export const ManageEventCreate = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };

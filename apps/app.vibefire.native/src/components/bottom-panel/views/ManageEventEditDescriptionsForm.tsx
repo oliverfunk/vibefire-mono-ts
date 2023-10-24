@@ -38,9 +38,9 @@ export const ManageEventEditDescriptionsForm = (props: {
 
   return (
     <ScrollViewSheetWithHeader header="Edit">
-      <View className="my-5 flex h-full flex-col items-center space-y-10">
-        {/* Form */}
-        <View className="w-full flex-col">
+      <View className="flex-col space-y-10 py-5">
+        {/*  */}
+        <View className="flex-col">
           <Text className="mx-5 text-lg">Event title:</Text>
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
@@ -59,7 +59,7 @@ export const ManageEventEditDescriptionsForm = (props: {
           </View>
         </View>
 
-        <View className="w-full flex-col">
+        <View className="flex-col">
           <Text className="mx-5 text-lg">Event description:</Text>
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
@@ -80,7 +80,7 @@ export const ManageEventEditDescriptionsForm = (props: {
           </View>
         </View>
 
-        <View className="w-full">
+        <View>
           <ReviewSaveNextFormButtons
             eventId={eventId}
             savedEnabled={hasEdited}

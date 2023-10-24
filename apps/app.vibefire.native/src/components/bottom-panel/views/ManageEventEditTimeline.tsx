@@ -28,6 +28,7 @@ import {
   FormTextInput,
   LinearRedOrangeView,
   ScrollViewSheet,
+  ScrollViewSheetWithHeader,
 } from "../_shared";
 
 const _TimelineElementView = (props: {
@@ -196,16 +197,7 @@ export const ManageEventEditTimeline = (props: {
   }, [selectedEventTimeline]);
 
   return (
-    <ScrollViewSheet>
-      {/* Heading */}
-      <LinearRedOrangeView className="flex-row p-4">
-        <View className="w-full bg-black p-4">
-          <Text className="text-center text-2xl font-bold text-white">
-            Timeline
-          </Text>
-        </View>
-      </LinearRedOrangeView>
-
+    <ScrollViewSheetWithHeader header="Timeline">
       {/* Main col */}
       <View className="flex-col space-y-5 p-3">
         <Text className="flex-col space-y-2 text-lg">
@@ -299,6 +291,6 @@ export const ManageEventEditTimeline = (props: {
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };

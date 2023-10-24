@@ -9,9 +9,8 @@ import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditTimes } from "~/nav";
 import {
-  LinearRedOrangeView,
   ReviewSaveNextFormButtons,
-  ScrollViewSheet,
+  ScrollViewSheetWithHeader,
 } from "../_shared";
 
 export const ManageEventEditLocationForm = (props: {
@@ -38,18 +37,9 @@ export const ManageEventEditLocationForm = (props: {
   }, [currentEventData]);
 
   return (
-    <ScrollViewSheet>
-      <View className="my-5 flex h-full flex-col items-center space-y-10">
-        {/* Heading */}
-        <LinearRedOrangeView className="flex-row p-4">
-          <View className="w-full bg-black p-4">
-            <Text className="text-center text-2xl font-bold text-white">
-              Edit
-            </Text>
-          </View>
-        </LinearRedOrangeView>
-        {/* Form */}
-        <View className=" w-full flex-col">
+    <ScrollViewSheetWithHeader header="Edit">
+      <View className="flex h-full flex-col items-center space-y-10 py-5">
+        <View className="flex-col">
           <Text className="mx-5 text-lg">Tap to select a location:</Text>
           <View className="mx-4 aspect-[4/4] border-2 border-slate-200">
             <LocationSelectionMap
@@ -70,7 +60,7 @@ export const ManageEventEditLocationForm = (props: {
           </View>
         </View>
 
-        <View className="w-full flex-col">
+        <View className="flex-col">
           <Text className="mx-5 text-lg">Address description:</Text>
           <View className="mx-4 rounded-lg bg-slate-200">
             <TextInput
@@ -92,7 +82,7 @@ export const ManageEventEditLocationForm = (props: {
           </View>
         </View>
 
-        <View className="w-full">
+        <View>
           <ReviewSaveNextFormButtons
             eventId={eventId}
             savedEnabled={hasEdited}
@@ -113,6 +103,6 @@ export const ManageEventEditLocationForm = (props: {
           />
         </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithHeader>
   );
 };

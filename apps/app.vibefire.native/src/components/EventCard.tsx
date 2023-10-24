@@ -8,28 +8,34 @@ import { LinearGradient } from "expo-linear-gradient";
 import { type DateTime } from "luxon";
 
 import { type VibefireEventT } from "@vibefire/models";
+import { OrganisationProfileImageKey } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
   state: VibefireEventT["state"];
+  published: VibefireEventT["published"];
   eventInfo: {
     title: string;
+    organiserId: string;
     organiserName: string;
-    organiserProfileUrl?: string;
+    organiserType: VibefireEventT["organiserType"];
     addressDescription?: string;
     timeStart?: DateTime;
     timeEnd?: DateTime;
     bannerImgKey?: string;
   };
   onPress: (event: GestureResponderEvent) => void;
+  showPublishedBanner?: boolean;
 };
 
-export const EventCard: React.FC<EventCardProps> = ({
+export const EventCard = ({
   state,
+  published,
   eventInfo: event,
   onPress,
-}) => {
+  showPublishedBanner = false,
+}: EventCardProps) => {
   return (
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
       <EventImage
@@ -44,19 +50,25 @@ export const EventCard: React.FC<EventCardProps> = ({
         </View>
       )}
 
+      {published && showPublishedBanner && (
+        <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
+          <Text className="text-2xl font-bold text-white">Published</Text>
+        </View>
+      )}
+
       <LinearGradient
         className="absolute left-0 top-0 w-full flex-row items-center rounded-t-xl p-2"
         colors={["rgba(50, 40, 40, 1)", "rgba(0,0,0,0)"]}
         locations={[0, 1]}
       >
-        {event.organiserProfileUrl ? (
+        {event.organiserType === "organisation" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
-            source={event.organiserProfileUrl}
+            source={OrganisationProfileImageKey(event.organiserId)}
             alt="Event Organizer Profile Picture"
           />
         ) : (
-          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-red-600">
+          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black/80">
             <Text className="text-lg text-white">
               {event.organiserName.at(0)!.toUpperCase()}
               {"."}

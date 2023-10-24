@@ -7,42 +7,52 @@ import { isoNTZToUTCDateTime } from "@vibefire/utils";
 
 import { EventCard } from "./EventCard";
 
-export const EventsList: React.FC<{
+type EventsListProps = {
   events: PartialDeep<VibefireEventT>[];
   onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void;
-}> = ({ events, onEventPress }) => {
+  showPublishedBanner?: boolean;
+};
+
+export const EventsList = ({
+  events,
+  onEventPress,
+  showPublishedBanner = false,
+}: EventsListProps) => {
   const renderItem = useCallback(
-    (value: PartialDeep<VibefireEventT>, item: React.Key) => (
+    (event: PartialDeep<VibefireEventT>, item: React.Key) => (
       <View key={item}>
         <EventCard
-          state={value.state!}
+          state={event.state!}
+          published={event.published!}
           eventInfo={{
-            bannerImgKey: value.images?.banner ?? undefined,
-            title: value.title!,
-            organiserName: "Org Name",
-            organiserProfileUrl: "https://picsum.photos/200/300",
+            bannerImgKey: event.images?.banner ?? undefined,
+            title: event.title!,
+            organiserId: event.organiserId!,
+            organiserType: event.organiserType!,
+            organiserName: event.organiserName!,
             addressDescription:
-              value?.location?.addressDescription ?? undefined,
-            timeStart: value.timeStartIsoNTZ
-              ? isoNTZToUTCDateTime(value.timeStartIsoNTZ)
+              event?.location?.addressDescription ?? undefined,
+            timeStart: event.timeStartIsoNTZ
+              ? isoNTZToUTCDateTime(event.timeStartIsoNTZ)
               : undefined,
-            timeEnd: value.timeEndIsoNTZ
-              ? isoNTZToUTCDateTime(value.timeEndIsoNTZ)
+            timeEnd: event.timeEndIsoNTZ
+              ? isoNTZToUTCDateTime(event.timeEndIsoNTZ)
               : undefined,
           }}
           onPress={() => {
-            onEventPress(value.id!);
+            onEventPress(event.id!, event);
           }}
+          showPublishedBanner={showPublishedBanner}
         />
       </View>
     ),
-    [onEventPress],
+    [onEventPress, showPublishedBanner],
   );
   return (
     <View className="flex-col space-y-5">
       {events.length === 0 ? (
-        <View className="h-[50vh] items-center justify-center bg-black py-5">
-          <Text className="text-lg text-white">No events yet</Text>
+        <View className="h-[30vh] items-center justify-center">
+          <Text className="text-lg text-black">No events yet</Text>
         </View>
       ) : (
         events.map(renderItem)
