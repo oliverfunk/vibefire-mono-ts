@@ -16,10 +16,10 @@ routes = [{ pattern = "api.vibefire.app", custom_domain = true }]
 # class_name = "MyDurableObject"
 
 # # Bucket binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv#bucket
-[[r2_buckets]]
-binding = "BUCKET_IMAGES_EU"
-bucket_name = "images-test-eu"
-preview_bucket_name = "images-test-eu-preview"
+# [[r2_buckets]]
+# binding = "BUCKET_IMAGES_EU"
+# bucket_name = "images-eu"
+# preview_bucket_name = "images-eu-preview"
 
 # # Service binding - For more information: https://developers.cloudflare.com/workers/platform/services
 # [[routes]]

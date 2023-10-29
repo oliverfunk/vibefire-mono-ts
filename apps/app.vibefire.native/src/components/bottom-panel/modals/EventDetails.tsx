@@ -86,9 +86,17 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
       <View className="relative">
         {/* Background image */}
         {imgs.length === 1 ? (
-          <EventImage vfImgKey={imgs[0]} alt="Event Banner" />
+          <EventImage
+            eventId={event.id}
+            imgIdKey={imgs[0]}
+            alt="Event Banner"
+          />
         ) : (
-          <EventImageCarousel vfImgKeys={imgs} width={width} />
+          <EventImageCarousel
+            eventId={event.id}
+            imgIdKeys={imgs}
+            width={width}
+          />
         )}
 
         <LinearGradient

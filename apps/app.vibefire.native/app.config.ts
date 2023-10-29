@@ -3,8 +3,8 @@ import { type ConfigContext, type ExpoConfig } from "expo/config";
 const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "Vibefire",
-  slug: "vibefire-app",
-  scheme: "vbfr",
+  slug: "vibefire-native",
+  scheme: "vifr",
   version: "0.1.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -24,9 +24,7 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.native",
-    config: {
-      googleMapsApiKey: "AIzaSyCeqR2spuZJN30WEIdjvx4YFHOpbFGFIs4",
-    },
+    config: {},
   },
   android: {
     package: "app.vibefire.native",
@@ -34,17 +32,12 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#010101",
     },
-    config: {
-      googleMaps: {
-        apiKey: "AIzaSyCeqR2spuZJN30WEIdjvx4YFHOpbFGFIs4",
-      },
-    },
+    config: {},
   },
   extra: {
     eas: {
-      // projectId: "your-project-id",
+      projectId: "8ea03d1b-020b-4c3c-afd3-30f36bb961fe",
     },
-    // CLERK_PUBLISHABLE_KEY,
   },
   plugins: [
     "expo-router",

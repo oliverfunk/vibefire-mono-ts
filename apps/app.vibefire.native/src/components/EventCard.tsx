@@ -8,11 +8,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { type DateTime } from "luxon";
 
 import { type VibefireEventT } from "@vibefire/models";
-import { OrganisationProfileImageKey } from "@vibefire/utils";
+import { organisationProfileImagePath } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
+  eventId: string;
   state: VibefireEventT["state"];
   published: VibefireEventT["published"];
   eventInfo: {
@@ -30,6 +31,7 @@ type EventCardProps = {
 };
 
 export const EventCard = ({
+  eventId,
   state,
   published,
   eventInfo: event,
@@ -39,8 +41,9 @@ export const EventCard = ({
   return (
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
       <EventImage
+        eventId={eventId}
+        imgIdKey={event.bannerImgKey}
         rounded={true}
-        vfImgKey={event.bannerImgKey ?? "http"}
         alt="Event Banner"
       />
 
@@ -66,7 +69,7 @@ export const EventCard = ({
         {event.organiserType === "organisation" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
-            source={OrganisationProfileImageKey(event.organiserId)}
+            source={organisationProfileImagePath(event.organiserId)}
             alt="Event Organizer Profile Picture"
           />
         ) : (

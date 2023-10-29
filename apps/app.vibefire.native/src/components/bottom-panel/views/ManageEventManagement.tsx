@@ -113,6 +113,7 @@ const _ManagementView = (props: {
           <Text className="text-lg font-bold">Event Card (tap to preview)</Text>
           <View>
             <EventCard
+              eventId={event.id}
               state="ready"
               published={event.published}
               eventInfo={{

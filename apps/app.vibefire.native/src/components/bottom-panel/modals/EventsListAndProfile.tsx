@@ -1,13 +1,10 @@
-import { forwardRef, useCallback, useMemo, type Ref } from "react";
+import { forwardRef, useMemo, type Ref } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { useFocusEffect } from "@react-navigation/native";
 import { useAtomValue, useSetAtom } from "jotai";
-import { DateTime } from "luxon";
 
 import { type VibefireUserT } from "@vibefire/models";
 import { mapQueryResult } from "@vibefire/shared-state";
@@ -16,15 +13,9 @@ import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
-import { EventCard } from "~/components/EventCard";
 import { EventsList } from "~/components/EventList";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import { useMapQuery } from "~/hooks/useMapQuery";
-import {
-  navManageEvent,
-  navManageEventCreate,
-  navViewEventsByOrganiser,
-} from "~/nav";
+import { navManageEventCreate, navViewEventsByOrganiser } from "~/nav";
 import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "../_shared";
 import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 

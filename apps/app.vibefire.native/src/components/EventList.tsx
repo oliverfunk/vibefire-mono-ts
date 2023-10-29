@@ -22,6 +22,7 @@ export const EventsList = ({
     (event: PartialDeep<VibefireEventT>, item: React.Key) => (
       <View key={item}>
         <EventCard
+          eventId={event.id!}
           state={event.state!}
           published={event.published!}
           eventInfo={{
@@ -52,7 +53,7 @@ export const EventsList = ({
     <View className="flex-col space-y-5">
       {events.length === 0 ? (
         <View className="h-[30vh] items-center justify-center">
-          <Text className="text-lg text-black">No events yet</Text>
+          <Text className="text-lg text-black">No events here yet</Text>
         </View>
       ) : (
         events.map(renderItem)

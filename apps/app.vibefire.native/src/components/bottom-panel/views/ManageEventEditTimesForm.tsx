@@ -89,9 +89,9 @@ export const ManageEventEditTimesForm = (props: {
 
   return (
     <ScrollViewSheetWithHeader header="Edit">
-      <View className="my-5 flex-col space-y-10">
+      <View className="flex-col space-y-10 py-5">
         {/* Form */}
-        <View className="flex-col ">
+        <View className="flex-col">
           <View className="mx-4 flex-row items-center justify-center rounded-lg border py-2">
             <Text className="text-lg">
               Time zone: {currentEventData?.timeZone ?? "Not set"}

@@ -24,6 +24,7 @@
   "exports": {
     "./fauna": "./src/fauna/index.ts",
     "./clerk": "./src/clerk/index.ts",
+    "./cf-images": "./src/cloudflare-images/index.ts",
     "./g-maps": "./src/google-maps/index.ts"
   }
 }

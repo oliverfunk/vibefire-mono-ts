@@ -3,6 +3,7 @@ import { StatusBar } from "react-native";
 import Toast from "react-native-toast-message";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { ClerkLoaded } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 
 import AppProviders from "~/providers";
@@ -29,18 +30,20 @@ const RootLayout = () => {
 
   return (
     <AppProviders>
-      {/* Idk what this is */}
-      <StatusBar />
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            // Hide the header for all other routes.
-            headerShown: false,
-          }}
-        />
-      </Stack>
-      <Toast />
+      <ClerkLoaded>
+        {/* Idk what this is */}
+        <StatusBar />
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              // Hide the header for all other routes.
+              headerShown: false,
+            }}
+          />
+        </Stack>
+        <Toast />
+      </ClerkLoaded>
     </AppProviders>
   );
 };
