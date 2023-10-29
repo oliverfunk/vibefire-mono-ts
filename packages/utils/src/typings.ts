@@ -1,5 +1,9 @@
 import type { PartialDeep } from "type-fest";
 
+export type ImageVariant = "public";
+
+export type ImageTypes = "banner" | "additional" | "icon";
+
 type FinalType<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 export type Replace<T, U extends Partial<Record<keyof T, unknown>>> = FinalType<
   Omit<T, keyof U> & U
@@ -21,20 +25,21 @@ export const removeUndef = (
   removeEmpty = true,
 ) => {
   for (const key in obj) {
-    if (obj[key] === undefined) {
+    const o = obj[key];
+    if (o === undefined) {
       delete obj[key];
-    } else if (obj[key] === null) {
+    } else if (o === null) {
       // leave it
-    } else if (typeof obj[key] === "object") {
-      if (Array.isArray(obj[key])) {
+    } else if (typeof o === "object") {
+      if (Array.isArray(o)) {
         // filter out null, undefined, and empty string from the array
-        obj[key] = (obj[key] as Array<unknown>).filter(
+        obj[key] = (o as Array<unknown>).filter(
           (value) => value !== null && value !== undefined && value !== "",
         );
       } else {
-        removeUndef(obj[key] as { [key: string]: unknown });
+        removeUndef(o as { [key: string]: unknown });
 
-        if (removeEmpty && Object.keys(obj[key]).length === 0) {
+        if (removeEmpty && Object.keys(o).length === 0) {
           delete obj[key];
         }
       }

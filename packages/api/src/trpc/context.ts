@@ -21,11 +21,12 @@ type ContextProps = {
 
 export const createContext = async ({
   req,
+  cfAccountId,
+  cfImagesApiKey,
   googleMapsApiKey,
   clerkPemString,
   clerkIssuerApiUrl,
   faunaClientKey,
-  bucketImagesEU,
 }: CreateContextOptions) => {
   return {
     auth: await authRequestWithClerk(clerkPemString, clerkIssuerApiUrl, req),
@@ -34,15 +35,16 @@ export const createContext = async ({
       googleMapsApiKey,
       faunaClientKey,
     ),
-    imagesManager: getImagesManager(bucketImagesEU),
+    imagesManager: getImagesManager(bucketImagesEU, imageBackend),
   } as ContextProps;
 };
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
+  cfAccountId: string;
+  cfImagesApiKey: string;
   googleMapsApiKey: string;
   clerkPemString: string;
   clerkIssuerApiUrl: string;
   faunaClientKey: string;
   supabaseClientKey: string;
-  bucketImagesEU: R2Bucket;
 };

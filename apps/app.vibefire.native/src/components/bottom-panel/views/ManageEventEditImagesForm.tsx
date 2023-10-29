@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import Carousel from "react-native-reanimated-carousel";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
 import _ from "lodash";
@@ -10,13 +9,10 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { EventImage } from "~/components/EventImage";
 import { EventImageCarousel } from "~/components/EventImageCarousel";
-import { vfImgUrlDebug } from "~/apis/base-urls";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditReview } from "~/nav";
 import {
-  LinearRedOrangeView,
   ReviewSaveNextFormButtons,
-  ScrollViewSheet,
   ScrollViewSheetWithHeader,
 } from "../_shared";
 
@@ -24,7 +20,7 @@ const selectImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
-    aspect: [4, 3],
+    aspect: [4, 4],
     quality: 1,
     base64: true,
   });
@@ -51,18 +47,17 @@ export const ManageEventEditImagesForm = (props: {
 
   const currentEventFormData = useMemo(
     () => ({
-      banner: vfImgUrlDebug(currentEventData?.images?.banner),
-      additional:
-        currentEventData?.images?.additional?.map(
-          (imgKey) => vfImgUrlDebug(imgKey)!,
-        ) ?? [],
+      banner: currentEventData?.images?.banner,
+      additional: currentEventData?.images?.additional ?? [],
     }),
-    [currentEventData],
+    [currentEventData?.images?.additional, currentEventData?.images?.banner],
   );
 
   const [selectedFormData, setSelectedFormData] =
     useState(currentEventFormData);
   const hasEdited = !_.isEqual(selectedFormData, currentEventFormData);
+
+  console.log("selectedFormData", JSON.stringify(selectedFormData, null, 2));
 
   const selectedAdditionalImages = useMemo(() => {
     const addImages = selectedFormData.additional;
@@ -78,6 +73,8 @@ export const ManageEventEditImagesForm = (props: {
   const uploadBannerImage = trpc.events.uploadBannerImage.useMutation();
   const uploadAdditionalImage = trpc.events.uploadAdditionalImage.useMutation();
   const removeAdditionalImage = trpc.events.removeAdditionalImage.useMutation();
+
+  // const updateImages = trpc.events.updateImages.useMutation();
 
   useEffect(() => {
     if (uploadBannerImage.status === "success") {
@@ -132,7 +129,8 @@ export const ManageEventEditImagesForm = (props: {
               }}
             >
               <EventImage
-                vfImgKey={selectedFormData.banner}
+                eventId={eventId}
+                imgIdKey={selectedFormData.banner}
                 alt="Event Banner"
               />
             </TouchableOpacity>
@@ -162,7 +160,8 @@ export const ManageEventEditImagesForm = (props: {
           <View className="items-center">
             <EventImageCarousel
               width={width}
-              vfImgKeys={selectedAdditionalImages}
+              eventId={eventId}
+              imgIdKeys={selectedAdditionalImages}
               renderItem={({ index, item }) => {
                 if (item === "") {
                   return (
@@ -189,7 +188,8 @@ export const ManageEventEditImagesForm = (props: {
                 return (
                   <View className="relative items-center">
                     <EventImage
-                      vfImgKey={item}
+                      eventId={eventId}
+                      imgIdKey={item}
                       alt={`Additional Image ${index}`}
                     />
                     <TouchableOpacity

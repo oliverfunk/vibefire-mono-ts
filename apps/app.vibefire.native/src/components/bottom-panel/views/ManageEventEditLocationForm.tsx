@@ -38,7 +38,7 @@ export const ManageEventEditLocationForm = (props: {
 
   return (
     <ScrollViewSheetWithHeader header="Edit">
-      <View className="flex h-full flex-col items-center space-y-10 py-5">
+      <View className="flex-col space-y-10 py-5">
         <View className="flex-col">
           <Text className="mx-5 text-lg">Tap to select a location:</Text>
           <View className="mx-4 aspect-[4/4] border-2 border-slate-200">

@@ -63,14 +63,15 @@ const PaginationItem = (props: {
 };
 
 export const EventImageCarousel: React.FC<{
-  vfImgKeys: string[];
+  eventId: string;
+  imgIdKeys: string[];
   width: number;
   renderItem?: ({
     index,
     item,
   }: CarouselRenderItemInfo<string>) => React.JSX.Element;
 }> = (props) => {
-  const { vfImgKeys, width, renderItem } = props;
+  const { eventId, imgIdKeys: imgIdKeys, width, renderItem } = props;
 
   const progressValue = useSharedValue<number>(0);
 
@@ -85,28 +86,34 @@ export const EventImageCarousel: React.FC<{
         onProgressChange={(_, absoluteProgress) =>
           (progressValue.value = absoluteProgress)
         }
-        data={vfImgKeys}
+        data={imgIdKeys}
         panGestureHandlerProps={{
           activeOffsetX: [-10, 10],
         }}
         renderItem={
           renderItem
             ? renderItem
-            : ({ index, item }) => {
-                return <EventImage vfImgKey={item} alt={`Image ${index}`} />;
+            : ({ index, item: imgIdKey }) => {
+                return (
+                  <EventImage
+                    eventId={eventId}
+                    imgIdKey={imgIdKey}
+                    alt={`Image ${index}`}
+                  />
+                );
               }
         }
       />
       {!!progressValue && (
         <View className="absolute top-0 w-full items-center justify-center pt-2">
           <View className="flex-row space-x-2 rounded-md bg-gray-800/10 p-1">
-            {vfImgKeys.map((_, index) => {
+            {imgIdKeys.map((_, index) => {
               return (
                 <View key={index}>
                   <PaginationItem
                     animValue={progressValue}
                     index={index}
-                    length={vfImgKeys.length}
+                    length={imgIdKeys.length}
                   />
                 </View>
               );

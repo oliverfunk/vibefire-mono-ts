@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import Carousel from "react-native-reanimated-carousel";
 import { DateTime } from "luxon";
 import { type PartialDeep } from "type-fest";
 
@@ -17,11 +16,7 @@ import {
   navManageEventEditLocation,
   navManageEventEditTimes,
 } from "~/nav";
-import {
-  LinearRedOrangeView,
-  ScrollViewSheet,
-  ScrollViewSheetWithHeader,
-} from "../_shared";
+import { ScrollViewSheetWithHeader } from "../_shared";
 
 export const ManageEventEditReview = (props: {
   eventId: string;
@@ -213,7 +208,8 @@ export const ManageEventEditReview = (props: {
             <Text className="mx-5 text-lg">Banner image</Text>
             {currentEventData?.images?.banner ? (
               <EventImage
-                vfImgKey={currentEventData?.images?.banner}
+                eventId={eventId}
+                imgIdKey={currentEventData?.images?.banner}
                 alt="Event Banner"
               />
             ) : (
@@ -231,8 +227,9 @@ export const ManageEventEditReview = (props: {
             currentEventData?.images?.additional.length > 0 ? (
               <View className="items-center">
                 <EventImageCarousel
-                  vfImgKeys={currentEventData?.images?.additional}
                   width={width}
+                  eventId={eventId}
+                  imgIdKeys={currentEventData?.images?.additional}
                 />
               </View>
             ) : (

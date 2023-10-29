@@ -419,11 +419,11 @@ export class ApiDataQueryManager {
     });
   }
 
-  async eventUpdateUploadBannerImage(
-    imageManager: ImagesManager,
+  async eventUpdateImages(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    b64_image: string,
+    bannerImageId?: string,
+    additionalImageIds?: string[],
     organisationId?: string,
   ) {
     this._checkUserIsPartOfOrg(userAc, organisationId);
@@ -432,13 +432,22 @@ export class ApiDataQueryManager {
     const updateData: PartialDeep<VibefireEventT> = {};
     const updateImages: PartialDeep<VibefireEventImagesT> = {};
 
-    const imgPath = await imageManager.eventImageSet(
-      eventId,
-      b64_image,
-      "banner",
-    );
-    updateImages.banner = imgPath;
+    if (bannerImageId) {
+      bannerImageId = tbValidator(
+        VibefireEventSchema.properties.images.properties.banner,
+      )(bannerImageId);
+      updateImages.banner = bannerImageId;
+    }
+    if (additionalImageIds) {
+      additionalImageIds = tbValidator(
+        VibefireEventSchema.properties.images.properties.additional,
+      )(additionalImageIds);
+      updateImages.additional = additionalImageIds;
+    }
+
     updateData.images = updateImages;
+
+    // todo: remove unused images
 
     removeUndef(updateData);
 
@@ -464,65 +473,28 @@ export class ApiDataQueryManager {
       "Event not found",
     );
 
-    const updateData: PartialDeep<VibefireEventT> = {};
-    const updateImages: PartialDeep<VibefireEventImagesT> = {
-      additional: e.images?.additional ?? [],
-    };
-    const addi = updateImages.additional;
-    if (!Array.isArray(addi) || addi.length >= 5) {
+    const addi = e.images?.additional ?? [];
+    if (addi.length >= 5) {
       console.error(
         "Cannot add more than 5 additional images, eventId: " + eventId,
       );
       return;
     }
 
-    const imgPath = await imageManager.eventImageSet(
+    const imgIdKey = await imageManager.uploadUrlEventBanner(
       eventId,
       b64_image,
-      "additional",
     );
 
-    addi.push(imgPath);
-    updateData.images = updateImages;
+    // todo: remove unused images
 
-    removeUndef(updateData);
-
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async eventUpdateRemoveAdditionalImage(
-    imageManager: ImagesManager,
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    imageKey: string,
-    organisationId?: string,
-  ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const e = await safeGet(
-      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
-      "Event not found",
-    );
-
-    const updateData: PartialDeep<VibefireEventT> = {};
+    addi.push(imgIdKey);
     const updateImages: PartialDeep<VibefireEventImagesT> = {
-      additional: e.images?.additional ?? [],
+      additional: addi,
     };
-
-    const additionalImgs = updateImages.additional;
-    if (!Array.isArray(additionalImgs) || additionalImgs.length === 0) {
-      return;
-    }
-
-    await imageManager.eventImageRemove(imageKey);
-
-    updateImages.additional = additionalImgs.filter((i) => i !== imageKey);
-    updateData.images = updateImages;
+    const updateData: PartialDeep<VibefireEventT> = {
+      images: updateImages,
+    };
 
     removeUndef(updateData);
 
