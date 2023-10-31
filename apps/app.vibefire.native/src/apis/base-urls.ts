@@ -5,7 +5,7 @@ import { BASEPATH_REST } from "@vibefire/api/src/basepaths";
 const _localApiPort = 8787;
 
 export const apiBaseUrl = () => {
-  return "https://api.vibefire.app";
+  // return "https://api.vibefire.app";
   const debuggerHost =
     Constants.expoConfig?.hostUri ??
     Constants.manifest2?.extra?.expoGo?.debuggerHost;

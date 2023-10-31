@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { Image, type ImageProps } from "expo-image";
 
-import { eventImageKey } from "@vibefire/utils";
-
 import { imgUrl } from "~/apis/base-urls";
 
 const blurhash =
@@ -24,7 +22,7 @@ export const StandardImage = ({
     cachePolicy={"none"}
     placeholder={blurhash}
     contentFit="cover"
-    transition={1000}
+    transition={500}
   />
 );
 
@@ -46,7 +44,7 @@ export const EventImage = ({
     if (imgIdKey.startsWith("http")) {
       return imgIdKey;
     }
-    return imgUrl(eventImageKey(eventId, imgIdKey));
+    return imgUrl(imgIdKey + "/public");
   }, [eventId, imgIdKey]);
 
   return (

@@ -1,10 +1,8 @@
 import { Hono } from "hono";
-import { logger } from "hono/logger";
 
-import {
-  getWebhooksClerkManager,
-  getWebhooksDataManager,
-} from "@vibefire/managers/webhooks";
+import { getClerkWebhookManager } from "@vibefire/managers/clerk-webhook";
+import { setManagersContext } from "@vibefire/managers/context";
+import { getFaunaManager } from "@vibefire/managers/fauna";
 
 import { validateToHttpExp } from "./utils";
 
@@ -15,15 +13,19 @@ type Bindings = {
 
 const webhooksRouter = new Hono<{ Bindings: Bindings }>();
 
-webhooksRouter.use("*", logger());
+webhooksRouter.use("*", async (c, next) => {
+  setManagersContext({
+    faunaClientKey: c.env.FAUNA_SECRET,
+    clerkWebhookSecret: c.env.CLERK_WEBHOOK_SECRET,
+  });
+  await next();
+});
 
 webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 
 webhooksRouter.post("/clerk/user", async (c) => {
-  const webhooksDataManager = getWebhooksDataManager(c.env.FAUNA_SECRET);
-  const webhooksClerkManager = getWebhooksClerkManager(
-    c.env.CLERK_WEBHOOK_SECRET,
-  );
+  const fauna = getFaunaManager();
+  const webhooksClerkManager = getClerkWebhookManager();
 
   const headers = c.req.headers;
   const payload = await c.req.text();
@@ -56,7 +58,7 @@ webhooksRouter.post("/clerk/user", async (c) => {
         (p) => p.id == primary_phone_number_id,
       )?.phone_number;
 
-      const _userID = await webhooksDataManager.userCreate(
+      const _userID = await fauna.userCreate(
         aid,
         first_name,
         contactEmail,

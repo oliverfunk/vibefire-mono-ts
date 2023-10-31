@@ -14,6 +14,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 import { type VibefireEventT } from "@vibefire/models";
+import { organisationProfileImagePath } from "@vibefire/utils";
 
 import { CustomBackground } from "~/components/bottom-panel/CustomBackground";
 import { EventImage, StandardImage } from "~/components/EventImage";
@@ -31,10 +32,10 @@ import {
 
 const _EventOrganiserBarView = (props: {
   organiserName: string;
-  organiserProfileUrl?: string;
-  organiserId?: string;
+  organiserId: string;
+  organiserType: VibefireEventT["organiserType"];
 }) => {
-  const { organiserName, organiserProfileUrl, organiserId } = props;
+  const { organiserName, organiserId, organiserType } = props;
   return (
     <Pressable
       className="flex-row items-center justify-center space-x-4 bg-black p-2"
@@ -42,14 +43,14 @@ const _EventOrganiserBarView = (props: {
         console.log("pressed organiser bar");
       }}
     >
-      {organiserProfileUrl ? (
+      {organiserType === "organisation" ? (
         <StandardImage
-          cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-orange-400"
-          source={organiserProfileUrl}
+          cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
+          source={organisationProfileImagePath(organiserId)}
           alt="Event Organizer Profile Picture"
         />
       ) : (
-        <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-red-600">
+        <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black">
           <Text className="text-lg text-white">
             {organiserName.at(0)!.toUpperCase()}
             {"."}
@@ -110,7 +111,11 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
       </View>
       {/* Main */}
       <View className="flex-col">
-        <_EventOrganiserBarView organiserName="Organiser Name Organiser Name Organiser Name Organiser Name" />
+        <_EventOrganiserBarView
+          organiserName={event.organiserName}
+          organiserId={event.organiserId}
+          organiserType={event.organiserType}
+        />
 
         {/* Description */}
         <View className="bg-black p-2">

@@ -1,12 +1,12 @@
-import { type R2Bucket } from "@cloudflare/workers-types";
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 import {
-  getApiDataQueryManager,
-  getGoogleMapsManager,
-  getImagesManager,
-} from "@vibefire/managers/api";
+  setManagersContext,
+  type ManagersContext,
+} from "@vibefire/managers/context";
+import { getFaunaManager } from "@vibefire/managers/fauna";
+import { getGoogleMapsManager } from "@vibefire/managers/google-maps";
 import {
   authRequestWithClerk,
   type ClerkAuthContext,
@@ -14,37 +14,24 @@ import {
 
 type ContextProps = {
   auth: ClerkAuthContext;
+  fauna: ReturnType<typeof getFaunaManager>;
   googleMapsManager: ReturnType<typeof getGoogleMapsManager>;
-  apiDataQueryManager: ReturnType<typeof getApiDataQueryManager>;
-  imagesManager: ReturnType<typeof getImagesManager>;
 };
 
-export const createContext = async ({
-  req,
-  cfAccountId,
-  cfImagesApiKey,
-  googleMapsApiKey,
-  clerkPemString,
-  clerkIssuerApiUrl,
-  faunaClientKey,
-}: CreateContextOptions) => {
+export const createContext = async ({ req, env }: CreateContextOptions) => {
+  setManagersContext(env);
+
   return {
-    auth: await authRequestWithClerk(clerkPemString, clerkIssuerApiUrl, req),
-    googleMapsManager: getGoogleMapsManager(googleMapsApiKey),
-    apiDataQueryManager: getApiDataQueryManager(
-      googleMapsApiKey,
-      faunaClientKey,
+    auth: await authRequestWithClerk(
+      env.clerkPemString!,
+      env.clerkIssuerApiUrl!,
+      req,
     ),
-    imagesManager: getImagesManager(bucketImagesEU, imageBackend),
+    fauna: getFaunaManager(),
+    googleMapsManager: getGoogleMapsManager(),
   } as ContextProps;
 };
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
-  cfAccountId: string;
-  cfImagesApiKey: string;
-  googleMapsApiKey: string;
-  clerkPemString: string;
-  clerkIssuerApiUrl: string;
-  faunaClientKey: string;
-  supabaseClientKey: string;
+  env: ManagersContext;
 };

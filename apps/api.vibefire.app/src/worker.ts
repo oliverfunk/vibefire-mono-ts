@@ -2,6 +2,7 @@
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { timing } from "hono/timing";
 
 import {
   BASEPATH_REST,
@@ -25,6 +26,8 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+app.use("*", timing());
+
 app.onError((err, c) => {
   console.error(JSON.stringify(err, null, 2));
   if (err instanceof HTTPException) {
@@ -43,13 +46,15 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
     createContext: async (opts) =>
       await createContext({
         ...opts,
-        cfAccountId: c.env.CF_ACCOUNT_ID,
-        cfImagesApiKey: c.env.CF_IMAGES_API_KEY,
-        clerkPemString: c.env.CLERK_PEM,
-        clerkIssuerApiUrl: c.env.CLERK_ISSUER_API_URL,
-        faunaClientKey: c.env.FAUNA_SECRET,
-        supabaseClientKey: c.env.SUPABASE_SECRET,
-        googleMapsApiKey: c.env.GOOGLE_MAPS_API_KEY,
+        env: {
+          cfAccountId: c.env.CF_ACCOUNT_ID,
+          cfImagesApiKey: c.env.CF_IMAGES_API_KEY,
+          clerkPemString: c.env.CLERK_PEM,
+          clerkIssuerApiUrl: c.env.CLERK_ISSUER_API_URL,
+          faunaClientKey: c.env.FAUNA_SECRET,
+          supabaseClientKey: c.env.SUPABASE_SECRET,
+          googleMapsApiKey: c.env.GOOGLE_MAPS_API_KEY,
+        },
       }),
   });
   return trpcHandler(c, next);

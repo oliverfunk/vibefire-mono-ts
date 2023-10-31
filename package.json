@@ -2,7 +2,7 @@
   "name": "vibefire-mono-babe",
   "private": true,
   "engines": {
-    "node": ">=v18.16.0"
+    "node": ">=v20.9.0"
   },
   "packageManager": "pnpm@8.5.1",
   "scripts": {

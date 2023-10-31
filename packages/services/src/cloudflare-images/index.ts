@@ -1,5 +1,4 @@
 import { type VibefireEventT } from "@vibefire/models";
-import { type ImageTypes } from "@vibefire/utils";
 
 const getUploadUrl = async (
   accountId: string,
@@ -32,8 +31,7 @@ const getUploadUrl = async (
     );
   }
 
-  const d = (await res.json()) as Record<string, unknown>;
-  return d;
+  return (await res.json()) as Record<string, unknown>;
 };
 
 export const getUploadUrlForEventImage = async (
@@ -41,12 +39,10 @@ export const getUploadUrlForEventImage = async (
   apiKey: string,
   eventId: VibefireEventT["id"],
   organiserId: VibefireEventT["organiserId"],
-  type: ImageTypes,
 ) => {
   const metadata = {
     eventId,
     owner: organiserId,
-    type,
   };
 
   return await getUploadUrl(accountId, apiKey, undefined, metadata);
