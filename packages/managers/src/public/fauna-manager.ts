@@ -21,6 +21,7 @@ import {
   callPublicEventsInPeriodInAreas,
   createEvent,
   createEventManagement,
+  createUser,
   deleteUser,
   getEventFromIDByOrganiser,
   getEventManagementFromEventIDByOrganiser,
@@ -41,48 +42,34 @@ import {
   zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
-import { safeGet } from "~/utils";
-import { getGoogleMapsManager } from "..";
-import { type GoogleMapsManager } from "../google-maps-manager";
-import { type ImagesManager } from "../images-manager";
+import { getManagersContext } from "~/managers-context";
+import { getImagesManager } from "~/private/images-manager";
+import { getGoogleMapsManager } from "~/public/google-maps-manager";
+import { checkUserIsPartOfOrg, safeGet } from "~/utils";
 
-export class ApiDataQueryManager {
-  private googleMapsManager: GoogleMapsManager;
+let _FaunaManager: FaunaManager | undefined;
+export const getFaunaManager = (): FaunaManager => {
+  "use strict";
+  if (!_FaunaManager) {
+    const faunaKey = getManagersContext().faunaClientKey!;
+    _FaunaManager = new FaunaManager(faunaKey);
+  }
+  return _FaunaManager;
+};
+
+export class FaunaManager {
   private faunaClient: Client;
-  // private supabaseClient: ReturnType<typeof createClient> | undefined;
-  constructor(googleMapsApiKey: string, faunaKey: string) {
-    this.googleMapsManager = getGoogleMapsManager(googleMapsApiKey);
+  constructor(faunaKey: string) {
     this.faunaClient = new Client({
       secret: faunaKey,
     });
-    // this.supabaseClient = createClient(
-    //   "https://hlfwftvznmtrejjxclvr.supabase.co",
-    //   supabaseKey,
-    //   { auth: { persistSession: false } },
-    // );
   }
-
-  _checkUserIsPartOfOrg(
-    userAc: ClerkSignedInAuthContext,
-    organisationId?: string,
-  ) {
-    if (organisationId !== undefined) {
-      if (userAc.organization === undefined) {
-        throw new Error("User is not part of an organization");
-      }
-      if (organisationId !== userAc.organization.id) {
-        throw new Error("User is not part of that organization");
-      }
-      // check if the user has a role that is able to create events for the organization
-    }
-  }
-
   // #region Event
   async eventsByOrganiser(
     userAc: ClerkSignedInAuthContext,
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
 
     const organiserId = organisationId || userAc.userId;
 
@@ -95,7 +82,7 @@ export class ApiDataQueryManager {
     eventId: string,
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
 
     const organiserId = organisationId || userAc.userId;
 
@@ -116,7 +103,7 @@ export class ApiDataQueryManager {
     eventId: string,
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
 
     const organiserId = organisationId || userAc.userId;
 
@@ -146,7 +133,7 @@ export class ApiDataQueryManager {
     eventId: string,
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
 
     const organiserId = organisationId || userAc.userId;
 
@@ -164,7 +151,6 @@ export class ApiDataQueryManager {
   }
 
   async publishedEventForExternalView(userId: string, eventId: string) {
-    console.log("event id", JSON.stringify(eventId, null, 2));
     const e = await getPublishedEventFromID(this.faunaClient, eventId);
     if (!e) {
       throw new Error("Event unavailable [1]");
@@ -208,7 +194,7 @@ export class ApiDataQueryManager {
     title: VibefireEventT["title"],
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
 
     // check if the user is spamming create events
     // have say 5 in draft max
@@ -244,7 +230,7 @@ export class ApiDataQueryManager {
     tags?: VibefireEventT["tags"],
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const updateData: Partial<VibefireEventT> = {};
@@ -280,11 +266,13 @@ export class ApiDataQueryManager {
     addressDescription?: VibefireEventLocationT["addressDescription"],
     organisationId?: string,
   ) {
+    const googleMapsManager = getGoogleMapsManager();
+
     if (!(position && addressDescription)) {
       return { id: eventId };
     }
 
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const dbE = await safeGet(
@@ -310,7 +298,7 @@ export class ApiDataQueryManager {
       updateLocation.h3Parents = h3ParentsDec;
 
       // get timezone based on new position
-      const posTZ = await this.googleMapsManager.getTimeZoneFromPosition(
+      const posTZ = await googleMapsManager.getTimeZoneFromPosition(
         position,
         dbE.timeStart ?? DateTime.now().toUnixInteger(),
       );
@@ -361,7 +349,7 @@ export class ApiDataQueryManager {
 
     // todo: round the time to the nearest 15 mins
 
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const e = await safeGet(
@@ -426,7 +414,7 @@ export class ApiDataQueryManager {
     additionalImageIds?: string[],
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const updateData: PartialDeep<VibefireEventT> = {};
@@ -458,51 +446,20 @@ export class ApiDataQueryManager {
     });
   }
 
-  async eventUpdateUploadAdditionalImage(
-    imageManager: ImagesManager,
+  async eventImageUploadLink(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    b64_image: string,
     organisationId?: string,
-  ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+  ): Promise<{
+    id: string;
+    uploadURL: string;
+  }> {
+    const imageManager = getImagesManager();
+
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await safeGet(
-      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
-      "Event not found",
-    );
-
-    const addi = e.images?.additional ?? [];
-    if (addi.length >= 5) {
-      console.error(
-        "Cannot add more than 5 additional images, eventId: " + eventId,
-      );
-      return;
-    }
-
-    const imgIdKey = await imageManager.uploadUrlEventBanner(
-      eventId,
-      b64_image,
-    );
-
-    // todo: remove unused images
-
-    addi.push(imgIdKey);
-    const updateImages: PartialDeep<VibefireEventImagesT> = {
-      additional: addi,
-    };
-    const updateData: PartialDeep<VibefireEventT> = {
-      images: updateImages,
-    };
-
-    removeUndef(updateData);
-
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
+    return await imageManager.eventUploadUrl(eventId, organiserId);
   }
 
   async eventUpdateTimeline(
@@ -515,7 +472,7 @@ export class ApiDataQueryManager {
     }[] = [],
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const e = await safeGet(
@@ -560,7 +517,7 @@ export class ApiDataQueryManager {
     eventId: string,
     organisationId?: string,
   ) {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const e = await getEventFromIDByOrganiser(
@@ -611,7 +568,7 @@ export class ApiDataQueryManager {
     eventId: string,
     organisationId?: string,
   ): Promise<void> {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const e = await getEventFromIDByOrganiser(
@@ -643,7 +600,7 @@ export class ApiDataQueryManager {
     eventId: string,
     organisationId?: string,
   ): Promise<void> {
-    this._checkUserIsPartOfOrg(userAc, organisationId);
+    checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
     const updateData: Partial<VibefireEventT> = {
@@ -721,6 +678,52 @@ export class ApiDataQueryManager {
   // #endregion
 
   // #region User
+  async userCreate(
+    aid: string,
+    firstName: string,
+    primaryEmail: string | undefined,
+    primaryPhone: string | undefined,
+    birthdayISO: string | undefined,
+  ) {
+    if (!aid) {
+      throw new Error("aid is required");
+    }
+    if (firstName.length < 2) {
+      throw new Error("firstName must be at least 2 characters long");
+    }
+    if (
+      primaryEmail &&
+      !Value.Check(VibefireUserSchema.properties.contactEmail, primaryEmail)
+    ) {
+      console.error("primaryEmail is invalid");
+      primaryEmail = undefined;
+    }
+    if (
+      primaryPhone &&
+      !Value.Check(VibefireUserSchema.properties.phoneNumber, primaryPhone)
+    ) {
+      console.error("primaryPhone is invalid");
+      primaryPhone = undefined;
+    }
+
+    const dateOfBirth = !!birthdayISO
+      ? DateTime.fromISO(birthdayISO).toISODate() ?? undefined
+      : undefined;
+
+    const u = Value.Create(VibefireUserSchema);
+
+    u.aid = aid;
+    u.name = firstName;
+    u.contactEmail = primaryEmail;
+    u.phoneNumber = primaryPhone;
+    u.dateOfBirth = dateOfBirth;
+
+    removeUndef(u);
+
+    const res = await createUser(this.faunaClient, u);
+    return res;
+  }
+
   async getUserInfo(userAc: ClerkSignedInAuthContext) {
     let res = await getUserByAid(this.faunaClient, userAc.userId);
     if (!res) {

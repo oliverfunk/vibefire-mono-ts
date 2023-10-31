@@ -17,7 +17,9 @@
     "@vibefire/config": "*"
   },
   "exports": {
-    "./api": "./src/api/index.ts",
-    "./webhooks": "./src/webhooks/index.ts"
+    "./context": "./src/managers-context.ts",
+    "./fauna": "./src/public/fauna-manager.ts",
+    "./google-maps": "./src/public/google-maps-manager.ts",
+    "./clerk-webhook": "./src/public/clerk-wh-manager.ts"
   }
 }

@@ -36,10 +36,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as PartialDeep<VibefireEventT>[])
     .query(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventsByOrganiser(
-        ctx.auth,
-        input.organisationId,
-      );
+      return await ctx.fauna.eventsByOrganiser(ctx.auth, input.organisationId);
     }),
   eventForEdit: authedProcedure
     .input(
@@ -52,7 +49,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as Partial<VibefireEventT>)
     .query(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventForEdit(
+      return await ctx.fauna.eventForEdit(
         ctx.auth,
         input.eventId,
         input.organisationId,
@@ -75,7 +72,7 @@ export const eventsRouter = router({
         },
     )
     .query(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventAllInfoForManagement(
+      return await ctx.fauna.eventAllInfoForManagement(
         ctx.auth,
         input.eventId,
         input.organisationId,
@@ -92,7 +89,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as VibefireEventT)
     .query(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventFromIDByOrganiser(
+      return await ctx.fauna.eventFromIDByOrganiser(
         ctx.auth,
         input.eventId,
         input.organisationId,
@@ -112,7 +109,7 @@ export const eventsRouter = router({
       if (ctx.auth.userId) {
         userId = ctx.auth.userId;
       }
-      return await ctx.apiDataQueryManager.publishedEventForExternalView(
+      return await ctx.fauna.publishedEventForExternalView(
         userId,
         input.eventId,
       );
@@ -128,7 +125,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventCreate(
+      return await ctx.fauna.eventCreate(
         ctx.auth,
         input.title,
         input.organisationId,
@@ -148,7 +145,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateDescriptions(
+      return await ctx.fauna.eventUpdateDescriptions(
         ctx.auth,
         input.eventId,
         input.title,
@@ -170,7 +167,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateLocation(
+      return await ctx.fauna.eventUpdateLocation(
         ctx.auth,
         input.eventId,
         input.position,
@@ -191,7 +188,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateTimes(
+      return await ctx.fauna.eventUpdateTimes(
         ctx.auth,
         input.eventId,
         input.timeStartIsoNTZ,
@@ -199,58 +196,48 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
-  uploadBannerImage: authedProcedure
+  updateImages: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
-          b64_image: t.String(),
+          bannerImageId: t.Optional(t.String()),
+          additionalImageIds: t.Optional(t.Array(t.String())),
+          organisationId: t.Optional(t.String()),
         }),
       ),
     )
-    // .output((value) => value as { id: string })
+    .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateUploadBannerImage(
-        ctx.imagesManager,
+      return await ctx.fauna.eventUpdateImages(
         ctx.auth,
         input.eventId,
-        input.b64_image,
+        input.bannerImageId,
+        input.additionalImageIds,
+        input.organisationId,
       );
     }),
-  uploadAdditionalImage: authedProcedure
+  getImageUploadLink: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
-          b64_image: t.String(),
+          organisationId: t.Optional(t.String()),
         }),
       ),
     )
-    // .output((value) => value as { id: string })
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateUploadAdditionalImage(
-        ctx.imagesManager,
-        ctx.auth,
-        input.eventId,
-        input.b64_image,
-      );
-    }),
-  removeAdditionalImage: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          additionalImageKey: t.String(),
-        }),
-      ),
+    .output(
+      (value) =>
+        value as {
+          id: string;
+          uploadURL: string;
+        },
     )
-    // .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateRemoveAdditionalImage(
-        ctx.imagesManager,
+      return await ctx.fauna.eventImageUploadLink(
         ctx.auth,
         input.eventId,
-        input.additionalImageKey,
+        input.organisationId,
       );
     }),
   setReady: authedProcedure
@@ -262,10 +249,7 @@ export const eventsRouter = router({
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventSetReady(
-        ctx.auth,
-        input.eventId,
-      );
+      return await ctx.fauna.eventSetReady(ctx.auth, input.eventId);
     }),
   setPublished: authedProcedure
     .input(
@@ -276,10 +260,7 @@ export const eventsRouter = router({
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventSetPublished(
-        ctx.auth,
-        input.eventId,
-      );
+      return await ctx.fauna.eventSetPublished(ctx.auth, input.eventId);
     }),
   setUnpublished: authedProcedure
     .input(
@@ -290,10 +271,7 @@ export const eventsRouter = router({
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventSetUnpublished(
-        ctx.auth,
-        input.eventId,
-      );
+      return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
     }),
   updateTimeline: authedProcedure
     .input(
@@ -313,7 +291,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventUpdateTimeline(
+      return await ctx.fauna.eventUpdateTimeline(
         ctx.auth,
         input.eventId,
         input.timeline,
@@ -324,6 +302,6 @@ export const eventsRouter = router({
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
-      return await ctx.apiDataQueryManager.eventsFromMapQuery(input);
+      return await ctx.fauna.eventsFromMapQuery(input);
     }),
 });

@@ -1,40 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { FontAwesome } from "@expo/vector-icons";
 import _ from "lodash";
 import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
-import { EventImage } from "~/components/EventImage";
 import { EventImageCarousel } from "~/components/EventImageCarousel";
+import { UploadableEventImage } from "~/components/UploadableEventImage";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditReview } from "~/nav";
 import {
   ReviewSaveNextFormButtons,
   ScrollViewSheetWithHeader,
 } from "../_shared";
-
-const selectImage = async () => {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [4, 4],
-    quality: 1,
-    base64: true,
-  });
-
-  if (result.canceled || !result.assets) {
-    return undefined;
-  }
-
-  const b64 = result.assets[0].base64;
-  if (!b64) {
-    return undefined;
-  }
-  return b64;
-};
 
 export const ManageEventEditImagesForm = (props: {
   eventId: string;
@@ -57,8 +35,6 @@ export const ManageEventEditImagesForm = (props: {
     useState(currentEventFormData);
   const hasEdited = !_.isEqual(selectedFormData, currentEventFormData);
 
-  console.log("selectedFormData", JSON.stringify(selectedFormData, null, 2));
-
   const selectedAdditionalImages = useMemo(() => {
     const addImages = selectedFormData.additional;
     if (!addImages) {
@@ -70,27 +46,13 @@ export const ManageEventEditImagesForm = (props: {
     return addImages;
   }, [selectedFormData]);
 
-  const uploadBannerImage = trpc.events.uploadBannerImage.useMutation();
-  const uploadAdditionalImage = trpc.events.uploadAdditionalImage.useMutation();
-  const removeAdditionalImage = trpc.events.removeAdditionalImage.useMutation();
-
-  // const updateImages = trpc.events.updateImages.useMutation();
+  const updateImages = trpc.events.updateImages.useMutation();
 
   useEffect(() => {
-    if (uploadBannerImage.status === "success") {
+    if (updateImages.status === "success") {
       dataRefetch();
     }
-  }, [uploadBannerImage.status, dataRefetch]);
-  useEffect(() => {
-    if (uploadAdditionalImage.status === "success") {
-      dataRefetch();
-    }
-  }, [uploadAdditionalImage.status, dataRefetch]);
-  useEffect(() => {
-    if (removeAdditionalImage.status === "success") {
-      dataRefetch();
-    }
-  }, [removeAdditionalImage.status, dataRefetch]);
+  }, [updateImages.status, dataRefetch]);
 
   useEffect(() => {
     setSelectedFormData(currentEventFormData);
@@ -115,44 +77,21 @@ export const ManageEventEditImagesForm = (props: {
 
         <View className="w-full flex-col space-y-2">
           <Text className="mx-5 text-lg">Banner image (tap to change):</Text>
-          {selectedFormData.banner ? (
-            <TouchableOpacity
-              onPress={async () => {
-                const img_b64 = await selectImage();
-                if (!img_b64) {
-                  return;
-                }
-                uploadBannerImage.mutate({
-                  eventId,
-                  b64_image: img_b64,
-                });
-              }}
-            >
-              <EventImage
-                eventId={eventId}
-                imgIdKey={selectedFormData.banner}
-                alt="Event Banner"
-              />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              className="aspect-[4/4] w-full items-center justify-center bg-slate-200"
-              onPress={async () => {
-                const img_b64 = await selectImage();
-                if (!img_b64) {
-                  return;
-                }
-                uploadBannerImage.mutate({
-                  eventId,
-                  b64_image: img_b64,
-                });
-              }}
-            >
-              <Text className="text-center text-lg text-black">
-                Add banner image
-              </Text>
-            </TouchableOpacity>
-          )}
+          <UploadableEventImage
+            eventId={eventId}
+            imgIdKey={selectedFormData.banner}
+            alt={`Banner image`}
+            unsetImageText="Add Banner Image"
+            selectNewOnSelected={true}
+            onImageUploaded={(imgKeyId: string) => {
+              setSelectedFormData((prev) => {
+                return {
+                  ...prev,
+                  banner: imgKeyId,
+                };
+              });
+            }}
+          />
         </View>
 
         <View className="w-full flex-col space-y-2">
@@ -163,52 +102,33 @@ export const ManageEventEditImagesForm = (props: {
               eventId={eventId}
               imgIdKeys={selectedAdditionalImages}
               renderItem={({ index, item }) => {
-                if (item === "") {
-                  return (
-                    <TouchableOpacity
-                      className="aspect-[4/4] w-full items-center justify-center bg-slate-200"
-                      onPress={async () => {
-                        const img_b64 = await selectImage();
-                        if (!img_b64) {
-                          return;
-                        }
-
-                        uploadAdditionalImage.mutate({
-                          eventId,
-                          b64_image: img_b64,
-                        });
-                      }}
-                    >
-                      <Text className="text-center text-lg text-black">
-                        Add additional image
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }
                 return (
-                  <View className="relative items-center">
-                    <EventImage
-                      eventId={eventId}
-                      imgIdKey={item}
-                      alt={`Additional Image ${index}`}
-                    />
-                    <TouchableOpacity
-                      className="absolute right-2 top-2 h-7 w-7 items-center justify-center rounded-full bg-black/50"
-                      onPress={() => {
-                        const imgKey =
-                          currentEventData?.images?.additional?.at(index);
-                        if (!imgKey) {
-                          return;
-                        }
-                        removeAdditionalImage.mutate({
-                          eventId,
-                          additionalImageKey: imgKey,
-                        });
-                      }}
-                    >
-                      <FontAwesome name="close" size={20} color="white" />
-                    </TouchableOpacity>
-                  </View>
+                  <UploadableEventImage
+                    eventId={eventId}
+                    imgIdKey={item}
+                    alt={`Additional image ${index}`}
+                    unsetImageText="Add Additional Image"
+                    onClosePress={() => {
+                      setSelectedFormData((prev) => {
+                        const newAdditional = [...prev.additional];
+                        newAdditional.splice(index, 1);
+                        return {
+                          ...prev,
+                          additional: newAdditional,
+                        };
+                      });
+                    }}
+                    onImageUploaded={(imgKeyId: string) => {
+                      setSelectedFormData((prev) => {
+                        const newAdditional = [...prev.additional];
+                        newAdditional[index] = imgKeyId;
+                        return {
+                          ...prev,
+                          additional: newAdditional,
+                        };
+                      });
+                    }}
+                  />
                 );
               }}
             />
@@ -224,9 +144,11 @@ export const ManageEventEditImagesForm = (props: {
                 return;
               }
               setFormErrors([]);
-              // updateImages.mutate({
-              //   eventId,
-              // });
+              updateImages.mutate({
+                eventId,
+                bannerImageId: selectedFormData.banner,
+                additionalImageIds: selectedFormData.additional,
+              });
             }}
             onPressNext={() => {
               navManageEventEditReview(eventId);
