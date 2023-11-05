@@ -32,6 +32,7 @@ import {
   updateUserInfo,
 } from "@vibefire/services/fauna";
 import {
+  cropText,
   h3ToH3Parents,
   hexToDecimal,
   isoNTZToTZEpochSecs,
@@ -42,7 +43,7 @@ import {
   zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
-import { getManagersContext } from "~/managers-context";
+import { managersContext } from "~/managers-context";
 import { getImagesManager } from "~/private/images-manager";
 import { getGoogleMapsManager } from "~/public/google-maps-manager";
 import { checkUserIsPartOfOrg, safeGet } from "~/utils";
@@ -51,7 +52,7 @@ let _FaunaManager: FaunaManager | undefined;
 export const getFaunaManager = (): FaunaManager => {
   "use strict";
   if (!_FaunaManager) {
-    const faunaKey = getManagersContext().faunaClientKey!;
+    const faunaKey = managersContext().faunaClientKey!;
     _FaunaManager = new FaunaManager(faunaKey);
   }
   return _FaunaManager;
@@ -201,6 +202,10 @@ export class FaunaManager {
 
     const e = Value.Create(VibefireEventSchema);
     e.organiserId = organisationId || userAc.userId;
+
+    title = tbValidator(VibefireEventSchema.properties.title)(
+      cropText(title, 100),
+    );
     e.title = title;
 
     if (organisationId === undefined) {
@@ -236,16 +241,19 @@ export class FaunaManager {
     const updateData: Partial<VibefireEventT> = {};
 
     if (title) {
-      title = tbValidator(VibefireEventSchema.properties.title)(title);
+      title = tbValidator(VibefireEventSchema.properties.title)(
+        cropText(title, 100),
+      );
       updateData.title = title;
     }
     if (description) {
       description = tbValidator(VibefireEventSchema.properties.description)(
-        description.trim(),
+        cropText(description.trim(), 2000),
       );
       updateData.description = description;
     }
     if (tags) {
+      tags = tags.map((t) => cropText(t, 20));
       tags = tbValidator(VibefireEventSchema.properties.tags)(tags);
       updateData.tags = tags;
     }
@@ -268,7 +276,7 @@ export class FaunaManager {
   ) {
     const googleMapsManager = getGoogleMapsManager();
 
-    if (!(position && addressDescription)) {
+    if (position === undefined && addressDescription === undefined) {
       return { id: eventId };
     }
 
@@ -321,10 +329,11 @@ export class FaunaManager {
     if (addressDescription) {
       updateLocation.addressDescription = tbValidator(
         VibefireEventSchema.properties.location.properties.addressDescription,
-      )(addressDescription.trim());
+      )(cropText(addressDescription, 500));
     }
 
     updateData.location = updateLocation;
+
     removeUndef(updateData);
 
     // ! NB: if e.state == 'ready', could merge updateData with e and validate
@@ -357,11 +366,7 @@ export class FaunaManager {
       "Event not found",
     );
 
-    if (e.timeZone === undefined) {
-      throw new Error("A timezone/location must be set before setting times");
-    }
-
-    const tz = e.timeZone;
+    const tz = e.timeZone ?? "utc";
 
     const updateData: Partial<VibefireEventT> = {
       timeStart: e.timeStart,
@@ -446,7 +451,7 @@ export class FaunaManager {
     });
   }
 
-  async eventImageUploadLink(
+  async generateEventImageUploadLink(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
     organisationId?: string,
@@ -490,7 +495,7 @@ export class FaunaManager {
       let tle = Value.Create(VibefireEventTimelineElementSchema);
       tle.id = el.id;
       tle.timeIsoNTZ = el.timeIsoNTZ;
-      tle.message = el.message.trim();
+      tle.message = cropText(el.message, 500);
       tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
       updateTimeline.push(tle);
     }
@@ -616,8 +621,6 @@ export class FaunaManager {
     });
   }
 
-  async eventFromId(eventId: string) {}
-
   async eventsFromMapQuery(query: MapQueryT) {
     const { northEast, southWest, timePeriod, zoomLevel } = query;
 
@@ -691,22 +694,21 @@ export class FaunaManager {
     if (firstName.length < 2) {
       throw new Error("firstName must be at least 2 characters long");
     }
-    if (
-      primaryEmail &&
-      !Value.Check(VibefireUserSchema.properties.contactEmail, primaryEmail)
-    ) {
-      console.error("primaryEmail is invalid");
-      primaryEmail = undefined;
+
+    firstName = cropText(firstName, 100);
+
+    if (primaryEmail) {
+      primaryEmail = tbValidator(VibefireUserSchema.properties.contactEmail)(
+        cropText(primaryEmail, 500),
+      );
     }
-    if (
-      primaryPhone &&
-      !Value.Check(VibefireUserSchema.properties.phoneNumber, primaryPhone)
-    ) {
-      console.error("primaryPhone is invalid");
-      primaryPhone = undefined;
+    if (primaryPhone) {
+      primaryPhone = tbValidator(VibefireUserSchema.properties.phoneNumber)(
+        cropText(primaryPhone, 100),
+      );
     }
 
-    const dateOfBirth = !!birthdayISO
+    const dateOfBirth = birthdayISO
       ? DateTime.fromISO(birthdayISO).toISODate() ?? undefined
       : undefined;
 

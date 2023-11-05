@@ -4,3 +4,4 @@ export * from "./src/typebox-hono-validator";
 export * from "./src/typings";
 export * from "./src/time-conversion";
 export * from "./src/image-path";
+export * from "./src/general";

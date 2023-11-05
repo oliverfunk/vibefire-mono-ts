@@ -234,7 +234,7 @@ export const eventsRouter = router({
         },
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventImageUploadLink(
+      return await ctx.fauna.generateEventImageUploadLink(
         ctx.auth,
         input.eventId,
         input.organisationId,

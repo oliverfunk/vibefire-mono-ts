@@ -1,13 +1,13 @@
 import { getUploadUrlForEventImage } from "@vibefire/services/cf-images";
 
-import { getManagersContext } from "~/managers-context";
+import { managersContext } from "~/managers-context";
 
 let _imagesManager: ImagesManager | undefined;
 export const getImagesManager = (): ImagesManager => {
   "use strict";
   if (!_imagesManager) {
-    const cfAccountId = getManagersContext().cfAccountId!;
-    const cfImagesApiKey = getManagersContext().cfImagesApiKey!;
+    const cfAccountId = managersContext().cfAccountId!;
+    const cfImagesApiKey = managersContext().cfImagesApiKey!;
     _imagesManager = new ImagesManager(cfAccountId, cfImagesApiKey);
   }
   return _imagesManager;

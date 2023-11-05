@@ -2,7 +2,7 @@ import { useCallback, useMemo, type ReactNode } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
-import { useOAuth, type UseOAuthFlowParams } from "@clerk/clerk-expo";
+import { useAuth, useOAuth, type UseOAuthFlowParams } from "@clerk/clerk-expo";
 
 import { useWarmUpBrowser } from "~/hooks/useWarmUpBrowser";
 
@@ -17,6 +17,8 @@ export const AuthButton = (props: {
 }) => {
   useWarmUpBrowser();
 
+  const { signOut } = useAuth();
+
   const { startOAuthFlow } = useOAuth(props.oauth);
   const oauthRedirectUrl = useMemo(
     () =>
@@ -25,11 +27,11 @@ export const AuthButton = (props: {
       }),
     [],
   );
-  console.log(JSON.stringify(a, null, 2));
 
   const onPress = useCallback(async () => {
-    console.log(`Signing in with ${props.text}, redirect: ${oauthRedirectUrl}`);
     try {
+      await signOut();
+
       const { createdSessionId, setActive } = await startOAuthFlow({
         redirectUrl: oauthRedirectUrl,
       });
@@ -44,7 +46,7 @@ export const AuthButton = (props: {
     } catch (err) {
       console.error("OAuth error", err);
     }
-  }, [startOAuthFlow]);
+  }, [oauthRedirectUrl, signOut, startOAuthFlow]);
 
   return (
     <TouchableOpacity

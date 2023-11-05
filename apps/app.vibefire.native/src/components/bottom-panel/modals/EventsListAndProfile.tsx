@@ -1,6 +1,7 @@
 import { forwardRef, useMemo, type Ref } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSignUp } from "@clerk/clerk-expo";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -13,11 +14,18 @@ import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
+import {
+  AniHandle,
+  SEARCH_HANDLE_HEIGHT,
+} from "~/components/bottom-panel/AniHandle";
 import { EventsList } from "~/components/EventList";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import { navManageEventCreate, navViewEventsByOrganiser } from "~/nav";
+import {
+  navManageEventCreate,
+  navViewEvent,
+  navViewEventsByOrganiser,
+} from "~/nav";
 import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "../_shared";
-import { SEARCH_HANDLE_HEIGHT, SearchHandle } from "../SearchHandle";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
@@ -34,6 +42,7 @@ const _Profile = () => {
   //   },
   // };
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
+  const { signUp } = useSignUp();
 
   switch (user.state) {
     case "loading":
@@ -89,6 +98,7 @@ const _Profile = () => {
       );
     case "authenticated":
       const userInfo = user.userInfo as VibefireUserT;
+
       return (
         <ScrollViewSheet>
           <View className="my-5 flex h-full flex-col items-center space-y-5">
@@ -106,25 +116,33 @@ const _Profile = () => {
                   {userInfo.contactEmail ? (
                     <Text className="ml-4">{userInfo.contactEmail}</Text>
                   ) : (
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity onPress={async () => {}}>
                       <Text className="ml-4">Tap to add email</Text>
                     </TouchableOpacity>
                   )}
                 </View>
               </View>
 
-              <View className="w-full flex-col">
+              {/* <View className="w-full flex-col">
                 <Text className="ml-4">Phone number</Text>
                 <View className="rounded-lg bg-slate-200 py-2">
                   {userInfo.phoneNumber ? (
                     <Text className="ml-4">{userInfo.phoneNumber}</Text>
                   ) : (
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        console.log("prepareSecondFactor");
+                        // Prepare the second factor verification by
+                        // specifying the phone code strategy. An SMS
+                        // message with a one-time code will be sent
+                        // to the user's verified phone number.
+                      }}
+                    >
                       <Text className="ml-4">Tap to add phone number</Text>
                     </TouchableOpacity>
                   )}
                 </View>
-              </View>
+              </View> */}
             </View>
 
             <LinearRedOrangeView className="w-full flex-row items-center justify-center p-6">
@@ -166,7 +184,12 @@ const _EventsList = () => {
   return (
     <ScrollViewSheet>
       <View className="px-2 pb-5">
-        <EventsList events={mqr} onEventPress={(eventId) => {}} />
+        <EventsList
+          events={mqr}
+          onEventPress={(eventId) => {
+            navViewEvent(eventId);
+          }}
+        />
       </View>
     </ScrollViewSheet>
   );
@@ -184,7 +207,7 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       enableDismissOnClose={false}
       enablePanDownToClose={false}
       backgroundStyle={{
-        backgroundColor: "white",
+        backgroundColor: "rgba(255,255,255,0.9)",
       }}
       keyboardBehavior="extend"
       bottomInset={insets.bottom}
@@ -192,7 +215,7 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       snapPoints={snapPoints}
       // onChange={handleSheetChange}
       handleHeight={SEARCH_HANDLE_HEIGHT}
-      handleComponent={SearchHandle}
+      handleComponent={AniHandle}
     >
       {/* This is supposed to render both
       profile and events list but only display one */}
