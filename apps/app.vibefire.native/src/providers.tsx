@@ -23,6 +23,8 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const userSessionRetry = useAtomValue(userSessionRetryAtom);
 
   const { isLoaded, isSignedIn } = useUser();
+  const setUser = useSetAtom(userAtom);
+
   const getSession = trpc.auth.getSession.useMutation();
   const getSessionMutDbc = useMemo(
     () => debounce(getSession.mutate, 1000),
@@ -34,7 +36,6 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-  const setUser = useSetAtom(userAtom);
 
   useEffect(() => {
     if (isLoaded) {
@@ -54,6 +55,7 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         }
         break;
       case "success":
+        // Sentry.Native.setUser({ email: "john.doe@example.com" });
         setUser(getSession.data);
         break;
     }

@@ -24,6 +24,7 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.native",
+    associatedDomains: ["applinks:vifr.io"],
     config: {},
   },
   android: {
@@ -32,7 +33,31 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#010101",
     },
-    config: {},
+    intentFilters: [
+      {
+        action: "VIEW",
+        autoVerify: true,
+        data: [
+          {
+            scheme: "https",
+            host: "*.vifr.io",
+            pathPrefix: "/",
+          },
+        ],
+        category: ["BROWSABLE", "DEFAULT"],
+      },
+    ],
+  },
+  hooks: {
+    postPublish: [
+      {
+        file: "sentry-expo/upload-sourcemaps",
+        config: {
+          organization: "vibefire",
+          project: "vibefire-native",
+        },
+      },
+    ],
   },
   extra: {
     eas: {
@@ -55,6 +80,7 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
         photosPermission: "Allow $(PRODUCT_NAME) to accesses your photos.",
       },
     ],
+    "sentry-expo",
   ],
 });
 export default expoConfig;

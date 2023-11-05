@@ -13,7 +13,7 @@ let _ManagersContext: ManagersContext | undefined;
 export const setManagersContext = (ctx: ManagersContext) => {
   _ManagersContext = ctx;
 };
-export const getManagersContext = (): ManagersContext => {
+export const managersContext = (): ManagersContext => {
   if (!_ManagersContext) {
     throw new Error("ManagersContext not set");
   }

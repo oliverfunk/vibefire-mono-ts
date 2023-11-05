@@ -1,8 +1,8 @@
-import { FC, memo, PropsWithChildren } from "react";
+import { memo, type PropsWithChildren } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const SafeAreaViewNoTopComponent: FC<PropsWithChildren> = ({ children }) => {
+const SafeAreaViewNoTopComponent = ({ children }: PropsWithChildren) => {
   const insets = useSafeAreaInsets();
   return (
     <View

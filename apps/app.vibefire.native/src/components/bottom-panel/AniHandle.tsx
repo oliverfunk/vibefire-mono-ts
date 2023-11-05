@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import React, { useMemo } from "react";
-import { StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import {
+  NativeSyntheticEvent,
+  Pressable,
+  StyleSheet,
+  TextInputChangeEventData,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -9,7 +17,17 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { toRad } from "react-native-redash";
-import { type BottomSheetHandleProps } from "@gorhom/bottom-sheet";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import {
+  useBottomSheet,
+  type BottomSheetHandleProps,
+} from "@gorhom/bottom-sheet";
+import { useAtom } from "jotai";
+
+import { TimePeriodPicker } from "~/components/TimePeriodPicker";
+import { profileSelectedAtom } from "~/atoms";
+
+export const SEARCH_HANDLE_HEIGHT = 70;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -101,32 +119,78 @@ export const AniHandle: React.FC<HandleProps> = ({ style, animatedIndex }) => {
       ),
     };
   });
+
+  const [profileSelected, setProfileSelected] = useAtom(profileSelectedAtom);
+  const [value, setValue] = useState("initialValue");
+  const { expand } = useBottomSheet();
+
   //#endregion
 
   // render
   return (
-    <Animated.View
-      style={[containerStyle, containerAnimatedStyle]}
-      renderToHardwareTextureAndroid={true}
+    <View
+      className={`h-[${SEARCH_HANDLE_HEIGHT + 1}px] flex-col justify-center`}
     >
-      <Animated.View style={[leftIndicatorStyle, leftIndicatorAnimatedStyle]} />
-      <Animated.View
-        style={[rightIndicatorStyle, rightIndicatorAnimatedStyle]}
-      />
-    </Animated.View>
+      <View className="h-4 flex-row items-start justify-center">
+        <Animated.View
+          style={[containerStyle, containerAnimatedStyle]}
+          renderToHardwareTextureAndroid={true}
+        >
+          <Animated.View
+            style={[leftIndicatorStyle, leftIndicatorAnimatedStyle]}
+          />
+          <Animated.View
+            style={[rightIndicatorStyle, rightIndicatorAnimatedStyle]}
+          />
+        </Animated.View>
+      </View>
+      <View className="flex-row items-center justify-between px-4">
+        <Pressable
+          className={`h-10 w-10 items-center justify-center rounded-full border ${
+            profileSelected ? "bg-black" : "bg-white"
+          }`}
+          onPress={() => {
+            const showProfile = !profileSelected;
+            setProfileSelected(showProfile);
+            if (showProfile) {
+              expand();
+            }
+          }}
+        >
+          <FontAwesome5 name="search" size={20} color="black" />
+        </Pressable>
+        <View className="flex-row space-x-1">
+          <View className="rounded-xl bg-blue-400">
+            <TimePeriodPicker width={50} height={SEARCH_HANDLE_HEIGHT / 2} />
+          </View>
+          <View className="rounded-xl bg-blue-400">
+            <TimePeriodPicker width={200} height={SEARCH_HANDLE_HEIGHT / 2} />
+          </View>
+        </View>
+        <Pressable
+          className={`h-10 w-10 items-center justify-center rounded-full border ${
+            profileSelected ? "bg-black" : "bg-white"
+          }`}
+          onPress={() => {
+            const showProfile = !profileSelected;
+            setProfileSelected(showProfile);
+            if (showProfile) {
+              expand();
+            }
+          }}
+        >
+          {profileSelected ? (
+            <FontAwesome name="close" size={20} color="white" />
+          ) : (
+            <FontAwesome5 name="user-alt" size={20} color="black" />
+          )}
+        </Pressable>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    alignContent: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#fff",
-  },
   indicator: {
     position: "absolute",
     width: 10,

@@ -2,13 +2,13 @@ import { type UserWebhookEvent } from "@clerk/backend";
 
 import { validateClerkWebhook } from "@vibefire/services/clerk";
 
-import { getManagersContext } from "~/managers-context";
+import { managersContext } from "~/managers-context";
 
 let _ClerkWebhookManager: ClerkWebhookManager | undefined;
 export const getClerkWebhookManager = (): ClerkWebhookManager => {
   "use strict";
   if (!_ClerkWebhookManager) {
-    const clerkWebhookSecret = getManagersContext().clerkWebhookSecret!;
+    const clerkWebhookSecret = managersContext().clerkWebhookSecret!;
     _ClerkWebhookManager = new ClerkWebhookManager(clerkWebhookSecret);
   }
   return _ClerkWebhookManager;

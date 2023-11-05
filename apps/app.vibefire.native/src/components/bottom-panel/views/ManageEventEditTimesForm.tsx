@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
@@ -18,10 +17,7 @@ import {
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditImages } from "~/nav";
 import {
-  ErrorSheet,
-  LinearRedOrangeView,
   ReviewSaveNextFormButtons,
-  ScrollViewSheet,
   ScrollViewSheetWithHeader,
 } from "../_shared";
 
@@ -31,12 +27,6 @@ export const ManageEventEditTimesForm = (props: {
   dataRefetch: () => void;
 }) => {
   const { eventId, currentEventData, dataRefetch } = props;
-
-  if (!currentEventData?.timeZone) {
-    return (
-      <ErrorSheet message="A location must be set before setting the times" />
-    );
-  }
 
   const [formErrors, setFormErrors] = useState<string[]>([]);
 

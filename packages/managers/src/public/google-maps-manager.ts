@@ -7,13 +7,13 @@ import {
   type GoogleMapsClient,
 } from "@vibefire/services/g-maps";
 
-import { getManagersContext } from "~/managers-context";
+import { managersContext } from "~/managers-context";
 
 let _GoogleMapsManager: GoogleMapsManager | undefined;
 export const getGoogleMapsManager = (): GoogleMapsManager => {
   "use strict";
   if (!_GoogleMapsManager) {
-    const googleMapsApiKey = getManagersContext().googleMapsApiKey!;
+    const googleMapsApiKey = managersContext().googleMapsApiKey!;
     _GoogleMapsManager = new GoogleMapsManager(googleMapsApiKey);
   }
   return _GoogleMapsManager;
