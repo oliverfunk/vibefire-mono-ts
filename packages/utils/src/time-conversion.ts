@@ -4,6 +4,8 @@ export const MONTH_DATE_TIME_FORMAT = "LLL d, T";
 export const MONTH_DATE_TIME_LB_FORMAT = "LLL d\nT";
 export const H24_TIME_FORMAT = "T";
 
+export const nowDateStr = () => DateTime.now().toFormat("yyyyMMdd");
+
 export const nowAsUTC = () =>
   DateTime.now().setZone("utc", { keepLocalTime: true });
 

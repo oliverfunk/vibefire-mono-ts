@@ -224,12 +224,21 @@ importers:
       react-native:
         specifier: 0.72.6
         version: 0.72.6(@babel/core@7.22.10)(@babel/preset-env@7.22.10)(react@18.2.0)
+      react-native-element-dropdown:
+        specifier: ^2.10.0
+        version: 2.10.0(react-native@0.72.6)(react@18.2.0)
       react-native-gesture-handler:
         specifier: ~2.12.1
         version: 2.12.1(react-native@0.72.6)(react@18.2.0)
       react-native-maps:
         specifier: 1.7.1
         version: 1.7.1(react-native-web@0.19.7)(react-native@0.72.6)(react@18.2.0)
+      react-native-modal-datetime-picker:
+        specifier: ^17.1.0
+        version: 17.1.0(@react-native-community/datetimepicker@7.2.0)(react-native@0.72.6)
+      react-native-popup-menu:
+        specifier: ^0.16.1
+        version: 0.16.1
       react-native-reanimated:
         specifier: ~3.3.0
         version: 3.3.0(@babel/core@7.22.10)(@babel/plugin-proposal-nullish-coalescing-operator@7.18.6)(@babel/plugin-proposal-optional-chaining@7.21.0)(@babel/plugin-transform-arrow-functions@7.22.5)(@babel/plugin-transform-shorthand-properties@7.22.5)(@babel/plugin-transform-template-literals@7.22.5)(react-native@0.72.6)(react@18.2.0)
@@ -11940,6 +11949,18 @@ packages:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: false
 
+  /react-native-element-dropdown@2.10.0(react-native@0.72.6)(react@18.2.0):
+    resolution: {integrity: sha512-aFjw0JbUIKGkqklHxDm8aDCZW6Q1GICP7pIHc0sllvpWpEamItzOwAMV4G1mBIKxED77Mp+nkq9p0Dhsr/faVw==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      lodash: 4.17.21
+      react: 18.2.0
+      react-native: 0.72.6(@babel/core@7.22.10)(@babel/preset-env@7.22.10)(react@18.2.0)
+    dev: false
+
   /react-native-gesture-handler@2.12.1(react-native@0.72.6)(react@18.2.0):
     resolution: {integrity: sha512-deqh36bw82CFUV9EC4tTo2PP1i9HfCOORGS3Zmv71UYhEZEHkzZv18IZNPB+2Awzj45vLIidZxGYGFxHlDSQ5A==}
     peerDependencies:
@@ -11969,6 +11990,21 @@ packages:
       react: 18.2.0
       react-native: 0.72.6(@babel/core@7.22.10)(@babel/preset-env@7.22.10)(react@18.2.0)
       react-native-web: 0.19.7(react-dom@18.2.0)(react@18.2.0)
+    dev: false
+
+  /react-native-modal-datetime-picker@17.1.0(@react-native-community/datetimepicker@7.2.0)(react-native@0.72.6):
+    resolution: {integrity: sha512-jfTwfaCLtBffYbQ+pOGFLM+J5HmUh3vb9rT0JrrQPjxzecdc8pNYreB1c96+mVuq8bDCvaCdIeuEsslTqLJL0Q==}
+    peerDependencies:
+      '@react-native-community/datetimepicker': '>=6.7.0'
+      react-native: '>=0.65.0'
+    dependencies:
+      '@react-native-community/datetimepicker': 7.2.0
+      prop-types: 15.8.1
+      react-native: 0.72.6(@babel/core@7.22.10)(@babel/preset-env@7.22.10)(react@18.2.0)
+    dev: false
+
+  /react-native-popup-menu@0.16.1:
+    resolution: {integrity: sha512-xRS7mRh0exwu7Iw8PPVHdM11d13A/KzYjy0/fZx3zVtxISxPkNaDGayau6oa7HqO3Nj0oS9ulFCYjcQfG6vahA==}
     dev: false
 
   /react-native-reanimated-carousel@3.5.1(react-native-gesture-handler@2.12.1)(react-native-reanimated@3.3.0)(react-native@0.72.6)(react@18.2.0):

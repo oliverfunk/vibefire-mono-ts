@@ -7,9 +7,7 @@ import { type VibefireEventT } from "@vibefire/models";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditLocation } from "~/nav";
 import {
-  LinearRedOrangeView,
   ReviewSaveNextFormButtons,
-  ScrollViewSheet,
   ScrollViewSheetWithHeader,
 } from "../_shared";
 
@@ -75,7 +73,6 @@ export const ManageEventEditDescriptionsForm = (props: {
               }
               value={editDetailsEventState?.description}
               placeholder=""
-              // autoFocus={true}
             />
           </View>
         </View>

@@ -59,7 +59,7 @@ export const EventTimeline = (props: {
         title: "End",
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        dotColor: "red",
+        dotColor: "#FF2400",
       });
     }
     return rtn;
@@ -71,7 +71,7 @@ export const EventTimeline = (props: {
       isUsingFlatlist={false}
       innerCircle="dot"
       dotSize={5}
-      circleColor="red"
+      circleColor="#FF2400"
       lineColor="white"
       renderFullLine={true}
       circleStyle={{ alignSelf: "center" }}

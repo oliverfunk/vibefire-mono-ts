@@ -1,15 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-  NativeSyntheticEvent,
+  Dimensions,
+  Modal,
   Pressable,
   StyleSheet,
-  TextInputChangeEventData,
+  Text,
+  TextInput,
+  TouchableOpacity,
   View,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -23,19 +25,162 @@ import {
   type BottomSheetHandleProps,
 } from "@gorhom/bottom-sheet";
 import { useAtom } from "jotai";
+import { DateTime } from "luxon";
 
-import { TimePeriodPicker } from "~/components/TimePeriodPicker";
-import { profileSelectedAtom } from "~/atoms";
+import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
+import { profileSelectedAtom, selectedDateStrAtom } from "~/atoms";
 
-export const SEARCH_HANDLE_HEIGHT = 70;
+export const SEARCH_HANDLE_HEIGHT = 60;
 
+const DatePicker = () => {
+  const [selectedDate, setSelectedDate] = useAtom(selectedDateStrAtom);
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  return (
+    <TouchableOpacity
+      className="flex-row items-center justify-center space-x-1"
+      onPress={() => {
+        setShowDatePicker(true);
+      }}
+    >
+      <DateTimePickerModal
+        isVisible={showDatePicker}
+        date={selectedDate}
+        mode="date"
+        onConfirm={(date) => {
+          setShowDatePicker(false);
+          if (date) setSelectedDate(date);
+        }}
+        onCancel={() => {
+          setShowDatePicker(false);
+        }}
+        onError={(_) => {
+          setShowDatePicker(false);
+        }}
+        maximumDate={new Date(2030, 1, 1)}
+        minimumDate={new Date(2020, 1, 1)}
+      />
+      <FontAwesome5 name="calendar-alt" size={20} color="black" />
+      <Text className="text-lg">
+        {DateTime.fromJSDate(selectedDate).toFormat("d")}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+const IconButton = (props: {
+  icon: React.ReactNode;
+  onPress: () => void;
+  cn?: string;
+}) => {
+  return (
+    <Pressable
+      className={`h-10 w-10 items-center justify-center rounded-full border ${props.cn}`}
+      onPress={props.onPress}
+    >
+      {props.icon}
+    </Pressable>
+  );
+};
+
+const SearchButton = () => {
+  const height = Dimensions.get("window").height;
+  const width = Dimensions.get("window").width;
+
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchString, setSearchString] = useState("");
+
+  if (showSearchModal) {
+    return (
+      <>
+        <Modal visible={showSearchModal} transparent animationType="fade">
+          <Pressable
+            className="h-full w-full bg-black/20"
+            onPress={() => setShowSearchModal(false)}
+          >
+            <View
+              className="absolute flex-row items-center space-x-2 overflow-hidden rounded-full bg-white px-4"
+              style={{
+                top: height / 10,
+                left: width / 25,
+                right: width / 25,
+              }}
+            >
+              <FontAwesome5 name="search" size={20} color="black" />
+              <TextInput
+                className="rounded-lg py-4"
+                style={{ fontSize: 20 }}
+                placeholderTextColor={"gray"}
+                multiline={true}
+                onChangeText={(text) => setSearchString(text)}
+                value={searchString}
+                autoFocus={true}
+                // placeholder="Search for a place or an event"
+                placeholder="This feature isn't ready yet"
+              />
+            </View>
+          </Pressable>
+        </Modal>
+        <IconButton
+          icon={<FontAwesome name="close" size={20} color="white" />}
+          onPress={() => {
+            setShowSearchModal(false);
+          }}
+          cn="bg-black"
+        />
+      </>
+    );
+  }
+
+  return (
+    <IconButton
+      icon={<FontAwesome5 name="search" size={20} color="black" />}
+      onPress={() => {
+        setShowSearchModal(true);
+      }}
+      cn="bg-white"
+    />
+  );
+};
+
+const ProfileButton = () => {
+  const [profileSelected, setProfileSelected] = useAtom(profileSelectedAtom);
+
+  const { expand } = useBottomSheet();
+
+  return profileSelected ? (
+    <IconButton
+      icon={<FontAwesome5 name="eye" size={20} color="white" />}
+      onPress={() => {
+        setProfileSelected(false);
+      }}
+      cn="bg-black"
+    />
+  ) : (
+    <IconButton
+      icon={<FontAwesome5 name="user-alt" size={20} color="black" />}
+      onPress={() => {
+        setProfileSelected(true);
+        expand();
+      }}
+      cn="bg-white"
+    />
+  );
+};
+
+// <3 ignorance is bliss
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export const transformOrigin = ({ x, y }, ...transformations) => {
+const transformOrigin = ({ x, y }, ...transformations) => {
   "worklet";
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return [
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     { translateX: x },
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     { translateY: y },
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     ...transformations,
     { translateX: x * -1 },
     { translateY: y * -1 },
@@ -46,15 +191,12 @@ interface HandleProps extends BottomSheetHandleProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export const AniHandle: React.FC<HandleProps> = ({ style, animatedIndex }) => {
-  //#region animations
+const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
   const indicatorTransformOriginY = useDerivedValue(() =>
     interpolate(animatedIndex.value, [0, 1, 2], [-1, 0, 1], Extrapolate.CLAMP),
   );
-  //#endregion
 
-  //#region styles
-  const containerStyle = useMemo(() => [styles.header, style], [style]);
+  const containerStyle = useMemo(() => [style], [style]);
   const containerAnimatedStyle = useAnimatedStyle(() => {
     const borderTopRadius = interpolate(
       animatedIndex.value,
@@ -120,72 +262,41 @@ export const AniHandle: React.FC<HandleProps> = ({ style, animatedIndex }) => {
     };
   });
 
-  const [profileSelected, setProfileSelected] = useAtom(profileSelectedAtom);
-  const [value, setValue] = useState("initialValue");
-  const { expand } = useBottomSheet();
-
-  //#endregion
-
-  // render
   return (
-    <View
-      className={`h-[${SEARCH_HANDLE_HEIGHT + 1}px] flex-col justify-center`}
+    <Animated.View
+      style={[containerStyle, containerAnimatedStyle]}
+      renderToHardwareTextureAndroid={true}
     >
-      <View className="h-4 flex-row items-start justify-center">
-        <Animated.View
-          style={[containerStyle, containerAnimatedStyle]}
-          renderToHardwareTextureAndroid={true}
-        >
-          <Animated.View
-            style={[leftIndicatorStyle, leftIndicatorAnimatedStyle]}
-          />
-          <Animated.View
-            style={[rightIndicatorStyle, rightIndicatorAnimatedStyle]}
-          />
-        </Animated.View>
-      </View>
-      <View className="flex-row items-center justify-between px-4">
-        <Pressable
-          className={`h-10 w-10 items-center justify-center rounded-full border ${
-            profileSelected ? "bg-black" : "bg-white"
-          }`}
-          onPress={() => {
-            const showProfile = !profileSelected;
-            setProfileSelected(showProfile);
-            if (showProfile) {
-              expand();
-            }
-          }}
-        >
-          <FontAwesome5 name="search" size={20} color="black" />
-        </Pressable>
+      <Animated.View style={[leftIndicatorStyle, leftIndicatorAnimatedStyle]} />
+      <Animated.View
+        style={[rightIndicatorStyle, rightIndicatorAnimatedStyle]}
+      />
+    </Animated.View>
+  );
+};
+
+export const AniHandle = (props: HandleProps) => {
+  return (
+    <View className={`flex-row items-end justify-around pb-2 pt-1`}>
+      <SearchButton />
+
+      <View className="flex-col items-center justify-center space-y-4">
+        <AnimatedArrow
+          style={props.style}
+          animatedIndex={props.animatedIndex}
+          animatedPosition={props.animatedPosition}
+        />
         <View className="flex-row space-x-1">
-          <View className="rounded-xl bg-blue-400">
-            <TimePeriodPicker width={50} height={SEARCH_HANDLE_HEIGHT / 2} />
+          <View className="rounded-lg border px-2">
+            <DatePicker />
           </View>
-          <View className="rounded-xl bg-blue-400">
-            <TimePeriodPicker width={200} height={SEARCH_HANDLE_HEIGHT / 2} />
+          <View className="rounded-lg border">
+            <TimeOfDayPicker width={200} height={SEARCH_HANDLE_HEIGHT / 2} />
           </View>
         </View>
-        <Pressable
-          className={`h-10 w-10 items-center justify-center rounded-full border ${
-            profileSelected ? "bg-black" : "bg-white"
-          }`}
-          onPress={() => {
-            const showProfile = !profileSelected;
-            setProfileSelected(showProfile);
-            if (showProfile) {
-              expand();
-            }
-          }}
-        >
-          {profileSelected ? (
-            <FontAwesome name="close" size={20} color="white" />
-          ) : (
-            <FontAwesome5 name="user-alt" size={20} color="black" />
-          )}
-        </Pressable>
       </View>
+
+      <ProfileButton />
     </View>
   );
 };
