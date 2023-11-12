@@ -22,8 +22,8 @@ import { EventsList } from "~/components/EventList";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import {
   navManageEventCreate,
+  navOwnEventsByOrganiser,
   navViewEvent,
-  navViewEventsByOrganiser,
 } from "~/nav";
 import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "../_shared";
 
@@ -72,7 +72,7 @@ const _Profile = () => {
     case "unauthenticated":
       return (
         <ScrollViewSheet>
-          <View className="mt-5 flex h-full flex-col items-center space-y-5">
+          <View className="mt-10 flex h-full flex-col items-center space-y-5">
             <FontAwesome5 name="user-alt" size={150} />
             <View className="mx-10 flex-row">
               <Text className="text-center">
@@ -161,7 +161,7 @@ const _Profile = () => {
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
                   // navManageEvent("374673133350682830");
-                  navViewEventsByOrganiser();
+                  navOwnEventsByOrganiser();
                 }}
               >
                 <Text className="text-xl text-white">Your events</Text>

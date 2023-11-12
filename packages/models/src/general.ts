@@ -1,5 +1,14 @@
 import { Type as t, type Static } from "@sinclair/typebox";
 
+export const TimeOfDaySchema = t.Union([
+  t.Literal("D"),
+  t.Literal("E"),
+  t.Literal("M"),
+  t.Literal("A"),
+  t.Literal("N"),
+]);
+export type TimeOfDayT = Static<typeof TimeOfDaySchema>;
+
 export const TimePeriodSchema = t.String({ pattern: `^[0-9]{8}\/[E,M,A,N]$` });
 export type TimePeriodT = Static<typeof TimePeriodSchema>;
 

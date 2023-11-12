@@ -1,15 +1,27 @@
-import { forwardRef, useCallback, useMemo, type Ref } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type Ref,
+} from "react";
 import {
   Dimensions,
+  Modal,
   Pressable,
+  Share,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { FontAwesome5 } from "@expo/vector-icons";
+import {
+  Entypo,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
@@ -22,7 +34,7 @@ import { EventImageCarousel } from "~/components/EventImageCarousel";
 import { EventTimeline } from "~/components/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
-import { navViewEventClose } from "~/nav";
+import { navViewEventClose, navViewOrg } from "~/nav";
 import {
   ErrorSheet,
   LoadingSheet,
@@ -30,34 +42,180 @@ import {
   useSheetBackdrop,
 } from "../_shared";
 
-const _EventOrganiserBarView = (props: {
+const ThreeDotsMenuOption = (props: {
+  label: string;
+  icon: React.ReactNode;
+  onPress: () => void;
+}) => {
+  const { label, icon, onPress } = props;
+  return (
+    <TouchableOpacity
+      className="flex-row items-center justify-stretch space-x-2 p-2"
+      onPress={onPress}
+    >
+      <Text className="text-base">{label}</Text>
+      <View className="flex-auto" />
+      {icon}
+    </TouchableOpacity>
+  );
+};
+
+const ThreeDotsMenu = () => {
+  const onShareEvent = useCallback(async () => {
+    try {
+      const result = await Share.share({
+        message: "Vibefire | Share this event!",
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: unknown) {
+      console.warn(JSON.stringify(error, null, 2));
+    }
+  }, []);
+
+  const onGetToEvent = useCallback(() => {
+    console.log("onGetToEvent");
+  }, []);
+
+  const onHideEvent = useCallback(() => {
+    console.log("onHideEvent");
+  }, []);
+
+  const onHideAndReportEvent = useCallback(() => {
+    console.log("onHideAndReportEvent");
+  }, []);
+
+  const onBlockOrganiser = useCallback(() => {
+    console.log("onBlockOrganiser");
+  }, []);
+
+  const [visible, setVisible] = useState(false);
+  const DropdownButton = useRef<View>();
+  const [dropdownTop, setDropdownTop] = useState(0);
+  const [dropdownRight, setDropdownRight] = useState(0);
+
+  const toggleDropdown = (): void => {
+    console.log(JSON.stringify(visible, null, 2));
+    visible ? setVisible(false) : openDropdown();
+  };
+
+  const openDropdown = (): void => {
+    DropdownButton.current!.measure((_fx, _fy, w, h, px, py) => {
+      console.log(JSON.stringify([_fx, _fy, w, h, px, py], null, 2));
+      setDropdownTop(py + h);
+      setDropdownRight(w);
+    });
+    setVisible(true);
+  };
+
+  return (
+    <Pressable
+      ref={DropdownButton}
+      onPress={() => {
+        toggleDropdown();
+      }}
+    >
+      <Modal visible={visible} transparent animationType="fade">
+        <Pressable className="h-full w-full" onPress={() => setVisible(false)}>
+          <View
+            className="absolute overflow-hidden rounded-md bg-white"
+            style={{ top: dropdownTop, right: dropdownRight }}
+          >
+            <ThreeDotsMenuOption
+              label="Share Event"
+              icon={<Entypo name="share" size={24} color="black" />}
+              onPress={onShareEvent}
+            />
+            <View className="h-px bg-gray-200" />
+            <ThreeDotsMenuOption
+              label="Get to Event"
+              icon={<FontAwesome5 name="car" size={24} color="black" />}
+              onPress={onGetToEvent}
+            />
+            <View className="h-px bg-gray-200" />
+            <ThreeDotsMenuOption
+              label="Hide Event"
+              icon={
+                <MaterialCommunityIcons
+                  name="eye-off"
+                  color={"red"}
+                  size={24}
+                />
+              }
+              onPress={onHideEvent}
+            />
+            <View className="h-px bg-gray-200" />
+            <ThreeDotsMenuOption
+              label="Hide & Report Event"
+              icon={
+                <MaterialCommunityIcons
+                  name="eye-off"
+                  color={"red"}
+                  size={24}
+                />
+              }
+              onPress={onHideAndReportEvent}
+            />
+            <View className="h-px bg-gray-200" />
+            <ThreeDotsMenuOption
+              label="Block Organiser"
+              icon={
+                <MaterialCommunityIcons
+                  name="block-helper"
+                  color={"red"}
+                  size={24}
+                />
+              }
+              onPress={onBlockOrganiser}
+            />
+          </View>
+        </Pressable>
+      </Modal>
+      <MaterialCommunityIcons name="dots-vertical" size={30} color="white" />
+    </Pressable>
+  );
+};
+
+const EventOrganiserBarView = (props: {
   organiserName: string;
   organiserId: string;
   organiserType: VibefireEventT["organiserType"];
 }) => {
   const { organiserName, organiserId, organiserType } = props;
+
+  const onOrganiserPress = useCallback(() => {
+    navViewOrg(organiserId);
+  }, [organiserId]);
+
   return (
-    <Pressable
-      className="flex-row items-center justify-center space-x-4 bg-black p-2"
-      onPress={() => {
-        console.log("pressed organiser bar");
-      }}
-    >
-      {organiserType === "organisation" ? (
-        <StandardImage
-          cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
-          source={organisationProfileImagePath(organiserId)}
-          alt="Event Organizer Profile Picture"
-        />
-      ) : (
-        <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black">
-          <Text className="text-lg text-white">
-            {organiserName.at(0)!.toUpperCase()}
-            {"."}
-          </Text>
-        </View>
-      )}
-      <View className="flex-1 flex-col justify-center">
+    <View className="flex-row items-center justify-center space-x-4 bg-black py-2 pl-2">
+      <Pressable onPress={onOrganiserPress}>
+        {organiserType === "organisation" ? (
+          <StandardImage
+            cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
+            source={organisationProfileImagePath(organiserId)}
+            alt="Event Organizer Profile Picture"
+          />
+        ) : (
+          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-[#FF2400]">
+            <Text className="text-lg text-white">
+              {organiserName.at(0)!.toUpperCase()}
+              {"."}
+            </Text>
+          </View>
+        )}
+      </Pressable>
+      <Pressable
+        className="flex-1 flex-col justify-center"
+        onPress={onOrganiserPress}
+      >
         <Text className="text-xs text-white">Organised by</Text>
         <Text
           numberOfLines={1}
@@ -66,12 +224,13 @@ const _EventOrganiserBarView = (props: {
         >
           {organiserName}
         </Text>
-      </View>
-    </Pressable>
+      </Pressable>
+      <ThreeDotsMenu />
+    </View>
   );
 };
 
-const _EventDetailsView = (props: { event: VibefireEventT }) => {
+const EventDetailsView = (props: { event: VibefireEventT }) => {
   const { event } = props;
 
   const width = Dimensions.get("window").width;
@@ -111,7 +270,7 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
       </View>
       {/* Main */}
       <View className="flex-col">
-        <_EventOrganiserBarView
+        <EventOrganiserBarView
           organiserName={event.organiserName}
           organiserId={event.organiserId}
           organiserType={event.organiserType}
@@ -155,7 +314,7 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
           </View>
         </View>
 
-        <View className="flex-row justify-evenly bg-black pb-2 pt-4">
+        {/* <View className="flex-row justify-evenly bg-black pb-2 pt-4">
           <View className="flex-col items-center">
             <TouchableOpacity className="rounded-lg bg-white p-4">
               <FontAwesome5 name="car" size={20} color="black" />
@@ -168,7 +327,7 @@ const _EventDetailsView = (props: { event: VibefireEventT }) => {
             </TouchableOpacity>
             <Text className="text-lg text-white">Share</Text>
           </View>
-        </View>
+        </View> */}
       </View>
     </ScrollViewSheet>
   );
@@ -184,7 +343,7 @@ const _EventDetailsController = (props: { eventId: string }) => {
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return <_EventDetailsView event={eventQuery.data} />;
+      return <EventDetailsView event={eventQuery.data} />;
   }
 };
 
@@ -200,7 +359,7 @@ const _EventDetailsPreviewController = (props: { eventId: string }) => {
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return <_EventDetailsView event={eventQuery.data} />;
+      return <EventDetailsView event={eventQuery.data} />;
   }
 };
 

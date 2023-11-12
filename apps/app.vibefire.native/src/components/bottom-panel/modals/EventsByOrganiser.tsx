@@ -12,7 +12,7 @@ import { trpc } from "~/apis/trpc-client";
 import {
   navManageEvent,
   navManageEventEditReview,
-  navViewEventsByOrganiserClose,
+  navOwnEventsByOrganiserClose,
 } from "~/nav";
 import {
   ErrorSheet,
@@ -76,7 +76,7 @@ const EventsByOrganiserComponent = (
       index={0}
       snapPoints={snapPoints}
       onDismiss={() => {
-        navViewEventsByOrganiserClose();
+        navOwnEventsByOrganiserClose();
       }}
     >
       <EventsByOrganiserController />
