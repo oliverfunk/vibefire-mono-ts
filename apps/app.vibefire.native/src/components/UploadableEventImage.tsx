@@ -16,8 +16,8 @@ import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
-import { EventImage } from "~/components/EventImage";
-import { EventImageCarousel } from "~/components/EventImageCarousel";
+import { EventImage } from "~/components/event/EventImage";
+import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { trpc } from "~/apis/trpc-client";
 
 const selectImage = async () => {

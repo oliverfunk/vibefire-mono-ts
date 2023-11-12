@@ -5,8 +5,8 @@ import { type PartialDeep } from "type-fest";
 
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
-import { EventImage } from "~/components/EventImage";
-import { EventImageCarousel } from "~/components/EventImageCarousel";
+import { EventImage } from "~/components/event/EventImage";
+import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
 import {
@@ -16,7 +16,7 @@ import {
   navManageEventEditLocation,
   navManageEventEditTimes,
 } from "~/nav";
-import { ScrollViewSheetWithHeader } from "../_shared";
+import { ScrollViewSheetWithHeader } from "../../_shared";
 
 export const ManageEventEditReview = (props: {
   eventId: string;

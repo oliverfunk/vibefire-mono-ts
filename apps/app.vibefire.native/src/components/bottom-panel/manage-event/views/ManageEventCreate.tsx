@@ -8,7 +8,7 @@ import {
   LinearRedOrangeView,
   ScrollViewSheet,
   ScrollViewSheetWithHeader,
-} from "../_shared";
+} from "../../_shared";
 
 export const ManageEventCreate = () => {
   const { close } = useBottomSheet();

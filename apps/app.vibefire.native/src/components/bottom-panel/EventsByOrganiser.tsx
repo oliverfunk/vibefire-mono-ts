@@ -7,7 +7,7 @@ import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
-import { EventsList } from "~/components/EventList";
+import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
 import {
   navManageEvent,
@@ -19,7 +19,7 @@ import {
   LoadingSheet,
   ScrollViewSheetWithHeader,
   useSheetBackdrop,
-} from "../_shared";
+} from "./_shared";
 
 const EventsByOrganiserView: React.FC<{
   events: PartialDeep<VibefireEventT>[];

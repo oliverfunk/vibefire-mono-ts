@@ -5,14 +5,14 @@ import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
-import { EventImageCarousel } from "~/components/EventImageCarousel";
+import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { UploadableEventImage } from "~/components/UploadableEventImage";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEventEditReview } from "~/nav";
 import {
   ReviewSaveNextFormButtons,
   ScrollViewSheetWithHeader,
-} from "../_shared";
+} from "../../_shared";
 
 export const ManageEventEditImagesForm = (props: {
   eventId: string;

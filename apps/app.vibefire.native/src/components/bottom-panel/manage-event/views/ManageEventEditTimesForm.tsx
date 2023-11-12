@@ -19,7 +19,7 @@ import { navManageEventEditImages } from "~/nav";
 import {
   ReviewSaveNextFormButtons,
   ScrollViewSheetWithHeader,
-} from "../_shared";
+} from "../../_shared";
 
 export const ManageEventEditTimesForm = (props: {
   eventId: string;

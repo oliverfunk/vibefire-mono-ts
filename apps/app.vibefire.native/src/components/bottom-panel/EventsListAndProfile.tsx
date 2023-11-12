@@ -15,17 +15,17 @@ import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
 import {
-  AniHandle,
+  BottomPanelHandle,
   SEARCH_HANDLE_HEIGHT,
-} from "~/components/bottom-panel/AniHandle";
-import { EventsList } from "~/components/EventList";
+} from "~/components/bottom-panel/BottomPanelHandle";
+import { EventsList } from "~/components/event/EventList";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import {
   navManageEventCreate,
   navOwnEventsByOrganiser,
   navViewEvent,
 } from "~/nav";
-import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "../_shared";
+import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
@@ -215,7 +215,7 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       snapPoints={snapPoints}
       // onChange={handleSheetChange}
       handleHeight={SEARCH_HANDLE_HEIGHT}
-      handleComponent={AniHandle}
+      handleComponent={BottomPanelHandle}
     >
       {/* This is supposed to render both
       profile and events list but only display one */}

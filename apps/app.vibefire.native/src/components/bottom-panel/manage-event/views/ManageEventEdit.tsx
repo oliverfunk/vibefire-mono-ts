@@ -1,7 +1,7 @@
 import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { ErrorSheet, LoadingSheet } from "../_shared";
+import { ErrorSheet, LoadingSheet } from "../../_shared";
 import { ManageEventEditDescriptionsForm } from "./ManageEventEditDescriptionsForm";
 import { ManageEventEditImagesForm } from "./ManageEventEditImagesForm";
 import { ManageEventEditLocationForm } from "./ManageEventEditLocationForm";

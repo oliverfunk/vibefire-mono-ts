@@ -275,7 +275,7 @@ const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
   );
 };
 
-export const AniHandle = (props: HandleProps) => {
+export const BottomPanelHandle = (props: HandleProps) => {
   return (
     <View className={`flex-row items-end justify-around pb-2 pt-1`}>
       <SearchButton />
