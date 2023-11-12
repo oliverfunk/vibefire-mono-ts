@@ -9,7 +9,7 @@ import { navManageEventEditLocation } from "~/nav";
 import {
   ReviewSaveNextFormButtons,
   ScrollViewSheetWithHeader,
-} from "../_shared";
+} from "../../_shared";
 
 export const ManageEventEditDescriptionsForm = (props: {
   eventId: string;

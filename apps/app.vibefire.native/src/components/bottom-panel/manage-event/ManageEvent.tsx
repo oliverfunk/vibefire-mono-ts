@@ -5,9 +5,9 @@ import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescrip
 
 import { navManageEventClose } from "~/nav";
 import { LoadingSheet } from "../_shared";
-import { ManageEventCreate } from "../views/ManageEventCreate";
-import { ManageEventEdit } from "../views/ManageEventEdit";
-import { ManageEventManagement } from "../views/ManageEventManagement";
+import { ManageEventCreate } from "./views/ManageEventCreate";
+import { ManageEventEdit } from "./views/ManageEventEdit";
+import { ManageEventManagement } from "./views/ManageEventManagement";
 
 type ManageEventViewLoading = {
   state: "loading";

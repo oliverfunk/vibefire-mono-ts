@@ -2,7 +2,7 @@ import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
 
 import { BottomPanel } from "~/components/bottom-panel/BottomPanel";
-import { EventMap } from "~/components/EventMap";
+import { EventMap } from "~/components/event/EventMap";
 import { NoTopContainer } from "~/components/NoTopContainer";
 
 const Home = () => {

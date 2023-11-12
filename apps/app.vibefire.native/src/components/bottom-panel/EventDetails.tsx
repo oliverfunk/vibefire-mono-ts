@@ -28,10 +28,9 @@ import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescrip
 import { type VibefireEventT } from "@vibefire/models";
 import { organisationProfileImagePath } from "@vibefire/utils";
 
-import { CustomBackground } from "~/components/bottom-panel/CustomBackground";
-import { EventImage, StandardImage } from "~/components/EventImage";
-import { EventImageCarousel } from "~/components/EventImageCarousel";
-import { EventTimeline } from "~/components/EventTimeline";
+import { EventImage, StandardImage } from "~/components/event/EventImage";
+import { EventImageCarousel } from "~/components/event/EventImageCarousel";
+import { EventTimeline } from "~/components/event/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
 import { navViewEventClose, navViewOrg } from "~/nav";
@@ -40,7 +39,7 @@ import {
   LoadingSheet,
   ScrollViewSheet,
   useSheetBackdrop,
-} from "../_shared";
+} from "./_shared";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
@@ -97,7 +96,7 @@ const ThreeDotsMenu = () => {
   }, []);
 
   const [visible, setVisible] = useState(false);
-  const DropdownButton = useRef<View>();
+  const DropdownButton = useRef<View>(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownRight, setDropdownRight] = useState(0);
 
@@ -383,7 +382,6 @@ const _EventDetails = (
     <BottomSheetModal
       ref={ref}
       backdropComponent={backdrop}
-      backgroundComponent={CustomBackground}
       bottomInset={insets.bottom}
       index={0}
       snapPoints={snapPoints}

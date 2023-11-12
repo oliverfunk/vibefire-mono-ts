@@ -16,7 +16,7 @@ import {
   nowAsUTC,
 } from "@vibefire/utils";
 
-import { EventTimeline } from "~/components/EventTimeline";
+import { EventTimeline } from "~/components/event/EventTimeline";
 import { PlatformSelect } from "~/components/PlatformSelect";
 import {
   TimeSelectionAndDisplayAnd,
@@ -29,7 +29,7 @@ import {
   LinearRedOrangeView,
   ScrollViewSheet,
   ScrollViewSheetWithHeader,
-} from "../_shared";
+} from "../../_shared";
 
 const _TimelineElementView = (props: {
   timeIsoNTZ: string;

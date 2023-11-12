@@ -4,11 +4,11 @@ import {
   type BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 
-import { EventDetails } from "./modals/EventDetails";
-import { EventsByOrganiser } from "./modals/EventsByOrganiser";
-import { EventsListAndProfile } from "./modals/EventsListAndProfile";
-import { ManageEvent } from "./modals/ManageEvent";
-import { OrgDetails } from "./modals/OrgDetails";
+import { EventDetails } from "./EventDetails";
+import { EventsByOrganiser } from "./EventsByOrganiser";
+import { EventsListAndProfile } from "./EventsListAndProfile";
+import { ManageEvent } from "./manage-event/ManageEvent";
+import { OrgDetails } from "./OrgDetails";
 
 export const BottomPanel = (props: {
   eventID?: string;

@@ -8,8 +8,8 @@ import {
   type VibefireEventT,
 } from "@vibefire/models";
 
-import { EventCard } from "~/components/EventCard";
-import { EventTimeline } from "~/components/EventTimeline";
+import { EventCard } from "~/components/event/EventCard";
+import { EventTimeline } from "~/components/event/EventTimeline";
 import { trpc } from "~/apis/trpc-client";
 import {
   navManageEventEditReview,
@@ -22,7 +22,7 @@ import {
   LoadingSheet,
   ScrollViewSheet,
   ScrollViewSheetWithHeader,
-} from "../_shared";
+} from "../../_shared";
 
 const _ManagementView = (props: {
   event: VibefireEventT;
