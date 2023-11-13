@@ -1,4 +1,4 @@
-import { Type as t, Type, type Static } from "@sinclair/typebox";
+import { Type as t, type Static } from "@sinclair/typebox";
 
 import { CoordSchema, TimePeriodSchema } from "./general";
 import { unsettable } from "./utils";
@@ -59,6 +59,7 @@ export type VibefireEventImagesT = Static<typeof VibefireEventImagesSchema>;
 export const VibefireEventSchema = t.Object(
   {
     id: t.String({ default: undefined }),
+    linkId: t.String({ default: undefined }),
     type: t.Union(
       [
         t.Literal("one-time"), // one time event

@@ -100,15 +100,16 @@ const _PreControl = (
   ref: Ref<BottomSheetModalMethods>,
 ) => {
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => ["80%"], []);
-  const snapIdx = useMemo(() => 0, []);
 
   return (
     <BottomSheetModal
       ref={ref}
+      backgroundStyle={{
+        backgroundColor: "rgba(255,255,255,0.9)",
+      }}
       bottomInset={insets.bottom}
-      index={snapIdx}
-      snapPoints={snapPoints}
+      index={0}
+      snapPoints={["80%"]}
       onDismiss={() => {
         navManageEventClose();
       }}

@@ -70,6 +70,18 @@ export const defineByOrganiserIDIndex = async (faunaClient: Client) => {
   await dfq(faunaClient, q);
 };
 
+export const defineEventsUniqueConstraints = async (faunaClient: Client) => {
+  const linkIdField: keyof VibefireEventT = "linkId";
+  const q = fql`
+    Users.definition.update({
+      constraints: [
+        { unique: [ ${linkIdField} ] }
+      ]
+    })
+  `;
+  await dfq(faunaClient, q);
+};
+
 export const createEvent = async (
   faunaClient: Client,
   createData: Partial<VibefireEventT>,

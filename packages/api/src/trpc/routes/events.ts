@@ -302,6 +302,6 @@ export const eventsRouter = router({
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventsFromMapQuery(input);
+      return await ctx.fauna.eventsFromMapQuery(ctx.auth, input);
     }),
 });

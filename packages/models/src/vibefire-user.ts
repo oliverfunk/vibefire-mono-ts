@@ -9,7 +9,8 @@ export const VibefireUserSchema = t.Object({
   phoneNumber: t.Optional(t.String()),
   dateOfBirth: t.Optional(t.String({ format: "date-time" })),
   followedEvents: t.Array(t.String(), { default: [] }),
-  followedOrganisations: t.Array(t.String(), { default: [] }),
+  hiddenEvents: t.Array(t.String(), { default: [] }),
+  blockedOrganisers: t.Array(t.String(), { default: [] }),
 });
 
 export type VibefireUserT = Static<typeof VibefireUserSchema>;

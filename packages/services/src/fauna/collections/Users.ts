@@ -79,7 +79,7 @@ export const updateUserInfo = async (
   const _userDataSer: Partial<typeof userDataSer> = userDataSer;
 
   const q = fql`
-    Users.withAid(${aid}).update(${_userDataSer}) {
+    Users.withAid(${aid}).first().update(${_userDataSer}) {
       id
     }
   `;
@@ -98,10 +98,41 @@ export const addFollowedEvent = async (
   aid: string,
   eventId: string,
 ) => {
+  const _followedEventsField: keyof VibefireUserT = "followedEvents";
   const q = fql`
-    let u = Users.withAid(${aid})
-    let updatedFollowedEvents = u?.followedEvents.append([${eventId}]).distinct()
+    let u = Users.withAid(${aid}).first()
+    let updatedFollowedEvents = u?.followedEvents.append(${eventId}).distinct()
     u?.update({ followedEvents: updatedFollowedEvents })
+  `;
+  return await dfq(faunaClient, q);
+};
+
+// export const removeFollowedEvent = async (
+
+export const addEventToHidden = async (
+  faunaClient: Client,
+  aid: string,
+  eventId: string,
+) => {
+  const _hiddenEventsField: keyof VibefireUserT = "hiddenEvents";
+  const q = fql`
+    let u = Users.withAid(${aid}).first()
+    let updatedHiddenEvents = u?.hiddenEvents.append(${eventId}).distinct()
+    u?.update({ hiddenEvents: updatedHiddenEvents })
+  `;
+  return await dfq(faunaClient, q);
+};
+
+export const addOrganiserToBlocked = async (
+  faunaClient: Client,
+  aid: string,
+  organiserId: string,
+) => {
+  const _blockedOrganisersField: keyof VibefireUserT = "blockedOrganisers";
+  const q = fql`
+    let u = Users.withAid(${aid}).first()
+    let updatedBlockedOrganisers = u?.blockedOrganisers.append(${organiserId}).distinct()
+    u?.update({ blockedOrganisers: updatedBlockedOrganisers })
   `;
   return await dfq(faunaClient, q);
 };
