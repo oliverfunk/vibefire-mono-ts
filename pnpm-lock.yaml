@@ -116,9 +116,6 @@ importers:
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
-      ulid:
-        specifier: ^2.3.0
-        version: 2.3.0
       wrangler:
         specifier: ^3.6.0
         version: 3.6.0
@@ -13760,11 +13757,6 @@ packages:
     dependencies:
       commander: 2.13.0
       source-map: 0.6.1
-    dev: false
-
-  /ulid@2.3.0:
-    resolution: {integrity: sha512-keqHubrlpvT6G2wH0OEfSW4mquYRcbe/J8NMmveoQOjUqmo+hXtO+ORCpWhdbZ7k72UtY61BL7haGxW6enBnjw==}
-    hasBin: true
     dev: false
 
   /unbox-primitive@1.0.2:

@@ -7,7 +7,7 @@ import {
   type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";
-import { eventUrl } from "@vibefire/utils";
+import { vibefireEventShareURL } from "@vibefire/utils";
 
 import { EventCard } from "~/components/event/EventCard";
 import { EventTimeline } from "~/components/event/EventTimeline";
@@ -86,7 +86,7 @@ const _ManagementView = (props: {
                       selectable={true}
                       className="text-center text-lg text-black"
                     >
-                      {eventUrl(event)}
+                      {vibefireEventShareURL(event)}
                     </Text>
                   </View>
                 </Pressable>
