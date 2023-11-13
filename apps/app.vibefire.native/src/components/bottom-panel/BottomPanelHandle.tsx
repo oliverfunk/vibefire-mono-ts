@@ -19,7 +19,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { toRad } from "react-native-redash";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import {
   useBottomSheet,
   type BottomSheetHandleProps,
@@ -151,7 +151,7 @@ const ProfileButton = () => {
 
   return profileSelected ? (
     <IconButton
-      icon={<FontAwesome5 name="eye" size={20} color="white" />}
+      icon={<MaterialIcons name="view-list" size={24} color="white" />}
       onPress={() => {
         setProfileSelected(false);
       }}

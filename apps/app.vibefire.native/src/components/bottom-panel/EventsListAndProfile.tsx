@@ -29,20 +29,7 @@ import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
-
-  // const user = { state: "loading" };
-  // const user = { state: "error", error: "GET FUCEKD" };
-  // const user = { state: "unauthenticated" };
-  // const user = {
-  //   state: "authenticated",
-  //   userInfo: {
-  //     name: "John Doe",
-  //     // contactEmail: "oli.readsasddasasdassk@gma.com",
-  //     phoneNumber: "+447716862564",
-  //   },
-  // };
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
-  const { signUp } = useSignUp();
 
   switch (user.state) {
     case "loading":
@@ -101,15 +88,15 @@ const _Profile = () => {
 
       return (
         <ScrollViewSheet>
-          <View className="my-5 flex h-full flex-col items-center space-y-5">
-            <View className="w-10/12 flex-col items-center space-y-2">
-              {/* Name ball */}
-              <View className="flex-row items-center justify-center space-x-1">
-                <View className="rounded-lg bg-black p-4">
-                  <Text className="text-2xl text-white">{userInfo.name}</Text>
-                </View>
+          <View className="flex-col items-center space-y-10 py-5">
+            {/* Name ball */}
+            <View className="flex-row items-center justify-center space-x-1">
+              <View className="rounded-lg bg-black p-4">
+                <Text className="text-2xl text-white">{userInfo.name}</Text>
               </View>
+            </View>
 
+            <View className="w-full flex-col items-center space-y-2 px-4">
               <View className="w-full flex-col">
                 <Text className="ml-4">Email</Text>
                 <View className="rounded-lg bg-slate-200 py-2">
@@ -123,14 +110,14 @@ const _Profile = () => {
                 </View>
               </View>
 
-              {/* <View className="w-full flex-col">
+              <View className="w-full flex-col">
                 <Text className="ml-4">Phone number</Text>
                 <View className="rounded-lg bg-slate-200 py-2">
                   {userInfo.phoneNumber ? (
                     <Text className="ml-4">{userInfo.phoneNumber}</Text>
                   ) : (
                     <TouchableOpacity
-                      onPress={async () => {
+                      onPress={() => {
                         console.log("prepareSecondFactor");
                         // Prepare the second factor verification by
                         // specifying the phone code strategy. An SMS
@@ -142,25 +129,13 @@ const _Profile = () => {
                     </TouchableOpacity>
                   )}
                 </View>
-              </View> */}
+              </View>
             </View>
 
             <LinearRedOrangeView className="w-full flex-row items-center justify-center p-6">
               <TouchableOpacity
                 className="rounded-lg bg-black px-4 py-2"
                 onPress={() => {
-                  navManageEventCreate();
-                }}
-              >
-                <Text className="text-xl text-white">Create event</Text>
-              </TouchableOpacity>
-            </LinearRedOrangeView>
-
-            <LinearRedOrangeView className="w-full flex-row items-center justify-center p-6">
-              <TouchableOpacity
-                className="rounded-lg bg-black px-4 py-2"
-                onPress={() => {
-                  // navManageEvent("374673133350682830");
                   navOwnEventsByOrganiser();
                 }}
               >
@@ -213,7 +188,6 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       bottomInset={insets.bottom}
       index={0}
       snapPoints={snapPoints}
-      // onChange={handleSheetChange}
       handleHeight={SEARCH_HANDLE_HEIGHT}
       handleComponent={BottomPanelHandle}
     >

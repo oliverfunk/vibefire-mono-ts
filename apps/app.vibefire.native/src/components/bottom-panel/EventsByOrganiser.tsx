@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo, type Ref } from "react";
-import { View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -11,11 +11,13 @@ import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
 import {
   navManageEvent,
+  navManageEventCreate,
   navManageEventEditReview,
   navOwnEventsByOrganiserClose,
 } from "~/nav";
 import {
   ErrorSheet,
+  LinearRedOrangeView,
   LoadingSheet,
   ScrollViewSheetWithHeader,
   useSheetBackdrop,
@@ -26,19 +28,30 @@ const EventsByOrganiserView: React.FC<{
 }> = ({ events }) => {
   return (
     <ScrollViewSheetWithHeader header="Your Events">
-      <View className="px-2 py-5">
-        <EventsList
-          events={events}
-          onEventPress={(eventId, event) => {
-            if (event?.state === "ready") {
-              navManageEvent(eventId);
-            } else {
-              navManageEventEditReview(eventId);
-              // should nav to edit if in draft
-            }
+      <View className="flex-col items-center justify-center space-y-4 px-2 py-4">
+        <TouchableOpacity
+          className="rounded-lg bg-black px-4 py-4"
+          onPress={() => {
+            navManageEventCreate();
           }}
-          showStatusBanner={true}
-        />
+        >
+          <Text className="text-xl font-bold text-white">Create event</Text>
+        </TouchableOpacity>
+
+        <View>
+          <EventsList
+            events={events}
+            onEventPress={(eventId, event) => {
+              if (event?.state === "ready") {
+                navManageEvent(eventId);
+              } else {
+                navManageEventEditReview(eventId);
+                // should nav to edit if in draft
+              }
+            }}
+            showStatusBanner={true}
+          />
+        </View>
       </View>
     </ScrollViewSheetWithHeader>
   );
@@ -64,17 +77,18 @@ const EventsByOrganiserComponent = (
   ref: Ref<BottomSheetModalMethods>,
 ) => {
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => ["80%"], []);
-
   const backdrop = useSheetBackdrop();
 
   return (
     <BottomSheetModal
       ref={ref}
       backdropComponent={backdrop}
+      backgroundStyle={{
+        backgroundColor: "rgba(255,255,255,0.9)",
+      }}
       bottomInset={insets.bottom}
       index={0}
-      snapPoints={snapPoints}
+      snapPoints={["80%"]}
       onDismiss={() => {
         navOwnEventsByOrganiserClose();
       }}

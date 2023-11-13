@@ -2,14 +2,15 @@ import {
   signedInAuthObject,
   signedOutAuthObject,
   verifyToken,
-  type AuthObject,
   type SignedInAuthObject,
   type SignedOutAuthObject,
   type WebhookEvent,
 } from "@clerk/backend";
 import { Webhook } from "svix";
 
-export type ClerkAuthContext = AuthObject;
+export type ClerkAuthContext =
+  | ClerkSignedInAuthContext
+  | ClerkSignedOutAuthContext;
 export type ClerkSignedInAuthContext = SignedInAuthObject;
 export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 

@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -26,7 +27,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 import { type VibefireEventT } from "@vibefire/models";
-import { organisationProfileImagePath } from "@vibefire/utils";
+import { eventUrl, organisationProfileImagePath } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "~/components/event/EventImage";
 import { EventImageCarousel } from "~/components/event/EventImageCarousel";
@@ -59,11 +60,31 @@ const ThreeDotsMenuOption = (props: {
   );
 };
 
-const ThreeDotsMenu = () => {
+const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
+  const { event } = props;
+
+  const [visible, setVisible] = useState(false);
+  const DropdownButton = useRef<View>(null);
+  const [dropdownTop, setDropdownTop] = useState(0);
+  const [dropdownRight, setDropdownRight] = useState(0);
+
+  const openDropdown = (): void => {
+    DropdownButton.current!.measure((_fx, _fy, w, h, px, py) => {
+      console.log(JSON.stringify([_fx, _fy, w, h, px, py], null, 2));
+      setDropdownTop(py + h);
+      setDropdownRight(w);
+    });
+    setVisible(true);
+  };
+
+  const hideEvent = trpc.user.hideEvent.useMutation();
+  const blockOrganiser = trpc.user.blockOrganiser.useMutation();
+
   const onShareEvent = useCallback(async () => {
+    setVisible(false);
     try {
       const result = await Share.share({
-        message: "Vibefire | Share this event!",
+        message: `Vibefire | Checkout out this event!\n${eventUrl(event)}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -77,48 +98,30 @@ const ThreeDotsMenu = () => {
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
-  }, []);
+  }, [event]);
 
   const onGetToEvent = useCallback(() => {
     console.log("onGetToEvent");
   }, []);
 
-  const onHideEvent = useCallback(() => {
-    console.log("onHideEvent");
-  }, []);
-
-  const onHideAndReportEvent = useCallback(() => {
-    console.log("onHideAndReportEvent");
-  }, []);
-
-  const onBlockOrganiser = useCallback(() => {
-    console.log("onBlockOrganiser");
-  }, []);
-
-  const [visible, setVisible] = useState(false);
-  const DropdownButton = useRef<View>(null);
-  const [dropdownTop, setDropdownTop] = useState(0);
-  const [dropdownRight, setDropdownRight] = useState(0);
-
-  const toggleDropdown = (): void => {
-    console.log(JSON.stringify(visible, null, 2));
-    visible ? setVisible(false) : openDropdown();
-  };
-
-  const openDropdown = (): void => {
-    DropdownButton.current!.measure((_fx, _fy, w, h, px, py) => {
-      console.log(JSON.stringify([_fx, _fy, w, h, px, py], null, 2));
-      setDropdownTop(py + h);
-      setDropdownRight(w);
-    });
-    setVisible(true);
-  };
+  useEffect(() => {
+    if (hideEvent.status === "success") {
+      // todo refresh mapquery
+      navViewEventClose();
+    }
+  }, [hideEvent.status]);
+  useEffect(() => {
+    if (blockOrganiser.status === "success") {
+      // todo refresh mapquery
+      navViewEventClose();
+    }
+  }, [blockOrganiser.status]);
 
   return (
     <Pressable
       ref={DropdownButton}
       onPress={() => {
-        toggleDropdown();
+        visible ? setVisible(false) : openDropdown();
       }}
     >
       <Modal visible={visible} transparent animationType="fade">
@@ -148,7 +151,10 @@ const ThreeDotsMenu = () => {
                   size={24}
                 />
               }
-              onPress={onHideEvent}
+              onPress={() => {
+                setVisible(false);
+                hideEvent.mutate({ eventId: event.id, report: false });
+              }}
             />
             <View className="h-px bg-gray-200" />
             <ThreeDotsMenuOption
@@ -160,7 +166,10 @@ const ThreeDotsMenu = () => {
                   size={24}
                 />
               }
-              onPress={onHideAndReportEvent}
+              onPress={() => {
+                setVisible(false);
+                hideEvent.mutate({ eventId: event.id, report: true });
+              }}
             />
             <View className="h-px bg-gray-200" />
             <ThreeDotsMenuOption
@@ -172,7 +181,10 @@ const ThreeDotsMenu = () => {
                   size={24}
                 />
               }
-              onPress={onBlockOrganiser}
+              onPress={() => {
+                setVisible(false);
+                blockOrganiser.mutate({ organiserId: event.organiserId });
+              }}
             />
           </View>
         </Pressable>
@@ -182,30 +194,26 @@ const ThreeDotsMenu = () => {
   );
 };
 
-const EventOrganiserBarView = (props: {
-  organiserName: string;
-  organiserId: string;
-  organiserType: VibefireEventT["organiserType"];
-}) => {
-  const { organiserName, organiserId, organiserType } = props;
+const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
+  const { event } = props;
 
   const onOrganiserPress = useCallback(() => {
-    navViewOrg(organiserId);
-  }, [organiserId]);
+    navViewOrg(event.organiserId);
+  }, [event.organiserId]);
 
   return (
     <View className="flex-row items-center justify-center space-x-4 bg-black py-2 pl-2">
       <Pressable onPress={onOrganiserPress}>
-        {organiserType === "organisation" ? (
+        {event.organiserType === "organisation" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
-            source={organisationProfileImagePath(organiserId)}
+            source={organisationProfileImagePath(event.organiserId)}
             alt="Event Organizer Profile Picture"
           />
         ) : (
           <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-[#FF2400]">
             <Text className="text-lg text-white">
-              {organiserName.at(0)!.toUpperCase()}
+              {event.organiserName.at(0)!.toUpperCase()}
               {"."}
             </Text>
           </View>
@@ -221,10 +229,10 @@ const EventOrganiserBarView = (props: {
           ellipsizeMode="tail"
           className="text-lg font-bold text-white"
         >
-          {organiserName}
+          {event.organiserName}
         </Text>
       </Pressable>
-      <ThreeDotsMenu />
+      <ThreeDotsMenu event={event} />
     </View>
   );
 };
@@ -269,11 +277,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
       </View>
       {/* Main */}
       <View className="flex-col">
-        <EventOrganiserBarView
-          organiserName={event.organiserName}
-          organiserId={event.organiserId}
-          organiserType={event.organiserType}
-        />
+        <EventOrganiserBarView event={event} />
 
         {/* Description */}
         <View className="bg-black p-2">
@@ -369,8 +373,6 @@ const _EventDetails = (
   const { eventQuery } = props;
 
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => ["80%"], []);
-
   const backdrop = useSheetBackdrop();
 
   const [eventId, preview] = useMemo(() => {
@@ -381,10 +383,13 @@ const _EventDetails = (
   return (
     <BottomSheetModal
       ref={ref}
+      backgroundStyle={{
+        backgroundColor: "black",
+      }}
       backdropComponent={backdrop}
       bottomInset={insets.bottom}
       index={0}
-      snapPoints={snapPoints}
+      snapPoints={["80%"]}
       handleComponent={null}
       onDismiss={() => {
         navViewEventClose();

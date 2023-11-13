@@ -2,6 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import { Client } from "fauna";
 import { DateTime } from "luxon";
 import type { PartialDeep } from "type-fest";
+import { detectPrng, factory } from "ulid";
 
 import {
   VibefireEventManagementSchema,
@@ -15,9 +16,14 @@ import {
   type VibefireEventTimelineElementT,
   type VibefireUserInfoT,
 } from "@vibefire/models";
-import { type ClerkSignedInAuthContext } from "@vibefire/services/clerk";
 import {
+  type ClerkAuthContext,
+  type ClerkSignedInAuthContext,
+} from "@vibefire/services/clerk";
+import {
+  addEventToHidden,
   addFollowedEvent,
+  addOrganiserToBlocked,
   callPublicEventsInPeriodInAreas,
   createEvent,
   createEventManagement,
@@ -32,7 +38,7 @@ import {
   updateUserInfo,
 } from "@vibefire/services/fauna";
 import {
-  cropText,
+  compactCells,
   h3ToH3Parents,
   hexToDecimal,
   isoNTZToTZEpochSecs,
@@ -40,6 +46,7 @@ import {
   polygonToCells,
   removeUndef,
   tbValidator,
+  trimAndCropText,
   zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
@@ -204,7 +211,7 @@ export class FaunaManager {
     e.organiserId = organisationId || userAc.userId;
 
     title = tbValidator(VibefireEventSchema.properties.title)(
-      cropText(title, 100),
+      trimAndCropText(title, 100),
     );
     e.title = title;
 
@@ -220,6 +227,7 @@ export class FaunaManager {
       e.visibility = "public"; // by default
     }
     e.type = "one-time"; // by default
+    e.linkId = crypto.randomUUID().slice(-9);
 
     removeUndef(e);
 
@@ -242,18 +250,18 @@ export class FaunaManager {
 
     if (title) {
       title = tbValidator(VibefireEventSchema.properties.title)(
-        cropText(title, 100),
+        trimAndCropText(title, 100),
       );
       updateData.title = title;
     }
     if (description) {
       description = tbValidator(VibefireEventSchema.properties.description)(
-        cropText(description.trim(), 2000),
+        trimAndCropText(description.trim(), 2000),
       );
       updateData.description = description;
     }
     if (tags) {
-      tags = tags.map((t) => cropText(t, 20));
+      tags = tags.map((t) => trimAndCropText(t, 20));
       tags = tbValidator(VibefireEventSchema.properties.tags)(tags);
       updateData.tags = tags;
     }
@@ -329,7 +337,7 @@ export class FaunaManager {
     if (addressDescription) {
       updateLocation.addressDescription = tbValidator(
         VibefireEventSchema.properties.location.properties.addressDescription,
-      )(cropText(addressDescription, 500));
+      )(trimAndCropText(addressDescription, 500));
     }
 
     updateData.location = updateLocation;
@@ -495,7 +503,7 @@ export class FaunaManager {
       let tle = Value.Create(VibefireEventTimelineElementSchema);
       tle.id = el.id;
       tle.timeIsoNTZ = el.timeIsoNTZ;
-      tle.message = cropText(el.message, 500);
+      tle.message = trimAndCropText(el.message, 500);
       tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
       updateTimeline.push(tle);
     }
@@ -621,7 +629,7 @@ export class FaunaManager {
     });
   }
 
-  async eventsFromMapQuery(query: MapQueryT) {
+  async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {
     const { northEast, southWest, timePeriod, zoomLevel } = query;
 
     console.log();
@@ -648,30 +656,39 @@ export class FaunaManager {
       h3Res,
     );
 
-    // const bboxH3s = compactCells(bboxH3sPre);
-    const bboxH3s = bboxH3sPre;
-    if (!bboxH3s.length) {
-      return [];
-    }
+    const bboxH3s = compactCells(bboxH3sPre);
 
     console.log("bboxH3sPre no", bboxH3sPre.length);
     console.log("bboxH3s no", bboxH3s.length);
 
-    const h3ps = bboxH3s.map((h3) => hexToDecimal(h3));
+    const h3ps = bboxH3sPre.map((h3) => hexToDecimal(h3));
     const res = await callPublicEventsInPeriodInAreas(
       this.faunaClient,
       timePeriod,
       h3ps,
     );
 
-    console.log("res", JSON.stringify(res, null, 2));
-
     // the extent to which this is necessary is questionable,
     // given the data comes from our db,
     // esp given the critical path nature of this function
-    const events = res.map((eventData) =>
+    let events = res.map((eventData) =>
       tbValidator(VibefireEventSchema)(eventData),
     );
+
+    if (userAc.userId) {
+      const userInfo = await this.getUserInfo(userAc);
+      const hiddenEvents = userInfo.hiddenEvents ?? [];
+      const blockedOrganisers = userInfo.blockedOrganisers ?? [];
+
+      events = events.filter((e) => {
+        if (hiddenEvents.includes(e.id)) {
+          return false;
+        }
+        if (blockedOrganisers.includes(e.organiserId)) {
+          return false;
+        }
+      });
+    }
 
     console.log("events.length", events.length);
 
@@ -695,16 +712,16 @@ export class FaunaManager {
       throw new Error("firstName must be at least 2 characters long");
     }
 
-    firstName = cropText(firstName, 100);
+    firstName = trimAndCropText(firstName, 100);
 
     if (primaryEmail) {
       primaryEmail = tbValidator(VibefireUserSchema.properties.contactEmail)(
-        cropText(primaryEmail, 500),
+        trimAndCropText(primaryEmail, 500),
       );
     }
     if (primaryPhone) {
       primaryPhone = tbValidator(VibefireUserSchema.properties.phoneNumber)(
-        cropText(primaryPhone, 100),
+        trimAndCropText(primaryPhone, 100),
       );
     }
 
@@ -756,5 +773,28 @@ export class FaunaManager {
     );
     return res;
   }
+
+  async hideEventForUser(userAc: ClerkSignedInAuthContext, eventId: string) {
+    // todo: cant hide ur own events
+    const _res = await addEventToHidden(
+      this.faunaClient,
+      userAc.userId,
+      eventId,
+    );
+    return true;
+  }
+
+  async blockOrganiserForUser(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+  ) {
+    const _res = await addOrganiserToBlocked(
+      this.faunaClient,
+      userAc.userId,
+      eventId,
+    );
+    return true;
+  }
+
   // #endregion
 }
