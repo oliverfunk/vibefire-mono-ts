@@ -26,6 +26,9 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: "app.vibefire.native",
     associatedDomains: ["applinks:vifr.io"],
     config: {},
+    infoPlist: {
+      LSApplicationQueriesSchemes: ["uber"],
+    },
   },
   android: {
     package: "app.vibefire.native",

@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Linking from "expo-linking";
 import {
   Entypo,
   FontAwesome5,
@@ -27,7 +28,11 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 import { type VibefireEventT } from "@vibefire/models";
-import { eventUrl, organisationProfileImagePath } from "@vibefire/utils";
+import {
+  organisationProfileImagePath,
+  uberRequestToEventURL,
+  vibefireEventShareURL,
+} from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "~/components/event/EventImage";
 import { EventImageCarousel } from "~/components/event/EventImageCarousel";
@@ -82,27 +87,30 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
 
   const onShareEvent = useCallback(async () => {
     setVisible(false);
+
     try {
-      const result = await Share.share({
-        message: `Vibefire | Checkout out this event!\n${eventUrl(event)}`,
+      await Share.share({
+        message: `Vibefire | Checkout out this event!\n${vibefireEventShareURL(
+          event,
+        )}`,
       });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
   }, [event]);
 
-  const onGetToEvent = useCallback(() => {
-    console.log("onGetToEvent");
-  }, []);
+  const onGetToEvent = useCallback(async () => {
+    setVisible(false);
+
+    const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
+    const url = uberRequestToEventURL(uberClientID, event);
+
+    try {
+      await Linking.openURL(url);
+    } catch (error: unknown) {
+      console.warn(JSON.stringify(error, null, 2));
+    }
+  }, [event]);
 
   useEffect(() => {
     if (hideEvent.status === "success") {
