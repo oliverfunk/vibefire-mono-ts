@@ -455,6 +455,9 @@ importers:
       '@vibefire/models':
         specifier: '*'
         version: link:../models
+      '@vibefire/utils':
+        specifier: '*'
+        version: link:../utils
     devDependencies:
       '@vibefire/config':
         specifier: '*'

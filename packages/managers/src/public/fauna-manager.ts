@@ -642,8 +642,6 @@ export class FaunaManager {
     console.log("longs delta", Math.abs(northEast.lng - southWest.lng));
     console.log();
 
-    // quadrantize the bbox, merge the cells, then query
-
     const h3Res = zoomLevelToH3Resolution(zoomLevel);
 
     const bboxH3sPre = polygonToCells(

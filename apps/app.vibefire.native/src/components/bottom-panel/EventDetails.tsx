@@ -21,11 +21,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
 import {
   Entypo,
+  FontAwesome,
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useAtomValue } from "jotai";
 
 import { type VibefireEventT } from "@vibefire/models";
 import {
@@ -39,6 +41,7 @@ import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
+import { userAtom } from "~/atoms";
 import { navViewEventClose, navViewOrg } from "~/nav";
 import {
   ErrorSheet,
@@ -85,33 +88,6 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
   const hideEvent = trpc.user.hideEvent.useMutation();
   const blockOrganiser = trpc.user.blockOrganiser.useMutation();
 
-  const onShareEvent = useCallback(async () => {
-    setVisible(false);
-
-    try {
-      await Share.share({
-        message: `Vibefire | Checkout out this event!\n${vibefireEventShareURL(
-          event,
-        )}`,
-      });
-    } catch (error: unknown) {
-      console.warn(JSON.stringify(error, null, 2));
-    }
-  }, [event]);
-
-  const onGetToEvent = useCallback(async () => {
-    setVisible(false);
-
-    const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
-    const url = uberRequestToEventURL(uberClientID, event);
-
-    try {
-      await Linking.openURL(url);
-    } catch (error: unknown) {
-      console.warn(JSON.stringify(error, null, 2));
-    }
-  }, [event]);
-
   useEffect(() => {
     if (hideEvent.status === "success") {
       // todo refresh mapquery
@@ -138,18 +114,6 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
             className="absolute overflow-hidden rounded-md bg-white"
             style={{ top: dropdownTop, right: dropdownRight }}
           >
-            <ThreeDotsMenuOption
-              label="Share Event"
-              icon={<Entypo name="share" size={24} color="black" />}
-              onPress={onShareEvent}
-            />
-            <View className="h-px bg-gray-200" />
-            <ThreeDotsMenuOption
-              label="Get to Event"
-              icon={<FontAwesome5 name="car" size={24} color="black" />}
-              onPress={onGetToEvent}
-            />
-            <View className="h-px bg-gray-200" />
             <ThreeDotsMenuOption
               label="Hide Event"
               icon={
@@ -250,10 +214,51 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
 
   const width = Dimensions.get("window").width;
 
+  const user = useAtomValue(userAtom);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const eventFollowed = useMemo(() => {
+    if (user.state === "authenticated") {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      return user.userInfo.followedEvents.includes(event.id);
+    }
+    return false;
+  }, [user, event.id]);
+
   const imgs = useMemo(
     () => [event.images.banner].concat(event.images.additional),
     [event.images],
   );
+
+  const onMapPress = useCallback(() => {
+    // todo
+  }, []);
+
+  const onShareEvent = useCallback(async () => {
+    try {
+      await Share.share({
+        message: `Vibefire | Checkout out this event!\n${vibefireEventShareURL(
+          event,
+        )}`,
+      });
+    } catch (error: unknown) {
+      console.warn(JSON.stringify(error, null, 2));
+    }
+  }, [event]);
+
+  const onGetToEvent = useCallback(async () => {
+    const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
+    const url = uberRequestToEventURL(uberClientID, event);
+
+    try {
+      await Linking.openURL(url);
+    } catch (error: unknown) {
+      console.warn(JSON.stringify(error, null, 2));
+    }
+  }, [event]);
+
+  const onFollowEvent = useCallback(() => {
+    // todo
+  }, []);
 
   return (
     <ScrollViewSheet>
@@ -283,18 +288,58 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
           <Text className="text-center text-2xl text-white">{event.title}</Text>
         </LinearGradient>
       </View>
-      {/* Main */}
-      <View className="flex-col">
-        <EventOrganiserBarView event={event} />
 
-        {/* Description */}
-        <View className="bg-black p-2">
+      <EventOrganiserBarView event={event} />
+
+      {/* Main */}
+      <View className="flex-col space-y-2 px-2">
+        {/* Actions */}
+        <View className="mt-2 h-10 flex-row justify-around">
+          <TouchableOpacity
+            className="flex-col items-center justify-between"
+            onPress={onMapPress}
+          >
+            <FontAwesome5 name="map" size={20} color="white" />
+            <Text className="text-sm text-white">Map</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-col items-center justify-between"
+            onPress={onGetToEvent}
+          >
+            <FontAwesome5 name="car" size={20} color="white" />
+            <Text className="text-sm text-white">Get there</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-col items-center justify-between"
+            onPress={onShareEvent}
+          >
+            <Entypo name="share" size={20} color="white" />
+            <Text className="text-sm text-white">Share</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-col items-center justify-between"
+            onPress={onFollowEvent}
+          >
+            {!!eventFollowed ? (
+              <FontAwesome name="star" size={20} color="yellow" />
+            ) : (
+              <FontAwesome5 name="star" size={20} color="white" />
+            )}
+            <Text className="text-sm text-white">Interested</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Details */}
+        <View>
           <Text className="pb-2 text-2xl font-bold text-white">Details</Text>
           <Text className="text-base text-white">{event.description}</Text>
         </View>
 
         {/* Timeline */}
-        <View className="bg-black p-2">
+        <View>
           <Text className="pb-2 text-2xl font-bold text-white">Timeline</Text>
           <EventTimeline
             timelineElements={event.timeline}
@@ -304,10 +349,10 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
         </View>
 
         {/* Map */}
-        <View className="bg-black p-2">
+        <View>
           <Text className="pb-2 text-2xl font-bold text-white">Location</Text>
           <Pressable
-            className="aspect-[4/4] "
+            className="aspect-[4/4] pb-2"
             onPress={() => {
               console.log("pressed map");
             }}
@@ -317,28 +362,13 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
               fixed={true}
             />
           </Pressable>
-          <View className="flex-row items-center space-x-2 bg-black px-4 py-2">
+          <View className="flex-row items-center space-x-2 px-2">
             <FontAwesome5 name="map-marker-alt" size={20} color="white" />
-            <Text className="text-center text-lg  text-white">
+            <Text className="text-sm text-white">
               {event.location.addressDescription}
             </Text>
           </View>
         </View>
-
-        {/* <View className="flex-row justify-evenly bg-black pb-2 pt-4">
-          <View className="flex-col items-center">
-            <TouchableOpacity className="rounded-lg bg-white p-4">
-              <FontAwesome5 name="car" size={20} color="black" />
-            </TouchableOpacity>
-            <Text className="text-lg text-white">Get there</Text>
-          </View>
-          <View className="flex-col items-center">
-            <TouchableOpacity className="rounded-lg bg-white p-4">
-              <FontAwesome5 name="share-alt" size={20} color="black" />
-            </TouchableOpacity>
-            <Text className="text-lg text-white">Share</Text>
-          </View>
-        </View> */}
       </View>
     </ScrollViewSheet>
   );
