@@ -5,8 +5,7 @@ import { useAtom } from "jotai";
 import _ from "lodash";
 
 import { type TimeOfDayT } from "@vibefire/models";
-
-import { selectedTimeOfDayAtom } from "~/atoms";
+import { selectedTimeOfDayAtom } from "@vibefire/shared-state";
 
 export const TimeOfDayPicker = (props: { width: number; height: number }) => {
   const { width, height } = props;

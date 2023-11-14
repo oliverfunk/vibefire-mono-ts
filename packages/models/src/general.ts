@@ -9,7 +9,9 @@ export const TimeOfDaySchema = t.Union([
 ]);
 export type TimeOfDayT = Static<typeof TimeOfDaySchema>;
 
-export const TimePeriodSchema = t.String({ pattern: `^[0-9]{8}\/[E,M,A,N]$` });
+export const TimePeriodSchema = t.String({
+  pattern: `^[0-9]{8}\/[D,E,M,A,N]$`,
+});
 export type TimePeriodT = Static<typeof TimePeriodSchema>;
 
 export const CoordSchema = t.Object({ lat: t.Number(), lng: t.Number() });

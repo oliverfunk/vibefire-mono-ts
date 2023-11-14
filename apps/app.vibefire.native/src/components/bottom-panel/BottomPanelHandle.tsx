@@ -25,10 +25,13 @@ import {
   type BottomSheetHandleProps,
 } from "@gorhom/bottom-sheet";
 import { useAtom } from "jotai";
+import { max } from "lodash";
 import { DateTime } from "luxon";
 
+import { selectedDateStrAtom } from "@vibefire/shared-state";
+
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
-import { profileSelectedAtom, selectedDateStrAtom } from "~/atoms";
+import { profileSelectedAtom } from "~/atoms";
 
 export const SEARCH_HANDLE_HEIGHT = 60;
 
@@ -46,11 +49,12 @@ const DatePicker = () => {
     >
       <DateTimePickerModal
         isVisible={showDatePicker}
-        date={selectedDate}
+        date={selectedDate.toJSDate()}
         mode="date"
+        locale="utc"
         onConfirm={(date) => {
           setShowDatePicker(false);
-          if (date) setSelectedDate(date);
+          if (date) setSelectedDate(DateTime.fromJSDate(date));
         }}
         onCancel={() => {
           setShowDatePicker(false);
@@ -62,9 +66,7 @@ const DatePicker = () => {
         minimumDate={new Date(2020, 1, 1)}
       />
       <FontAwesome5 name="calendar-alt" size={20} color="black" />
-      <Text className="text-lg">
-        {DateTime.fromJSDate(selectedDate).toFormat("d")}
-      </Text>
+      <Text className="text-lg">{selectedDate.toFormat("d")}</Text>
     </TouchableOpacity>
   );
 };
@@ -276,6 +278,7 @@ const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
 };
 
 export const BottomPanelHandle = (props: HandleProps) => {
+  const width = Dimensions.get("window").width;
   return (
     <View className={`flex-row items-end justify-around pb-2 pt-1`}>
       <SearchButton />
@@ -291,7 +294,10 @@ export const BottomPanelHandle = (props: HandleProps) => {
             <DatePicker />
           </View>
           <View className="rounded-lg border">
-            <TimeOfDayPicker width={200} height={SEARCH_HANDLE_HEIGHT / 2} />
+            <TimeOfDayPicker
+              width={max([width / 2, 150])!}
+              height={SEARCH_HANDLE_HEIGHT / 2}
+            />
           </View>
         </View>
       </View>

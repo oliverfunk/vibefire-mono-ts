@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 
 import {
   mapQueryInfo,
@@ -11,8 +11,8 @@ import {
 import { trpc } from "~/apis/trpc-client";
 
 export const useMapQuery = () => {
-  const mapPos = useAtomValue(mapQueryPositionAtom);
-  const tp = useAtomValue(mapQueryTimePeriodAtom);
+  const [mapPos] = useAtom(mapQueryPositionAtom);
+  const [tp] = useAtom(mapQueryTimePeriodAtom);
   const [mqi, setMqi] = useAtom(mapQueryInfo);
   const [_mqr, setMqr] = useAtom(mapQueryResult);
   const mapQuery = trpc.events.mapQueryPublicEvents.useQuery(
