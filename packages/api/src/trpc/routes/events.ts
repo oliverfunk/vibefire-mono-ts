@@ -21,7 +21,7 @@ export const eventsRouter = router({
       ),
     )
     .output((value) => value as string)
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
         input.position,
       );
@@ -131,21 +131,31 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
-  updateDescriptions: authedProcedure
+  updateEvent: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+
           title: t.Optional(t.String()),
           description: t.Optional(t.String()),
           tags: t.Optional(t.Array(t.String())),
-          organisationId: t.Optional(t.String()),
+
+          position: t.Optional(CoordSchema),
+          addressDescription: t.Optional(t.String()),
+
+          timeStartIsoNTZ: t.Optional(t.String()),
+          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
+
+          bannerImageId: t.Optional(t.String()),
+          additionalImageIds: t.Optional(t.Array(t.String())),
         }),
       ),
     )
     .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventUpdateDescriptions(
+      await ctx.fauna.eventUpdateDescriptions(
         ctx.auth,
         input.eventId,
         input.title,
@@ -153,62 +163,20 @@ export const eventsRouter = router({
         input.tags,
         input.organisationId,
       );
-    }),
-  updateLocation: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          position: t.Optional(CoordSchema),
-          addressDescription: t.Optional(t.String()),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as { id: string })
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventUpdateLocation(
+      await ctx.fauna.eventUpdateLocation(
         ctx.auth,
         input.eventId,
         input.position,
         input.addressDescription,
         input.organisationId,
       );
-    }),
-  updateTimes: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          timeStartIsoNTZ: t.Optional(t.String()),
-          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as { id: string })
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventUpdateTimes(
+      await ctx.fauna.eventUpdateTimes(
         ctx.auth,
         input.eventId,
         input.timeStartIsoNTZ,
         input.timeEndIsoNTZ,
         input.organisationId,
       );
-    }),
-  updateImages: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          bannerImageId: t.Optional(t.String()),
-          additionalImageIds: t.Optional(t.Array(t.String())),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as { id: string })
-    .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventUpdateImages(
         ctx.auth,
         input.eventId,

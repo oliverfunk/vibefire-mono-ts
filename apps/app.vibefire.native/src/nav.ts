@@ -1,5 +1,7 @@
 import { router } from "expo-router";
 
+import { type EditEventFormSectionT } from "./types";
+
 export const navOwnEventsByOrganiser = (organiserId?: string) => {
   router.setParams({ eventsBy: organiserId ?? "personal" });
 };
@@ -30,29 +32,26 @@ export const navViewOrgClose = () => {
   router.setParams({ orgId: undefined });
 };
 
+export const navCreateEvent = () => {
+  router.setParams({ editEvent: "create" });
+};
+export const navEditEvent = (eventId: string) => {
+  router.setParams({ editEvent: eventId });
+};
+export const navEditEventClose = () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  router.setParams({ editEvent: undefined });
+};
+export const navEditEventEditSection = (
+  eventId: string,
+  section: EditEventFormSectionT,
+) => {
+  router.setParams({ editEvent: `${eventId},${section}` });
+};
+
 export const navManageEvent = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId}` });
-};
-export const navManageEventCreate = () => {
-  router.setParams({ manageEvent: "create" });
-};
-export const navManageEventEditDescription = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,description` });
-};
-export const navManageEventEditLocation = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,location` });
-};
-export const navManageEventEditTimes = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,times` });
-};
-export const navManageEventEditImages = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,images` });
-};
-export const navManageEventEditReview = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,review` });
-};
-export const navManageEventEditTimeline = (eventId: string) => {
-  router.setParams({ manageEvent: `${eventId},edit,timeline` });
+  router.setParams({ manageEvent: eventId });
 };
 export const navManageEventClose = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

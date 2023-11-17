@@ -1,7 +1,6 @@
 import { forwardRef, useMemo, type Ref } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useSignUp } from "@clerk/clerk-expo";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -20,11 +19,7 @@ import {
 } from "~/components/bottom-panel/BottomPanelHandle";
 import { EventsList } from "~/components/event/EventList";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import {
-  navManageEventCreate,
-  navOwnEventsByOrganiser,
-  navViewEvent,
-} from "~/nav";
+import { navOwnEventsByOrganiser, navViewEvent } from "~/nav";
 import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const _Profile = () => {
@@ -184,7 +179,6 @@ const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
       backgroundStyle={{
         backgroundColor: "rgba(255,255,255,0.9)",
       }}
-      keyboardBehavior="extend"
       bottomInset={insets.bottom}
       index={0}
       snapPoints={snapPoints}

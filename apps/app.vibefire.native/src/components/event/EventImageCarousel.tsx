@@ -62,15 +62,12 @@ const PaginationItem = (props: {
   );
 };
 
-export const EventImageCarousel: React.FC<{
+export const EventImageCarousel = (props: {
   eventId: string;
   imgIdKeys: string[];
   width: number;
-  renderItem?: ({
-    index,
-    item,
-  }: CarouselRenderItemInfo<string>) => React.JSX.Element;
-}> = (props) => {
+  renderItem?: (r: CarouselRenderItemInfo<string>) => React.JSX.Element;
+}) => {
   const { eventId, imgIdKeys: imgIdKeys, width, renderItem } = props;
 
   const progressValue = useSharedValue<number>(0);
@@ -104,7 +101,7 @@ export const EventImageCarousel: React.FC<{
               }
         }
       />
-      {!!progressValue && (
+      {imgIdKeys.length > 1 && (
         <View className="absolute top-0 w-full items-center justify-center pt-2">
           <View className="flex-row space-x-2 rounded-md bg-gray-800/10 p-1">
             {imgIdKeys.map((_, index) => {

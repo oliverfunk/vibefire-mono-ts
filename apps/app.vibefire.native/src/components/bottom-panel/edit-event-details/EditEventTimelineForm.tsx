@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useMemo, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import _, { set } from "lodash";
+import _ from "lodash";
 import { type PartialDeep } from "type-fest";
 
 import {
@@ -24,12 +23,7 @@ import {
 } from "~/components/TimeSelection";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEvent } from "~/nav";
-import {
-  FormTextInput,
-  LinearRedOrangeView,
-  ScrollViewSheet,
-  ScrollViewSheetWithHeader,
-} from "../../_shared";
+import { FormTextInput, ScrollViewSheetWithHeader } from "../_shared";
 
 const _TimelineElementView = (props: {
   timeIsoNTZ: string;
@@ -39,14 +33,18 @@ const _TimelineElementView = (props: {
 }) => {
   const { timeIsoNTZ, message, onRemove, onMessageEdit } = props;
   return (
-    <View className="flex-row items-center space-x-5">
-      <View className="flex-none rounded-lg bg-slate-200 p-2">
-        <Text className="text-lg">{timeIsoNTZ}</Text>
+    <View className="flex-row items-center space-x-2">
+      <View className="flex-[2] rounded-sm bg-slate-200 p-2">
+        <Text className="text-center text-lg">{timeIsoNTZ}</Text>
       </View>
-      <View className="flex-1">
-        <FormTextInput currentValue={message} onChange={onMessageEdit} />
+      <View className="flex-[8]">
+        <FormTextInput
+          value={message}
+          onChangeText={onMessageEdit}
+          multiline={true}
+        />
       </View>
-      <View className="flex-none pr-1">
+      <View className="flex-[1]">
         <TouchableOpacity
           className="h-5 w-5 items-center justify-center rounded-full bg-gray-800"
           onPress={onRemove}
@@ -107,12 +105,13 @@ const _TimelineElementAdd = (props: {
 
       <View className="flex-col">
         <Text className="text-lg">Message</Text>
-        <View className="">
+        <View>
           <FormTextInput
-            currentValue={message}
-            onChange={(text) => {
+            value={message}
+            onChangeText={(text) => {
               setMessage(text);
             }}
+            multiline={true}
           />
         </View>
       </View>
@@ -141,20 +140,10 @@ const _TimelineElementAdd = (props: {
 
 export const ManageEventEditTimeline = (props: {
   eventId: string;
-  currentEventData: PartialDeep<VibefireEventT> | undefined;
+  currentEventData: PartialDeep<VibefireEventT>;
   dataRefetch: () => void;
 }) => {
   const { eventId, currentEventData, dataRefetch } = props;
-
-  if (currentEventData === undefined) {
-    return null;
-  }
-  if (
-    currentEventData.timeline === undefined ||
-    currentEventData.timeStartIsoNTZ === undefined
-  ) {
-    return null;
-  }
 
   const currentEventFormData = useMemo(
     () => ({
@@ -176,10 +165,10 @@ export const ManageEventEditTimeline = (props: {
   const updateTimeline = trpc.events.updateTimeline.useMutation();
 
   useEffect(() => {
-    if (updateTimeline.status === "success") {
+    if (updateTimeline.isSuccess) {
       dataRefetch();
     }
-  }, [updateTimeline.status, dataRefetch]);
+  }, [updateTimeline.isSuccess, dataRefetch]);
 
   useEffect(() => {
     setSelectedEventTimeline(currentEventFormData.timeline);
@@ -197,12 +186,14 @@ export const ManageEventEditTimeline = (props: {
   }, [selectedEventTimeline]);
 
   return (
-    <ScrollViewSheetWithHeader header="Timeline">
+    <ScrollViewSheetWithHeader header="Edit Timeline">
       {/* Main col */}
-      <View className="flex-col space-y-5 p-3">
-        <Text className="flex-col space-y-2 text-lg">
-          Edit the timeline by adding or removing timeline elements below
-        </Text>
+      <View className="pb-4">
+        <View className="flex-col bg-black p-4 ">
+          <Text className="text-lg text-white">
+            Edit the timeline by adding or removing timeline elements below
+          </Text>
+        </View>
 
         <View className="flex-col">
           <View className="bg-black p-4">

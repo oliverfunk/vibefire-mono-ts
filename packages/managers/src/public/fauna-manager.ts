@@ -2,7 +2,6 @@ import { Value } from "@sinclair/typebox/value";
 import { Client } from "fauna";
 import { DateTime } from "luxon";
 import type { PartialDeep } from "type-fest";
-import { detectPrng, factory } from "ulid";
 
 import {
   VibefireEventManagementSchema,

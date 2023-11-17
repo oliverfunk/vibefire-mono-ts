@@ -358,7 +358,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
             }}
           >
             <LocationSelectionMap
-              currentSelectedPosition={event.location.position}
+              initialPosition={event.location.position}
               fixed={true}
             />
           </Pressable>
@@ -421,6 +421,7 @@ const _EventDetails = (
   return (
     <BottomSheetModal
       ref={ref}
+      stackBehavior="push"
       backgroundStyle={{
         backgroundColor: "black",
       }}
