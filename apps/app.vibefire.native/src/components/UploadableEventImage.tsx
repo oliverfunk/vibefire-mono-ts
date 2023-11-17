@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   Pressable,
   Text,
   TouchableOpacity,
@@ -10,14 +9,8 @@ import {
 import { type ImageProps } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
-import { set } from "lodash";
-import { DateTime } from "luxon";
-import { type PartialDeep } from "type-fest";
-
-import { type VibefireEventT } from "@vibefire/models";
 
 import { EventImage } from "~/components/event/EventImage";
-import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { trpc } from "~/apis/trpc-client";
 
 const selectImage = async () => {
@@ -36,16 +29,16 @@ const selectImage = async () => {
 };
 
 const uploadImage = async (
-  pickedImage: ImagePicker.ImagePickerAsset,
+  pickedImageUri: string,
   uploadURL: string,
   uploadedFileName: string,
 ) => {
-  const pickRes = await fetch(pickedImage.uri);
+  const pickRes = await fetch(pickedImageUri);
   const ct = pickRes.headers.get("content-type");
 
   const formdata = new FormData();
   formdata.append("file", {
-    uri: pickedImage.uri,
+    uri: pickedImageUri,
     name: uploadedFileName,
     type: ct,
   });
@@ -59,7 +52,7 @@ const uploadImage = async (
 type UploadableEventImageProps = {
   eventId: string;
   alt: ImageProps["alt"];
-  selectNewOnSelected?: boolean;
+  selectNewOnPressed?: boolean;
   unsetImageText?: string;
   imgIdKey?: string;
   rounded?: boolean;
@@ -71,7 +64,7 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
   const {
     eventId,
     alt,
-    selectNewOnSelected,
+    selectNewOnPressed,
     unsetImageText,
     imgIdKey,
     rounded,
@@ -81,10 +74,15 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
 
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [pickedImageUri, setPickedImageUri] = useState("");
 
   const getImageUploadLink = trpc.events.getImageUploadLink.useMutation();
 
   useEffect(() => {
+    if (getImageUploadLink.status === "idle") {
+      setLoading(false);
+      setHasError(false);
+    }
     if (getImageUploadLink.status === "loading") {
       setLoading(true);
       setHasError(false);
@@ -100,12 +98,11 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
         uploadURL: string,
         uploadedFileName: string,
       ) => {
-        const pickedImage = await selectImage();
-        if (!pickedImage) {
-          return;
-        }
-
-        const res = await uploadImage(pickedImage, uploadURL, uploadedFileName);
+        const res = await uploadImage(
+          pickedImageUri,
+          uploadURL,
+          uploadedFileName,
+        );
 
         if (!res.ok) {
           console.error(JSON.stringify(res, null, 2));
@@ -120,12 +117,13 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
 
       selectImageAndUpload(uploadURL, id).catch(console.error);
     }
-  }, [getImageUploadLink.status]);
+  }, [getImageUploadLink.status, pickedImageUri]);
 
   if (loading) {
     return (
-      <View className="aspect-[4/4] w-full flex-col items-center justify-center bg-black">
+      <View className="aspect-[4/4] w-full flex-col items-center justify-center space-y-2 bg-black">
         <ActivityIndicator size="small" color="#ffffff" />
+        <Text className="text-center text-lg text-white">Uploading...</Text>
       </View>
     );
   }
@@ -152,7 +150,12 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
     return (
       <Pressable
         className="aspect-[4/4] w-full flex-col items-center justify-center bg-slate-200"
-        onPress={() => {
+        onPress={async () => {
+          const pickedImage = await selectImage();
+          if (!pickedImage) {
+            return;
+          }
+          setPickedImageUri(pickedImage.uri);
           getImageUploadLink.mutate({
             eventId,
           });
@@ -165,12 +168,18 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
       </Pressable>
     );
   }
+
   return (
     <View className="relative items-center">
       <Pressable
         onPress={
-          selectNewOnSelected
-            ? () => {
+          selectNewOnPressed
+            ? async () => {
+                const pickedImage = await selectImage();
+                if (!pickedImage) {
+                  return;
+                }
+                setPickedImageUri(pickedImage.uri);
                 getImageUploadLink.mutate({
                   eventId,
                 });

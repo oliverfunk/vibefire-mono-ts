@@ -4,6 +4,7 @@ import {
   type BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 
+import { EditEventDetails } from "./edit-event-details/EditEventDetails";
 import { EventDetails } from "./EventDetails";
 import { EventsByOrganiser } from "./EventsByOrganiser";
 import { EventsListAndProfile } from "./EventsListAndProfile";
@@ -15,25 +16,33 @@ export const BottomPanel = (props: {
   orgID?: string;
   manageEvent?: string;
   eventsBy?: string;
+  editEvent?: string;
 }) => {
   const mapQueryEventsListSheetRef = useRef<BottomSheetModal>(null);
   const eventDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
   const orgDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
   const manageEventSheetRef = useRef<BottomSheetModal>(null);
-  const eventsBySheetRef = useRef<BottomSheetModal>(null);
+  const eventsByOrganiserSheetRef = useRef<BottomSheetModal>(null);
+  const editEventDetailsSheetRef = useRef<BottomSheetModal>(null);
 
   //#region effects
   useEffect(() => {
     if (props.eventID) {
       // navigate to event on map and show event details
       eventDetailsDisplaySheetRef.current?.present();
-    } else if (props.orgID) {
+    }
+    if (props.orgID) {
       // show org details screen
       orgDetailsDisplaySheetRef.current?.present();
-    } else if (props.manageEvent) {
+    }
+    if (props.manageEvent) {
       manageEventSheetRef.current?.present();
-    } else if (props.eventsBy) {
-      eventsBySheetRef.current?.present();
+    }
+    if (props.editEvent) {
+      editEventDetailsSheetRef.current?.present();
+    }
+    if (props.eventsBy) {
+      eventsByOrganiserSheetRef.current?.present();
     }
   }, [props]);
 
@@ -60,10 +69,16 @@ export const BottomPanel = (props: {
       {props.manageEvent && (
         <ManageEvent
           ref={manageEventSheetRef}
-          manageSelect={props.manageEvent}
+          queryString={props.manageEvent}
         />
       )}
-      {props.eventsBy && <EventsByOrganiser ref={eventsBySheetRef} />}
+      {props.eventsBy && <EventsByOrganiser ref={eventsByOrganiserSheetRef} />}
+      {props.editEvent && (
+        <EditEventDetails
+          ref={editEventDetailsSheetRef}
+          queryString={props.editEvent}
+        />
+      )}
     </BottomSheetModalProvider>
   );
 };

@@ -1,7 +1,8 @@
 import { atom } from "jotai";
 
-import { type AppUserState, type TimeOfDayT } from "@vibefire/models";
+import { type AppUserState } from "@vibefire/models";
 
+export const editEventButtonStateAtom = atom("inital");
 export const profileSelectedAtom = atom(false);
 export const userSessionRetryAtom = atom(false);
 export const userAtom = atom<AppUserState>({

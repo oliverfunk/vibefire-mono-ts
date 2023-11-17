@@ -1,0 +1,101 @@
+import { useLayoutEffect, useMemo } from "react";
+import { Dimensions, View } from "react-native";
+import _ from "lodash";
+
+import { EventImageCarousel } from "~/components/event/EventImageCarousel";
+import { UploadableEventImage } from "~/components/UploadableEventImage";
+import { FormTitleInput } from "../../_shared";
+import { type FormSectionProps } from "./types";
+
+export const EditEventImages = (props: FormSectionProps) => {
+  const {
+    editedEventData: eventData,
+    setEditedEventData: setEventData,
+    setMayProceed,
+  } = props;
+
+  useLayoutEffect(() => {
+    setMayProceed(!!eventData.images?.banner);
+  }, [eventData, setMayProceed]);
+
+  const selectedAdditionalImages = useMemo(() => {
+    const addImages = eventData.images?.additional;
+    if (!addImages) {
+      return [""];
+    }
+    if (addImages.length < 5) {
+      return [...addImages, ""];
+    }
+    return addImages;
+  }, [eventData]);
+
+  const width = Dimensions.get("window").width;
+
+  return (
+    <View className="w-full flex-col space-y-4 py-4">
+      <View>
+        <FormTitleInput
+          title="Banner image (tap to change)"
+          inputRequired={!eventData.images?.banner}
+        >
+          <UploadableEventImage
+            eventId={eventData.id!}
+            imgIdKey={eventData.images?.banner}
+            alt={`Banner image`}
+            unsetImageText="Add Banner Image"
+            selectNewOnPressed={true}
+            onImageUploaded={(imgKeyId: string) => {
+              setEventData(
+                _.merge({}, eventData, { images: { banner: imgKeyId } }),
+              );
+            }}
+          />
+        </FormTitleInput>
+      </View>
+
+      <View>
+        <FormTitleInput title="Additional images (scroll to add)">
+          <EventImageCarousel
+            width={width}
+            eventId={eventData.id!}
+            imgIdKeys={selectedAdditionalImages}
+            renderItem={({ index, item }) => {
+              return (
+                <UploadableEventImage
+                  eventId={eventData.id!}
+                  imgIdKey={item}
+                  alt={`Additional image ${index}`}
+                  unsetImageText="Add Additional Image"
+                  onClosePress={() => {
+                    const newAdditional = [...eventData.images!.additional!];
+                    newAdditional.splice(index, 1);
+                    setEventData({
+                      ...eventData,
+                      images: {
+                        ...eventData.images,
+                        additional: newAdditional,
+                      },
+                    });
+                  }}
+                  onImageUploaded={(imgKeyId: string) => {
+                    const newAdditional = [
+                      ...(eventData.images?.additional ?? []),
+                    ];
+                    newAdditional[index] = imgKeyId;
+                    setEventData({
+                      ...eventData,
+                      images: {
+                        ...eventData.images,
+                        additional: newAdditional,
+                      },
+                    });
+                  }}
+                />
+              );
+            }}
+          />
+        </FormTitleInput>
+      </View>
+    </View>
+  );
+};

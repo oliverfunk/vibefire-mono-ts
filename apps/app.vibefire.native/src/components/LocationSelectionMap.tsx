@@ -8,14 +8,14 @@ import { trpc } from "~/apis/trpc-client";
 import { useLocationOnce } from "~/hooks/useLocation";
 
 export const LocationSelectionMap = (props: {
-  currentSelectedPosition?: CoordT;
+  initialPosition?: CoordT;
   onPositionSelected?: (position: CoordT) => void;
   onPositionInfo?: (position: CoordT, addressDescription: string) => void;
   fixed?: boolean;
   onPress?: () => void;
 }) => {
   const {
-    currentSelectedPosition,
+    initialPosition,
     onPositionInfo,
     onPositionSelected,
     fixed = false,
@@ -23,38 +23,46 @@ export const LocationSelectionMap = (props: {
   } = props;
 
   const mvRef = useRef<MapView>(null);
+
   const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
-    currentSelectedPosition,
+    initialPosition,
   );
-  const positionAddressInfoQuery = trpc.events.positionAddressInfo.useQuery(
-    {
-      position: selectedPosition ?? { lat: 0, lng: 0 },
-    },
-    {
-      enabled:
-        selectedPosition !== undefined &&
-        // run only after a selection is made
-        currentSelectedPosition !== selectedPosition,
-    },
-  );
+
+  const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
+  //   {
+  //     position: selectedPosition ?? { lat: 0, lng: 0 },
+  //   },
+  //   {
+  //     enabled:
+  //       selectedPosition !== undefined &&
+  //       // run only after a selection is made
+  //       currentSelectedPosition !== selectedPosition,
+  //   },
+  // );
+
+  useEffect(() => {
+    if (!selectedPosition) {
+      return;
+    }
+    const q = async () => {
+      const addressDesc = await positionAddressInfoMut.mutateAsync({
+        position: selectedPosition,
+      });
+      onPositionInfo?.(selectedPosition, addressDesc);
+    };
+    void q();
+  }, [selectedPosition]);
 
   const { location, locPermDeniedMsg } = useLocationOnce();
 
   useEffect(() => {
-    if (selectedPosition && positionAddressInfoQuery.status == "success") {
-      const addressDesc = positionAddressInfoQuery.data;
-      onPositionInfo?.(selectedPosition, addressDesc);
-    }
-  }, [positionAddressInfoQuery.status]);
-
-  useEffect(() => {
     // the timeouts improve stability on android
-    if (currentSelectedPosition !== undefined) {
+    if (initialPosition !== undefined) {
       setTimeout(() => {
         mvRef.current?.setCamera({
           center: {
-            latitude: currentSelectedPosition.lat,
-            longitude: currentSelectedPosition.lng,
+            latitude: initialPosition.lat,
+            longitude: initialPosition.lng,
           },
           zoom: 16,
         });
@@ -70,7 +78,7 @@ export const LocationSelectionMap = (props: {
         });
       }, 100);
     }
-  }, [location, currentSelectedPosition]);
+  }, [location, initialPosition]);
 
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
@@ -93,12 +101,13 @@ export const LocationSelectionMap = (props: {
       zoomEnabled={!fixed}
       scrollEnabled={!fixed}
       zoomTapEnabled={!fixed}
+      showsMyLocationButton={!fixed}
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
       loadingEnabled={true}
       showsUserLocation={true}
-      moveOnMarkerPress
+      moveOnMarkerPress={false}
       rotateEnabled={false}
       maxZoomLevel={20}
       minZoomLevel={3}
@@ -110,6 +119,10 @@ export const LocationSelectionMap = (props: {
           : (event) => {
               const { latitude, longitude } = event.nativeEvent.coordinate;
               setSelectedPosition({
+                lat: latitude,
+                lng: longitude,
+              });
+              onPositionSelected?.({
                 lat: latitude,
                 lng: longitude,
               });

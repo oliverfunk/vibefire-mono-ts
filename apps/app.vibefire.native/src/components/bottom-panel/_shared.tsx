@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Text,
@@ -15,8 +15,6 @@ import {
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import { useFocusEffect } from "@react-navigation/native";
-
-import { navManageEventEditReview } from "~/nav";
 
 export const LoadingSheet = () => {
   return (
@@ -54,21 +52,60 @@ export const useSheetBackdrop = () => {
   );
 };
 
-export const FormTextInput = (props: {
-  currentValue: string;
-  onChange: (text: string) => void;
-  placeholder?: string;
-  fontSize?: number;
+export const FormTitleInput = (props: {
+  title: string;
+  children: React.ReactNode;
+  inputRequired?: boolean;
 }) => {
   return (
-    <View className="rounded-lg border-4 border-slate-200 bg-white">
+    <View className="flex-col">
+      <Text
+        className={`px-4 text-lg ${props.inputRequired && "text-[#ff1111]"}`}
+      >
+        {props.title}
+      </Text>
+      <View>{props.children}</View>
+    </View>
+  );
+};
+
+export type FormTextInputProps = {
+  value: string | undefined;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  fontSize?: number;
+  multiline?: boolean;
+  editable?: boolean;
+};
+
+export const FormTitleTextInput = (
+  props: { title: string; inputRequired?: boolean } & FormTextInputProps,
+) => {
+  return (
+    <FormTitleInput title={props.title} inputRequired={props.inputRequired}>
+      <FormTextInput
+        fontSize={props.fontSize}
+        onChangeText={props.onChangeText}
+        value={props.value}
+        placeholder={props.placeholder}
+        multiline={props.multiline}
+        editable={props.editable}
+      />
+    </FormTitleInput>
+  );
+};
+
+export const FormTextInput = (props: FormTextInputProps) => {
+  return (
+    <View className="rounded-lg bg-slate-200">
       <TextInput
-        className="p-2"
-        multiline={true}
+        className="px-4 py-2"
         style={{ fontSize: props.fontSize ?? 18 }}
+        multiline={props.multiline ?? false}
         placeholderTextColor={"#000000FF"}
-        onChangeText={props.onChange}
-        value={props.currentValue}
+        onChangeText={props.onChangeText}
+        value={props.value}
+        editable={props.editable}
         placeholder={props.placeholder}
       />
     </View>
@@ -89,7 +126,8 @@ export const ScrollViewSheetWithHeader = (props: {
   children: React.ReactNode;
 }) => (
   <BottomSheetScrollView
-    automaticallyAdjustKeyboardInsets={true}
+    // automaticallyAdjustKeyboardInsets={true}
+    keyboardDismissMode={"on-drag"}
     focusHook={useFocusEffect}
   >
     <LinearRedOrangeView className="flex-row p-4">
@@ -103,38 +141,68 @@ export const ScrollViewSheetWithHeader = (props: {
   </BottomSheetScrollView>
 );
 
-export const ReviewSaveNextFormButtons = (props: {
-  eventId: string;
-  onPressSave: () => void;
-  onPressNext: () => void;
-  savedEnabled: boolean;
+const usePrevious = <T,>(value: T) => {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+};
+
+export const BackNextButtons = (props: {
+  backText?: string;
+  onBackPressed: () => void;
+  saveText?: string;
+  onSavePressed: () => void;
+  nextText?: string;
+  onNextPressed: () => void;
+  canSave: boolean;
+  mayProceed: boolean;
+  isLoading: boolean;
+  nextAfterLoading?: boolean;
 }) => {
+  const canSave = props.mayProceed && props.canSave;
+  const prevLoading = usePrevious(props.isLoading);
+  useEffect(() => {
+    if (prevLoading && !props.isLoading && props.nextAfterLoading) {
+      props.onNextPressed();
+    }
+  }, [
+    prevLoading,
+    props.isLoading,
+    props.onNextPressed,
+    props.nextAfterLoading,
+    props,
+  ]);
   return (
     <View className="flex-row justify-around">
       <TouchableOpacity
-        className="rounded-lg border bg-white px-4 py-2"
-        onPress={() => {
-          navManageEventEditReview(props.eventId);
-        }}
+        className="items-center justify-center rounded-lg border bg-white px-4 py-2 "
+        onPress={props.onBackPressed}
       >
-        <Text className="text-xl text-black">Review</Text>
+        <Text className="text-xl text-black">{props.backText ?? "Back"}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        className={`rounded-lg px-4 py-2 ${
-          props.savedEnabled ? "bg-red-500" : "bg-gray-300"
+        className={`items-center justify-center rounded-lg px-4 py-2 ${
+          props.isLoading
+            ? "bg-black"
+            : props.mayProceed
+            ? props.canSave
+              ? "bg-green-500"
+              : "bg-black"
+            : "bg-gray-300"
         }`}
-        disabled={!props.savedEnabled}
-        onPress={props.onPressSave}
+        disabled={!props.mayProceed}
+        onPress={canSave ? props.onSavePressed : props.onNextPressed}
       >
-        <Text className="text-xl text-white">Save</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        className="rounded-lg bg-black px-4 py-2"
-        onPress={props.onPressNext}
-      >
-        <Text className="text-xl text-white">Next</Text>
+        {props.isLoading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : canSave ? (
+          <Text className="text-xl text-white">{props.saveText ?? "Save"}</Text>
+        ) : (
+          <Text className="text-xl text-white">{props.nextText ?? "Next"}</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo, type Ref } from "react";
+import React, { forwardRef, type Ref } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -10,14 +10,13 @@ import { type VibefireEventT } from "@vibefire/models";
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
 import {
+  navCreateEvent,
+  navEditEvent,
   navManageEvent,
-  navManageEventCreate,
-  navManageEventEditReview,
   navOwnEventsByOrganiserClose,
 } from "~/nav";
 import {
   ErrorSheet,
-  LinearRedOrangeView,
   LoadingSheet,
   ScrollViewSheetWithHeader,
   useSheetBackdrop,
@@ -32,7 +31,7 @@ const EventsByOrganiserView: React.FC<{
         <TouchableOpacity
           className="rounded-lg bg-black px-4 py-4"
           onPress={() => {
-            navManageEventCreate();
+            navCreateEvent();
           }}
         >
           <Text className="text-xl font-bold text-white">Create event</Text>
@@ -42,11 +41,10 @@ const EventsByOrganiserView: React.FC<{
           <EventsList
             events={events}
             onEventPress={(eventId, event) => {
-              if (event?.state === "ready") {
-                navManageEvent(eventId);
+              if (event?.state === "draft") {
+                navEditEvent(eventId);
               } else {
-                navManageEventEditReview(eventId);
-                // should nav to edit if in draft
+                navManageEvent(eventId);
               }
             }}
             showStatusBanner={true}
@@ -83,8 +81,9 @@ const EventsByOrganiserComponent = (
     <BottomSheetModal
       ref={ref}
       backdropComponent={backdrop}
+      stackBehavior="push"
       backgroundStyle={{
-        backgroundColor: "rgba(255,255,255,0.9)",
+        backgroundColor: "rgba(255,255,255,1)",
       }}
       bottomInset={insets.bottom}
       index={0}

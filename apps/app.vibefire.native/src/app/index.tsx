@@ -11,6 +11,7 @@ const Home = () => {
     orgId?: string;
     manageEvent?: string;
     eventsBy?: string;
+    editEvent?: string;
   }>();
 
   const url = Linking.useURL();
@@ -36,6 +37,7 @@ const Home = () => {
         orgID={params.orgId}
         manageEvent={params.manageEvent}
         eventsBy={params.eventsBy}
+        editEvent={params.editEvent}
       />
     </NoTopContainer>
   );

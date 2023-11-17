@@ -12,20 +12,10 @@ import { vibefireEventShareURL } from "@vibefire/utils";
 import { EventCard } from "~/components/event/EventCard";
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { trpc } from "~/apis/trpc-client";
-import {
-  navManageEventEditReview,
-  navManageEventEditTimeline,
-  navViewEventAsPreview,
-} from "~/nav";
-import {
-  ErrorSheet,
-  LinearRedOrangeView,
-  LoadingSheet,
-  ScrollViewSheet,
-  ScrollViewSheetWithHeader,
-} from "../../_shared";
+import { navEditEvent, navViewEventAsPreview } from "~/nav";
+import { ScrollViewSheetWithHeader } from "../../_shared";
 
-const _ManagementView = (props: {
+export const ManagementView = (props: {
   event: VibefireEventT;
   eventManagement: VibefireEventManagementT;
   dataRefetch: () => void;
@@ -136,16 +126,19 @@ const _ManagementView = (props: {
               }}
             />
           </View>
-          <View className="items-center">
-            <TouchableOpacity
-              className="items-center rounded-lg bg-black px-4 py-2"
-              onPress={() => {
-                navManageEventEditReview(event.id);
-              }}
-            >
-              <Text className="text-xl text-white">Edit details</Text>
-            </TouchableOpacity>
-          </View>
+        </View>
+
+        <View className="border-b" />
+
+        <View className="items-center">
+          <TouchableOpacity
+            className="items-center rounded-lg bg-black px-4 py-2"
+            onPress={() => {
+              navEditEvent(event.id);
+            }}
+          >
+            <Text className="text-xl text-white">Edit event details</Text>
+          </TouchableOpacity>
         </View>
 
         <View className="border-b" />
@@ -163,7 +156,7 @@ const _ManagementView = (props: {
             <TouchableOpacity
               className="items-center rounded-lg bg-black px-4 py-2"
               onPress={() => {
-                navManageEventEditTimeline(event.id);
+                // navManageEventEditTimeline(event.id);
               }}
             >
               <Text className="text-xl text-white">Edit timeline</Text>
@@ -207,26 +200,4 @@ const _ManagementView = (props: {
       </View>
     </ScrollViewSheetWithHeader>
   );
-};
-
-export const ManageEventManagement = (props: { eventId: string }) => {
-  const { eventId } = props;
-  const eventForManagement = trpc.events.eventAllInfoForManagement.useQuery({
-    eventId,
-  });
-
-  switch (eventForManagement.status) {
-    case "loading":
-      return <LoadingSheet />;
-    case "error":
-      return <ErrorSheet message="Couldn't load the event" />;
-    case "success":
-      return (
-        <_ManagementView
-          event={eventForManagement.data.event}
-          eventManagement={eventForManagement.data.eventManagement}
-          dataRefetch={eventForManagement.refetch}
-        />
-      );
-  }
 };
