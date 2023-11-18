@@ -138,7 +138,7 @@ const _TimelineElementAdd = (props: {
   );
 };
 
-export const ManageEventEditTimeline = (props: {
+export const EditEventTimeline = (props: {
   eventId: string;
   currentEventData: PartialDeep<VibefireEventT>;
   dataRefetch: () => void;
@@ -162,13 +162,13 @@ export const ManageEventEditTimeline = (props: {
     return !_.isEqual(selectedEventTimeline, currentEventFormData.timeline);
   }, [selectedEventTimeline, currentEventFormData.timeline]);
 
-  const updateTimeline = trpc.events.updateTimeline.useMutation();
+  const updateEvent = trpc.events.updateEvent.useMutation();
 
   useEffect(() => {
-    if (updateTimeline.isSuccess) {
+    if (updateEvent.isSuccess) {
       dataRefetch();
     }
-  }, [updateTimeline.isSuccess, dataRefetch]);
+  }, [updateEvent.isSuccess, dataRefetch]);
 
   useEffect(() => {
     setSelectedEventTimeline(currentEventFormData.timeline);
@@ -272,7 +272,7 @@ export const ManageEventEditTimeline = (props: {
             }`}
             disabled={!hasEdited}
             onPress={() => {
-              updateTimeline.mutate({
+              updateEvent.mutate({
                 eventId,
                 timeline: selectedEventTimeline,
               });

@@ -1,12 +1,4 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type Ref,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   Modal,
@@ -16,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
 import {
@@ -24,12 +15,12 @@ import {
   FontAwesome,
   FontAwesome5,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { useAtomValue } from "jotai";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
 import {
   organisationProfileImagePath,
   uberRequestToEventURL,
@@ -42,13 +33,8 @@ import { EventTimeline } from "~/components/event/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
 import { userAtom } from "~/atoms";
-import { navViewEventClose, navViewOrg } from "~/nav";
-import {
-  ErrorSheet,
-  LoadingSheet,
-  ScrollViewSheet,
-  useSheetBackdrop,
-} from "./_shared";
+import { navManageEvent, navViewOrg } from "~/nav";
+import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
@@ -71,10 +57,14 @@ const ThreeDotsMenuOption = (props: {
 const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
   const { event } = props;
 
-  const [visible, setVisible] = useState(false);
+  const user = useAtomValue(userAtom);
+
+  const [menuVisible, setMenuVisible] = useState(false);
   const DropdownButton = useRef<View>(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownRight, setDropdownRight] = useState(0);
+
+  const { close } = useBottomSheet();
 
   const openDropdown = (): void => {
     DropdownButton.current!.measure((_fx, _fy, w, h, px, py) => {
@@ -82,38 +72,62 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
       setDropdownTop(py + h);
       setDropdownRight(w);
     });
-    setVisible(true);
+    setMenuVisible(true);
   };
 
-  const hideEvent = trpc.user.hideEvent.useMutation();
-  const blockOrganiser = trpc.user.blockOrganiser.useMutation();
+  const hideEventMut = trpc.user.hideEvent.useMutation();
+  const blockOrganiserMut = trpc.user.blockOrganiser.useMutation();
 
   useEffect(() => {
-    if (hideEvent.status === "success") {
+    if (hideEventMut.isSuccess) {
       // todo refresh mapquery
-      navViewEventClose();
+      close();
     }
-  }, [hideEvent.status]);
+  }, [close, hideEventMut.isSuccess]);
   useEffect(() => {
-    if (blockOrganiser.status === "success") {
+    if (blockOrganiserMut.isSuccess) {
       // todo refresh mapquery
-      navViewEventClose();
+      close();
     }
-  }, [blockOrganiser.status]);
+  }, [blockOrganiserMut.isSuccess, close]);
 
   return (
     <Pressable
       ref={DropdownButton}
       onPress={() => {
-        visible ? setVisible(false) : openDropdown();
+        menuVisible ? setMenuVisible(false) : openDropdown();
       }}
     >
-      <Modal visible={visible} transparent animationType="fade">
-        <Pressable className="h-full w-full" onPress={() => setVisible(false)}>
+      <Modal visible={menuVisible} transparent animationType="fade">
+        <Pressable
+          className="h-full w-full"
+          onPress={() => setMenuVisible(false)}
+        >
           <View
             className="absolute overflow-hidden rounded-md bg-white"
             style={{ top: dropdownTop, right: dropdownRight }}
           >
+            {user.state === "authenticated" &&
+              (user.userInfo as VibefireUserT).aid === event.organiserId && (
+                <>
+                  <ThreeDotsMenuOption
+                    label="Manage Event"
+                    icon={
+                      <MaterialIcons
+                        name="app-registration"
+                        color={"black"}
+                        size={24}
+                      />
+                    }
+                    onPress={() => {
+                      setMenuVisible(false);
+                      close();
+                      navManageEvent(event.id);
+                    }}
+                  />
+                  <View className="h-px bg-gray-200" />
+                </>
+              )}
             <ThreeDotsMenuOption
               label="Hide Event"
               icon={
@@ -124,8 +138,8 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
                 />
               }
               onPress={() => {
-                setVisible(false);
-                hideEvent.mutate({ eventId: event.id, report: false });
+                setMenuVisible(false);
+                hideEventMut.mutate({ eventId: event.id, report: false });
               }}
             />
             <View className="h-px bg-gray-200" />
@@ -139,8 +153,8 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
                 />
               }
               onPress={() => {
-                setVisible(false);
-                hideEvent.mutate({ eventId: event.id, report: true });
+                setMenuVisible(false);
+                hideEventMut.mutate({ eventId: event.id, report: true });
               }}
             />
             <View className="h-px bg-gray-200" />
@@ -154,8 +168,8 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
                 />
               }
               onPress={() => {
-                setVisible(false);
-                blockOrganiser.mutate({ organiserId: event.organiserId });
+                setMenuVisible(false);
+                blockOrganiserMut.mutate({ organiserId: event.organiserId });
               }}
             />
           </View>
@@ -215,6 +229,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   const width = Dimensions.get("window").width;
 
   const user = useAtomValue(userAtom);
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const eventFollowed = useMemo(() => {
     if (user.state === "authenticated") {
@@ -225,7 +240,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   }, [user, event.id]);
 
   const imgs = useMemo(
-    () => [event.images.banner].concat(event.images.additional),
+    () => [event.images.banner].concat(event.images.additional ?? []),
     [event.images],
   );
 
@@ -374,7 +389,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   );
 };
 
-const _EventDetailsController = (props: { eventId: string }) => {
+const EventDetailsController = (props: { eventId: string }) => {
   const { eventId } = props;
   const eventQuery = trpc.events.eventForExternalView.useQuery({ eventId });
 
@@ -388,7 +403,7 @@ const _EventDetailsController = (props: { eventId: string }) => {
   }
 };
 
-const _EventDetailsPreviewController = (props: { eventId: string }) => {
+const EventDetailsPreviewController = (props: { eventId: string }) => {
   const { eventId } = props;
   const eventQuery = trpc.events.eventForReadyPreview.useQuery({
     eventId,
@@ -404,43 +419,17 @@ const _EventDetailsPreviewController = (props: { eventId: string }) => {
   }
 };
 
-const _EventDetails = (
-  props: { eventQuery: string },
-  ref: Ref<BottomSheetModalMethods>,
-) => {
+export const EventDetails = (props: { eventQuery: string }) => {
   const { eventQuery } = props;
-
-  const insets = useSafeAreaInsets();
-  const backdrop = useSheetBackdrop();
 
   const [eventId, preview] = useMemo(() => {
     const [eventId, preview] = eventQuery.split(",");
     return [eventId, preview === "preview"];
   }, [eventQuery]);
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      stackBehavior="push"
-      backgroundStyle={{
-        backgroundColor: "black",
-      }}
-      backdropComponent={backdrop}
-      bottomInset={insets.bottom}
-      index={0}
-      snapPoints={["80%"]}
-      handleComponent={null}
-      onDismiss={() => {
-        navViewEventClose();
-      }}
-    >
-      {preview ? (
-        <_EventDetailsPreviewController eventId={eventId} />
-      ) : (
-        <_EventDetailsController eventId={eventId} />
-      )}
-    </BottomSheetModal>
+  return preview ? (
+    <EventDetailsPreviewController eventId={eventId} />
+  ) : (
+    <EventDetailsController eventId={eventId} />
   );
 };
-
-export const EventDetails = forwardRef(_EventDetails);

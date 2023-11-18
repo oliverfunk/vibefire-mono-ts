@@ -150,39 +150,34 @@ export const eventsRouter = router({
 
           bannerImageId: t.Optional(t.String()),
           additionalImageIds: t.Optional(t.Array(t.String())),
+
+          timeline: t.Optional(
+            t.Array(
+              t.Object({
+                id: t.String(),
+                timeIsoNTZ: t.String(),
+                message: t.String(),
+              }),
+            ),
+          ),
         }),
       ),
     )
-    .output((value) => value as { id: string })
     .mutation(async ({ ctx, input }) => {
-      await ctx.fauna.eventUpdateDescriptions(
+      await ctx.fauna.eventUpdate(
         ctx.auth,
         input.eventId,
+        input.organisationId,
         input.title,
         input.description,
         input.tags,
-        input.organisationId,
-      );
-      await ctx.fauna.eventUpdateLocation(
-        ctx.auth,
-        input.eventId,
-        input.position,
-        input.addressDescription,
-        input.organisationId,
-      );
-      await ctx.fauna.eventUpdateTimes(
-        ctx.auth,
-        input.eventId,
         input.timeStartIsoNTZ,
         input.timeEndIsoNTZ,
-        input.organisationId,
-      );
-      return await ctx.fauna.eventUpdateImages(
-        ctx.auth,
-        input.eventId,
+        input.position,
+        input.addressDescription,
         input.bannerImageId,
         input.additionalImageIds,
-        input.organisationId,
+        input.timeline,
       );
     }),
   getImageUploadLink: authedProcedure
@@ -208,17 +203,6 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
-  setReady: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetReady(ctx.auth, input.eventId);
-    }),
   setPublished: authedProcedure
     .input(
       tbValidator(
@@ -240,31 +224,6 @@ export const eventsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
-    }),
-  updateTimeline: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          timeline: t.Array(
-            t.Object({
-              id: t.String(),
-              timeIsoNTZ: t.String(),
-              message: t.String(),
-            }),
-          ),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as { id: string })
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventUpdateTimeline(
-        ctx.auth,
-        input.eventId,
-        input.timeline,
-        input.organisationId,
-      );
     }),
   mapQueryPublicEvents: publicProcedure
     .input(tbValidator(MapQuerySchema))

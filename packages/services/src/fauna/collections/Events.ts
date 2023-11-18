@@ -96,27 +96,23 @@ export const createEvent = async (
 
 export const updateEvent = async (
   faunaClient: Client,
-  updateData: PartialDeepExceptRequired<VibefireEventT, "id" | "organiserId">,
+  eventId: string,
+  organiserId: string,
+  updateData: PartialDeep<VibefireEventT>,
 ) => {
-  const eventId = updateData.id;
-  const organiserId = updateData.organiserId;
-
-  const newUpdateData: PartialDeep<VibefireEventT> = { ...updateData };
-  delete newUpdateData.id;
-  delete newUpdateData.organiserId;
+  delete updateData.id;
+  delete updateData.organiserId;
 
   const q = fql`
     let e = Events.byId(${eventId})
     if (e?.organiserId == ${organiserId}) {
-      e?.update(${newUpdateData}){
-        id
-      }
+      e?.update(${updateData})
     } else {
       null
     }
   `;
 
-  const res = await dfq<{ id: string } | null>(faunaClient, q);
+  const res = await dfq<PartialDeep<VibefireEventT> | null>(faunaClient, q);
   if (res === null) {
     throw new Error("Error updating event");
   }

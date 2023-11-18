@@ -8,13 +8,17 @@ import {
   type ViewProps,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons } from "@expo/vector-icons";
 import {
   BottomSheetBackdrop,
+  BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import { useFocusEffect } from "@react-navigation/native";
+
+import { usePrevious } from "~/hooks/usePrevious";
 
 export const LoadingSheet = () => {
   return (
@@ -141,14 +145,6 @@ export const ScrollViewSheetWithHeader = (props: {
   </BottomSheetScrollView>
 );
 
-const usePrevious = <T,>(value: T) => {
-  const ref = useRef<T>();
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-};
-
 export const BackNextButtons = (props: {
   backText?: string;
   onBackPressed: () => void;
@@ -158,13 +154,18 @@ export const BackNextButtons = (props: {
   onNextPressed: () => void;
   canSave: boolean;
   mayProceed: boolean;
+  mayProceedBg?: string;
   isLoading: boolean;
   nextAfterLoading?: boolean;
 }) => {
-  const canSave = props.mayProceed && props.canSave;
   const prevLoading = usePrevious(props.isLoading);
   useEffect(() => {
-    if (prevLoading && !props.isLoading && props.nextAfterLoading) {
+    if (
+      prevLoading &&
+      !props.isLoading &&
+      props.nextAfterLoading &&
+      props.mayProceed
+    ) {
       props.onNextPressed();
     }
   }, [
@@ -177,31 +178,59 @@ export const BackNextButtons = (props: {
   return (
     <View className="flex-row justify-around">
       <TouchableOpacity
-        className="items-center justify-center rounded-lg border bg-white px-4 py-2 "
+        className="flex-row items-center justify-center rounded-lg border bg-white px-4 py-2 "
         onPress={props.onBackPressed}
       >
-        <Text className="text-xl text-black">{props.backText ?? "Back"}</Text>
+        <>
+          <MaterialIcons
+            name="navigate-before"
+            // removes annoying padding
+            style={{ marginStart: -10 }}
+            size={24}
+            color="black"
+          />
+          <Text className="text-xl text-black">{props.backText ?? "Back"}</Text>
+        </>
       </TouchableOpacity>
 
       <TouchableOpacity
-        className={`items-center justify-center rounded-lg px-4 py-2 ${
+        className={`flex-row items-center justify-center rounded-lg px-4 py-2 ${
           props.isLoading
             ? "bg-black"
+            : props.canSave
+            ? "bg-green-500"
             : props.mayProceed
-            ? props.canSave
-              ? "bg-green-500"
-              : "bg-black"
+            ? props.mayProceedBg ?? "bg-black"
             : "bg-gray-300"
         }`}
-        disabled={!props.mayProceed}
-        onPress={canSave ? props.onSavePressed : props.onNextPressed}
+        disabled={!(props.canSave || props.mayProceed)}
+        onPress={
+          props.isLoading
+            ? undefined
+            : props.canSave
+            ? props.onSavePressed
+            : props.mayProceed
+            ? props.onNextPressed
+            : undefined
+        }
       >
         {props.isLoading ? (
           <ActivityIndicator size="small" color="white" />
-        ) : canSave ? (
+        ) : props.canSave ? (
           <Text className="text-xl text-white">{props.saveText ?? "Save"}</Text>
         ) : (
-          <Text className="text-xl text-white">{props.nextText ?? "Next"}</Text>
+          <>
+            <Text className="text-xl text-white">
+              {props.nextText ?? "Next"}
+            </Text>
+            <MaterialIcons
+              name="navigate-next"
+              // removes annoying padding
+              style={{ marginEnd: -10 }}
+              size={24}
+              color="white"
+            />
+          </>
         )}
       </TouchableOpacity>
     </View>
@@ -220,3 +249,25 @@ export const LinearRedOrangeView = (
     {props.children}
   </LinearGradient>
 );
+
+// export const SheetModal = (props: {}) => {
+//   return (
+//     <BottomSheetModal
+//       ref={ref}
+//       stackBehavior="push"
+//       backgroundStyle={{
+//         backgroundColor: "black",
+//       }}
+//       backdropComponent={backdrop}
+//       bottomInset={insets.bottom}
+//       index={0}
+//       snapPoints={["80%"]}
+//       handleComponent={null}
+//       onDismiss={() => {
+//         // navClear();
+//       }}
+//     >
+//       {props.children}
+//     </BottomSheetModal>
+//   );
+// };

@@ -23,7 +23,6 @@ export const EditEventTimes = (props: FormSectionProps) => {
     setMayProceed,
     setFormValidations,
   } = props;
-
   useLayoutEffect(() => {
     setMayProceed(!!editedEventData.timeStartIsoNTZ);
 

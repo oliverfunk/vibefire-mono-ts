@@ -12,7 +12,7 @@ import { vibefireEventShareURL } from "@vibefire/utils";
 import { EventCard } from "~/components/event/EventCard";
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { trpc } from "~/apis/trpc-client";
-import { navEditEvent, navViewEventAsPreview } from "~/nav";
+import { navEditEvent, navEditEventClose, navViewEventAsPreview } from "~/nav";
 import { ScrollViewSheetWithHeader } from "../../_shared";
 
 export const ManagementView = (props: {
@@ -132,7 +132,7 @@ export const ManagementView = (props: {
 
         <View className="items-center">
           <TouchableOpacity
-            className="items-center rounded-lg bg-black px-4 py-2"
+            className="items-center rounded-lg bg-black p-4"
             onPress={() => {
               navEditEvent(event.id);
             }}
@@ -144,7 +144,7 @@ export const ManagementView = (props: {
         <View className="border-b" />
 
         {/* Timeline */}
-        <View className="flex-col space-y-2">
+        <View className="flex-col space-y-4">
           <View className="bg-black p-4">
             <EventTimeline
               timelineElements={event.timeline}
@@ -154,7 +154,7 @@ export const ManagementView = (props: {
           </View>
           <View className="items-center">
             <TouchableOpacity
-              className="items-center rounded-lg bg-black px-4 py-2"
+              className="items-center rounded-lg bg-black p-4"
               onPress={() => {
                 // navManageEventEditTimeline(event.id);
               }}

@@ -1,9 +1,18 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  BottomSheetModal,
   BottomSheetModalProvider,
-  type BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 
+import { usePrevious } from "~/hooks/usePrevious";
+import {
+  navEditEventClose,
+  navManageEventClose,
+  navOwnEventsByOrganiserClose,
+  navViewEventClose,
+} from "~/nav";
+import { useSheetBackdrop } from "./_shared";
 import { EditEventDetails } from "./edit-event-details/EditEventDetails";
 import { EventDetails } from "./EventDetails";
 import { EventsByOrganiser } from "./EventsByOrganiser";
@@ -25,24 +34,38 @@ export const BottomPanel = (props: {
   const eventsByOrganiserSheetRef = useRef<BottomSheetModal>(null);
   const editEventDetailsSheetRef = useRef<BottomSheetModal>(null);
 
+  const prevProps = usePrevious(props);
+
   //#region effects
   useEffect(() => {
-    if (props.eventID) {
-      // navigate to event on map and show event details
+    if (props.eventID !== undefined) {
       eventDetailsDisplaySheetRef.current?.present();
+    } else {
+      eventDetailsDisplaySheetRef.current?.close();
     }
-    if (props.orgID) {
-      // show org details screen
+
+    if (props.orgID !== undefined) {
       orgDetailsDisplaySheetRef.current?.present();
+    } else {
+      orgDetailsDisplaySheetRef.current?.close();
     }
-    if (props.manageEvent) {
+
+    if (props.manageEvent !== undefined) {
       manageEventSheetRef.current?.present();
+    } else {
+      manageEventSheetRef.current?.close();
     }
-    if (props.editEvent) {
+
+    if (props.editEvent !== undefined) {
       editEventDetailsSheetRef.current?.present();
+    } else {
+      editEventDetailsSheetRef.current?.close();
     }
-    if (props.eventsBy) {
+
+    if (props.eventsBy !== undefined) {
       eventsByOrganiserSheetRef.current?.present();
+    } else {
+      eventsByOrganiserSheetRef.current?.close();
     }
   }, [props]);
 
@@ -51,34 +74,90 @@ export const BottomPanel = (props: {
   }, []);
   //#endregion
 
+  const insets = useSafeAreaInsets();
+  const backdrop = useSheetBackdrop();
+
   return (
     <BottomSheetModalProvider>
       <EventsListAndProfile ref={mapQueryEventsListSheetRef} />
-      {props.eventID && (
-        <EventDetails
-          ref={eventDetailsDisplaySheetRef}
-          eventQuery={props.eventID}
-        />
-      )}
+
+      {/* Event details */}
+      <BottomSheetModal
+        ref={eventDetailsDisplaySheetRef}
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: "black",
+        }}
+        backdropComponent={backdrop}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={["80%"]}
+        handleComponent={null}
+        onDismiss={() => {
+          navViewEventClose();
+        }}
+      >
+        {props.eventID && <EventDetails eventQuery={props.eventID} />}
+      </BottomSheetModal>
+
       {props.orgID && (
         <OrgDetails
           ref={orgDetailsDisplaySheetRef}
           organisationId={props.orgID}
         />
       )}
-      {props.manageEvent && (
-        <ManageEvent
-          ref={manageEventSheetRef}
-          queryString={props.manageEvent}
-        />
-      )}
-      {props.eventsBy && <EventsByOrganiser ref={eventsByOrganiserSheetRef} />}
-      {props.editEvent && (
-        <EditEventDetails
-          ref={editEventDetailsSheetRef}
-          queryString={props.editEvent}
-        />
-      )}
+
+      {/* Manage event */}
+      <BottomSheetModal
+        ref={manageEventSheetRef}
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: "rgba(255,255,255,1)",
+        }}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={["80%"]}
+        onDismiss={() => {
+          navManageEventClose();
+        }}
+      >
+        {props.manageEvent && <ManageEvent queryString={props.manageEvent} />}
+      </BottomSheetModal>
+
+      {/* Events by organiser */}
+      <BottomSheetModal
+        ref={eventsByOrganiserSheetRef}
+        backdropComponent={backdrop}
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: "rgba(255,255,255,1)",
+        }}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={["80%"]}
+        onDismiss={() => {
+          navOwnEventsByOrganiserClose();
+        }}
+      >
+        {props.eventsBy && <EventsByOrganiser />}
+      </BottomSheetModal>
+
+      {/* Event edit */}
+      <BottomSheetModal
+        ref={editEventDetailsSheetRef}
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: "rgba(255,255,255,1)",
+        }}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={["80%"]}
+        onDismiss={() => {
+          navEditEventClose();
+        }}
+      >
+        {props.editEvent && <EditEventDetails queryString={props.editEvent} />}
+      </BottomSheetModal>
     </BottomSheetModalProvider>
   );
 };

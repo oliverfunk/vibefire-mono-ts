@@ -4,7 +4,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 import { trpc } from "~/apis/trpc-client";
-import { navManageEventClose } from "~/nav";
+import { navClear } from "~/nav";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { ManagementView } from "./views/ManageEventView";
 
@@ -31,32 +31,10 @@ const ManageEventController = (props: { eventId: string; section: string }) => {
   }
 };
 
-const _ManageEvent = (
-  props: { queryString: string },
-  ref: Ref<BottomSheetModalMethods>,
-) => {
+export const ManageEvent = (props: { queryString: string }) => {
   const { queryString } = props;
-  const insets = useSafeAreaInsets();
 
   const [eventId, section] = queryString.split(",", 2);
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      stackBehavior="push"
-      backgroundStyle={{
-        backgroundColor: "rgba(255,255,255,1)",
-      }}
-      bottomInset={insets.bottom}
-      index={0}
-      snapPoints={["80%"]}
-      onDismiss={() => {
-        navManageEventClose();
-      }}
-    >
-      <ManageEventController eventId={eventId} section={section} />
-    </BottomSheetModal>
-  );
+  return <ManageEventController eventId={eventId} section={section} />;
 };
-
-export const ManageEvent = forwardRef(_ManageEvent);
