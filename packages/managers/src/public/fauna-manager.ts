@@ -234,319 +234,206 @@ export class FaunaManager {
     return res;
   }
 
-  async eventUpdateDescriptions(
+  async eventUpdate(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
+    organisationId?: string,
     title?: VibefireEventT["title"],
     description?: VibefireEventT["description"],
     tags?: VibefireEventT["tags"],
-    organisationId?: string,
-  ) {
-    checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const updateData: Partial<VibefireEventT> = {};
-
-    if (title) {
-      title = tbValidator(VibefireEventSchema.properties.title)(
-        trimAndCropText(title, 100),
-      );
-      updateData.title = title;
-    }
-    if (description) {
-      description = tbValidator(VibefireEventSchema.properties.description)(
-        trimAndCropText(description.trim(), 2000),
-      );
-      updateData.description = description;
-    }
-    if (tags) {
-      tags = tags.map((t) => trimAndCropText(t, 20));
-      tags = tbValidator(VibefireEventSchema.properties.tags)(tags);
-      updateData.tags = tags;
-    }
-
-    removeUndef(updateData);
-
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async eventUpdateLocation(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    position?: VibefireEventLocationT["position"],
-    addressDescription?: VibefireEventLocationT["addressDescription"],
-    organisationId?: string,
-  ) {
-    const googleMapsManager = getGoogleMapsManager();
-
-    if (position === undefined && addressDescription === undefined) {
-      return { id: eventId };
-    }
-
-    checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const dbE = await safeGet(
-      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
-      "Event not found",
-    );
-
-    const updateData: PartialDeep<VibefireEventT> = {};
-    const updateLocation: Partial<VibefireEventLocationT> = {};
-
-    if (position) {
-      position = tbValidator(
-        VibefireEventSchema.properties.location.properties.position,
-      )(position);
-
-      // update h3's
-      const { h3, h3Dec } = latLngPositionToH3(position);
-      const { h3ParentsDec } = h3ToH3Parents(h3);
-
-      // could validate h3's but nah
-      updateLocation.position = position;
-      updateLocation.h3 = h3Dec;
-      updateLocation.h3Parents = h3ParentsDec;
-
-      // get timezone based on new position
-      const posTZ = await googleMapsManager.getTimeZoneFromPosition(
-        position,
-        dbE.timeStart ?? DateTime.now().toUnixInteger(),
-      );
-
-      // todo: it's probabaly fine to assume utc if no timezone is found
-
-      if (!posTZ) {
-        throw new Error("Could not get timezone from position");
-      }
-
-      if (dbE.timeStartIsoNTZ && dbE.timeStart) {
-        updateData.timeStart = isoNTZToTZEpochSecs(dbE.timeStartIsoNTZ, posTZ);
-      }
-      if (dbE.timeEndIsoNTZ && dbE.timeEnd) {
-        updateData.timeEnd = isoNTZToTZEpochSecs(dbE.timeEndIsoNTZ, posTZ);
-      }
-      updateData.timeZone = posTZ;
-    }
-
-    if (addressDescription) {
-      updateLocation.addressDescription = tbValidator(
-        VibefireEventSchema.properties.location.properties.addressDescription,
-      )(trimAndCropText(addressDescription, 500));
-    }
-
-    updateData.location = updateLocation;
-
-    removeUndef(updateData);
-
-    // ! NB: if e.state == 'ready', could merge updateData with e and validate
-
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async eventUpdateTimes(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
     timeStartIsoNTZ?: string,
     timeEndIsoNTZ?: string | null,
-    organisationId?: string,
-  ) {
-    if (!timeStartIsoNTZ || timeEndIsoNTZ === undefined) {
-      return { id: eventId };
-    }
-
-    // todo: round the time to the nearest 15 mins
-
-    checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const e = await safeGet(
-      getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
-      "Event not found",
-    );
-
-    const tz = e.timeZone ?? "utc";
-
-    const updateData: Partial<VibefireEventT> = {
-      timeStart: e.timeStart,
-      timeStartIsoNTZ: e.timeStartIsoNTZ,
-      timeEnd: e.timeEnd,
-      timeEndIsoNTZ: e.timeEndIsoNTZ,
-    };
-
-    // could check if UTC iso string
-
-    if (timeStartIsoNTZ) {
-      timeStartIsoNTZ = tbValidator(
-        VibefireEventSchema.properties.timeStartIsoNTZ,
-      )(timeStartIsoNTZ);
-      updateData.timeStartIsoNTZ = timeStartIsoNTZ;
-      updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
-    }
-    if (timeEndIsoNTZ !== undefined) {
-      if (timeEndIsoNTZ === null) {
-        updateData.timeEndIsoNTZ = null;
-        updateData.timeEnd = null;
-      } else {
-        timeEndIsoNTZ = tbValidator(
-          VibefireEventSchema.properties.timeEndIsoNTZ,
-        )(timeEndIsoNTZ);
-        updateData.timeEndIsoNTZ = timeEndIsoNTZ;
-        updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ!, tz);
-      }
-    }
-
-    if (updateData.timeStart && updateData.timeEnd) {
-      if (updateData.timeStart >= updateData.timeEnd) {
-        throw new Error("timeStart must be before timeEnd");
-      }
-    }
-
-    removeUndef(updateData);
-
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async eventUpdateImages(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
+    position?: VibefireEventLocationT["position"],
+    addressDescription?: VibefireEventLocationT["addressDescription"],
     bannerImageId?: string,
     additionalImageIds?: string[],
-    organisationId?: string,
-  ) {
-    checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const updateData: PartialDeep<VibefireEventT> = {};
-    const updateImages: PartialDeep<VibefireEventImagesT> = {};
-
-    if (bannerImageId) {
-      bannerImageId = tbValidator(
-        VibefireEventSchema.properties.images.properties.banner,
-      )(bannerImageId);
-      updateImages.banner = bannerImageId;
-    }
-    if (additionalImageIds) {
-      additionalImageIds = tbValidator(
-        VibefireEventSchema.properties.images.properties.additional,
-      )(additionalImageIds);
-      updateImages.additional = additionalImageIds;
-    }
-
-    updateData.images = updateImages;
-
-    // todo: remove unused images
-
-    removeUndef(updateData);
-
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async generateEventImageUploadLink(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    organisationId?: string,
-  ): Promise<{
-    id: string;
-    uploadURL: string;
-  }> {
-    const imageManager = getImagesManager();
-
-    checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    return await imageManager.eventUploadUrl(eventId, organiserId);
-  }
-
-  async eventUpdateTimeline(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
     setTimeline: {
       id: string;
       timeIsoNTZ: string;
       message: string;
     }[] = [],
-    organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await safeGet(
+    const dbEvent = await safeGet(
       getEventFromIDByOrganiser(this.faunaClient, eventId, organiserId),
       "Event not found",
     );
-    // could use e to get the timezone to set a notification
-    // also to check if has announced etc. for removed elements
-    // but for now don't need it
 
-    const updateData: PartialDeep<VibefireEventT> = {};
-    const updateTimeline: VibefireEventTimelineElementT[] = [];
+    const updateData: PartialDeep<VibefireEventT> = {
+      timeZone: dbEvent.timeZone,
+      timeStartIsoNTZ: dbEvent.timeStartIsoNTZ,
+      timeEndIsoNTZ: dbEvent.timeEndIsoNTZ,
+      timeStart: dbEvent.timeStart,
+      timeEnd: dbEvent.timeEnd,
+    };
 
-    for (const el of setTimeline) {
-      let tle = Value.Create(VibefireEventTimelineElementSchema);
-      tle.id = el.id;
-      tle.timeIsoNTZ = el.timeIsoNTZ;
-      tle.message = trimAndCropText(el.message, 500);
-      tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
-      updateTimeline.push(tle);
+    // descriptions
+    if (title || description || tags) {
+      if (title) {
+        title = tbValidator(VibefireEventSchema.properties.title)(
+          trimAndCropText(title, 100),
+        );
+        updateData.title = title;
+      }
+      if (description) {
+        description = tbValidator(VibefireEventSchema.properties.description)(
+          trimAndCropText(description.trim(), 2000),
+        );
+        updateData.description = description;
+      }
+      if (tags) {
+        tags = tags.map((t) => trimAndCropText(t, 20));
+        tags = tbValidator(VibefireEventSchema.properties.tags)(tags);
+        updateData.tags = tags;
+      }
     }
 
-    updateData.timeline = updateTimeline;
+    // times
+    if (timeStartIsoNTZ || timeEndIsoNTZ !== undefined) {
+      const tz = updateData.timeZone ?? "utc";
+      if (timeStartIsoNTZ) {
+        timeStartIsoNTZ = tbValidator(
+          VibefireEventSchema.properties.timeStartIsoNTZ,
+        )(timeStartIsoNTZ);
+        updateData.timeStartIsoNTZ = timeStartIsoNTZ;
+        updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
+      }
+      if (timeEndIsoNTZ !== undefined) {
+        if (timeEndIsoNTZ === null) {
+          updateData.timeEndIsoNTZ = null;
+          updateData.timeEnd = null;
+        } else {
+          timeEndIsoNTZ = tbValidator(
+            VibefireEventSchema.properties.timeEndIsoNTZ,
+          )(timeEndIsoNTZ);
+          updateData.timeEndIsoNTZ = timeEndIsoNTZ;
+          updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ!, tz);
+        }
+      }
+
+      if (updateData.timeStart && updateData.timeEnd) {
+        if (updateData.timeStart >= updateData.timeEnd) {
+          throw new Error("timeStart must be before timeEnd");
+        }
+      }
+    }
+
+    // location
+    if (position || addressDescription) {
+      const updateLocation: Partial<VibefireEventLocationT> = {};
+      if (position) {
+        position = tbValidator(
+          VibefireEventSchema.properties.location.properties.position,
+        )(position);
+
+        // update h3's
+        const { h3, h3Dec } = latLngPositionToH3(position);
+        const { h3ParentsDec } = h3ToH3Parents(h3);
+
+        // could validate h3's but nah
+        updateLocation.position = position;
+        updateLocation.h3 = h3Dec;
+        updateLocation.h3Parents = h3ParentsDec;
+
+        // get timezone based on new position
+        const googleMapsManager = getGoogleMapsManager();
+        const posTZ =
+          (await googleMapsManager.getTimeZoneFromPosition(
+            position,
+            updateData.timeStart ?? DateTime.now().toUnixInteger(),
+          )) ?? "utc";
+
+        if (updateData.timeStartIsoNTZ) {
+          updateData.timeStart = isoNTZToTZEpochSecs(
+            updateData.timeStartIsoNTZ,
+            posTZ,
+          );
+        }
+
+        if (updateData.timeEndIsoNTZ) {
+          updateData.timeEnd = isoNTZToTZEpochSecs(
+            updateData.timeEndIsoNTZ,
+            posTZ,
+          );
+        }
+
+        updateData.timeZone = posTZ;
+      }
+      if (addressDescription) {
+        updateLocation.addressDescription = tbValidator(
+          VibefireEventSchema.properties.location.properties.addressDescription,
+        )(trimAndCropText(addressDescription, 500));
+      }
+      updateData.location = updateLocation;
+    }
+
+    // images
+    if (bannerImageId || additionalImageIds) {
+      const updateImages: PartialDeep<VibefireEventImagesT> = {};
+      if (bannerImageId) {
+        bannerImageId = tbValidator(
+          VibefireEventSchema.properties.images.properties.banner,
+        )(bannerImageId);
+        updateImages.banner = bannerImageId;
+      }
+      if (additionalImageIds) {
+        additionalImageIds = tbValidator(
+          VibefireEventSchema.properties.images.properties.additional,
+        )(additionalImageIds);
+        updateImages.additional = additionalImageIds;
+      }
+      updateData.images = updateImages;
+      // todo: remove unused images
+    }
+
+    // timeline
+    if (setTimeline.length > 0) {
+      const updateTimeline: VibefireEventTimelineElementT[] = [];
+      for (const el of setTimeline) {
+        let tle = Value.Create(VibefireEventTimelineElementSchema);
+        tle.id = el.id;
+        tle.timeIsoNTZ = el.timeIsoNTZ;
+        tle.message = trimAndCropText(el.message, 500);
+        tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
+        updateTimeline.push(tle);
+      }
+      updateData.timeline = updateTimeline;
+    }
 
     removeUndef(updateData);
 
-    return await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
-  }
-
-  async eventUpdateTimelineLinkPOI(
-    userAc: ClerkSignedInAuthContext,
-    poiId: string,
-    timelineElementId: string,
-  ) {}
-
-  async eventSetReady(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    organisationId?: string,
-  ) {
-    checkUserIsPartOfOrg(userAc, organisationId);
-    const organiserId = organisationId || userAc.userId;
-
-    const e = await getEventFromIDByOrganiser(
+    const updatedEvent = await updateEvent(
       this.faunaClient,
       eventId,
       organiserId,
+      updateData,
     );
-    const event = tbValidator(VibefireEventSchema)(e);
 
-    if (event.state !== "draft") {
-      throw new Error("Only events in draft can be set ready");
+    if (updatedEvent.state === "draft") {
+      await this._setEventReadyIfPossible(organiserId, updatedEvent);
+    }
+
+    return { id: eventId };
+  }
+
+  async _setEventReadyIfPossible(
+    organiserId: string,
+    e: PartialDeep<VibefireEventT>,
+  ) {
+    let event;
+    try {
+      event = tbValidator(VibefireEventSchema)(e);
+    } catch (e) {
+      console.error(e);
+      return;
     }
 
     // create management doc based on event type
     let em = Value.Create(VibefireEventManagementSchema);
 
-    em.id = ""; // temporary
+    em.id = ""; // temporary to pass validation
     em.eventId = event.id;
     em.organiserId = event.organiserId;
     em.organiserType = event.organiserType;
@@ -568,12 +455,30 @@ export class FaunaManager {
 
     removeUndef(updateData);
 
-    await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
+    await updateEvent(this.faunaClient, event.id, organiserId, updateData);
   }
+
+  async generateEventImageUploadLink(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ): Promise<{
+    id: string;
+    uploadURL: string;
+  }> {
+    const imageManager = getImagesManager();
+
+    checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    return await imageManager.eventUploadUrl(eventId, organiserId);
+  }
+
+  async eventUpdateTimelineLinkPOI(
+    userAc: ClerkSignedInAuthContext,
+    poiId: string,
+    timelineElementId: string,
+  ) {}
 
   async eventSetPublished(
     userAc: ClerkSignedInAuthContext,
@@ -600,11 +505,7 @@ export class FaunaManager {
 
     removeUndef(updateData);
 
-    await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
+    await updateEvent(this.faunaClient, eventId, organiserId, updateData);
   }
 
   async eventSetUnpublished(
@@ -621,11 +522,7 @@ export class FaunaManager {
 
     removeUndef(updateData);
 
-    await updateEvent(this.faunaClient, {
-      id: eventId,
-      organiserId,
-      ...updateData,
-    });
+    await updateEvent(this.faunaClient, eventId, organiserId, updateData);
   }
 
   async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {

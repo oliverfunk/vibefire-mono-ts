@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
-import { navEditEvent, navManageEventClose } from "~/nav";
+import { navClear, navEditEvent } from "~/nav";
 import { FormTitleTextInput, ScrollViewSheetWithHeader } from "../_shared";
 
 export const CreateEventForm = () => {
@@ -39,7 +39,7 @@ export const CreateEventForm = () => {
           <TouchableOpacity
             className="rounded-lg border bg-white px-4 py-2"
             onPress={() => {
-              navManageEventClose();
+              navClear();
               close();
             }}
           >

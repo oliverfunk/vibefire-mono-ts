@@ -9,12 +9,7 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
-import {
-  navCreateEvent,
-  navEditEvent,
-  navManageEvent,
-  navOwnEventsByOrganiserClose,
-} from "~/nav";
+import { navClear, navCreateEvent, navEditEvent, navManageEvent } from "~/nav";
 import {
   ErrorSheet,
   LoadingSheet,
@@ -68,33 +63,6 @@ const EventsByOrganiserController = () => {
   }
 };
 
-const EventsByOrganiserComponent = (
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  _props,
-  ref: Ref<BottomSheetModalMethods>,
-) => {
-  const insets = useSafeAreaInsets();
-  const backdrop = useSheetBackdrop();
-
-  return (
-    <BottomSheetModal
-      ref={ref}
-      backdropComponent={backdrop}
-      stackBehavior="push"
-      backgroundStyle={{
-        backgroundColor: "rgba(255,255,255,1)",
-      }}
-      bottomInset={insets.bottom}
-      index={0}
-      snapPoints={["80%"]}
-      onDismiss={() => {
-        navOwnEventsByOrganiserClose();
-      }}
-    >
-      <EventsByOrganiserController />
-    </BottomSheetModal>
-  );
+export const EventsByOrganiser = () => {
+  return <EventsByOrganiserController />;
 };
-
-export const EventsByOrganiser = forwardRef(EventsByOrganiserComponent);

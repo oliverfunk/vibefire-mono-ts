@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 import _ from "lodash";
 import { type PartialDeep } from "type-fest";
 
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { navEditEventClose, navEditEventEditSection } from "~/nav";
+import {
+  navEditEventEditSection,
+  navManageEvent,
+  navManageEventClose,
+} from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
 import { BackNextButtons, ScrollViewSheetWithHeader } from "../_shared";
 import { EditEventDescription } from "./sections/EditEventDescriptions";
@@ -35,6 +40,8 @@ export const EditEventForm = (props: {
 }) => {
   const { eventId, currentEventData, dataRefetch, section } = props;
 
+  const { close } = useBottomSheet();
+
   const [editedEventData, setEditedEventData] = useState(currentEventData);
   const hasEdited = !_.isEqual(currentEventData, editedEventData);
 
@@ -46,23 +53,12 @@ export const EditEventForm = (props: {
   const [mayProceed, setMayProceed] = useState(false);
   const [formValidations, setFormValidations] = useState<string[]>([]);
 
-  // const readyState: "draft" | "now-ready" | "already-ready" = useMemo(() => {
-  //   const isReady =
-  //     currentEventData?.title &&
-  //     currentEventData?.description &&
-  //     currentEventData?.location?.position &&
-  //     currentEventData?.location?.addressDescription &&
-  //     currentEventData?.timeZone &&
-  //     currentEventData?.timeStartIsoNTZ &&
-  //     currentEventData?.images?.banner;
-  //   if (!isReady) {
-  //     return "draft";
-  //   }
-  //   if (currentEventData.state === "draft") {
-  //     return "now-ready";
-  //   }
-  //   return "already-ready";
-  // }, [currentEventData]);
+  const mayProceedForm = useMemo(() => {
+    if (section === "images") {
+      return mayProceed && currentEventData.state === "ready";
+    }
+    return mayProceed;
+  }, [currentEventData, mayProceed, section]);
 
   const updateEventMut = trpc.events.updateEvent.useMutation();
 
@@ -70,10 +66,18 @@ export const EditEventForm = (props: {
     <ScrollViewSheetWithHeader header="Edit Details">
       <View className="pb-4">
         <View className="flex-col bg-black p-4 ">
-          <Text className="text-lg text-white">
-            Get your event ready by setting the event details. Fields in{" "}
-            <Text className="text-[#ff1111]">red</Text> still need to be set.
-          </Text>
+          {currentEventData.state === "draft" ? (
+            <Text className="text-lg text-white">
+              Get your event ready by setting the event details. Fields in{" "}
+              <Text className="text-[#ff1111]">red</Text> still need to be set.
+            </Text>
+          ) : (
+            <Text className="text-lg text-white">
+              &#x1F525; Your event is{" "}
+              <Text className="text-[#11ff11]">ready</Text>! You can manage it,
+              published it and share it now.
+            </Text>
+          )}
         </View>
         {section === "description" && (
           <EditEventDescription
@@ -112,7 +116,7 @@ export const EditEventForm = (props: {
           />
         )}
         <BackNextButtons
-          nextText={section === "images" ? "Save" : "Next"}
+          nextText={section === "images" ? "Manage" : "Next"}
           nextAfterLoading={currentEventData.state === "draft"}
           onBackPressed={() => {
             setMayProceed(false);
@@ -120,7 +124,7 @@ export const EditEventForm = (props: {
             setEditedEventData(currentEventData);
             switch (section) {
               case "description":
-                navEditEventClose();
+                close();
                 break;
               case "location":
                 navEditEventEditSection(eventId, "description");
@@ -168,12 +172,14 @@ export const EditEventForm = (props: {
                   navEditEventEditSection(eventId, "images");
                   break;
                 case "images":
-                  // navEditEventEditSection(eventId, "location");
+                  close();
+                  navManageEvent(eventId);
                   break;
               }
             }
           }}
-          mayProceed={mayProceed}
+          mayProceed={mayProceedForm}
+          mayProceedBg={section === "images" ? "bg-[#FF4500]" : undefined}
           canSave={hasEdited}
           isLoading={updateEventMut.isLoading}
         />
