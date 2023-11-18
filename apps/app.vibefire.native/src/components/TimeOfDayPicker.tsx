@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Text, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 import _ from "lodash";
 
@@ -27,26 +28,53 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
   }, []);
 
   return (
-    <Carousel
-      width={width}
-      height={height}
-      defaultIndex={todToIndexMapping[selectedTod]}
-      loop={false}
-      overscrollEnabled={false}
-      data={periods}
-      panGestureHandlerProps={{
-        activeOffsetX: [-10, 10],
-      }}
-      onSnapToItem={(index) => {
-        setSelectedTod(_.invert(todToIndexMapping)[index] as TimeOfDayT);
-      }}
-      renderItem={({ index, item: period }) => {
-        return (
-          <View key={index} className="flex-1 items-center justify-center">
-            <Text className="text-xl font-bold">{period}</Text>
-          </View>
-        );
-      }}
-    />
+    <View className="relative flex-row items-center justify-center">
+      <Carousel
+        width={width}
+        height={height}
+        defaultIndex={todToIndexMapping[selectedTod]}
+        // mode="parallax"
+        // modeConfig={{
+        //   parallaxScrollingOffset: 90,
+        //   parallaxScrollingScale: 0.9,
+        // }}
+        loop={false}
+        overscrollEnabled={false}
+        data={periods}
+        panGestureHandlerProps={{
+          activeOffsetX: [-10, 10],
+        }}
+        onSnapToItem={(index) => {
+          setSelectedTod(_.invert(todToIndexMapping)[index] as TimeOfDayT);
+        }}
+        renderItem={({ index, item: period }) => {
+          return (
+            <View key={index} className="flex-1 items-center justify-center">
+              <Text className="text-xl font-bold">{period}</Text>
+            </View>
+          );
+        }}
+      />
+      <View className="absolute right-1">
+        <MaterialIcons
+          name="navigate-next"
+          className=""
+          // removes annoying padding
+
+          size={20}
+          color="black"
+        />
+      </View>
+      <View className="absolute left-1">
+        <MaterialIcons
+          name="navigate-before"
+          className=""
+          // removes annoying padding
+
+          size={20}
+          color="black"
+        />
+      </View>
+    </View>
   );
 };

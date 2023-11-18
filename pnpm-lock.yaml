@@ -170,6 +170,9 @@ importers:
       expo-auth-session:
         specifier: ^5.0.2
         version: 5.0.2(expo@49.0.8)
+      expo-clipboard:
+        specifier: ~4.3.1
+        version: 4.3.1(expo@49.0.8)
       expo-constants:
         specifier: ~14.4.2
         version: 14.4.2(expo@49.0.8)
@@ -7782,6 +7785,14 @@ packages:
     transitivePeerDependencies:
       - expo
       - supports-color
+    dev: false
+
+  /expo-clipboard@4.3.1(expo@49.0.8):
+    resolution: {integrity: sha512-WIsjvAsr2+/NZRa84mKxjui1EdPpdKbQIC2LN/KMBNuT7g4GQYL3oo9WO9G/C7doKQ7f7pnfdvO3N6fUnoRoJw==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 49.0.8(@babel/core@7.22.10)
     dev: false
 
   /expo-constants@14.4.2(expo@49.0.8):

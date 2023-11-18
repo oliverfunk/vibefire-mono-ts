@@ -11,7 +11,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   BottomSheetBackdrop,
-  BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";

@@ -3,7 +3,6 @@ import {
   Dimensions,
   Modal,
   Pressable,
-  Share,
   Text,
   TouchableOpacity,
   View,
@@ -24,7 +23,6 @@ import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
 import {
   organisationProfileImagePath,
   uberRequestToEventURL,
-  vibefireEventShareURL,
 } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "~/components/event/EventImage";
@@ -33,6 +31,7 @@ import { EventTimeline } from "~/components/event/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
 import { userAtom } from "~/atoms";
+import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navManageEvent, navViewOrg } from "~/nav";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
@@ -68,12 +67,18 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
 
   const openDropdown = (): void => {
     DropdownButton.current!.measure((_fx, _fy, w, h, px, py) => {
-      console.log(JSON.stringify([_fx, _fy, w, h, px, py], null, 2));
       setDropdownTop(py + h);
       setDropdownRight(w);
     });
     setMenuVisible(true);
   };
+
+  const eventOrganisedByUser = useMemo(() => {
+    if (user.state === "authenticated") {
+      return (user.userInfo as VibefireUserT).aid === event.organiserId;
+    }
+    return false;
+  }, [user, event.organiserId]);
 
   const hideEventMut = trpc.user.hideEvent.useMutation();
   const blockOrganiserMut = trpc.user.blockOrganiser.useMutation();
@@ -107,71 +112,72 @@ const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
             className="absolute overflow-hidden rounded-md bg-white"
             style={{ top: dropdownTop, right: dropdownRight }}
           >
-            {user.state === "authenticated" &&
-              (user.userInfo as VibefireUserT).aid === event.organiserId && (
-                <>
-                  <ThreeDotsMenuOption
-                    label="Manage Event"
-                    icon={
-                      <MaterialIcons
-                        name="app-registration"
-                        color={"black"}
-                        size={24}
-                      />
-                    }
-                    onPress={() => {
-                      setMenuVisible(false);
-                      close();
-                      navManageEvent(event.id);
-                    }}
+            {eventOrganisedByUser ? (
+              <ThreeDotsMenuOption
+                label="Manage"
+                icon={
+                  <MaterialIcons
+                    name="app-registration"
+                    color={"black"}
+                    size={24}
                   />
-                  <View className="h-px bg-gray-200" />
-                </>
-              )}
-            <ThreeDotsMenuOption
-              label="Hide Event"
-              icon={
-                <MaterialCommunityIcons
-                  name="eye-off"
-                  color={"red"}
-                  size={24}
+                }
+                onPress={() => {
+                  setMenuVisible(false);
+                  close();
+                  navManageEvent(event.id);
+                }}
+              />
+            ) : (
+              <>
+                <ThreeDotsMenuOption
+                  label="Hide Event"
+                  icon={
+                    <MaterialCommunityIcons
+                      name="eye-off"
+                      color={"red"}
+                      size={24}
+                    />
+                  }
+                  onPress={() => {
+                    setMenuVisible(false);
+                    hideEventMut.mutate({ eventId: event.id, report: false });
+                  }}
                 />
-              }
-              onPress={() => {
-                setMenuVisible(false);
-                hideEventMut.mutate({ eventId: event.id, report: false });
-              }}
-            />
-            <View className="h-px bg-gray-200" />
-            <ThreeDotsMenuOption
-              label="Hide & Report Event"
-              icon={
-                <MaterialCommunityIcons
-                  name="eye-off"
-                  color={"red"}
-                  size={24}
+                <View className="h-px bg-gray-200" />
+                <ThreeDotsMenuOption
+                  label="Hide & Report Event"
+                  icon={
+                    <MaterialCommunityIcons
+                      name="eye-off"
+                      color={"red"}
+                      size={24}
+                    />
+                  }
+                  onPress={() => {
+                    setMenuVisible(false);
+                    hideEventMut.mutate({ eventId: event.id, report: true });
+                  }}
                 />
-              }
-              onPress={() => {
-                setMenuVisible(false);
-                hideEventMut.mutate({ eventId: event.id, report: true });
-              }}
-            />
-            <View className="h-px bg-gray-200" />
-            <ThreeDotsMenuOption
-              label="Block Organiser"
-              icon={
-                <MaterialCommunityIcons
-                  name="block-helper"
-                  color={"red"}
-                  size={24}
+                <View className="h-px bg-gray-200" />
+                <ThreeDotsMenuOption
+                  label="Block Organiser"
+                  icon={
+                    <MaterialCommunityIcons
+                      name="block-helper"
+                      color={"red"}
+                      size={24}
+                    />
+                  }
+                  onPress={() => {
+                    setMenuVisible(false);
+                    blockOrganiserMut.mutate({
+                      organiserId: event.organiserId,
+                    });
+                  }}
                 />
-              }
-              onPress={() => {
-                setMenuVisible(false);
-                blockOrganiserMut.mutate({ organiserId: event.organiserId });
-              }}
-            />
+              </>
+            )}
           </View>
         </Pressable>
       </Modal>
@@ -248,17 +254,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
     // todo
   }, []);
 
-  const onShareEvent = useCallback(async () => {
-    try {
-      await Share.share({
-        message: `Vibefire | Checkout out this event!\n${vibefireEventShareURL(
-          event,
-        )}`,
-      });
-    } catch (error: unknown) {
-      console.warn(JSON.stringify(error, null, 2));
-    }
-  }, [event]);
+  const onShareEvent = useShareEventLink(event);
 
   const onGetToEvent = useCallback(async () => {
     const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
@@ -315,7 +311,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
             onPress={onMapPress}
           >
             <FontAwesome5 name="map" size={20} color="white" />
-            <Text className="text-sm text-white">Map</Text>
+            <Text className="text-sm text-white">Maps</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -330,7 +326,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
             className="flex-col items-center justify-between"
             onPress={onShareEvent}
           >
-            <Entypo name="share" size={20} color="white" />
+            <Entypo name="share-alternative" size={20} color="white" />
             <Text className="text-sm text-white">Share</Text>
           </TouchableOpacity>
 

@@ -50,13 +50,13 @@ export const AuthButton = (props: {
 
   return (
     <TouchableOpacity
-      className={`flex-row items-center rounded-lg p-3 ${
+      className={`flex-row items-center justify-start space-x-2 rounded-lg p-4 ${
         props.classNameBtn ?? "border"
       }`}
       onPress={onPress}
     >
-      <View className="w-10 items-center">{props.icon}</View>
-      <Text className={props.classNameText}>{props.text}</Text>
+      <View className="items-center">{props.icon}</View>
+      <Text className={`text-center ${props.classNameText}`}>{props.text}</Text>
     </TouchableOpacity>
   );
 };

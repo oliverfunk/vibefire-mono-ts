@@ -412,7 +412,11 @@ export class FaunaManager {
     );
 
     if (updatedEvent.state === "draft") {
-      await this._setEventReadyIfPossible(organiserId, updatedEvent);
+      await this._setEventReadyIfPossible(
+        organiserId,
+        updatedEvent,
+        updatedEvent.organiserType === "user",
+      );
     }
 
     return { id: eventId };
@@ -421,6 +425,7 @@ export class FaunaManager {
   async _setEventReadyIfPossible(
     organiserId: string,
     e: PartialDeep<VibefireEventT>,
+    publish = false,
   ) {
     let event;
     try {
@@ -452,6 +457,9 @@ export class FaunaManager {
     const updateData: Partial<VibefireEventT> = {
       state: "ready",
     };
+    if (publish) {
+      updateData.published = true;
+    }
 
     removeUndef(updateData);
 
