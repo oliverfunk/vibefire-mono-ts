@@ -7,11 +7,7 @@ import { type PartialDeep } from "type-fest";
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import {
-  navEditEventEditSection,
-  navManageEvent,
-  navManageEventClose,
-} from "~/nav";
+import { navEditEventEditSection, navManageEvent } from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
 import { BackNextButtons, ScrollViewSheetWithHeader } from "../_shared";
 import { EditEventDescription } from "./sections/EditEventDescriptions";
@@ -20,17 +16,6 @@ import { EditEventLocation } from "./sections/EditEventLocation";
 import { EditEventTimes } from "./sections/EditEventTimes";
 
 // const [formErrors, setFormErrors] = useState<string[]>([]);
-// {formErrors.length > 0 && (
-//   <View className="w-full flex-col">
-//     <View className="mx-4 space-y-2 rounded-lg bg-slate-200 p-4">
-//       {formErrors.map((error) => (
-//         <Text key={error} className="text-lg text-red-500">
-//           {error}
-//         </Text>
-//       ))}
-//     </View>
-//   </View>
-// )}
 
 export const EditEventForm = (props: {
   eventId: string;
@@ -45,9 +30,20 @@ export const EditEventForm = (props: {
   const [editedEventData, setEditedEventData] = useState(currentEventData);
   const hasEdited = !_.isEqual(currentEventData, editedEventData);
 
+  const [displayValidations, setDisplayValidations] = useState(false);
+
   useEffect(() => {
+    // poor detection of draft -> ready transition
+    if (
+      editedEventData.state === "draft" &&
+      currentEventData.state === "ready" &&
+      section === "images"
+    ) {
+      close();
+      navManageEvent(eventId);
+    }
     setEditedEventData(currentEventData);
-  }, [currentEventData]);
+  }, [close, currentEventData, editedEventData.state, eventId, section]);
 
   // set by each section
   const [mayProceed, setMayProceed] = useState(false);
@@ -65,7 +61,7 @@ export const EditEventForm = (props: {
   return (
     <ScrollViewSheetWithHeader header="Edit Details">
       <View className="pb-4">
-        <View className="flex-col bg-black p-4 ">
+        <View className="flex-col bg-black p-4">
           {currentEventData.state === "draft" ? (
             <Text className="text-lg text-white">
               Get your event ready by setting the event details. Fields in{" "}
@@ -77,6 +73,15 @@ export const EditEventForm = (props: {
               <Text className="text-[#11ff11]">ready</Text>! You can manage it,
               published it and share it now.
             </Text>
+          )}
+          {displayValidations && (
+            <View className="w-full flex-col space-y-2 pt-4">
+              {formValidations.map((error) => (
+                <Text key={error} className="text-lg text-[#ff1111]">
+                  {error}
+                </Text>
+              ))}
+            </View>
           )}
         </View>
         {section === "description" && (
@@ -120,6 +125,7 @@ export const EditEventForm = (props: {
           nextAfterLoading={currentEventData.state === "draft"}
           onBackPressed={() => {
             setMayProceed(false);
+            setDisplayValidations(false);
             // reset
             setEditedEventData(currentEventData);
             switch (section) {
@@ -139,7 +145,7 @@ export const EditEventForm = (props: {
           }}
           onSavePressed={async () => {
             if (formValidations.length > 0) {
-              // set errors
+              setDisplayValidations(true);
               return;
             }
             if (hasEdited) {
@@ -161,6 +167,7 @@ export const EditEventForm = (props: {
           onNextPressed={() => {
             if (mayProceed) {
               setMayProceed(false);
+              setDisplayValidations(false);
               switch (section) {
                 case "description":
                   navEditEventEditSection(eventId, "location");

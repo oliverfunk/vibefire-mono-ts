@@ -34,8 +34,6 @@ export const BottomPanel = (props: {
   const eventsByOrganiserSheetRef = useRef<BottomSheetModal>(null);
   const editEventDetailsSheetRef = useRef<BottomSheetModal>(null);
 
-  const prevProps = usePrevious(props);
-
   //#region effects
   useEffect(() => {
     if (props.eventID !== undefined) {

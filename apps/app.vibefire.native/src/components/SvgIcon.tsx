@@ -19,6 +19,7 @@ xmlns="http://www.w3.org/2000/svg">
 export const SvgIcon = ({ idx }: { idx: number }) => (
   <>
     <Svg height="50" width="50" viewBox="0 0 100 100">
+      <SvgXml xml={vfIcon} />
       <Circle
         cx="50"
         cy="50"

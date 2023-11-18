@@ -33,7 +33,7 @@ import { selectedDateStrAtom } from "@vibefire/shared-state";
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
 import { profileSelectedAtom } from "~/atoms";
 
-export const SEARCH_HANDLE_HEIGHT = 60;
+export const SEARCH_HANDLE_HEIGHT = 70;
 
 const DatePicker = () => {
   const [selectedDate, setSelectedDate] = useAtom(selectedDateStrAtom);
@@ -283,14 +283,14 @@ export const BottomPanelHandle = (props: HandleProps) => {
     <View className={`flex-row items-end justify-around pb-2 pt-1`}>
       <SearchButton />
 
-      <View className="flex-col items-center justify-center space-y-4">
+      <View className="flex-col items-center justify-center space-y-5">
         <AnimatedArrow
           style={props.style}
           animatedIndex={props.animatedIndex}
           animatedPosition={props.animatedPosition}
         />
         <View className="flex-row space-x-1">
-          <View className="rounded-lg border px-2">
+          <View className="items-center justify-center rounded-lg border px-2">
             <DatePicker />
           </View>
           <View className="rounded-lg border">
