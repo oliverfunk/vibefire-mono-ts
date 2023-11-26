@@ -1,10 +1,4 @@
-import { forwardRef, type Ref } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-
 import { trpc } from "~/apis/trpc-client";
-import { navClear } from "~/nav";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { ManagementView } from "./views/ManageEventView";
 

@@ -1,7 +1,6 @@
 import { useCallback, useLayoutEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import _ from "lodash";
 import { DateTime } from "luxon";
 
@@ -9,8 +8,8 @@ import { nowAsUTC } from "@vibefire/utils";
 
 import { PlatformSelect } from "~/components/PlatformSelect";
 import {
-  TimeSelectionAndDisplayAnd,
-  TimeSelectionAndDisplayIos,
+  DateTimeSelectionAndDisplayAnd,
+  DateTimeSelectionAndDisplayIos,
 } from "~/components/TimeSelection";
 import { FormTitleInput } from "../../_shared";
 import { type FormSectionProps } from "./types";
@@ -42,7 +41,7 @@ export const EditEventTimes = (props: FormSectionProps) => {
   }, [editedEventData, setFormValidations, setMayProceed]);
 
   const onTimeStartSelect = useCallback(
-    (_event: DateTimePickerEvent, selectedDate?: Date) => {
+    (selectedDate?: Date) => {
       if (selectedDate) {
         setEditedEventData(
           _.merge({}, editedEventData, {
@@ -54,7 +53,7 @@ export const EditEventTimes = (props: FormSectionProps) => {
     [editedEventData, setEditedEventData],
   );
   const onTimeEndSelect = useCallback(
-    (_event: DateTimePickerEvent, selectedDate?: Date) => {
+    (selectedDate?: Date) => {
       if (selectedDate) {
         setEditedEventData(
           _.merge({}, editedEventData, {
@@ -82,7 +81,7 @@ export const EditEventTimes = (props: FormSectionProps) => {
           <View className="flex-row">
             <PlatformSelect
               android={
-                <TimeSelectionAndDisplayAnd
+                <DateTimeSelectionAndDisplayAnd
                   currentDate={
                     new Date(
                       editedEventData.timeStartIsoNTZ ?? nowAsUTC().toISO()!,
@@ -92,7 +91,7 @@ export const EditEventTimes = (props: FormSectionProps) => {
                 />
               }
               ios={
-                <TimeSelectionAndDisplayIos
+                <DateTimeSelectionAndDisplayIos
                   currentDate={
                     new Date(
                       editedEventData.timeStartIsoNTZ ?? nowAsUTC().toISO()!,
@@ -112,13 +111,13 @@ export const EditEventTimes = (props: FormSectionProps) => {
             <View className="flex-row">
               <PlatformSelect
                 android={
-                  <TimeSelectionAndDisplayAnd
+                  <DateTimeSelectionAndDisplayAnd
                     currentDate={new Date(editedEventData.timeEndIsoNTZ)}
                     onChange={onTimeEndSelect}
                   />
                 }
                 ios={
-                  <TimeSelectionAndDisplayIos
+                  <DateTimeSelectionAndDisplayIos
                     currentDate={new Date(editedEventData.timeEndIsoNTZ)}
                     onChange={onTimeEndSelect}
                   />

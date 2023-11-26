@@ -15,8 +15,6 @@ import { EditEventImages } from "./sections/EditEventImages";
 import { EditEventLocation } from "./sections/EditEventLocation";
 import { EditEventTimes } from "./sections/EditEventTimes";
 
-// const [formErrors, setFormErrors] = useState<string[]>([]);
-
 export const EditEventForm = (props: {
   eventId: string;
   currentEventData: PartialDeep<VibefireEventT>;
@@ -71,7 +69,7 @@ export const EditEventForm = (props: {
             <Text className="text-lg text-white">
               &#x1F525; Your event is{" "}
               <Text className="text-[#11ff11]">ready</Text>! You can manage it,
-              published it and share it now.
+              published it and share it now. Back will cancel changes.
             </Text>
           )}
           {displayValidations && (

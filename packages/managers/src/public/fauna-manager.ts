@@ -24,6 +24,8 @@ import {
   addFollowedEvent,
   addOrganiserToBlocked,
   callPublicEventsInPeriodInAreas,
+  callPublishedEventByIdForExternalUser,
+  callUpcomingEventsForUser,
   createEvent,
   createEventManagement,
   createUser,
@@ -31,13 +33,14 @@ import {
   getEventFromIDByOrganiser,
   getEventManagementFromEventIDByOrganiser,
   getEventsByOrganiser,
-  getPublishedEventFromID,
   getUserByAid,
   updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
 import {
   compactCells,
+  displayPeriodsBetween,
+  displayPeriodsFor,
   h3ToH3Parents,
   hexToDecimal,
   isoNTZToTZEpochSecs,
@@ -72,7 +75,7 @@ export class FaunaManager {
     });
   }
   // #region Event
-  async eventsByOrganiser(
+  async eventsByUser(
     userAc: ClerkSignedInAuthContext,
     organisationId?: string,
   ) {
@@ -135,64 +138,16 @@ export class FaunaManager {
     };
   }
 
-  async eventFromIDByOrganiser(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    organisationId?: string,
-  ) {
-    checkUserIsPartOfOrg(userAc, organisationId);
-
-    const organiserId = organisationId || userAc.userId;
-
-    const e = await getEventFromIDByOrganiser(
-      this.faunaClient,
-      eventId,
-      organiserId,
-    );
-    if (!e) {
-      throw new Error("Event not found");
-    }
-    const event = tbValidator(VibefireEventSchema)(e);
-
-    return event;
-  }
-
   async publishedEventForExternalView(userId: string, eventId: string) {
-    const e = await getPublishedEventFromID(this.faunaClient, eventId);
+    const e = await callPublishedEventByIdForExternalUser(
+      this.faunaClient,
+      userId,
+      eventId,
+    );
     if (!e) {
-      throw new Error("Event unavailable [1]");
+      throw new Error("Event unavailable");
     }
     const event = tbValidator(VibefireEventSchema)(e);
-
-    const em = await getEventManagementFromEventIDByOrganiser(
-      this.faunaClient,
-      eventId,
-      event.organiserId,
-    );
-    if (!em) {
-      throw new Error("Event management unavailable");
-    }
-    const eventManagement = tbValidator(VibefireEventManagementSchema)(em);
-
-    if (event.organiserType === "organisation") {
-      // get the organisation profile data
-    } else if (event.organiserType === "user") {
-      // get the relevant user profile data
-    } else {
-      throw new Error("Unknown organiserType");
-    }
-
-    if (e.visibility === "invite-only") {
-      if (userId === "anon") {
-        throw new Error("User not signed in");
-      }
-      // check if the user has been added
-      const rs = eventManagement.invited.find((i) => i === userId);
-      if (!rs) {
-        throw new Error("Event unavailable [2]");
-      }
-    }
-
     return event;
   }
 
@@ -293,6 +248,7 @@ export class FaunaManager {
     // times
     if (timeStartIsoNTZ || timeEndIsoNTZ !== undefined) {
       const tz = updateData.timeZone ?? "utc";
+
       if (timeStartIsoNTZ) {
         timeStartIsoNTZ = tbValidator(
           VibefireEventSchema.properties.timeStartIsoNTZ,
@@ -300,6 +256,7 @@ export class FaunaManager {
         updateData.timeStartIsoNTZ = timeStartIsoNTZ;
         updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
       }
+
       if (timeEndIsoNTZ !== undefined) {
         if (timeEndIsoNTZ === null) {
           updateData.timeEndIsoNTZ = null;
@@ -312,6 +269,11 @@ export class FaunaManager {
           updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ!, tz);
         }
       }
+
+      updateData.displayTimePeriods = displayPeriodsBetween(
+        updateData.timeStartIsoNTZ!,
+        updateData.timeEndIsoNTZ,
+      );
 
       if (updateData.timeStart && updateData.timeEnd) {
         if (updateData.timeStart >= updateData.timeEnd) {
@@ -338,12 +300,23 @@ export class FaunaManager {
         updateLocation.h3Parents = h3ParentsDec;
 
         // get timezone based on new position
+        // const tzLookupTS = async () => {
+        //   if (updateData.timeStart) {
+        //     return updateData.timeStart;
+        //   }
+        //   if (updateData.timeStartIsoNTZ) {
+        //     return DateTime.fromISO(updateData.timeStartIsoNTZ).toUnixInteger();
+        //   }
+        // };
         const googleMapsManager = getGoogleMapsManager();
-        const posTZ =
-          (await googleMapsManager.getTimeZoneFromPosition(
-            position,
-            updateData.timeStart ?? DateTime.now().toUnixInteger(),
-          )) ?? "utc";
+        // if updateData.timeStart  is undef. and isoNTZ is def.
+        // lookup the tz using DT.now(), then use that tz
+        // to set the correct timestamp, then lookup again
+
+        const posTZ = await googleMapsManager.getTimeZoneFromPosition(
+          position,
+          updateData.timeStart ?? DateTime.now().toUnixInteger(),
+        );
 
         if (updateData.timeStartIsoNTZ) {
           updateData.timeStart = isoNTZToTZEpochSecs(
@@ -533,18 +506,31 @@ export class FaunaManager {
     await updateEvent(this.faunaClient, eventId, organiserId, updateData);
   }
 
+  async eventsFromUpcoming7DaysForUser(
+    userAc: ClerkSignedInAuthContext,
+    startDateIsoNTZ: string,
+  ) {
+    const queryPeriods = displayPeriodsFor(startDateIsoNTZ, 7);
+    const res = await callUpcomingEventsForUser(
+      this.faunaClient,
+      userAc.userId,
+      queryPeriods,
+    );
+    return res;
+  }
+
   async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {
     const { northEast, southWest, timePeriod, zoomLevel } = query;
 
-    console.log();
-    console.log("timePeriod", timePeriod);
-    console.log("northEast", JSON.stringify(northEast, null, 2));
-    console.log("southWest", JSON.stringify(southWest, null, 2));
-    console.log("zoomLevel", zoomLevel);
-    console.log();
-    console.log("lats delta", Math.abs(northEast.lat - southWest.lat));
-    console.log("longs delta", Math.abs(northEast.lng - southWest.lng));
-    console.log();
+    // console.log();
+    // console.log("timePeriod", timePeriod);
+    // console.log("northEast", JSON.stringify(northEast, null, 2));
+    // console.log("southWest", JSON.stringify(southWest, null, 2));
+    // console.log("zoomLevel", zoomLevel);
+    // console.log();
+    // console.log("lats delta", Math.abs(northEast.lat - southWest.lat));
+    // console.log("longs delta", Math.abs(northEast.lng - southWest.lng));
+    // console.log();
 
     const h3Res = zoomLevelToH3Resolution(zoomLevel);
 
@@ -560,8 +546,8 @@ export class FaunaManager {
 
     const bboxH3s = compactCells(bboxH3sPre);
 
-    console.log("bboxH3sPre no", bboxH3sPre.length);
-    console.log("bboxH3s no", bboxH3s.length);
+    // console.log("bboxH3sPre no", bboxH3sPre.length);
+    // console.log("bboxH3s no", bboxH3s.length);
 
     const h3ps = bboxH3sPre.map((h3) => hexToDecimal(h3));
     const res = await callPublicEventsInPeriodInAreas(
@@ -592,7 +578,7 @@ export class FaunaManager {
       });
     }
 
-    console.log("events.length", events.length);
+    // console.log("events.length", events.length);
 
     return events;
   }

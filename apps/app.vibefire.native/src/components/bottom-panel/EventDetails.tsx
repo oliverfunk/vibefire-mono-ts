@@ -401,7 +401,7 @@ const EventDetailsController = (props: { eventId: string }) => {
 
 const EventDetailsPreviewController = (props: { eventId: string }) => {
   const { eventId } = props;
-  const eventQuery = trpc.events.eventForReadyPreview.useQuery({
+  const eventQuery = trpc.events.eventAllInfoForManagement.useQuery({
     eventId,
   });
 
@@ -411,7 +411,7 @@ const EventDetailsPreviewController = (props: { eventId: string }) => {
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return <EventDetailsView event={eventQuery.data} />;
+      return <EventDetailsView event={eventQuery.data.event} />;
   }
 };
 

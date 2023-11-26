@@ -2,24 +2,24 @@ import { atom } from "jotai";
 import { type DateTime } from "luxon";
 
 import {
+  type MapDisplayEventsInfoT,
   type MapPositionInfoT,
-  type MapQueryInfoT,
   type TimeOfDayT,
   type VibefireEventT,
 } from "@vibefire/models";
-import { nowAsUTC, toQueryStr } from "@vibefire/utils";
+import { nowAsNTZ } from "@vibefire/utils";
+
+export const todayDTAtom = atom<DateTime>(nowAsNTZ());
 
 export const selectedTimeOfDayAtom = atom<TimeOfDayT>("D");
-export const selectedDateStrAtom = atom<DateTime>(nowAsUTC());
+export const selectedDateDTAtom = atom<DateTime>(nowAsNTZ());
 
-export const mapQueryPositionAtom = atom<MapPositionInfoT | null>(null);
-export const mapQueryTimePeriodAtom = atom<string>((get) => {
-  const tod = get(selectedTimeOfDayAtom);
-  const ds = get(selectedDateStrAtom);
-  return toQueryStr(ds, tod);
-});
-export const mapQueryInfo = atom<MapQueryInfoT>({
+export const mapPositionInfoAtom = atom<MapPositionInfoT | null>(null);
+
+export const displayEventsInfoAtom = atom<MapDisplayEventsInfoT>({
   numberOfEvents: 0,
   queryStatus: "done",
 });
-export const mapQueryResult = atom<VibefireEventT[]>([]);
+
+export const mapPositionDateEventsQueryResultAtom = atom<VibefireEventT[]>([]);
+export const upcomingEventsQueryResultAtom = atom<VibefireEventT[]>([]);

@@ -28,7 +28,7 @@ import { useAtom } from "jotai";
 import { max } from "lodash";
 import { DateTime } from "luxon";
 
-import { selectedDateStrAtom } from "@vibefire/shared-state";
+import { selectedDateDTAtom } from "@vibefire/shared-state";
 
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
 import { profileSelectedAtom } from "~/atoms";
@@ -36,7 +36,7 @@ import { profileSelectedAtom } from "~/atoms";
 export const SEARCH_HANDLE_HEIGHT = 70;
 
 const DatePicker = () => {
-  const [selectedDate, setSelectedDate] = useAtom(selectedDateStrAtom);
+  const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 

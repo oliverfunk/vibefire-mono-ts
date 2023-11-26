@@ -26,7 +26,7 @@ export const eventsRouter = router({
         input.position,
       );
     }),
-  eventsByOrganiser: authedProcedure
+  eventsByUser: authedProcedure
     .input(
       tbValidator(
         t.Object({
@@ -36,7 +36,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as PartialDeep<VibefireEventT>[])
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventsByOrganiser(ctx.auth, input.organisationId);
+      return await ctx.fauna.eventsByUser(ctx.auth, input.organisationId);
     }),
   eventForEdit: authedProcedure
     .input(
@@ -73,23 +73,6 @@ export const eventsRouter = router({
     )
     .query(async ({ ctx, input }) => {
       return await ctx.fauna.eventAllInfoForManagement(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
-    }),
-  eventForReadyPreview: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as VibefireEventT)
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventFromIDByOrganiser(
         ctx.auth,
         input.eventId,
         input.organisationId,
@@ -225,7 +208,25 @@ export const eventsRouter = router({
     .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
     }),
-  mapQueryPublicEvents: publicProcedure
+  upcomingEvents: publicProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          currentIsoNTZ: t.String(),
+        }),
+      ),
+    )
+    .output((value) => value as VibefireEventT[])
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        return [];
+      }
+      return await ctx.fauna.eventsFromUpcoming7DaysForUser(
+        ctx.auth,
+        input.currentIsoNTZ,
+      );
+    }),
+  maPositionDatePublicEvents: publicProcedure
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
