@@ -45,7 +45,7 @@ export class GoogleMapsManager {
       position,
       timestampSeconds,
     );
-    return res?.timeZoneId;
+    return res?.timeZoneId ?? "UTC";
   }
 
   async getBestStreetAddressFromPosition(position: CoordT): Promise<string> {

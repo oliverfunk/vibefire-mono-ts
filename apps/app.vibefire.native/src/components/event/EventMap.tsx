@@ -11,12 +11,12 @@ import { ErrorBoundary, type ErrorBoundaryProps } from "expo-router";
 import { useSetAtom } from "jotai";
 
 import { type CoordT } from "@vibefire/models";
-import { mapQueryPositionAtom } from "@vibefire/shared-state";
+import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
 import { SvgIcon } from "~/components/SvgIcon";
 import { useLocationOnce } from "~/hooks/useLocation";
-import { useMapQuery } from "~/hooks/useMapQuery";
+import { useDisplayEvents } from "~/hooks/useMapQuery";
 import { navViewEvent } from "~/nav";
 
 export class Try extends React.Component<
@@ -57,17 +57,15 @@ const useMapMarkers = () => {
   const [markers, setMarkers] = useState<
     { id: string; lat: number; lng: number }[]
   >([]);
-  const mapQueryState = useMapQuery();
+  const displayEvents = useDisplayEvents();
   useEffect(() => {
-    if (mapQueryState.status === "success") {
-      setMarkers(
-        mapQueryState.data.map((event) => ({
-          id: event.id,
-          ...event.location.position,
-        })),
-      );
-    }
-  }, [mapQueryState.status, mapQueryState.data]);
+    setMarkers(
+      displayEvents.map((event) => ({
+        id: event.id,
+        ...event.location.position,
+      })),
+    );
+  }, [displayEvents]);
   return markers;
 };
 
@@ -75,7 +73,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   const mvRef = useRef<MapView>(null);
 
   const setMapQueryPositionAtomDbc = debounce(
-    useSetAtom(mapQueryPositionAtom),
+    useSetAtom(mapPositionInfoAtom),
     1000,
   );
 

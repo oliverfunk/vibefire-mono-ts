@@ -1,13 +1,11 @@
 import { useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import DateTimePicker, {
-  type DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { DateTime } from "luxon";
 
-export const TimeSelectionAndDisplayIos = (props: {
+export const DateTimeSelectionAndDisplayIos = (props: {
   currentDate: Date;
-  onChange?: (event: DateTimePickerEvent, date?: Date) => void;
+  onChange: (date?: Date) => void;
 }) => {
   const { currentDate, onChange } = props;
 
@@ -18,7 +16,7 @@ export const TimeSelectionAndDisplayIos = (props: {
         mode={"date"}
         timeZoneOffsetInMinutes={0}
         is24Hour={true}
-        onChange={onChange}
+        onChange={(_event, date) => onChange(date)}
         minuteInterval={15}
         maximumDate={new Date(2030, 1, 1)}
         minimumDate={new Date(2020, 1, 1)}
@@ -29,15 +27,15 @@ export const TimeSelectionAndDisplayIos = (props: {
         timeZoneOffsetInMinutes={0}
         minuteInterval={15}
         is24Hour={true}
-        onChange={onChange}
+        onChange={(_event, date) => onChange(date)}
       />
     </>
   );
 };
 
-export const TimeSelectionAndDisplayAnd = (props: {
+export const DateTimeSelectionAndDisplayAnd = (props: {
   currentDate: Date;
-  onChange: (event: DateTimePickerEvent, date?: Date) => void;
+  onChange: (date?: Date) => void;
 }) => {
   const { currentDate, onChange } = props;
 
@@ -64,9 +62,9 @@ export const TimeSelectionAndDisplayAnd = (props: {
               mode={"date"}
               timeZoneOffsetInMinutes={0}
               is24Hour={true}
-              onChange={(event, date) => {
+              onChange={(_event, date) => {
                 setShowDatePicker(false);
-                onChange(event, date);
+                onChange(date);
               }}
               onError={(_) => {
                 setShowDatePicker(false);
@@ -95,9 +93,9 @@ export const TimeSelectionAndDisplayAnd = (props: {
               timeZoneOffsetInMinutes={0}
               minuteInterval={15}
               is24Hour={true}
-              onChange={(event, date) => {
+              onChange={(_event, date) => {
                 setShowTimePicker(false);
-                onChange(event, date);
+                onChange(date);
               }}
               onError={(_) => {
                 setShowTimePicker(false);

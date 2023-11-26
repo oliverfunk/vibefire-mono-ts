@@ -7,7 +7,12 @@ import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescrip
 import { useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireUserT } from "@vibefire/models";
-import { mapQueryResult } from "@vibefire/shared-state";
+import {
+  mapPositionDateEventsQueryResultAtom,
+  selectedDateDTAtom,
+  todayDTAtom,
+  upcomingEventsQueryResultAtom,
+} from "@vibefire/shared-state";
 
 import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
@@ -18,6 +23,7 @@ import {
   SEARCH_HANDLE_HEIGHT,
 } from "~/components/bottom-panel/BottomPanelHandle";
 import { EventsList } from "~/components/event/EventList";
+import { trpc } from "~/apis/trpc-client";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import { navOwnEventsByOrganiser, navViewEvent } from "~/nav";
 import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "./_shared";
@@ -54,7 +60,7 @@ const _Profile = () => {
     case "unauthenticated":
       return (
         <ScrollViewSheet>
-          <View className="mt-10 flex h-full flex-col items-center space-y-5">
+          <View className="mt-10 flex h-full flex-col items-center space-y-10">
             <FontAwesome5 name="user-alt" size={150} />
             <View className="mx-10 flex-row">
               <Text className="text-center">
@@ -62,7 +68,7 @@ const _Profile = () => {
                 with friends, filter and follow events and organisations.
               </Text>
             </View>
-            <View className="flex-col space-y-2">
+            <View className="flex-col space-y-4">
               <View>
                 <ContinueWithGoogle />
               </View>
@@ -148,14 +154,27 @@ const _Profile = () => {
 };
 
 const _EventsList = () => {
-  // call userQuery here
-  const mqr = useAtomValue(mapQueryResult);
+  const upcomingEvents = useAtomValue(upcomingEventsQueryResultAtom);
+  const mapPosDateEvents = useAtomValue(mapPositionDateEventsQueryResultAtom);
 
   return (
     <ScrollViewSheet>
       <View className="px-2 pb-5">
+        {upcomingEvents.length > 0 && (
+          <>
+            <EventsList
+              events={upcomingEvents}
+              onEventPress={(eventId) => {
+                navViewEvent(eventId);
+              }}
+              listTitle="Starred/Upcoming events"
+            />
+            <View className="border" />
+          </>
+        )}
         <EventsList
-          events={mqr}
+          events={mapPosDateEvents}
+          noEventsMessage="No public events here yet"
           onEventPress={(eventId) => {
             navViewEvent(eventId);
           }}

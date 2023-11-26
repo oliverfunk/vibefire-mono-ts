@@ -1,21 +1,13 @@
-import React, { forwardRef, type Ref } from "react";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
-import { navClear, navCreateEvent, navEditEvent, navManageEvent } from "~/nav";
-import {
-  ErrorSheet,
-  LoadingSheet,
-  ScrollViewSheetWithHeader,
-  useSheetBackdrop,
-} from "./_shared";
+import { navCreateEvent, navEditEvent, navManageEvent } from "~/nav";
+import { ErrorSheet, LoadingSheet, ScrollViewSheetWithHeader } from "./_shared";
 
 const EventsByOrganiserView: React.FC<{
   events: PartialDeep<VibefireEventT>[];
@@ -51,7 +43,7 @@ const EventsByOrganiserView: React.FC<{
 };
 
 const EventsByOrganiserController = () => {
-  const eventsQuery = trpc.events.eventsByOrganiser.useQuery({});
+  const eventsQuery = trpc.events.eventsByUser.useQuery({});
 
   switch (eventsQuery.status) {
     case "loading":

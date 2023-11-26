@@ -52,6 +52,34 @@ export const defineGeoTemporalIndex = async (faunaClient: Client) => {
   await dfq(faunaClient, q);
 };
 
+export const defineByDisplayTimePeriodIndex = async (faunaClient: Client) => {
+  const dtpField: keyof VibefireEventT = "displayTimePeriods";
+  const visField: keyof VibefireEventT = "visibility";
+  const pubField: keyof VibefireEventT = "published";
+
+  const q = fql`
+    Events.definition.update({
+      indexes: {
+        withDisplayTimePeriod: {
+          terms: [
+            {
+              field: ${dtpField},
+              mva: true
+            },
+            {
+              field: ${visField},
+            },
+            {
+              field: ${pubField}
+            }
+          ],
+        },
+      }
+    })
+  `;
+  await dfq(faunaClient, q);
+};
+
 export const defineByOrganiserIDIndex = async (faunaClient: Client) => {
   const organiserIdField: keyof VibefireEventT = "organiserId";
   const q = fql`
@@ -117,25 +145,6 @@ export const updateEvent = async (
     throw new Error("Error updating event");
   }
   return res;
-};
-
-export const getPublishedEventFromID = async (
-  faunaClient: Client,
-  eventId: string,
-) => {
-  // this method is somewhat insecure because it would allow anyone to get the event
-  // even if it's invite-only
-  const _stateField: keyof VibefireEventT = "state";
-  const _publishedField: keyof VibefireEventT = "published";
-  const q = fql`
-    let e = Events.byId(${eventId})
-    if (e?.state == "ready" && e?.published == true) {
-      e
-    } else {
-      null
-    }
-  `;
-  return await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
 };
 
 export const getEventFromIDByOrganiser = async (

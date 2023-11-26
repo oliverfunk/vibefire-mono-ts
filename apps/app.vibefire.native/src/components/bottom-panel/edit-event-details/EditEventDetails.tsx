@@ -1,13 +1,9 @@
-import { forwardRef, useMemo, type Ref } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useMemo } from "react";
 import _ from "lodash";
 
 import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { navClear, navEditEventClose } from "~/nav";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { CreateEventForm } from "./CreateEventForm";
 import { EditEventForm } from "./EditEventDetailsForm";

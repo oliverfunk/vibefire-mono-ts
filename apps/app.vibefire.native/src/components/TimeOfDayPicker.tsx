@@ -42,7 +42,7 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
         overscrollEnabled={false}
         data={periods}
         panGestureHandlerProps={{
-          activeOffsetX: [-10, 10],
+          activeOffsetX: [-5, 5],
         }}
         onSnapToItem={(index) => {
           setSelectedTod(_.invert(todToIndexMapping)[index] as TimeOfDayT);
@@ -56,24 +56,10 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
         }}
       />
       <View className="absolute right-1">
-        <MaterialIcons
-          name="navigate-next"
-          className=""
-          // removes annoying padding
-
-          size={20}
-          color="black"
-        />
+        <MaterialIcons name="navigate-next" size={20} color="black" />
       </View>
       <View className="absolute left-1">
-        <MaterialIcons
-          name="navigate-before"
-          className=""
-          // removes annoying padding
-
-          size={20}
-          color="black"
-        />
+        <MaterialIcons name="navigate-before" size={20} color="black" />
       </View>
     </View>
   );

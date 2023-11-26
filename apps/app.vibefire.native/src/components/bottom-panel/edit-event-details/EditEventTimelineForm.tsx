@@ -18,8 +18,8 @@ import {
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { PlatformSelect } from "~/components/PlatformSelect";
 import {
-  TimeSelectionAndDisplayAnd,
-  TimeSelectionAndDisplayIos,
+  DateTimeSelectionAndDisplayAnd,
+  DateTimeSelectionAndDisplayIos,
 } from "~/components/TimeSelection";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEvent } from "~/nav";
@@ -80,7 +80,7 @@ const _TimelineElementAdd = (props: {
         <View className="flex-row items-center py-2">
           <PlatformSelect
             android={
-              <TimeSelectionAndDisplayAnd
+              <DateTimeSelectionAndDisplayAnd
                 currentDate={isoNTZToUTCDateTime(selectedTimeIsoNTZ).toJSDate()}
                 onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
                   if (selectedDate) {
@@ -90,7 +90,7 @@ const _TimelineElementAdd = (props: {
               />
             }
             ios={
-              <TimeSelectionAndDisplayIos
+              <DateTimeSelectionAndDisplayIos
                 currentDate={isoNTZToUTCDateTime(selectedTimeIsoNTZ).toJSDate()}
                 onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
                   if (selectedDate) {
