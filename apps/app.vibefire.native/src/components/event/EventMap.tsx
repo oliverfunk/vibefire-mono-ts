@@ -14,7 +14,7 @@ import { type CoordT } from "@vibefire/models";
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
-import { SvgIcon } from "~/components/SvgIcon";
+import { ClusterIcon, EventIcon } from "~/components/SvgIcon";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useDisplayEvents } from "~/hooks/useMapQuery";
 import { navViewEvent } from "~/nav";
@@ -180,7 +180,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
                 <View className="h-full w-full bg-white" />
               </View>
             </Callout> */}
-            <SvgIcon idx={index} />
+            <EventIcon vibeIndex={event.vibe} />
           </Marker>
         ))}
     </MapView>
