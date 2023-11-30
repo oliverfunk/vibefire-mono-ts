@@ -1,5 +1,6 @@
 import { useLayoutEffect } from "react";
 import { View } from "react-native";
+import { NativeViewGestureHandler } from "react-native-gesture-handler";
 import _ from "lodash";
 
 import { type CoordT } from "@vibefire/models";
@@ -31,18 +32,20 @@ export const EditEventLocation = (props: FormSectionProps) => {
           inputRequired={!editedEventData.location?.position}
         >
           <View className="aspect-[4/4] border-2 border-slate-200">
-            <LocationSelectionMap
-              initialPosition={
-                (currentEventData.location?.position as CoordT) ?? undefined
-              }
-              onPositionInfo={(position, addressDescription) => {
-                setEditedEventData(
-                  _.merge({}, editedEventData, {
-                    location: { position, addressDescription },
-                  } as typeof editedEventData),
-                );
-              }}
-            />
+            <NativeViewGestureHandler>
+              <LocationSelectionMap
+                initialPosition={
+                  (currentEventData.location?.position as CoordT) ?? undefined
+                }
+                onPositionInfo={(position, addressDescription) => {
+                  setEditedEventData(
+                    _.merge({}, editedEventData, {
+                      location: { position, addressDescription },
+                    } as typeof editedEventData),
+                  );
+                }}
+              />
+            </NativeViewGestureHandler>
           </View>
         </FormTitleInput>
       </View>

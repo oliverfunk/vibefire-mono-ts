@@ -115,35 +115,35 @@ export const LocationSelectionMap = (props: {
         onPress
           ? onPress
           : fixed
-          ? undefined
-          : (event) => {
-              const { latitude, longitude } = event.nativeEvent.coordinate;
-              setSelectedPosition({
-                lat: latitude,
-                lng: longitude,
-              });
-              onPositionSelected?.({
-                lat: latitude,
-                lng: longitude,
-              });
-            }
+            ? undefined
+            : (event) => {
+                const { latitude, longitude } = event.nativeEvent.coordinate;
+                setSelectedPosition({
+                  lat: latitude,
+                  lng: longitude,
+                });
+                onPositionSelected?.({
+                  lat: latitude,
+                  lng: longitude,
+                });
+              }
       }
       onPoiClick={
         onPress
           ? onPress
           : fixed
-          ? undefined
-          : (event) => {
-              const { latitude, longitude } = event.nativeEvent.coordinate;
-              setSelectedPosition({
-                lat: latitude,
-                lng: longitude,
-              });
-              onPositionSelected?.({
-                lat: latitude,
-                lng: longitude,
-              });
-            }
+            ? undefined
+            : (event) => {
+                const { latitude, longitude } = event.nativeEvent.coordinate;
+                setSelectedPosition({
+                  lat: latitude,
+                  lng: longitude,
+                });
+                onPositionSelected?.({
+                  lat: latitude,
+                  lng: longitude,
+                });
+              }
       }
     >
       {selectedPosition && (

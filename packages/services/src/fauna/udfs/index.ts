@@ -4,32 +4,58 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { dfq } from "../utils";
 
-export const createUDFPublicEventsInPeriodInAreas = async (
+export const createUDFEventsInAreasDuringPeriodForUser = async (
   faunaClient: Client,
 ) => {
   const q = fql`
     Function.create({
-      name: "publicEventsInPeriodInAreas",
+      name: "eventsInAreasDuringPeriodForUser",
       body: <<-END
-        (timePeriod, h3s) => {
-          h3s.toSet().flatMap(h3 => Events.geoTemporal(timePeriod, h3, 'public', true))
+        (userId, timePeriod, h3s) => {
+          let events = h3s.toSet().flatMap(h3 => Events.geoTemporal(timePeriod, h3, true)).toArray()
+          events.filter((event) => filterEventIsPublishedAndViewable(userId, event.id, event))
         }
       END
     })
   `;
   return await dfq(faunaClient, q);
 };
-export const callPublicEventsInPeriodInAreas = async (
+export const callEventsInAreasDuringPeriodForUser = async (
   faunaClient: Client,
-  timePeriodIndex: string,
-  areaH3s: number[],
+  userId: string,
+  timePeriod: string,
+  h3s: number[],
 ) => {
+  console.log(JSON.stringify(userId, null, 2));
+  console.log(JSON.stringify(timePeriod, null, 2));
+  console.log(JSON.stringify(h3s, null, 2));
   const q = fql`
-    publicEventsInPeriodInAreas(
-      ${timePeriodIndex}, ${areaH3s}
-    )
+    let events = ${h3s}.toSet().flatMap(h3 => Events.geoTemporal(${timePeriod}, h3, true)).toArray()
+    events.filter((event) => filterEventIsPublishedAndViewable(${userId}, event.id, event))
   `;
-  return (await dfq<{ data: VibefireEventT[] }>(faunaClient, q)).data;
+  return await dfq<VibefireEventT[]>(faunaClient, q);
+};
+export const callEventsInBBoxDuringPeriodForUser = async (
+  faunaClient: Client,
+  userId: string,
+  timePeriod: string,
+  northWest: { lat: number; lng: number },
+  southEast: { lat: number; lng: number },
+) => {
+  console.log(JSON.stringify(userId, null, 2));
+  console.log(JSON.stringify(timePeriod, null, 2));
+  console.log(JSON.stringify(northWest, null, 2));
+  console.log(JSON.stringify(southEast, null, 2));
+  const q = fql`
+    let events = Events.betweenLatLng(
+      ${timePeriod}, true, {
+        from: [${southEast.lat}, ${southEast.lng}],
+        to: [${northWest.lat}, ${northWest.lng}],
+      }
+    ).toArray()
+    events.filter((event) => filterEventIsPublishedAndViewable(${userId}, event.id, event))
+  `;
+  return await dfq<VibefireEventT[]>(faunaClient, q);
 };
 
 export const createUDFFilterEventIsPublishedAndViewable = async (
@@ -70,12 +96,12 @@ export const createUDFFilterEventIsPublishedAndViewable = async (
   return await dfq(faunaClient, q);
 };
 
-export const createUDFPublishedEventByIdForExternalUser = async (
+export const createUDFEventPublishedByIdForExternalUser = async (
   faunaClient: Client,
 ) => {
   const q = fql`
     Function.create({
-      name: "publishedEventByIdForExternalUser",
+      name: "eventPublishedByIdForExternalUser",
       body: <<-END
       (accessorId, eventId) => {
         let event = Events.byId(eventId)
@@ -90,23 +116,23 @@ export const createUDFPublishedEventByIdForExternalUser = async (
   `;
   return await dfq(faunaClient, q);
 };
-export const callPublishedEventByIdForExternalUser = async (
+export const callEventPublishedByIdForExternalUser = async (
   faunaClient: Client,
   accessorId: string,
   eventId: string,
 ) => {
   const q = fql`
-    publishedEventByIdForExternalUser(
+      eventPublishedByIdForExternalUser(
         ${accessorId}, ${eventId}
       )
   `;
   return await dfq<VibefireEventT>(faunaClient, q);
 };
 
-export const createUDUpcomingEventsForUser = async (faunaClient: Client) => {
+export const createUDFEventsUpcomingForUser = async (faunaClient: Client) => {
   const q = fql`
     Function.create({
-      name: "upcomingEventsForUser",
+      name: "eventsUpcomingForUser",
       body: <<-END
         (userId, queryPeriods) => {
           let maxFollowed = 20
@@ -120,13 +146,13 @@ export const createUDUpcomingEventsForUser = async (faunaClient: Client) => {
   `;
   return await dfq(faunaClient, q);
 };
-export const callUpcomingEventsForUser = async (
+export const callEventsUpcomingForUser = async (
   faunaClient: Client,
   userId: string,
   queryPeriods: string[],
 ) => {
   const q = fql`
-    upcomingEventsForUser(
+    eventsUpcomingForUser(
       ${userId}, ${queryPeriods}
     )
   `;

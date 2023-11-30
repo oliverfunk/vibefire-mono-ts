@@ -1,7 +1,11 @@
 import { fql, type Client } from "fauna";
 import type { PartialDeep } from "type-fest";
 
-import type { VibefireEventLocationT, VibefireEventT } from "@vibefire/models";
+import type {
+  CoordT,
+  VibefireEventLocationT,
+  VibefireEventT,
+} from "@vibefire/models";
 import { type PartialDeepExceptRequired } from "@vibefire/utils";
 
 import { CreateCollectionIfDne, dfq } from "../utils";
@@ -15,9 +19,7 @@ export const defineGeoTemporalIndex = async (faunaClient: Client) => {
   const h3pField: keyof VibefireEventLocationT = "h3Parents";
   const locH3Field = `${locField}.${h3pField}`;
   const dtpField: keyof VibefireEventT = "displayTimePeriods";
-  const visField: keyof VibefireEventT = "visibility";
   const pubField: keyof VibefireEventT = "published";
-  const rankField: keyof VibefireEventT = "rank";
 
   const q = fql`
     Events.definition.update({
@@ -33,16 +35,7 @@ export const defineGeoTemporalIndex = async (faunaClient: Client) => {
               mva: true
             },
             {
-              field: ${visField},
-            },
-            {
               field: ${pubField}
-            }
-          ],
-          values: [
-            {
-              field: ${rankField},
-              order: "desc"
             }
           ],
         },
@@ -91,6 +84,34 @@ export const defineByOrganiserIDIndex = async (faunaClient: Client) => {
               field: ${organiserIdField},
             }
           ],
+        },
+      }
+    })
+  `;
+  await dfq(faunaClient, q);
+};
+
+export const defineBetweenLatLngIndex = async (faunaClient: Client) => {
+  const dtpField: keyof VibefireEventT = "displayTimePeriods";
+  const pubField: keyof VibefireEventT = "published";
+  const locField: keyof VibefireEventT = "location";
+  const positionField: keyof VibefireEventLocationT = "position";
+  const latField: keyof CoordT = "lat";
+  const lngField: keyof CoordT = "lng";
+  const fullLatField = `${locField}.${positionField}.${latField}`;
+  const fullLngField = `${locField}.${positionField}.${lngField}`;
+  const q = fql`
+    Events.definition.update({
+      indexes: {
+        betweenLatLng: {
+          terms: [
+            { field: ${dtpField}, mva: true },
+            { field: ${pubField} }
+          ],
+          values: [
+            { field: ${fullLatField} },
+            { field: ${fullLngField} }
+          ]
         },
       }
     })
