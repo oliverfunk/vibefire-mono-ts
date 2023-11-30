@@ -5,7 +5,6 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 
-import { usePrevious } from "~/hooks/usePrevious";
 import {
   navEditEventClose,
   navManageEventClose,

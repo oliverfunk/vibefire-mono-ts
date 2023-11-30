@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import React, { useCallback, useEffect, useRef } from "react";
+import { View } from "react-native";
 import MapView, {
   Callout,
   Marker,
@@ -53,22 +53,6 @@ export class Try extends React.Component<
   }
 }
 
-const useMapMarkers = () => {
-  const [markers, setMarkers] = useState<
-    { id: string; lat: number; lng: number }[]
-  >([]);
-  const displayEvents = useDisplayEvents();
-  useEffect(() => {
-    setMarkers(
-      displayEvents.map((event) => ({
-        id: event.id,
-        ...event.location.position,
-      })),
-    );
-  }, [displayEvents]);
-  return markers;
-};
-
 const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   const mvRef = useRef<MapView>(null);
 
@@ -79,7 +63,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
 
   const { location, locPermDeniedMsg } = useLocationOnce();
 
-  const markers = useMapMarkers();
+  const displayEvents = useDisplayEvents();
 
   //#region effects
   useEffect(() => {
@@ -162,27 +146,40 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
       toolbarEnabled={false}
       loadingEnabled={true}
       onRegionChangeComplete={onMapRegionChange}
-      moveOnMarkerPress
+      moveOnMarkerPress={false}
       rotateEnabled={false}
       maxZoomLevel={20}
       minZoomLevel={3}
       ref={mvRef}
     >
-      {markers.length > 0 &&
-        markers.map((marker, index) => (
+      {displayEvents.length > 0 &&
+        displayEvents.map((event, index) => (
           <Marker
-            key={marker.id}
-            coordinate={{ latitude: marker.lat, longitude: marker.lng }}
+            key={event.id}
+            coordinate={{
+              latitude: event.location.position.lat,
+              longitude: event.location.position.lng,
+            }}
             onPress={() => {
-              navViewEvent(marker.id);
+              navViewEvent(event.id);
+              mvRef.current?.animateCamera({
+                center: {
+                  latitude: event.location.position.lat,
+                  longitude: event.location.position.lng,
+                },
+              });
             }}
           >
-            <Callout tooltip={true} className="items-center">
-              <View className="bg-white">
-                <Text className="text-black">This is amaing</Text>
+            {/* <Callout
+              tooltip={true}
+              onPress={() => {
+                navViewEvent(event.id);
+              }}
+            >
+              <View className="h-28 w-56 rounded-md bg-black p-2">
+                <View className="h-full w-full bg-white" />
               </View>
-              <View className="h-0 w-0 border-x-[10px] border-b-0 border-t-[15px] border-x-transparent border-t-white" />
-            </Callout>
+            </Callout> */}
             <SvgIcon idx={index} />
           </Marker>
         ))}

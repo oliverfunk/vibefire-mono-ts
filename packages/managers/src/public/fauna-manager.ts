@@ -23,9 +23,10 @@ import {
   addEventToHidden,
   addFollowedEvent,
   addOrganiserToBlocked,
-  callPublicEventsInPeriodInAreas,
-  callPublishedEventByIdForExternalUser,
-  callUpcomingEventsForUser,
+  callEventPublishedByIdForExternalUser,
+  callEventsInAreasDuringPeriodForUser,
+  callEventsInBBoxDuringPeriodForUser,
+  callEventsUpcomingForUser,
   createEvent,
   createEventManagement,
   createUser,
@@ -139,7 +140,7 @@ export class FaunaManager {
   }
 
   async publishedEventForExternalView(userId: string, eventId: string) {
-    const e = await callPublishedEventByIdForExternalUser(
+    const e = await callEventPublishedByIdForExternalUser(
       this.faunaClient,
       userId,
       eventId,
@@ -309,7 +310,7 @@ export class FaunaManager {
         //   }
         // };
         const googleMapsManager = getGoogleMapsManager();
-        // if updateData.timeStart  is undef. and isoNTZ is def.
+        // todo: if updateData.timeStart  is undef. and isoNTZ is def.
         // lookup the tz using DT.now(), then use that tz
         // to set the correct timestamp, then lookup again
 
@@ -511,7 +512,7 @@ export class FaunaManager {
     startDateIsoNTZ: string,
   ) {
     const queryPeriods = displayPeriodsFor(startDateIsoNTZ, 7);
-    const res = await callUpcomingEventsForUser(
+    const res = await callEventsUpcomingForUser(
       this.faunaClient,
       userAc.userId,
       queryPeriods,
@@ -532,28 +533,36 @@ export class FaunaManager {
     // console.log("longs delta", Math.abs(northEast.lng - southWest.lng));
     // console.log();
 
-    const h3Res = zoomLevelToH3Resolution(zoomLevel);
+    // const h3Res = zoomLevelToH3Resolution(zoomLevel);
 
-    const bboxH3sPre = polygonToCells(
-      [
-        [northEast.lat, northEast.lng],
-        [northEast.lat, southWest.lng],
-        [southWest.lat, southWest.lng],
-        [southWest.lat, northEast.lng],
-      ],
-      h3Res,
-    );
+    // const bboxH3s = polygonToCells(
+    //   [
+    //     [northEast.lat, northEast.lng],
+    //     [northEast.lat, southWest.lng],
+    //     [southWest.lat, southWest.lng],
+    //     [southWest.lat, northEast.lng],
+    //   ],
+    //   h3Res,
+    // );
 
-    const bboxH3s = compactCells(bboxH3sPre);
+    // const bboxH3sComp = compactCells(bboxH3s);
 
     // console.log("bboxH3sPre no", bboxH3sPre.length);
     // console.log("bboxH3s no", bboxH3s.length);
 
-    const h3ps = bboxH3sPre.map((h3) => hexToDecimal(h3));
-    const res = await callPublicEventsInPeriodInAreas(
+    // const h3ps = bboxH3s.map((h3) => hexToDecimal(h3));
+    // const res = await callEventsInAreasDuringPeriodForUser(
+    //   this.faunaClient,
+    //   userAc.userId ?? "anon",
+    //   timePeriod,
+    //   h3ps,
+    // );
+    const res = await callEventsInBBoxDuringPeriodForUser(
       this.faunaClient,
+      userAc.userId ?? "anon",
       timePeriod,
-      h3ps,
+      northEast,
+      southWest,
     );
 
     // the extent to which this is necessary is questionable,
@@ -563,6 +572,7 @@ export class FaunaManager {
       tbValidator(VibefireEventSchema)(eventData),
     );
 
+    // todo: optimise this by doing it fauna side
     if (userAc.userId) {
       const userInfo = await this.getUserInfo(userAc);
       const hiddenEvents = userInfo.hiddenEvents ?? [];
@@ -575,10 +585,11 @@ export class FaunaManager {
         if (blockedOrganisers.includes(e.organiserId)) {
           return false;
         }
+        return true;
       });
     }
 
-    // console.log("events.length", events.length);
+    console.log("events.length", events.length);
 
     return events;
   }
