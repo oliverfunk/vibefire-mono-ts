@@ -17,7 +17,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
 import {
@@ -30,9 +30,10 @@ import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
-import { userAtom } from "~/atoms";
+import { userAtom, userSessionRetryAtom } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navManageEvent, navViewOrg } from "~/nav";
+import { LocationDisplayMap } from "../LocationDisplayMap";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const ThreeDotsMenuOption = (props: {
@@ -53,7 +54,7 @@ const ThreeDotsMenuOption = (props: {
   );
 };
 
-const ThreeDotsMenu = (props: { event: VibefireEventT }) => {
+const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
   const { event } = props;
 
   const user = useAtomValue(userAtom);
@@ -224,17 +225,21 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
           {event.organiserName}
         </Text>
       </Pressable>
-      <ThreeDotsMenu event={event} />
+      <ThreeDotsModalMenu event={event} />
     </View>
   );
 };
 
-const EventDetailsView = (props: { event: VibefireEventT }) => {
-  const { event } = props;
+const EventDetailsView = (props: {
+  event: VibefireEventT;
+  dataRefetch: () => void;
+}) => {
+  const { event, dataRefetch } = props;
 
   const width = Dimensions.get("window").width;
 
   const user = useAtomValue(userAtom);
+  const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const eventFollowed = useMemo(() => {
@@ -267,9 +272,17 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
     }
   }, [event]);
 
-  const onFollowEvent = useCallback(() => {
-    // todo
-  }, []);
+  const starEventMut = trpc.user.starEvent.useMutation();
+  const onStarEvent = useCallback(async () => {
+    if (user.state !== "authenticated") {
+      return;
+    }
+    await starEventMut.mutateAsync({
+      eventId: event.id,
+      starIt: !eventFollowed,
+    });
+    setUserSessionRetry((prev) => !prev);
+  }, [event.id, eventFollowed, setUserSessionRetry, starEventMut]);
 
   return (
     <ScrollViewSheet>
@@ -332,14 +345,14 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
 
           <TouchableOpacity
             className="flex-col items-center justify-between"
-            onPress={onFollowEvent}
+            onPress={onStarEvent}
           >
             {!!eventFollowed ? (
               <FontAwesome name="star" size={20} color="yellow" />
             ) : (
               <FontAwesome5 name="star" size={20} color="white" />
             )}
-            <Text className="text-sm text-white">Interested</Text>
+            <Text className="text-sm text-white">Star</Text>
           </TouchableOpacity>
         </View>
 
@@ -368,10 +381,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
               console.log("pressed map");
             }}
           >
-            <LocationSelectionMap
-              initialPosition={event.location.position}
-              fixed={true}
-            />
+            <LocationDisplayMap markerPosition={event.location.position} />
           </Pressable>
           <View className="flex-row items-center space-x-2 px-2">
             <FontAwesome5 name="map-marker-alt" size={20} color="white" />
@@ -395,7 +405,12 @@ const EventDetailsController = (props: { eventId: string }) => {
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return <EventDetailsView event={eventQuery.data} />;
+      return (
+        <EventDetailsView
+          event={eventQuery.data}
+          dataRefetch={eventQuery.refetch}
+        />
+      );
   }
 };
 
@@ -405,13 +420,20 @@ const EventDetailsPreviewController = (props: { eventId: string }) => {
     eventId,
   });
 
+  console.log("EventDetailsPreviewController");
+
   switch (eventQuery.status) {
     case "loading":
       return <LoadingSheet />;
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return <EventDetailsView event={eventQuery.data.event} />;
+      return (
+        <EventDetailsView
+          event={eventQuery.data.event}
+          dataRefetch={() => eventQuery.refetch({ stale: true })}
+        />
+      );
   }
 };
 

@@ -26,7 +26,7 @@ export const EditEventForm = (props: {
   const { close } = useBottomSheet();
 
   const [editedEventData, setEditedEventData] = useState(currentEventData);
-  const hasEdited = !_.isEqual(currentEventData, editedEventData);
+  const isEdited = !_.isEqual(currentEventData, editedEventData);
 
   const [displayValidations, setDisplayValidations] = useState(false);
 
@@ -63,7 +63,7 @@ export const EditEventForm = (props: {
           {currentEventData.state === "draft" ? (
             <Text className="text-lg text-white">
               Get your event ready by setting the event details. Fields in{" "}
-              <Text className="text-[#ff1111]">red</Text> still need to be set.
+              <Text className="text-[#ff3333]">red</Text> still need to be set.
             </Text>
           ) : (
             <Text className="text-lg text-white">
@@ -75,7 +75,7 @@ export const EditEventForm = (props: {
           {displayValidations && (
             <View className="w-full flex-col space-y-2 pt-4">
               {formValidations.map((error) => (
-                <Text key={error} className="text-lg text-[#ff1111]">
+                <Text key={error} className="text-lg text-[#ff3333]">
                   {error}
                 </Text>
               ))}
@@ -120,7 +120,7 @@ export const EditEventForm = (props: {
         )}
         <BackNextButtons
           nextText={section === "images" ? "Manage" : "Next"}
-          nextAfterLoading={currentEventData.state === "draft"}
+          nextAfterLoading={true}
           onBackPressed={() => {
             setMayProceed(false);
             setDisplayValidations(false);
@@ -141,12 +141,18 @@ export const EditEventForm = (props: {
                 break;
             }
           }}
+          onCancelPressed={() => {
+            setMayProceed(false);
+            setDisplayValidations(false);
+            // reset
+            setEditedEventData(currentEventData);
+          }}
           onSavePressed={async () => {
             if (formValidations.length > 0) {
               setDisplayValidations(true);
               return;
             }
-            if (hasEdited) {
+            if (isEdited) {
               await updateEventMut.mutateAsync({
                 eventId,
                 title: editedEventData.title,
@@ -184,8 +190,9 @@ export const EditEventForm = (props: {
             }
           }}
           mayProceed={mayProceedForm}
+          // sets the background to orange for goto manage
           mayProceedBg={section === "images" ? "bg-[#FF4500]" : undefined}
-          canSave={hasEdited}
+          isEdited={isEdited}
           isLoading={updateEventMut.isLoading}
         />
       </View>

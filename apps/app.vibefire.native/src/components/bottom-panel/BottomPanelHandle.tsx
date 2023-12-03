@@ -119,7 +119,7 @@ const SearchButton = () => {
                 value={searchString}
                 autoFocus={true}
                 // placeholder="Search for a place or an event"
-                placeholder="This feature isn't ready yet"
+                placeholder="The search feature will be ready soon"
               />
             </View>
           </Pressable>

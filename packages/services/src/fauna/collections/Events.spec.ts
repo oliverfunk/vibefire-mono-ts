@@ -1,16 +1,11 @@
 import { Client } from "fauna";
 
-import {
-  createUDFEventPublishedByIdForExternalUser,
-  createUDFEventsInAreasDuringPeriodForUser,
-  createUDFEventsUpcomingForUser,
-  defineBetweenLatLngIndex,
-} from "..";
+import { createUDFFilterEventIsPublishedAndViewable } from "..";
 
 const faunaClient = new Client({
   secret: "***REMOVED***",
 });
 
 test("setting up events", async () => {
-  await defineBetweenLatLngIndex(faunaClient);
+  await createUDFFilterEventIsPublishedAndViewable(faunaClient);
 });

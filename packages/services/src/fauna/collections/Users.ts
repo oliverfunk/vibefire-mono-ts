@@ -93,7 +93,7 @@ export const deleteUser = async (faunaClient: Client, aid: string) => {
   return await dfq<{ id: string }>(faunaClient, q);
 };
 
-export const addFollowedEvent = async (
+export const starEvent = async (
   faunaClient: Client,
   aid: string,
   eventId: string,
@@ -102,6 +102,19 @@ export const addFollowedEvent = async (
   const q = fql`
     let u = Users.withAid(${aid}).first()
     let updatedFollowedEvents = u?.followedEvents.append(${eventId}).distinct()
+    u?.update({ followedEvents: updatedFollowedEvents })
+  `;
+  return await dfq(faunaClient, q);
+};
+export const unstarEvent = async (
+  faunaClient: Client,
+  aid: string,
+  eventId: string,
+) => {
+  const _followedEventsField: keyof VibefireUserT = "followedEvents";
+  const q = fql`
+    let u = Users.withAid(${aid}).first()
+    let updatedFollowedEvents = u?.followedEvents.filter((eventId) => eventId != ${eventId}).distinct()
     u?.update({ followedEvents: updatedFollowedEvents })
   `;
   return await dfq(faunaClient, q);

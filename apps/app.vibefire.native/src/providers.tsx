@@ -32,7 +32,7 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     [],
   );
   const getSessionMutDbcLong = useMemo(
-    () => debounce(getSession.mutate, 60000),
+    () => debounce(getSession.mutate, 10000),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -50,9 +50,7 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         break;
       case "error":
         setUser({ state: "error", error: getSession.error.message });
-        if (!__DEV__) {
-          getSessionMutDbcLong();
-        }
+        getSessionMutDbcLong();
         break;
       case "success":
         // Sentry.Native.setUser({ email: "john.doe@example.com" });

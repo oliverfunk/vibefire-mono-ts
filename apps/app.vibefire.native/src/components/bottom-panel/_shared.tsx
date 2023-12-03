@@ -145,16 +145,15 @@ export const ScrollViewSheetWithHeader = (props: {
 );
 
 export const BackNextButtons = (props: {
-  backText?: string;
   onBackPressed: () => void;
-  saveText?: string;
-  onSavePressed: () => void;
-  nextText?: string;
   onNextPressed: () => void;
-  canSave: boolean;
+  nextText?: string;
+  onCancelPressed: () => void;
+  onSavePressed: () => void;
+  isEdited: boolean;
+  isLoading: boolean;
   mayProceed: boolean;
   mayProceedBg?: string;
-  isLoading: boolean;
   nextAfterLoading?: boolean;
 }) => {
   const prevLoading = usePrevious(props.isLoading);
@@ -177,46 +176,52 @@ export const BackNextButtons = (props: {
   return (
     <View className="flex-row justify-around">
       <TouchableOpacity
-        className="flex-row items-center justify-center rounded-lg border bg-white px-4 py-2 "
-        onPress={props.onBackPressed}
+        className={`flex-row items-center justify-center rounded-lg px-4 py-2 ${
+          props.isEdited ? "bg-[#ff0000]" : "border bg-white"
+        }`}
+        onPress={props.isEdited ? props.onCancelPressed : props.onBackPressed}
       >
-        <>
-          <MaterialIcons
-            name="navigate-before"
-            // removes annoying padding
-            style={{ marginStart: -10 }}
-            size={24}
-            color="black"
-          />
-          <Text className="text-xl text-black">{props.backText ?? "Back"}</Text>
-        </>
+        {props.isEdited ? (
+          <Text className="text-xl text-white">Cancel</Text>
+        ) : (
+          <>
+            <MaterialIcons
+              name="navigate-before"
+              // removes annoying padding
+              style={{ marginStart: -10 }}
+              size={24}
+              color="black"
+            />
+            <Text className="text-xl text-black">Back</Text>
+          </>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
         className={`flex-row items-center justify-center rounded-lg px-4 py-2 ${
           props.isLoading
             ? "bg-black"
-            : props.canSave
-            ? "bg-green-500"
-            : props.mayProceed
-            ? props.mayProceedBg ?? "bg-black"
-            : "bg-gray-300"
+            : props.isEdited
+              ? "bg-green-500"
+              : props.mayProceed
+                ? props.mayProceedBg ?? "bg-black"
+                : "bg-gray-300"
         }`}
-        disabled={!(props.canSave || props.mayProceed)}
+        disabled={!(props.isEdited || props.mayProceed)}
         onPress={
           props.isLoading
             ? undefined
-            : props.canSave
-            ? props.onSavePressed
-            : props.mayProceed
-            ? props.onNextPressed
-            : undefined
+            : props.isEdited
+              ? props.onSavePressed
+              : props.mayProceed
+                ? props.onNextPressed
+                : undefined
         }
       >
         {props.isLoading ? (
           <ActivityIndicator size="small" color="white" />
-        ) : props.canSave ? (
-          <Text className="text-xl text-white">{props.saveText ?? "Save"}</Text>
+        ) : props.isEdited ? (
+          <Text className="text-xl text-white">Save</Text>
         ) : (
           <>
             <Text className="text-xl text-white">

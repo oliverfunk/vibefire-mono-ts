@@ -50,7 +50,10 @@ export const displayPeriodsBetween = (
   return periods;
 };
 
-export const displayPeriodsFor = (startIsoStr: string, numerOfDays: int) => {
+export const displayPeriodsFor = (
+  startIsoStr: string,
+  numberOfDays: number,
+) => {
   const start = isoNTZToUTCDateTime(startIsoStr);
 
   const periods = [];
@@ -59,7 +62,7 @@ export const displayPeriodsFor = (startIsoStr: string, numerOfDays: int) => {
   do {
     periods.push(toDateStr(current));
     current = current.plus({ day: 1 });
-  } while (periods.length >= numerOfDays);
+  } while (periods.length < numberOfDays);
 
   return periods;
 };

@@ -4,8 +4,30 @@ import { tbValidator } from "@vibefire/utils";
 
 import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
+// These are public becuase you can view an event without being logged in
+// not the best
+// todo: idk how to fix it but should be fixed
 export const userRouter = router({
-  hideEvent: authedProcedure
+  starEvent: publicProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          starIt: t.Boolean(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        return;
+      }
+      return await ctx.fauna.setStarEventForUser(
+        ctx.auth,
+        input.eventId,
+        input.starIt,
+      );
+    }),
+  hideEvent: publicProcedure
     .input(
       tbValidator(
         t.Object({
@@ -14,11 +36,13 @@ export const userRouter = router({
         }),
       ),
     )
-    .output((value) => value as boolean)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        return;
+      }
       return await ctx.fauna.hideEventForUser(ctx.auth, input.eventId);
     }),
-  blockOrganiser: authedProcedure
+  blockOrganiser: publicProcedure
     .input(
       tbValidator(
         t.Object({
@@ -26,8 +50,10 @@ export const userRouter = router({
         }),
       ),
     )
-    .output((value) => value as boolean)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        return;
+      }
       return await ctx.fauna.blockOrganiserForUser(ctx.auth, input.organiserId);
     }),
 });
