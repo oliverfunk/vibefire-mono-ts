@@ -322,6 +322,15 @@ importers:
         specifier: 3.3.2
         version: 3.3.2
 
+  apps/handle.vibefire.app:
+    devDependencies:
+      '@vibefire/api':
+        specifier: ^0.1.0
+        version: link:../../packages/api
+      '@vibefire/utils':
+        specifier: ^0.1.0
+        version: link:../../packages/utils
+
   apps/manage.vibefire.app:
     dependencies:
       '@headlessui/react':

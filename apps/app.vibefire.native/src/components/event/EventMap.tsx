@@ -14,7 +14,7 @@ import { type CoordT } from "@vibefire/models";
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
-import { ClusterIcon, EventIcon } from "~/components/SvgIcon";
+import { EventIcon } from "~/components/SvgIcon";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useDisplayEvents } from "~/hooks/useMapQuery";
 import { navViewEvent } from "~/nav";
@@ -160,6 +160,7 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
               latitude: event.location.position.lat,
               longitude: event.location.position.lng,
             }}
+            anchor={{ x: 0.5, y: 1 }} // bottom center
             onPress={() => {
               navViewEvent(event.id);
               mvRef.current?.animateCamera({

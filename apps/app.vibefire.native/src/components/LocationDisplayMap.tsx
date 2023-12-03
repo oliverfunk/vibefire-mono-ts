@@ -4,13 +4,14 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { type CoordT } from "@vibefire/models";
 
 import { useSetMapCameraMarkerPositionElseUserLocation } from "~/hooks/useSetMapCameraMarkerPositionElseUserLocation";
+import { EventIcon } from "./SvgIcon";
 
 export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
   const { markerPosition } = props;
 
   const mvRef = useRef<MapView>(null);
 
-  useSetMapCameraMarkerPositionElseUserLocation(markerPosition, mvRef);
+  useSetMapCameraMarkerPositionElseUserLocation(mvRef, markerPosition);
 
   return (
     <MapView
@@ -37,7 +38,9 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
           latitude: markerPosition.lat,
           longitude: markerPosition.lng,
         }}
-      />
+      >
+        <EventIcon vibeIndex={0} />
+      </Marker>
     </MapView>
   );
 };

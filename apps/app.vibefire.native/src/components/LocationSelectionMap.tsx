@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import Toast from "react-native-toast-message";
 
 import { type CoordT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { useLocationOnce } from "~/hooks/useLocation";
+import { useSetMapCameraMarkerPositionElseUserLocation } from "~/hooks/useSetMapCameraMarkerPositionElseUserLocation";
 
 export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;
@@ -34,6 +33,9 @@ export const LocationSelectionMap = (props: {
     if (!selectedPosition) {
       return;
     }
+    if (selectedPosition === initialPosition) {
+      return;
+    }
     const q = async () => {
       const addressDesc = await positionAddressInfoMut.mutateAsync({
         position: selectedPosition,
@@ -43,44 +45,7 @@ export const LocationSelectionMap = (props: {
     void q();
   }, [selectedPosition]);
 
-  const { location, locPermDeniedMsg } = useLocationOnce();
-
-  useEffect(() => {
-    // the timeouts improve stability on android
-    if (initialPosition !== undefined) {
-      setTimeout(() => {
-        mvRef.current?.setCamera({
-          center: {
-            latitude: initialPosition.lat,
-            longitude: initialPosition.lng,
-          },
-          zoom: 16,
-        });
-      }, 100);
-    } else if (location !== null) {
-      setTimeout(() => {
-        mvRef.current?.setCamera({
-          center: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-          zoom: 16,
-        });
-      }, 100);
-    }
-  }, [location, initialPosition]);
-
-  useEffect(() => {
-    if (locPermDeniedMsg !== null) {
-      Toast.show({
-        type: "error",
-        text1: "Problem getting your location",
-        text2: locPermDeniedMsg,
-        position: "bottom",
-        bottomOffset: 100,
-      });
-    }
-  }, [locPermDeniedMsg]);
+  useSetMapCameraMarkerPositionElseUserLocation(mvRef, selectedPosition);
 
   return (
     <MapView
