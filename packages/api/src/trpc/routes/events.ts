@@ -4,6 +4,7 @@ import { type PartialDeep } from "type-fest";
 import {
   CoordSchema,
   MapQuerySchema,
+  TimePeriodSchema,
   type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";
@@ -88,12 +89,8 @@ export const eventsRouter = router({
     )
     .output((value) => value as VibefireEventT)
     .query(async ({ ctx, input }) => {
-      let userId = "anon";
-      if (ctx.auth.userId) {
-        userId = ctx.auth.userId;
-      }
       return await ctx.fauna.publishedEventForExternalView(
-        userId,
+        ctx.auth.userId ?? "anon",
         input.eventId,
       );
     }),
@@ -208,11 +205,12 @@ export const eventsRouter = router({
     .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
     }),
-  upcomingEvents: publicProcedure
+  starredOwnedEvents: publicProcedure
     .input(
       tbValidator(
         t.Object({
-          currentIsoNTZ: t.String(),
+          onDateIsoNTZ: t.String(),
+          isUpcoming: t.Boolean(),
         }),
       ),
     )
@@ -221,15 +219,18 @@ export const eventsRouter = router({
       if (!ctx.auth.userId) {
         return [];
       }
-      return await ctx.fauna.eventsFromUpcoming7DaysForUser(
+      const res = await ctx.fauna.eventFromStarredOwnedInPeriodForUser(
         ctx.auth,
-        input.currentIsoNTZ,
+        input.onDateIsoNTZ,
+        input.isUpcoming,
       );
+      return res;
     }),
-  maPositionDatePublicEvents: publicProcedure
+  mapPositionDatePublicEvents: publicProcedure
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
+      console.log("hello mapPositionDatePublicEvents");
       return await ctx.fauna.eventsFromMapQuery(ctx.auth, input);
     }),
 });

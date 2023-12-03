@@ -167,7 +167,7 @@ const _EventsList = () => {
               onEventPress={(eventId) => {
                 navViewEvent(eventId);
               }}
-              listTitle="Starred/Upcoming events"
+              listTitle="Upcoming Starred Events"
             />
             <View className="border" />
           </>

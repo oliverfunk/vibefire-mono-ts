@@ -4,6 +4,7 @@ import { DateTime } from "luxon";
 import type { PartialDeep } from "type-fest";
 
 import {
+  TimePeriodT,
   VibefireEventManagementSchema,
   VibefireEventSchema,
   VibefireEventTimelineElementSchema,
@@ -21,12 +22,10 @@ import {
 } from "@vibefire/services/clerk";
 import {
   addEventToHidden,
-  addFollowedEvent,
   addOrganiserToBlocked,
+  callAuthedEventsStarredOwnedDuringPeriods,
   callEventPublishedByIdForExternalUser,
-  callEventsInAreasDuringPeriodForUser,
   callEventsInBBoxDuringPeriodForUser,
-  callEventsUpcomingForUser,
   createEvent,
   createEventManagement,
   createUser,
@@ -35,22 +34,20 @@ import {
   getEventManagementFromEventIDByOrganiser,
   getEventsByOrganiser,
   getUserByAid,
+  starEvent,
+  unstarEvent,
   updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
 import {
-  compactCells,
   displayPeriodsBetween,
   displayPeriodsFor,
   h3ToH3Parents,
-  hexToDecimal,
   isoNTZToTZEpochSecs,
   latLngPositionToH3,
-  polygonToCells,
   removeUndef,
   tbValidator,
   trimAndCropText,
-  zoomLevelToH3Resolution,
 } from "@vibefire/utils";
 
 import { managersContext } from "~/managers-context";
@@ -139,10 +136,10 @@ export class FaunaManager {
     };
   }
 
-  async publishedEventForExternalView(userId: string, eventId: string) {
+  async publishedEventForExternalView(userAidOrAnon: string, eventId: string) {
     const e = await callEventPublishedByIdForExternalUser(
       this.faunaClient,
-      userId,
+      userAidOrAnon,
       eventId,
     );
     if (!e) {
@@ -158,9 +155,22 @@ export class FaunaManager {
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
 
     // check if the user is spamming create events
-    // have say 5 in draft max
+    // max 5 in draft, max 10 in draft or ready
+    const organiserEvents = await getEventsByOrganiser(
+      this.faunaClient,
+      organiserId,
+    );
+    const draftEvents = organiserEvents.filter((e) => e.state === "draft");
+    const readyEvents = organiserEvents.filter((e) => e.state === "ready");
+    if (draftEvents.length >= 5) {
+      throw new Error("Too many draft events");
+    }
+    if (draftEvents.length + readyEvents.length >= 10) {
+      throw new Error("Too many draft and ready events");
+    }
 
     const e = Value.Create(VibefireEventSchema);
     e.organiserId = organisationId || userAc.userId;
@@ -174,7 +184,8 @@ export class FaunaManager {
       // if the user is not part of an organisation, then they are creating
       // a user event, so set the type to user
       e.organiserType = "user";
-      e.visibility = "link-only"; // by default
+      // e.visibility = "link-only"; // by default
+      e.visibility = "public"; // by default
       const userInfo = await this.getUserInfo(userAc);
       e.organiserName = userInfo.name;
     } else {
@@ -405,7 +416,6 @@ export class FaunaManager {
     try {
       event = tbValidator(VibefireEventSchema)(e);
     } catch (e) {
-      console.error(e);
       return;
     }
 
@@ -507,17 +517,23 @@ export class FaunaManager {
     await updateEvent(this.faunaClient, eventId, organiserId, updateData);
   }
 
-  async eventsFromUpcoming7DaysForUser(
+  async eventFromStarredOwnedInPeriodForUser(
     userAc: ClerkSignedInAuthContext,
-    startDateIsoNTZ: string,
+    onDateIsoNTZ: string,
+    isUpcoming: boolean,
   ) {
-    const queryPeriods = displayPeriodsFor(startDateIsoNTZ, 7);
-    const res = await callEventsUpcomingForUser(
+    const queryPeriods = displayPeriodsFor(onDateIsoNTZ, isUpcoming ? 7 : 1);
+    const res = await callAuthedEventsStarredOwnedDuringPeriods(
       this.faunaClient,
       userAc.userId,
       queryPeriods,
     );
-    return res;
+    // todo: do fauna side
+    const resFiltered = res.filter(
+      (event, index, self) =>
+        self.findIndex((e) => e.id === event.id) === index,
+    );
+    return resFiltered;
   }
 
   async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {
@@ -664,13 +680,16 @@ export class FaunaManager {
     return res;
   }
 
-  async addFollowedEvent(userAc: ClerkSignedInAuthContext, eventId: string) {
-    const res = await addFollowedEvent(
-      this.faunaClient,
-      userAc.userId,
-      eventId,
-    );
-    return res;
+  async setStarEventForUser(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    starIt: boolean,
+  ) {
+    if (starIt) {
+      await starEvent(this.faunaClient, userAc.userId, eventId);
+    } else {
+      await unstarEvent(this.faunaClient, userAc.userId, eventId);
+    }
   }
 
   async hideEventForUser(userAc: ClerkSignedInAuthContext, eventId: string) {

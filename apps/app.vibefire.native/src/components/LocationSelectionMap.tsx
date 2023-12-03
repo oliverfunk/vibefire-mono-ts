@@ -29,16 +29,6 @@ export const LocationSelectionMap = (props: {
   );
 
   const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
-  //   {
-  //     position: selectedPosition ?? { lat: 0, lng: 0 },
-  //   },
-  //   {
-  //     enabled:
-  //       selectedPosition !== undefined &&
-  //       // run only after a selection is made
-  //       currentSelectedPosition !== selectedPosition,
-  //   },
-  // );
 
   useEffect(() => {
     if (!selectedPosition) {

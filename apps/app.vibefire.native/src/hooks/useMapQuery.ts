@@ -15,17 +15,20 @@ import { toDateStr } from "@vibefire/utils";
 import { trpc } from "~/apis/trpc-client";
 
 const useUpcomingEventsQuery = () => {
-  const [todayIsoNTZ] = useAtom(todayDTAtom);
-  const upcomingEvents = trpc.events.upcomingEvents.useQuery({
-    currentIsoNTZ: todayIsoNTZ.toISO()!,
+  const [todayDT] = useAtom(todayDTAtom);
+  const [selectedDateDT] = useAtom(selectedDateDTAtom);
+  const upcomingEvents = trpc.events.starredOwnedEvents.useQuery({
+    onDateIsoNTZ: selectedDateDT.toISO()!,
+    isUpcoming: selectedDateDT.hasSame(todayDT, "day"),
   });
+  console.log("upcomingEvents", JSON.stringify(upcomingEvents.status, null, 2));
   return upcomingEvents;
 };
 
 const useMapPositionDateEventsQuery = () => {
   const [mapPos] = useAtom(mapPositionInfoAtom);
-  const [selectedDT] = useAtom(selectedDateDTAtom);
-  const mapQuery = trpc.events.maPositionDatePublicEvents.useQuery(
+  const [selectedDateDT] = useAtom(selectedDateDTAtom);
+  const mapQuery = trpc.events.mapPositionDatePublicEvents.useQuery(
     mapPos === null
       ? {
           timePeriod: "",
@@ -40,13 +43,14 @@ const useMapPositionDateEventsQuery = () => {
           zoomLevel: 0,
         }
       : {
-          timePeriod: toDateStr(selectedDT),
+          timePeriod: toDateStr(selectedDateDT),
           northEast: mapPos.northEast,
           southWest: mapPos.southWest,
           zoomLevel: mapPos.zoomLevel,
         },
     { enabled: mapPos !== null },
   );
+  console.log("mapQuery", JSON.stringify(mapQuery.status, null, 2));
   return mapQuery;
 };
 
@@ -56,9 +60,6 @@ export const useDisplayEvents = () => {
 
   const setUpcomingEvents = useSetAtom(upcomingEventsQueryResultAtom);
   const setMapPositionDateEvents = useSetAtom(mapPositionDateEventsAtom);
-
-  const [todayDT] = useAtom(todayDTAtom);
-  const [selectedDateDT] = useAtom(selectedDateDTAtom);
 
   const setMapDisplayEventsInfo = useSetAtom(displayEventsInfoAtom);
 
@@ -89,12 +90,7 @@ export const useDisplayEvents = () => {
       return;
     }
     if (bothSuccess) {
-      let upcomingEvents = upcomingEventsQuery.data;
-      if (!selectedDateDT.hasSame(todayDT, "day")) {
-        upcomingEvents = upcomingEvents.filter((v) =>
-          v.displayTimePeriods.includes(toDateStr(selectedDateDT)),
-        );
-      }
+      const upcomingEvents = upcomingEventsQuery.data;
       const mapPositionDateEvents = mapPositionDateEventsQuery.data.filter(
         (v) => upcomingEvents.findIndex((t) => t.id === v.id) === -1,
       );
@@ -117,8 +113,6 @@ export const useDisplayEvents = () => {
     setMapDisplayEventsInfo,
     setMapPositionDateEvents,
     setUpcomingEvents,
-    selectedDateDT,
-    todayDT,
   ]);
 
   return mapDisplayEvents;

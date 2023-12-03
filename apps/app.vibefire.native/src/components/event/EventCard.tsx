@@ -53,10 +53,10 @@ export const EventCard = ({
             {state == "draft"
               ? "Draft"
               : state === "ready"
-              ? published
-                ? "Published"
-                : "Ready"
-              : "Archived"}
+                ? published
+                  ? "Published"
+                  : "Hidden"
+                : "Archived"}
           </Text>
         </View>
       )}
