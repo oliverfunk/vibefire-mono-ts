@@ -1,0 +1,15 @@
+{
+  "name": "handle.vibefire.app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "start": "wrangler dev",
+    "update": "pnpm update",
+    "update-latest": "pnpm update --latest"
+  },
+  "devDependencies": {
+    "@vibefire/api": "^0.1.0",
+    "@vibefire/utils": "^0.1.0"
+  }
+}

@@ -27,16 +27,13 @@ webhooksRouter.post("/clerk/user", async (c) => {
   const fauna = getFaunaManager();
   const webhooksClerkManager = getClerkWebhookManager();
 
-  const headers = c.req.headers;
+  const headers = c.req.header();
   const payload = await c.req.text();
 
-  const h: Record<string, string> = {};
-  headers.forEach((v, k) => {
-    h[k] = v;
-  });
+  console.log("WERE HERE");
 
   const event = validateToHttpExp(() =>
-    webhooksClerkManager.validateUserWebhookEvent(h, payload),
+    webhooksClerkManager.validateUserWebhookEvent(headers, payload),
   );
   switch (event.type) {
     case "user.created": {

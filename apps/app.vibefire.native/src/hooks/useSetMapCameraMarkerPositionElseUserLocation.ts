@@ -7,8 +7,8 @@ import { type CoordT } from "@vibefire/models";
 import { useLocationOnce } from "~/hooks/useLocation";
 
 export const useSetMapCameraMarkerPositionElseUserLocation = (
-  markerCoord: CoordT,
   mapRef: RefObject<MapView>,
+  markerCoord?: CoordT,
 ) => {
   const { location, locPermDeniedMsg } = useLocationOnce();
 

@@ -21,7 +21,6 @@ const useUpcomingEventsQuery = () => {
     onDateIsoNTZ: selectedDateDT.toISO()!,
     isUpcoming: selectedDateDT.hasSame(todayDT, "day"),
   });
-  console.log("upcomingEvents", JSON.stringify(upcomingEvents.status, null, 2));
   return upcomingEvents;
 };
 
@@ -50,7 +49,6 @@ const useMapPositionDateEventsQuery = () => {
         },
     { enabled: mapPos !== null },
   );
-  console.log("mapQuery", JSON.stringify(mapQuery.status, null, 2));
   return mapQuery;
 };
 

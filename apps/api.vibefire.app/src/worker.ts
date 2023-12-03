@@ -4,14 +4,9 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { timing } from "hono/timing";
 
-import {
-  BASEPATH_REST,
-  BASEPATH_TRPC,
-  BASEPATH_WEBHOOKS,
-} from "@vibefire/api/basepaths";
+import { BASEPATH_REST, BASEPATH_TRPC } from "@vibefire/api/basepaths";
 import { restRouter } from "@vibefire/api/rest";
 import { apiRouter, createContext } from "@vibefire/api/trpc";
-import { webhooksRouter } from "@vibefire/api/webhooks";
 
 type Bindings = {
   CF_ACCOUNT_ID: string;
@@ -61,7 +56,5 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
 });
 
 app.route(BASEPATH_REST, restRouter);
-
-app.route(BASEPATH_WEBHOOKS, webhooksRouter);
 
 export default app;
