@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { View } from "react-native";
 import MapView, {
   Callout,
   Marker,
@@ -15,6 +14,7 @@ import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
 import { EventIcon } from "~/components/SvgIcon";
+import { eventMapMapRefAtom } from "~/atoms";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useDisplayEvents } from "~/hooks/useMapQuery";
 import { navViewEvent } from "~/nav";
@@ -55,6 +55,8 @@ export class Try extends React.Component<
 
 const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   const mvRef = useRef<MapView>(null);
+
+  const setEventMapMapRef = useSetAtom(eventMapMapRefAtom);
 
   const setMapQueryPositionAtomDbc = debounce(
     useSetAtom(mapPositionInfoAtom),
@@ -138,6 +140,10 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
 
   return (
     <MapView
+      ref={mvRef}
+      onMapReady={() => {
+        setEventMapMapRef(mvRef.current);
+      }}
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
@@ -150,7 +156,6 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
       rotateEnabled={false}
       maxZoomLevel={20}
       minZoomLevel={3}
-      ref={mvRef}
     >
       {displayEvents.length > 0 &&
         displayEvents.map((event, index) => (
@@ -188,12 +193,10 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
   );
 };
 
-const EventMap = () => {
+export const EventMap = () => {
   return (
     <Try catch={ErrorBoundary}>
       <EventMapComponent />
     </Try>
   );
 };
-
-export { EventMap };

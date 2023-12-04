@@ -1,12 +1,12 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
-import { navCreateEvent, navEditEvent, navManageEvent } from "~/nav";
+import { navEditEvent, navManageEvent } from "~/nav";
 import { ErrorSheet, LoadingSheet, ScrollViewSheetWithHeader } from "./_shared";
 
 const EventsByOrganiserView: React.FC<{
@@ -15,28 +15,18 @@ const EventsByOrganiserView: React.FC<{
   return (
     <ScrollViewSheetWithHeader header="Your Events">
       <View className="flex-col items-center justify-center space-y-4 px-2 py-4">
-        <TouchableOpacity
-          className="rounded-lg bg-black px-4 py-4"
-          onPress={() => {
-            navCreateEvent();
+        <EventsList
+          events={events}
+          noEventsMessage="You have made no events yet"
+          onEventPress={(eventId, event) => {
+            if (event?.state === "draft") {
+              navEditEvent(eventId);
+            } else {
+              navManageEvent(eventId);
+            }
           }}
-        >
-          <Text className="text-xl font-bold text-white">Create event</Text>
-        </TouchableOpacity>
-
-        <View>
-          <EventsList
-            events={events}
-            onEventPress={(eventId, event) => {
-              if (event?.state === "draft") {
-                navEditEvent(eventId);
-              } else {
-                navManageEvent(eventId);
-              }
-            }}
-            showStatusBanner={true}
-          />
-        </View>
+          showStatusBanner={true}
+        />
       </View>
     </ScrollViewSheetWithHeader>
   );

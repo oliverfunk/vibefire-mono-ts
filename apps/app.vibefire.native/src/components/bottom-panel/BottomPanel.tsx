@@ -4,14 +4,15 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
+import { useAtom } from "jotai";
 
+import { mainBottomSheetPresentToggleAtom } from "~/atoms";
 import {
   navEditEventClose,
   navManageEventClose,
   navOwnEventsByOrganiserClose,
   navViewEventClose,
 } from "~/nav";
-import { useSheetBackdrop } from "./_shared";
 import { EditEventDetails } from "./edit-event-details/EditEventDetails";
 import { EventDetails } from "./EventDetails";
 import { EventsByOrganiser } from "./EventsByOrganiser";
@@ -32,6 +33,10 @@ export const BottomPanel = (props: {
   const manageEventSheetRef = useRef<BottomSheetModal>(null);
   const eventsByOrganiserSheetRef = useRef<BottomSheetModal>(null);
   const editEventDetailsSheetRef = useRef<BottomSheetModal>(null);
+
+  const [mainBottomSheetPresentToggle] = useAtom(
+    mainBottomSheetPresentToggleAtom,
+  );
 
   //#region effects
   useEffect(() => {
@@ -66,13 +71,22 @@ export const BottomPanel = (props: {
     }
   }, [props]);
 
+  useEffect(() => {
+    if (!mainBottomSheetPresentToggle.initial) {
+      if (mainBottomSheetPresentToggle.present) {
+        mapQueryEventsListSheetRef.current?.present();
+      } else {
+        mapQueryEventsListSheetRef.current?.collapse();
+      }
+    }
+  }, [mainBottomSheetPresentToggle]);
+
   useLayoutEffect(() => {
     requestAnimationFrame(() => mapQueryEventsListSheetRef.current?.present());
   }, []);
   //#endregion
 
   const insets = useSafeAreaInsets();
-  const backdrop = useSheetBackdrop();
 
   return (
     <BottomSheetModalProvider>
@@ -81,11 +95,11 @@ export const BottomPanel = (props: {
       {/* Event details */}
       <BottomSheetModal
         ref={eventDetailsDisplaySheetRef}
+        // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "black",
         }}
-        backdropComponent={backdrop}
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
@@ -107,6 +121,7 @@ export const BottomPanel = (props: {
       {/* Manage event */}
       <BottomSheetModal
         ref={manageEventSheetRef}
+        // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
@@ -124,7 +139,7 @@ export const BottomPanel = (props: {
       {/* Events by organiser */}
       <BottomSheetModal
         ref={eventsByOrganiserSheetRef}
-        backdropComponent={backdrop}
+        // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
@@ -142,6 +157,7 @@ export const BottomPanel = (props: {
       {/* Event edit */}
       <BottomSheetModal
         ref={editEventDetailsSheetRef}
+        // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",

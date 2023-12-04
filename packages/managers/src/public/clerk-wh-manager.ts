@@ -1,5 +1,3 @@
-import { type UserWebhookEvent } from "@clerk/backend";
-
 import { validateClerkWebhook } from "@vibefire/services/clerk";
 
 import { managersContext } from "~/managers-context";
@@ -19,11 +17,8 @@ export class ClerkWebhookManager {
   constructor(clerkWebhookSecret: string) {
     this.clerkWebhookSecret = clerkWebhookSecret;
   }
-  validateUserWebhookEvent(
-    reqHeaders: Record<string, string>,
-    reqPayload: string,
-  ) {
-    const validatedWh = validateClerkWebhook<UserWebhookEvent>(
+  validateWebhookEvent(reqHeaders: Record<string, string>, reqPayload: string) {
+    const validatedWh = validateClerkWebhook(
       reqHeaders,
       reqPayload,
       this.clerkWebhookSecret,

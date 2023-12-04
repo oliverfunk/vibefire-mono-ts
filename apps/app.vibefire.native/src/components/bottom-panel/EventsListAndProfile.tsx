@@ -25,8 +25,13 @@ import {
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
-import { navOwnEventsByOrganiser, navViewEvent } from "~/nav";
-import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "./_shared";
+import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
+import {
+  LinearRedOrangeView,
+  LoadingSheet,
+  ScrollViewSheet,
+  useSheetBackdrop,
+} from "./_shared";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
@@ -133,15 +138,33 @@ const _Profile = () => {
               </View>
             </View>
 
-            <LinearRedOrangeView className="w-full flex-row items-center justify-center p-6">
-              <TouchableOpacity
-                className="rounded-lg bg-black px-4 py-2"
-                onPress={() => {
-                  navOwnEventsByOrganiser();
-                }}
-              >
-                <Text className="text-xl text-white">Your events</Text>
-              </TouchableOpacity>
+            <LinearRedOrangeView className="w-full flex-col space-y-4 px-6 py-4">
+              <Text className="text-center text-xl text-white">
+                Create or view your events
+              </Text>
+              <View className="flex-row items-center justify-around">
+                <TouchableOpacity
+                  className="rounded-lg bg-black px-4 py-4"
+                  onPress={() => {
+                    navCreateEvent();
+                  }}
+                >
+                  <Text className="text-lg font-bold text-white">
+                    Create event
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="rounded-lg bg-black px-4 py-4"
+                  onPress={() => {
+                    navOwnEventsByOrganiser();
+                  }}
+                >
+                  <Text className="text-lg font-bold text-white">
+                    Your events
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </LinearRedOrangeView>
 
             <View className="flex-row pt-20">
