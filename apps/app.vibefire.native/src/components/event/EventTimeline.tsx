@@ -112,12 +112,6 @@ export const EventTimeline = (props: {
         alignSelf: "flex-start",
         backgroundColor: "black",
         color: "white",
-        // defines the border
-        // borderColor: "black",
-        borderBottomColor: "white",
-        borderWidth: 2,
-        borderRadius: 2,
-        overflow: "hidden",
       }}
     />
   );

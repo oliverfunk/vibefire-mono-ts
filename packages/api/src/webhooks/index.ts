@@ -4,6 +4,7 @@ import { getClerkWebhookManager } from "@vibefire/managers/clerk-webhook";
 import { setManagersContext } from "@vibefire/managers/context";
 import { getFaunaManager } from "@vibefire/managers/fauna";
 
+import { BASEPATH_WEBHOOKS } from "~/basepaths";
 import { validateToHttpExp } from "./utils";
 
 type Bindings = {
@@ -23,17 +24,15 @@ webhooksRouter.use("*", async (c, next) => {
 
 webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 
-webhooksRouter.post("/clerk/user", async (c) => {
+webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
   const fauna = getFaunaManager();
   const webhooksClerkManager = getClerkWebhookManager();
 
   const headers = c.req.header();
   const payload = await c.req.text();
 
-  console.log("WERE HERE");
-
   const event = validateToHttpExp(() =>
-    webhooksClerkManager.validateUserWebhookEvent(headers, payload),
+    webhooksClerkManager.validateWebhookEvent(headers, payload),
   );
   switch (event.type) {
     case "user.created": {
@@ -62,8 +61,6 @@ webhooksRouter.post("/clerk/user", async (c) => {
         phoneNumber,
         birthday,
       );
-
-      return c.json({ status: "ok" }, 200);
     }
     case "user.updated": {
       // const {
@@ -75,22 +72,18 @@ webhooksRouter.post("/clerk/user", async (c) => {
       //   phone_numbers,
       //   birthday,
       // } = payload.data;
-
       // let dateOfBirth;
       // try {
       //   dateOfBirth = new Date(Date.parse(birthday));
       // } catch (err) {
       //   dateOfBirth = undefined;
       // }
-
       // const contactEmail = email_addresses.find(
       //   (e) => e.id == primary_email_address_id,
       // )?.email_address;
-
       // const phoneNumber = phone_numbers.find(
       //   (p) => p.id == primary_phone_number_id,
       // )?.phone_number;
-
       // const client = _getFaunaClient(c.env);
       // const userID = await updateUserInfo(client, aid, {
       //   name: first_name,
@@ -98,23 +91,19 @@ webhooksRouter.post("/clerk/user", async (c) => {
       //   phoneNumber,
       //   dateOfBirth,
       // });
-
-      return c.json({ status: "ok" }, 200);
     }
     case "user.deleted": {
       // const { id: aid, object } = payload.data;
-
       // if (aid == undefined) {
       //   console.log("aid undefined in delete", JSON.stringify(object, null, 2));
       //   return c.json({ status: "ok" }, 200);
       // }
-
       // const client = _getFaunaClient(c.env);
       // const userID = await deleteUser(client, aid);
-
-      return c.json({ status: "ok" }, 200);
     }
   }
+  console.log("handled", event.type, JSON.stringify(event, null, 2));
+  return c.json({ status: "ok" }, 200);
 });
 
 export { webhooksRouter };

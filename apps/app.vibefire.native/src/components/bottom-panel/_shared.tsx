@@ -46,8 +46,8 @@ export const useSheetBackdrop = () => {
     (props: BottomSheetDefaultBackdropProps) => (
       <BottomSheetBackdrop
         {...props}
-        disappearsOnIndex={0}
-        appearsOnIndex={1}
+        // disappearsOnIndex={0}
+        appearsOnIndex={0}
         pressBehavior={"collapse"}
       />
     ),

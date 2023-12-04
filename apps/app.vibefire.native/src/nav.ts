@@ -2,6 +2,16 @@ import { router } from "expo-router";
 
 import { type EditEventFormSectionT } from "./types";
 
+export const navClear = () => {
+  router.setParams({
+    eventId: undefined,
+    editEvent: undefined,
+    manageEvent: undefined,
+    orgId: undefined,
+    eventsBy: undefined,
+  });
+};
+
 export const navOwnEventsByOrganiser = (organiserId?: string) => {
   router.setParams({ eventsBy: organiserId ?? "personal" });
 };

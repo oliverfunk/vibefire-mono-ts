@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
+import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
 import {
@@ -16,23 +18,31 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
+import { selectedDateDTAtom, todayDTAtom } from "@vibefire/shared-state";
 import {
+  isoNTZToTZDateTime,
+  isoNTZToUTCDateTime,
   organisationProfileImagePath,
   uberRequestToEventURL,
+  vibefireEventShareURL,
 } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "~/components/event/EventImage";
 import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { EventTimeline } from "~/components/event/EventTimeline";
-import { LocationSelectionMap } from "~/components/LocationSelectionMap";
 import { trpc } from "~/apis/trpc-client";
-import { userAtom, userSessionRetryAtom } from "~/atoms";
+import {
+  eventMapMapRefAtom,
+  mainBottomSheetPresentToggleAtom,
+  userAtom,
+  userSessionRetryAtom,
+} from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
-import { navManageEvent, navViewOrg } from "~/nav";
+import { navClear, navManageEvent, navViewOrg } from "~/nav";
 import { LocationDisplayMap } from "../LocationDisplayMap";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
@@ -230,13 +240,13 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
   );
 };
 
-const EventDetailsView = (props: {
-  event: VibefireEventT;
-  dataRefetch: () => void;
-}) => {
-  const { event, dataRefetch } = props;
+const EventDetailsView = (props: { event: VibefireEventT }) => {
+  const { event } = props;
 
   const width = Dimensions.get("window").width;
+
+  const [eventMapMapRef] = useAtom(eventMapMapRefAtom);
+  const [selectedDateDT, setSelectedDateDT] = useAtom(selectedDateDTAtom);
 
   const user = useAtomValue(userAtom);
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
@@ -255,7 +265,7 @@ const EventDetailsView = (props: {
     [event.images],
   );
 
-  const onMapPress = useCallback(() => {
+  const onMapsPressed = useCallback(() => {
     // todo
   }, []);
 
@@ -283,6 +293,35 @@ const EventDetailsView = (props: {
     });
     setUserSessionRetry((prev) => !prev);
   }, [event.id, eventFollowed, setUserSessionRetry, starEventMut]);
+
+  console.log(
+    JSON.stringify(
+      !selectedDateDT.hasSame(
+        isoNTZToUTCDateTime(event.timeStartIsoNTZ),
+        "day",
+      ),
+      null,
+      2,
+    ),
+  );
+
+  const setPresentMainToggle = useSetAtom(mainBottomSheetPresentToggleAtom);
+
+  const onSetToEvent = useCallback(() => {
+    setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));
+    eventMapMapRef?.animateCamera({
+      center: {
+        latitude: event.location.position.lat,
+        longitude: event.location.position.lng,
+      },
+    });
+    navClear();
+    setPresentMainToggle((prev) => ({
+      initial: false,
+      present: false,
+      toggle: !prev.toggle,
+    }));
+  }, [event, eventMapMapRef, setPresentMainToggle, setSelectedDateDT]);
 
   return (
     <ScrollViewSheet>
@@ -321,7 +360,7 @@ const EventDetailsView = (props: {
         <View className="mt-2 h-10 flex-row justify-around">
           <TouchableOpacity
             className="flex-col items-center justify-between"
-            onPress={onMapPress}
+            onPress={onMapsPressed}
           >
             <FontAwesome5 name="map" size={20} color="white" />
             <Text className="text-sm text-white">Maps</Text>
@@ -348,13 +387,36 @@ const EventDetailsView = (props: {
             onPress={onStarEvent}
           >
             {!!eventFollowed ? (
-              <FontAwesome name="star" size={20} color="yellow" />
+              <FontAwesome name="star" size={20} color="gold" />
             ) : (
               <FontAwesome5 name="star" size={20} color="white" />
             )}
             <Text className="text-sm text-white">Star</Text>
           </TouchableOpacity>
         </View>
+
+        <View>
+          <Text className="text-center text-sm text-white">
+            (Star the event to save it to the top of your events list)
+          </Text>
+        </View>
+
+        {!selectedDateDT.hasSame(
+          isoNTZToUTCDateTime(event.timeStartIsoNTZ),
+          "day",
+        ) && (
+          <View className="items-center pt-2">
+            <TouchableOpacity
+              className="flex-col items-center justify-between rounded-lg bg-white px-4 py-2"
+              onPress={onSetToEvent}
+            >
+              <FontAwesome5 name="clock" size={20} color="black" />
+              <Text className="text-sm text-black">
+                Show event start on map
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Details */}
         <View>
@@ -376,19 +438,32 @@ const EventDetailsView = (props: {
         <View>
           <Text className="pb-2 text-2xl font-bold text-white">Location</Text>
           <Pressable
-            className="aspect-[4/4] pb-2"
-            onPress={() => {
-              console.log("pressed map");
+            className="flex-row items-center space-x-2 px-2 pb-2"
+            onPress={async () => {
+              await Clipboard.setStringAsync(event.location.addressDescription);
+              Toast.show({
+                type: "success",
+                text1: "Address copied!",
+                position: "bottom",
+                bottomOffset: 50,
+                visibilityTime: 1000,
+              });
             }}
           >
-            <LocationDisplayMap markerPosition={event.location.position} />
-          </Pressable>
-          <View className="flex-row items-center space-x-2 px-2">
             <FontAwesome5 name="map-marker-alt" size={20} color="white" />
             <Text className="text-sm text-white">
               {event.location.addressDescription}
             </Text>
-          </View>
+          </Pressable>
+          <Pressable
+            className="aspect-[4/4] overflow-hidden rounded-lg"
+            onPress={onSetToEvent}
+          >
+            <LocationDisplayMap markerPosition={event.location.position} />
+          </Pressable>
+          <Text className="pb-2 text-center text-sm text-white">
+            (Tap to view on the map)
+          </Text>
         </View>
       </View>
     </ScrollViewSheet>
@@ -405,12 +480,7 @@ const EventDetailsController = (props: { eventId: string }) => {
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return (
-        <EventDetailsView
-          event={eventQuery.data}
-          dataRefetch={eventQuery.refetch}
-        />
-      );
+      return <EventDetailsView event={eventQuery.data} />;
   }
 };
 
@@ -428,12 +498,7 @@ const EventDetailsPreviewController = (props: { eventId: string }) => {
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
     case "success":
-      return (
-        <EventDetailsView
-          event={eventQuery.data.event}
-          dataRefetch={() => eventQuery.refetch({ stale: true })}
-        />
-      );
+      return <EventDetailsView event={eventQuery.data.event} />;
   }
 };
 

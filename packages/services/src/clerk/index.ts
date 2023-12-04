@@ -38,17 +38,16 @@ export const authRequestWithClerk = async (
   });
 };
 
-export const validateClerkWebhook = <T extends WebhookEvent>(
+export const validateClerkWebhook = (
   reqHeaders: Record<string, string>,
   reqPayload: string,
   webhookSecret: string,
-): T | undefined => {
+): WebhookEvent | undefined => {
   const wh = new Webhook(webhookSecret);
-  let msg = undefined;
   try {
-    msg = wh.verify(reqPayload, reqHeaders) as T;
+    return wh.verify(reqPayload, reqHeaders) as WebhookEvent;
   } catch (err) {
     console.error(err);
+    return undefined;
   }
-  return msg;
 };
