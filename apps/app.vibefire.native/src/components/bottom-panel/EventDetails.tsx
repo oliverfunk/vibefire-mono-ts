@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   Modal,
@@ -18,17 +18,15 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
-import { selectedDateDTAtom, todayDTAtom } from "@vibefire/shared-state";
+import { selectedDateDTAtom } from "@vibefire/shared-state";
 import {
-  isoNTZToTZDateTime,
   isoNTZToUTCDateTime,
   organisationProfileImagePath,
   uberRequestToEventURL,
-  vibefireEventShareURL,
 } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "~/components/event/EventImage";
@@ -42,7 +40,7 @@ import {
   userSessionRetryAtom,
 } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
-import { navClear, navManageEvent, navViewOrg } from "~/nav";
+import { navClearAll, navManageEvent, navViewOrg } from "~/nav";
 import { LocationDisplayMap } from "../LocationDisplayMap";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
@@ -94,19 +92,6 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
   const hideEventMut = trpc.user.hideEvent.useMutation();
   const blockOrganiserMut = trpc.user.blockOrganiser.useMutation();
 
-  useEffect(() => {
-    if (hideEventMut.isSuccess) {
-      // todo refresh mapquery
-      close();
-    }
-  }, [close, hideEventMut.isSuccess]);
-  useEffect(() => {
-    if (blockOrganiserMut.isSuccess) {
-      // todo refresh mapquery
-      close();
-    }
-  }, [blockOrganiserMut.isSuccess, close]);
-
   return (
     <Pressable
       ref={DropdownButton}
@@ -150,9 +135,13 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
                       size={24}
                     />
                   }
-                  onPress={() => {
+                  onPress={async () => {
                     setMenuVisible(false);
-                    hideEventMut.mutate({ eventId: event.id, report: false });
+                    await hideEventMut.mutateAsync({
+                      eventId: event.id,
+                      report: false,
+                    });
+                    close();
                   }}
                 />
                 <View className="h-px bg-gray-200" />
@@ -165,9 +154,13 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
                       size={24}
                     />
                   }
-                  onPress={() => {
+                  onPress={async () => {
                     setMenuVisible(false);
-                    hideEventMut.mutate({ eventId: event.id, report: true });
+                    await hideEventMut.mutateAsync({
+                      eventId: event.id,
+                      report: true,
+                    });
+                    close();
                   }}
                 />
                 <View className="h-px bg-gray-200" />
@@ -180,11 +173,12 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
                       size={24}
                     />
                   }
-                  onPress={() => {
+                  onPress={async () => {
                     setMenuVisible(false);
-                    blockOrganiserMut.mutate({
+                    await blockOrganiserMut.mutateAsync({
                       organiserId: event.organiserId,
                     });
+                    close();
                   }}
                 />
               </>
@@ -285,6 +279,13 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   const starEventMut = trpc.user.starEvent.useMutation();
   const onStarEvent = useCallback(async () => {
     if (user.state !== "authenticated") {
+      Toast.show({
+        type: "warn",
+        text1: "Sign in to star events",
+        position: "bottom",
+        bottomOffset: 50,
+        visibilityTime: 3000,
+      });
       return;
     }
     await starEventMut.mutateAsync({
@@ -292,22 +293,11 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
       starIt: !eventFollowed,
     });
     setUserSessionRetry((prev) => !prev);
-  }, [event.id, eventFollowed, setUserSessionRetry, starEventMut]);
-
-  console.log(
-    JSON.stringify(
-      !selectedDateDT.hasSame(
-        isoNTZToUTCDateTime(event.timeStartIsoNTZ),
-        "day",
-      ),
-      null,
-      2,
-    ),
-  );
+  }, [event.id, eventFollowed, setUserSessionRetry, starEventMut, user.state]);
 
   const setPresentMainToggle = useSetAtom(mainBottomSheetPresentToggleAtom);
 
-  const onSetToEvent = useCallback(() => {
+  const onMoveToEvent = useCallback(() => {
     setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));
     eventMapMapRef?.animateCamera({
       center: {
@@ -315,7 +305,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
         longitude: event.location.position.lng,
       },
     });
-    navClear();
+    navClearAll();
     setPresentMainToggle((prev) => ({
       initial: false,
       present: false,
@@ -408,7 +398,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
           <View className="items-center pt-2">
             <TouchableOpacity
               className="flex-col items-center justify-between rounded-lg bg-white px-4 py-2"
-              onPress={onSetToEvent}
+              onPress={onMoveToEvent}
             >
               <FontAwesome5 name="clock" size={20} color="black" />
               <Text className="text-sm text-black">
@@ -457,7 +447,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
           </Pressable>
           <Pressable
             className="aspect-[4/4] overflow-hidden rounded-lg"
-            onPress={onSetToEvent}
+            onPress={onMoveToEvent}
           >
             <LocationDisplayMap markerPosition={event.location.position} />
           </Pressable>

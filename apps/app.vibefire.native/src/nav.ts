@@ -2,7 +2,7 @@ import { router } from "expo-router";
 
 import { type EditEventFormSectionT } from "./types";
 
-export const navClear = () => {
+export const navClearAll = () => {
   router.setParams({
     eventId: undefined,
     editEvent: undefined,

@@ -230,7 +230,6 @@ export const eventsRouter = router({
     .input(tbValidator(MapQuerySchema))
     .output((value) => value as VibefireEventT[])
     .query(async ({ ctx, input }) => {
-      console.log("hello mapPositionDatePublicEvents");
       return await ctx.fauna.eventsFromMapQuery(ctx.auth, input);
     }),
 });

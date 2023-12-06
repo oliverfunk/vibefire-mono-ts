@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
+import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   BottomSheetModal,
@@ -6,6 +7,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useAtom } from "jotai";
 
+import { trpc } from "~/apis/trpc-client";
 import { mainBottomSheetPresentToggleAtom } from "~/atoms";
 import {
   navEditEventClose,
@@ -27,6 +29,8 @@ export const BottomPanel = (props: {
   eventsBy?: string;
   editEvent?: string;
 }) => {
+  const utils = trpc.useUtils();
+
   const mapQueryEventsListSheetRef = useRef<BottomSheetModal>(null);
   const eventDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
   const orgDetailsDisplaySheetRef = useRef<BottomSheetModal>(null);
@@ -104,8 +108,9 @@ export const BottomPanel = (props: {
         index={0}
         snapPoints={["80%"]}
         handleComponent={null}
-        onDismiss={() => {
+        onDismiss={async () => {
           navViewEventClose();
+          await utils.invalidate();
         }}
       >
         {props.eventID && <EventDetails eventQuery={props.eventID} />}
@@ -129,8 +134,9 @@ export const BottomPanel = (props: {
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
-        onDismiss={() => {
+        onDismiss={async () => {
           navManageEventClose();
+          await utils.invalidate();
         }}
       >
         {props.manageEvent && <ManageEvent queryString={props.manageEvent} />}
@@ -147,8 +153,9 @@ export const BottomPanel = (props: {
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
-        onDismiss={() => {
+        onDismiss={async () => {
           navOwnEventsByOrganiserClose();
+          await utils.invalidate();
         }}
       >
         {props.eventsBy && <EventsByOrganiser />}
@@ -158,6 +165,8 @@ export const BottomPanel = (props: {
       <BottomSheetModal
         ref={editEventDetailsSheetRef}
         // backdropComponent={backdrop}
+        enableContentPanningGesture={Platform.OS === "android" ? false : true}
+        enablePanDownToClose={true}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
@@ -165,8 +174,9 @@ export const BottomPanel = (props: {
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
-        onDismiss={() => {
+        onDismiss={async () => {
           navEditEventClose();
+          await utils.invalidate();
         }}
       >
         {props.editEvent && <EditEventDetails queryString={props.editEvent} />}
