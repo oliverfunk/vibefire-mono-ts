@@ -10,16 +10,10 @@ export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;
   onPositionSelected?: (position: CoordT) => void;
   onPositionInfo?: (position: CoordT, addressDescription: string) => void;
-  fixed?: boolean;
   onPress?: () => void;
 }) => {
-  const {
-    initialPosition,
-    onPositionInfo,
-    onPositionSelected,
-    fixed = false,
-    onPress,
-  } = props;
+  const { initialPosition, onPositionInfo, onPositionSelected, onPress } =
+    props;
 
   const mvRef = useRef<MapView>(null);
 
@@ -52,11 +46,6 @@ export const LocationSelectionMap = (props: {
       ref={mvRef}
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
-      pointerEvents={fixed ? "none" : undefined}
-      zoomEnabled={!fixed}
-      scrollEnabled={!fixed}
-      zoomTapEnabled={!fixed}
-      showsMyLocationButton={!fixed}
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
@@ -69,36 +58,32 @@ export const LocationSelectionMap = (props: {
       onPress={
         onPress
           ? onPress
-          : fixed
-            ? undefined
-            : (event) => {
-                const { latitude, longitude } = event.nativeEvent.coordinate;
-                setSelectedPosition({
-                  lat: latitude,
-                  lng: longitude,
-                });
-                onPositionSelected?.({
-                  lat: latitude,
-                  lng: longitude,
-                });
-              }
+          : (event) => {
+              const { latitude, longitude } = event.nativeEvent.coordinate;
+              setSelectedPosition({
+                lat: latitude,
+                lng: longitude,
+              });
+              onPositionSelected?.({
+                lat: latitude,
+                lng: longitude,
+              });
+            }
       }
       onPoiClick={
         onPress
           ? onPress
-          : fixed
-            ? undefined
-            : (event) => {
-                const { latitude, longitude } = event.nativeEvent.coordinate;
-                setSelectedPosition({
-                  lat: latitude,
-                  lng: longitude,
-                });
-                onPositionSelected?.({
-                  lat: latitude,
-                  lng: longitude,
-                });
-              }
+          : (event) => {
+              const { latitude, longitude } = event.nativeEvent.coordinate;
+              setSelectedPosition({
+                lat: latitude,
+                lng: longitude,
+              });
+              onPositionSelected?.({
+                lat: latitude,
+                lng: longitude,
+              });
+            }
       }
     >
       {selectedPosition && (

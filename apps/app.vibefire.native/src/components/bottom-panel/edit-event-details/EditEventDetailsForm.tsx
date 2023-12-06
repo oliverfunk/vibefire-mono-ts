@@ -31,7 +31,7 @@ export const EditEventForm = (props: {
   const [displayValidations, setDisplayValidations] = useState(false);
 
   useEffect(() => {
-    // poor detection of draft -> ready transition
+    // poor detection of draft -> ready transition, on images section
     if (
       editedEventData.state === "draft" &&
       currentEventData.state === "ready" &&

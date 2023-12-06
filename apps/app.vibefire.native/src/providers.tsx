@@ -2,6 +2,7 @@ import React, {
   memo,
   useEffect,
   useMemo,
+  useState,
   type FC,
   type ReactNode,
 } from "react";
@@ -64,24 +65,22 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
   const { getToken } = useAuth();
-  const queryClient = useMemo(() => new QueryClient(), []);
-  const trpcClient = useMemo(
-    () =>
-      trpc.createClient({
-        transformer: superjson,
-        links: [
-          httpBatchLink({
-            async headers() {
-              const authToken = await getToken();
-              return {
-                ...(!!authToken && { Authorization: authToken }),
-              };
-            },
-            url: trpcUrl,
-          }),
-        ],
-      }),
-    [getToken],
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      transformer: superjson,
+      links: [
+        httpBatchLink({
+          async headers() {
+            const authToken = await getToken();
+            return {
+              ...(!!authToken && { Authorization: authToken }),
+            };
+          },
+          url: trpcUrl,
+        }),
+      ],
+    }),
   );
 
   return (

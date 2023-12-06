@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { type DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import _ from "lodash";
 import { type PartialDeep } from "type-fest";
 
@@ -82,7 +81,7 @@ const _TimelineElementAdd = (props: {
             android={
               <DateTimeSelectionAndDisplayAnd
                 currentDate={isoNTZToUTCDateTime(selectedTimeIsoNTZ).toJSDate()}
-                onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                onChange={(selectedDate?: Date) => {
                   if (selectedDate) {
                     setSelectedTimeIsoNTZ(selectedDate.toISOString());
                   }
@@ -92,7 +91,7 @@ const _TimelineElementAdd = (props: {
             ios={
               <DateTimeSelectionAndDisplayIos
                 currentDate={isoNTZToUTCDateTime(selectedTimeIsoNTZ).toJSDate()}
-                onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                onChange={(selectedDate?: Date) => {
                   if (selectedDate) {
                     setSelectedTimeIsoNTZ(selectedDate.toISOString());
                   }

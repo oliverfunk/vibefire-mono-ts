@@ -21,8 +21,7 @@ import {
   type ClerkSignedInAuthContext,
 } from "@vibefire/services/clerk";
 import {
-  addEventToHidden,
-  addOrganiserToBlocked,
+  blockOrganiser,
   callAuthedEventsStarredOwnedDuringPeriods,
   callEventPublishedByIdForExternalUser,
   callEventsInBBoxDuringPeriodForUser,
@@ -34,6 +33,7 @@ import {
   getEventManagementFromEventIDByOrganiser,
   getEventsByOrganiser,
   getUserByAid,
+  hideEvent,
   starEvent,
   unstarEvent,
   updateEvent,
@@ -693,26 +693,17 @@ export class FaunaManager {
   }
 
   async hideEventForUser(userAc: ClerkSignedInAuthContext, eventId: string) {
-    // todo: cant hide ur own events
-    const _res = await addEventToHidden(
-      this.faunaClient,
-      userAc.userId,
-      eventId,
-    );
-    return true;
+    await hideEvent(this.faunaClient, userAc.userId, eventId);
   }
 
   async blockOrganiserForUser(
     userAc: ClerkSignedInAuthContext,
-    eventId: string,
+    organiserId: string,
   ) {
-    const _res = await addOrganiserToBlocked(
-      this.faunaClient,
-      userAc.userId,
-      eventId,
-    );
-    return true;
+    if (organiserId === userAc.userId) {
+      throw new Error("Cannot block yourself");
+    }
+    await blockOrganiser(this.faunaClient, userAc.userId, organiserId);
   }
-
   // #endregion
 }

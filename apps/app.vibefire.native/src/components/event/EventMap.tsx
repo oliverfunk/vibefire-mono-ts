@@ -1,6 +1,12 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Touchable, TouchableOpacity, View } from "react-native";
 import MapView, {
-  Callout,
   Marker,
   PROVIDER_GOOGLE,
   type Region,
@@ -17,7 +23,8 @@ import { EventIcon } from "~/components/SvgIcon";
 import { eventMapMapRefAtom } from "~/atoms";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useDisplayEvents } from "~/hooks/useMapQuery";
-import { navViewEvent } from "~/nav";
+import { navClearAll, navCreateEvent, navRefresh, navViewEvent } from "~/nav";
+import { SEARCH_HANDLE_HEIGHT } from "../bottom-panel/BottomPanelHandle";
 
 export class Try extends React.Component<
   {
@@ -138,58 +145,77 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
     [setMapQueryPositionAtomDbc],
   );
 
+  const [bottomPanelHeight] = useState(() => {
+    return SEARCH_HANDLE_HEIGHT * 1;
+  });
+
   return (
-    <MapView
-      ref={mvRef}
-      onMapReady={() => {
-        setEventMapMapRef(mvRef.current);
-      }}
-      className="h-full w-full"
-      provider={PROVIDER_GOOGLE}
-      showsUserLocation={true}
-      pitchEnabled={false}
-      zoomControlEnabled={false}
-      toolbarEnabled={false}
-      loadingEnabled={true}
-      onRegionChangeComplete={onMapRegionChange}
-      moveOnMarkerPress={false}
-      rotateEnabled={false}
-      maxZoomLevel={20}
-      minZoomLevel={3}
-    >
-      {displayEvents.length > 0 &&
-        displayEvents.map((event, index) => (
-          <Marker
-            key={event.id}
-            coordinate={{
-              latitude: event.location.position.lat,
-              longitude: event.location.position.lng,
-            }}
-            anchor={{ x: 0.5, y: 1 }} // bottom center
-            onPress={() => {
-              navViewEvent(event.id);
-              mvRef.current?.animateCamera({
-                center: {
-                  latitude: event.location.position.lat,
-                  longitude: event.location.position.lng,
-                },
-              });
-            }}
-          >
-            {/* <Callout
-              tooltip={true}
+    <>
+      <MapView
+        ref={mvRef}
+        onMapReady={() => {
+          setEventMapMapRef(mvRef.current);
+        }}
+        className="h-full w-full"
+        mapPadding={{
+          top: bottomPanelHeight,
+          right: 0,
+          bottom: bottomPanelHeight,
+          left: 0,
+        }}
+        provider={PROVIDER_GOOGLE}
+        showsUserLocation={true}
+        showsMyLocationButton={false}
+        pitchEnabled={false}
+        zoomControlEnabled={false}
+        toolbarEnabled={false}
+        loadingEnabled={true}
+        onRegionChangeComplete={onMapRegionChange}
+        moveOnMarkerPress={false}
+        rotateEnabled={false}
+        maxZoomLevel={20}
+        minZoomLevel={3}
+      >
+        {displayEvents.length > 0 &&
+          displayEvents.map((event, _index) => (
+            <Marker
+              key={event.id}
+              coordinate={{
+                latitude: event.location.position.lat,
+                longitude: event.location.position.lng,
+              }}
+              anchor={{ x: 0.5, y: 1 }} // bottom center
               onPress={() => {
                 navViewEvent(event.id);
+                mvRef.current?.animateCamera({
+                  center: {
+                    latitude: event.location.position.lat,
+                    longitude: event.location.position.lng,
+                  },
+                });
               }}
             >
-              <View className="h-28 w-56 rounded-md bg-black p-2">
-                <View className="h-full w-full bg-white" />
-              </View>
-            </Callout> */}
-            <EventIcon vibeIndex={event.vibe} />
-          </Marker>
-        ))}
-    </MapView>
+              {/* <Callout
+                tooltip={true}
+                onPress={() => {
+                  navViewEvent(event.id);
+                }}
+              >
+                <View className="h-28 w-56 rounded-md bg-black p-2">
+                  <View className="h-full w-full bg-white" />
+                </View>
+              </Callout> */}
+              <EventIcon vibeIndex={event.vibe} />
+            </Marker>
+          ))}
+      </MapView>
+      {/* <TouchableOpacity
+        className="absolute bottom-[100px] right-0 mb-4 mr-4 rounded-full bg-white p-2"
+        onPress={() => {
+          navCreateEvent();
+        }}
+      /> */}
+    </>
   );
 };
 

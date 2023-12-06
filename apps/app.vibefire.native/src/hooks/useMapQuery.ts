@@ -107,7 +107,9 @@ export const useDisplayEvents = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     mapPositionDateEventsQuery.status,
+    mapPositionDateEventsQuery.data?.length,
     upcomingEventsQuery.status,
+    upcomingEventsQuery.data?.length,
     setMapDisplayEventsInfo,
     setMapPositionDateEvents,
     setUpcomingEvents,

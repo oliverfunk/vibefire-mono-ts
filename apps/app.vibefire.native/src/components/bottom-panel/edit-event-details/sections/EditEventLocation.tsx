@@ -32,22 +32,18 @@ export const EditEventLocation = (props: FormSectionProps) => {
           inputRequired={!editedEventData.location?.position}
         >
           <View className="aspect-[4/4] border-2 border-slate-200">
-            <NativeViewGestureHandler>
-              <View>
-                <LocationSelectionMap
-                  initialPosition={
-                    (currentEventData.location?.position as CoordT) ?? undefined
-                  }
-                  onPositionInfo={(position, addressDescription) => {
-                    setEditedEventData(
-                      _.merge({}, editedEventData, {
-                        location: { position, addressDescription },
-                      } as typeof editedEventData),
-                    );
-                  }}
-                />
-              </View>
-            </NativeViewGestureHandler>
+            <LocationSelectionMap
+              initialPosition={
+                (currentEventData.location?.position as CoordT) ?? undefined
+              }
+              onPositionInfo={(position, addressDescription) => {
+                setEditedEventData(
+                  _.merge({}, editedEventData, {
+                    location: { position, addressDescription },
+                  } as typeof editedEventData),
+                );
+              }}
+            />
           </View>
         </FormTitleInput>
       </View>

@@ -122,7 +122,7 @@ export const unstarEvent = async (
 
 // export const removeFollowedEvent = async (
 
-export const addEventToHidden = async (
+export const hideEvent = async (
   faunaClient: Client,
   aid: string,
   eventId: string,
@@ -131,12 +131,14 @@ export const addEventToHidden = async (
   const q = fql`
     let u = Users.withAid(${aid}).first()
     let updatedHiddenEvents = u?.hiddenEvents.append(${eventId}).distinct()
-    u?.update({ hiddenEvents: updatedHiddenEvents })
+    // remove from followed events if it's there
+    let updatedFollowedEvents = u?.followedEvents.filter((eventId) => eventId != ${eventId}).distinct()
+    u?.update({ hiddenEvents: updatedHiddenEvents, followedEvents: updatedFollowedEvents })
   `;
   return await dfq(faunaClient, q);
 };
 
-export const addOrganiserToBlocked = async (
+export const blockOrganiser = async (
   faunaClient: Client,
   aid: string,
   organiserId: string,
