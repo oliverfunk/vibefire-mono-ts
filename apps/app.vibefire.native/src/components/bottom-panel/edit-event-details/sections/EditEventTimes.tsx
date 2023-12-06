@@ -78,30 +78,39 @@ export const EditEventTimes = (props: FormSectionProps) => {
           title="Starting time"
           inputRequired={!editedEventData.timeStartIsoNTZ}
         >
-          <View className="flex-row">
-            <PlatformSelect
-              android={
-                <DateTimeSelectionAndDisplayAnd
-                  currentDate={
-                    new Date(
-                      editedEventData.timeStartIsoNTZ ?? nowAsUTC().toISO()!,
-                    )
-                  }
-                  onChange={onTimeStartSelect}
-                />
-              }
-              ios={
-                <DateTimeSelectionAndDisplayIos
-                  currentDate={
-                    new Date(
-                      editedEventData.timeStartIsoNTZ ?? nowAsUTC().toISO()!,
-                    )
-                  }
-                  onChange={onTimeStartSelect}
-                />
-              }
-            />
-          </View>
+          {editedEventData.timeStartIsoNTZ ? (
+            <View className="flex-row">
+              <PlatformSelect
+                android={
+                  <DateTimeSelectionAndDisplayAnd
+                    currentDate={new Date(editedEventData.timeStartIsoNTZ)}
+                    onChange={onTimeStartSelect}
+                  />
+                }
+                ios={
+                  <DateTimeSelectionAndDisplayIos
+                    currentDate={new Date(editedEventData.timeStartIsoNTZ)}
+                    onChange={onTimeStartSelect}
+                  />
+                }
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              className="rounded-lg bg-slate-200 p-2"
+              onPress={() => {
+                setEditedEventData(
+                  _.merge({}, editedEventData, {
+                    timeStartIsoNTZ: nowAsUTC().startOf("hour").toISO()!,
+                  } as typeof editedEventData),
+                );
+              }}
+            >
+              <Text className="text-center text-lg text-black">
+                + Add starting time
+              </Text>
+            </TouchableOpacity>
+          )}
         </FormTitleInput>
       </View>
 
@@ -145,7 +154,7 @@ export const EditEventTimes = (props: FormSectionProps) => {
               onPress={() => {
                 setEditedEventData(
                   _.merge({}, editedEventData, {
-                    timeEndIsoNTZ: nowAsUTC().toISO()!,
+                    timeEndIsoNTZ: nowAsUTC().startOf("hour").toISO()!,
                   } as typeof editedEventData),
                 );
               }}

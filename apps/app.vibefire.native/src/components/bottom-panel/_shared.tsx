@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, type ReactNode } from "react";
 import {
   ActivityIndicator,
   Text,
@@ -124,26 +124,6 @@ export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
   </BottomSheetScrollView>
 );
 
-export const ScrollViewSheetWithHeader = (props: {
-  header: string;
-  children: React.ReactNode;
-}) => (
-  <BottomSheetScrollView
-    // automaticallyAdjustKeyboardInsets={true}
-    keyboardDismissMode={"on-drag"}
-    focusHook={useFocusEffect}
-  >
-    <LinearRedOrangeView className="flex-row p-4">
-      <View className="w-full bg-black p-4">
-        <Text className="text-center text-2xl font-bold text-white">
-          {props.header}
-        </Text>
-      </View>
-    </LinearRedOrangeView>
-    {props.children}
-  </BottomSheetScrollView>
-);
-
 export const BackNextButtons = (props: {
   onBackPressed: () => void;
   onNextPressed: () => void;
@@ -252,6 +232,24 @@ export const LinearRedOrangeView = (
   >
     {props.children}
   </LinearGradient>
+);
+
+export const JuicyWrapper = (props: { children: ReactNode }) => (
+  <View className="bg-black p-2">
+    <LinearRedOrangeView className="overflow-hidden rounded-lg p-2">
+      {props.children}
+    </LinearRedOrangeView>
+  </View>
+);
+
+export const SectionHeader = (props: {
+  text: string;
+  children?: ReactNode;
+}) => (
+  <View className="bg-black p-4">
+    <Text className="text-lg text-white">{props.text}</Text>
+    {props.children}
+  </View>
 );
 
 // export const SheetModal = (props: {}) => {

@@ -5,7 +5,6 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
 import { ErrorSheet, LoadingSheet } from "../_shared";
-import { CreateEventForm } from "./CreateEventForm";
 import { EditEventForm } from "./EditEventDetailsForm";
 
 const EditEventController = (props: { eventId: string; section: string }) => {
@@ -55,9 +54,5 @@ export const EditEventDetails = (props: { queryString: string }) => {
 
   const [eventId, section] = queryString.split(",", 2);
 
-  return eventId === "create" ? (
-    <CreateEventForm />
-  ) : (
-    <EditEventController eventId={eventId} section={section} />
-  );
+  return <EditEventController eventId={eventId} section={section} />;
 };

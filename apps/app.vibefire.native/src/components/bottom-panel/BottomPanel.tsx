@@ -10,25 +10,23 @@ import { useAtom } from "jotai";
 import { trpc } from "~/apis/trpc-client";
 import { mainBottomSheetPresentToggleAtom } from "~/atoms";
 import {
+  navCreateEventClose,
   navEditEventClose,
   navManageEventClose,
   navOwnEventsByOrganiserClose,
   navViewEventClose,
 } from "~/nav";
+import { type NavMainQueryParamsT } from "~/types";
+import { CreateEventForm } from "./create-event/CreateEvent";
 import { EditEventDetails } from "./edit-event-details/EditEventDetails";
 import { EventDetails } from "./EventDetails";
 import { EventsByOrganiser } from "./EventsByOrganiser";
 import { EventsListAndProfile } from "./EventsListAndProfile";
+import { HandleWithHeader } from "./HandleWithHeader";
 import { ManageEvent } from "./manage-event/ManageEvent";
 import { OrgDetails } from "./OrgDetails";
 
-export const BottomPanel = (props: {
-  eventID?: string;
-  orgID?: string;
-  manageEvent?: string;
-  eventsBy?: string;
-  editEvent?: string;
-}) => {
+export const BottomPanel = (props: NavMainQueryParamsT) => {
   const utils = trpc.useUtils();
 
   const mapQueryEventsListSheetRef = useRef<BottomSheetModal>(null);
@@ -37,6 +35,7 @@ export const BottomPanel = (props: {
   const manageEventSheetRef = useRef<BottomSheetModal>(null);
   const eventsByOrganiserSheetRef = useRef<BottomSheetModal>(null);
   const editEventDetailsSheetRef = useRef<BottomSheetModal>(null);
+  const createEventSheetRef = useRef<BottomSheetModal>(null);
 
   const [mainBottomSheetPresentToggle] = useAtom(
     mainBottomSheetPresentToggleAtom,
@@ -72,6 +71,12 @@ export const BottomPanel = (props: {
       eventsByOrganiserSheetRef.current?.present();
     } else {
       eventsByOrganiserSheetRef.current?.close();
+    }
+
+    if (props.create !== undefined) {
+      createEventSheetRef.current?.present();
+    } else {
+      createEventSheetRef.current?.close();
     }
   }, [props]);
 
@@ -123,9 +128,37 @@ export const BottomPanel = (props: {
         />
       )}
 
+      {/* Events by organiser */}
+      <BottomSheetModal
+        ref={eventsByOrganiserSheetRef}
+        // backdropComponent={backdrop}
+        handleComponent={(p) =>
+          HandleWithHeader({ header: "Your Events", ...p })
+        }
+        // enablePanDownToClose={true}
+        // enableHandlePanningGesture={true}
+        // enableContentPanningGesture={Platform.OS === "android" ? false : true}
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: "rgba(255,255,255,1)",
+        }}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={["80%"]}
+        onDismiss={async () => {
+          navOwnEventsByOrganiserClose();
+          await utils.invalidate();
+        }}
+      >
+        {props.eventsBy && <EventsByOrganiser />}
+      </BottomSheetModal>
+
       {/* Manage event */}
       <BottomSheetModal
         ref={manageEventSheetRef}
+        handleComponent={(p) =>
+          HandleWithHeader({ header: "Manage Event", ...p })
+        }
         // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
@@ -142,29 +175,13 @@ export const BottomPanel = (props: {
         {props.manageEvent && <ManageEvent queryString={props.manageEvent} />}
       </BottomSheetModal>
 
-      {/* Events by organiser */}
-      <BottomSheetModal
-        ref={eventsByOrganiserSheetRef}
-        // backdropComponent={backdrop}
-        stackBehavior="push"
-        backgroundStyle={{
-          backgroundColor: "rgba(255,255,255,1)",
-        }}
-        bottomInset={insets.bottom}
-        index={0}
-        snapPoints={["80%"]}
-        onDismiss={async () => {
-          navOwnEventsByOrganiserClose();
-          await utils.invalidate();
-        }}
-      >
-        {props.eventsBy && <EventsByOrganiser />}
-      </BottomSheetModal>
-
       {/* Event edit */}
       <BottomSheetModal
         ref={editEventDetailsSheetRef}
         // backdropComponent={backdrop}
+        handleComponent={(p) =>
+          HandleWithHeader({ header: "Edit Event", ...p })
+        }
         enableContentPanningGesture={Platform.OS === "android" ? false : true}
         enablePanDownToClose={true}
         stackBehavior="push"
@@ -180,6 +197,28 @@ export const BottomPanel = (props: {
         }}
       >
         {props.editEvent && <EditEventDetails queryString={props.editEvent} />}
+      </BottomSheetModal>
+
+      {/* Create edit */}
+      <BottomSheetModal
+        ref={createEventSheetRef}
+        // backdropComponent={backdrop}
+        handleComponent={(p) =>
+          HandleWithHeader({ header: "Create Event", ...p })
+        }
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: "rgba(255,255,255,1)",
+        }}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={["80%"]}
+        onDismiss={async () => {
+          navCreateEventClose();
+          await utils.invalidate();
+        }}
+      >
+        {props.create && <CreateEventForm />}
       </BottomSheetModal>
     </BottomSheetModalProvider>
   );

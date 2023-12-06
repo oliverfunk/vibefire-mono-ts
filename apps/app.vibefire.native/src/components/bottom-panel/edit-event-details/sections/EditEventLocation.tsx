@@ -1,6 +1,5 @@
 import { useLayoutEffect } from "react";
 import { View } from "react-native";
-import { NativeViewGestureHandler } from "react-native-gesture-handler";
 import _ from "lodash";
 
 import { type CoordT } from "@vibefire/models";
