@@ -7,14 +7,14 @@ import { type VibefireEventT } from "@vibefire/models";
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
 import { navEditEvent, navManageEvent } from "~/nav";
-import { ErrorSheet, LoadingSheet, ScrollViewSheetWithHeader } from "./_shared";
+import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const EventsByOrganiserView: React.FC<{
   events: PartialDeep<VibefireEventT>[];
 }> = ({ events }) => {
   return (
-    <ScrollViewSheetWithHeader header="Your Events">
-      <View className="flex-col items-center justify-center space-y-4 px-2 py-4">
+    <ScrollViewSheet>
+      <View className="flex-col items-center justify-center space-y-4 px-2">
         <EventsList
           events={events}
           noEventsMessage="You have made no events yet"
@@ -28,7 +28,7 @@ const EventsByOrganiserView: React.FC<{
           showStatusBanner={true}
         />
       </View>
-    </ScrollViewSheetWithHeader>
+    </ScrollViewSheet>
   );
 };
 

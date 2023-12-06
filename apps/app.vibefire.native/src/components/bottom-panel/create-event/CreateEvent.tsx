@@ -4,7 +4,7 @@ import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
 import { navEditEvent, navEditEventClose } from "~/nav";
-import { FormTitleTextInput, ScrollViewSheetWithHeader } from "../_shared";
+import { FormTitleTextInput, ScrollViewSheet, SectionHeader } from "../_shared";
 
 export const CreateEventForm = () => {
   const { close } = useBottomSheet();
@@ -18,14 +18,14 @@ export const CreateEventForm = () => {
   const createEventMS = trpc.events.createEvent.useMutation();
 
   return (
-    <ScrollViewSheetWithHeader header="Create Event">
-      <View className="w-full flex-col space-y-4 px-4 py-4">
-        <Text className="text-lg">
-          To get started, set an event title and press start. This will create a
+    <ScrollViewSheet>
+      <SectionHeader
+        text="To get started, set an event title and press start. This will create a
           draft event which you can edit to anytime! After your event is ready,
-          it can be published and shared.
-        </Text>
+          it can be published and shared."
+      />
 
+      <View className="w-full flex-col space-y-4 px-4 py-4">
         <View>
           <FormTitleTextInput
             title="Event title:"
@@ -39,7 +39,6 @@ export const CreateEventForm = () => {
           <TouchableOpacity
             className="rounded-lg border bg-white px-4 py-2"
             onPress={() => {
-              navEditEventClose();
               close();
             }}
           >
@@ -54,6 +53,7 @@ export const CreateEventForm = () => {
               const { id } = await createEventMS.mutateAsync({
                 title: createEventState.title,
               });
+              close();
               navEditEvent(id);
             }}
           >
@@ -61,6 +61,6 @@ export const CreateEventForm = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollViewSheetWithHeader>
+    </ScrollViewSheet>
   );
 };

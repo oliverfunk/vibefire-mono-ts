@@ -9,7 +9,7 @@ import { type CoordT, type VibefireEventT } from "@vibefire/models";
 import { trpc } from "~/apis/trpc-client";
 import { navEditEventEditSection, navManageEvent } from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
-import { BackNextButtons, ScrollViewSheetWithHeader } from "../_shared";
+import { BackNextButtons, ScrollViewSheet } from "../_shared";
 import { EditEventDescription } from "./sections/EditEventDescriptions";
 import { EditEventImages } from "./sections/EditEventImages";
 import { EditEventLocation } from "./sections/EditEventLocation";
@@ -57,7 +57,7 @@ export const EditEventForm = (props: {
   const updateEventMut = trpc.events.updateEvent.useMutation();
 
   return (
-    <ScrollViewSheetWithHeader header="Edit Details">
+    <ScrollViewSheet>
       <View className="pb-4">
         <View className="flex-col bg-black p-4">
           {currentEventData.state === "draft" ? (
@@ -196,6 +196,6 @@ export const EditEventForm = (props: {
           isLoading={updateEventMut.isLoading}
         />
       </View>
-    </ScrollViewSheetWithHeader>
+    </ScrollViewSheet>
   );
 };

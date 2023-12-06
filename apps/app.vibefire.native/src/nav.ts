@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 
-import { type EditEventFormSectionT } from "./types";
+import { NavMainQueryParamsT, type EditEventFormSectionT } from "./types";
 
 export const navClearAll = () => {
   router.setParams({
@@ -9,6 +9,7 @@ export const navClearAll = () => {
     manageEvent: undefined,
     orgId: undefined,
     eventsBy: undefined,
+    create: undefined,
   });
 };
 
@@ -43,8 +44,14 @@ export const navViewOrgClose = () => {
 };
 
 export const navCreateEvent = () => {
-  router.setParams({ editEvent: "create" });
+  router.setParams({ create: "event" });
 };
+export const navCreateEventClose = () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  router.setParams({ create: undefined });
+};
+
 export const navEditEvent = (eventId: string) => {
   router.setParams({ editEvent: eventId });
 };

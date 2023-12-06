@@ -22,7 +22,7 @@ import {
 } from "~/components/TimeSelection";
 import { trpc } from "~/apis/trpc-client";
 import { navManageEvent } from "~/nav";
-import { FormTextInput, ScrollViewSheetWithHeader } from "../_shared";
+import { FormTextInput, ScrollViewSheet } from "../_shared";
 
 const _TimelineElementView = (props: {
   timeIsoNTZ: string;
@@ -185,7 +185,7 @@ export const EditEventTimeline = (props: {
   }, [selectedEventTimeline]);
 
   return (
-    <ScrollViewSheetWithHeader header="Edit Timeline">
+    <ScrollViewSheet>
       {/* Main col */}
       <View className="pb-4">
         <View className="flex-col bg-black p-4 ">
@@ -281,6 +281,6 @@ export const EditEventTimeline = (props: {
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollViewSheetWithHeader>
+    </ScrollViewSheet>
   );
 };
