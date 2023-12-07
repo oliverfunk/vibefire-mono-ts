@@ -4,7 +4,6 @@ import { type PartialDeep } from "type-fest";
 import {
   CoordSchema,
   MapQuerySchema,
-  TimePeriodSchema,
   type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";

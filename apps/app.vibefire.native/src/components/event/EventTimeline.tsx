@@ -10,7 +10,7 @@ import {
 
 export const EventTimeline = (props: {
   timelineElements: VibefireEventTimelineElementT[];
-  timeStartIsoNTZ: string;
+  timeStartIsoNTZ?: string;
   timeEndIsoNTZ?: string | null;
   // styling
   elementSpacing?: number;
@@ -24,14 +24,17 @@ export const EventTimeline = (props: {
 
   const data = useMemo(() => {
     let rtn = [];
-    rtn.push({
-      ts: isoNTZToUTCDateTime(timeStartIsoNTZ).toUnixInteger(),
-      time: isoNTZToUTCDateTime(timeStartIsoNTZ).toFormat(
-        MONTH_DATE_TIME_LB_FORMAT,
-      ),
-      title: "Start",
-      dotColor: undefined,
-    });
+    if (timeStartIsoNTZ) {
+      rtn.push({
+        ts: isoNTZToUTCDateTime(timeStartIsoNTZ).toUnixInteger(),
+        time: isoNTZToUTCDateTime(timeStartIsoNTZ).toFormat(
+          MONTH_DATE_TIME_LB_FORMAT,
+        ),
+        title: "Start",
+        dotColor: "white",
+      });
+    }
+
     timelineElements.forEach((element) =>
       rtn.push({
         ts: isoNTZToUTCDateTime(element.timeIsoNTZ).toUnixInteger(),
@@ -39,9 +42,10 @@ export const EventTimeline = (props: {
           MONTH_DATE_TIME_LB_FORMAT,
         ),
         title: element.message,
-        dotColor: undefined,
+        dotColor: "white",
       }),
     );
+
     if (timeEndIsoNTZ) {
       rtn.push({
         ts: isoNTZToUTCDateTime(timeEndIsoNTZ).toUnixInteger(),
@@ -51,10 +55,23 @@ export const EventTimeline = (props: {
         title: "End",
         dotColor: "white",
       });
-      rtn = _.sortBy(rtn, ["ts"]);
-    } else {
-      rtn = _.sortBy(rtn, ["ts"]);
+    }
+
+    rtn = _.sortBy(rtn, ["ts"]);
+
+    if (!timeStartIsoNTZ) {
+      rtn.unshift({
+        ts: undefined,
+        time: "",
+        title: "Start",
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        dotColor: "#FF2400",
+      });
+    }
+    if (!timeEndIsoNTZ) {
       rtn.push({
+        ts: undefined,
         time: "",
         title: "End",
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

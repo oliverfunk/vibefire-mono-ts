@@ -49,11 +49,11 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
       eventDetailsDisplaySheetRef.current?.close();
     }
 
-    if (props.orgID !== undefined) {
-      orgDetailsDisplaySheetRef.current?.present();
-    } else {
-      orgDetailsDisplaySheetRef.current?.close();
-    }
+    // if (props.orgID !== undefined) {
+    //   orgDetailsDisplaySheetRef.current?.present();
+    // } else {
+    //   orgDetailsDisplaySheetRef.current?.close();
+    // }
 
     if (props.manageEvent !== undefined) {
       manageEventSheetRef.current?.present();

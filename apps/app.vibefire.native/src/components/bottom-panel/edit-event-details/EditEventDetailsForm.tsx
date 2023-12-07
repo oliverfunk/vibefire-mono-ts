@@ -58,66 +58,66 @@ export const EditEventForm = (props: {
 
   return (
     <ScrollViewSheet>
-      <View className="pb-4">
-        <View className="flex-col bg-black p-4">
-          {currentEventData.state === "draft" ? (
-            <Text className="text-lg text-white">
-              Get your event ready by setting the event details. Fields in{" "}
-              <Text className="text-[#ff3333]">red</Text> still need to be set.
-            </Text>
-          ) : (
-            <Text className="text-lg text-white">
-              &#x1F525; Your event is{" "}
-              <Text className="text-[#11ff11]">ready</Text>! You can manage it,
-              published it and share it now. Back will cancel changes.
-            </Text>
-          )}
-          {displayValidations && (
-            <View className="w-full flex-col space-y-2 pt-4">
-              {formValidations.map((error) => (
-                <Text key={error} className="text-lg text-[#ff3333]">
-                  {error}
-                </Text>
-              ))}
-            </View>
-          )}
-        </View>
-        {section === "description" && (
-          <EditEventDescription
-            currentEventData={currentEventData}
-            editedEventData={editedEventData}
-            setEditedEventData={setEditedEventData}
-            setMayProceed={setMayProceed}
-            setFormValidations={setFormValidations}
-          />
+      <View className="flex-col bg-black p-4">
+        {currentEventData.state === "draft" ? (
+          <Text className="text-lg text-white">
+            Get your event ready by setting the event details. Fields in{" "}
+            <Text className="text-[#ff3333]">red</Text> still need to be set.
+          </Text>
+        ) : (
+          <Text className="text-lg text-white">
+            &#x1F525; Your event is{" "}
+            <Text className="text-[#11ff11]">ready</Text>! You can manage it,
+            published it and share it now.
+          </Text>
         )}
-        {section === "location" && (
-          <EditEventLocation
-            currentEventData={currentEventData}
-            editedEventData={editedEventData}
-            setEditedEventData={setEditedEventData}
-            setMayProceed={setMayProceed}
-            setFormValidations={setFormValidations}
-          />
+        {displayValidations && (
+          <View className="w-full flex-col space-y-2 pt-4">
+            {formValidations.map((error) => (
+              <Text key={error} className="text-lg text-[#ff3333]">
+                {error}
+              </Text>
+            ))}
+          </View>
         )}
-        {section === "times" && (
-          <EditEventTimes
-            currentEventData={currentEventData}
-            editedEventData={editedEventData}
-            setEditedEventData={setEditedEventData}
-            setMayProceed={setMayProceed}
-            setFormValidations={setFormValidations}
-          />
-        )}
-        {section === "images" && (
-          <EditEventImages
-            currentEventData={currentEventData}
-            editedEventData={editedEventData}
-            setEditedEventData={setEditedEventData}
-            setMayProceed={setMayProceed}
-            setFormValidations={setFormValidations}
-          />
-        )}
+      </View>
+      {section === "description" && (
+        <EditEventDescription
+          currentEventData={currentEventData}
+          editedEventData={editedEventData}
+          setEditedEventData={setEditedEventData}
+          setMayProceed={setMayProceed}
+          setFormValidations={setFormValidations}
+        />
+      )}
+      {section === "location" && (
+        <EditEventLocation
+          currentEventData={currentEventData}
+          editedEventData={editedEventData}
+          setEditedEventData={setEditedEventData}
+          setMayProceed={setMayProceed}
+          setFormValidations={setFormValidations}
+        />
+      )}
+      {section === "times" && (
+        <EditEventTimes
+          currentEventData={currentEventData}
+          editedEventData={editedEventData}
+          setEditedEventData={setEditedEventData}
+          setMayProceed={setMayProceed}
+          setFormValidations={setFormValidations}
+        />
+      )}
+      {section === "images" && (
+        <EditEventImages
+          currentEventData={currentEventData}
+          editedEventData={editedEventData}
+          setEditedEventData={setEditedEventData}
+          setMayProceed={setMayProceed}
+          setFormValidations={setFormValidations}
+        />
+      )}
+      <View className="py-4 pb-6">
         <BackNextButtons
           nextText={section === "images" ? "Manage" : "Next"}
           nextAfterLoading={true}
@@ -164,6 +164,7 @@ export const EditEventForm = (props: {
                 timeEndIsoNTZ: editedEventData.timeEndIsoNTZ,
                 bannerImageId: editedEventData.images?.banner,
                 additionalImageIds: editedEventData.images?.additional,
+                timeline: editedEventData.timeline,
               });
               dataRefetch();
             }
