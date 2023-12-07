@@ -235,7 +235,7 @@ export const LinearRedOrangeView = (
 );
 
 export const JuicyWrapper = (props: { children: ReactNode }) => (
-  <View className="bg-black p-2">
+  <View className="w-full bg-black p-2">
     <LinearRedOrangeView className="overflow-hidden rounded-lg p-2">
       {props.children}
     </LinearRedOrangeView>

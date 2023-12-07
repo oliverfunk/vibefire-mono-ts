@@ -19,7 +19,7 @@ export const uberRequestToEventURL = (
 ) => {
   const { lat, lng } = event.location.position;
   const { addressDescription } = event.location;
-  const query = encodeQueryParameters({
+  const queryParams = encodeQueryParameters({
     client_id: uberClientID,
     action: "setPickup",
     pickup: "my_location",
@@ -27,6 +27,28 @@ export const uberRequestToEventURL = (
     "dropoff[longitude]": lng.toString(),
     "dropoff[nickname]": addressDescription,
   });
-  const url = `https://m.uber.com/ul/?${query}`;
+  const url = `https://m.uber.com/ul/?${queryParams}`;
+  return url;
+};
+
+export const googleMapsOpenEventLocationURL = (event: VibefireEventT) => {
+  const { lat, lng } = event.location.position;
+  const { addressDescription } = event.location;
+  const queryParams = encodeQueryParameters({
+    api: "1",
+    query: `${lat},${lng}`,
+  });
+  const url = `https://www.google.com/maps/search/?${queryParams}`;
+  return url;
+};
+
+export const appleMapsOpenEventLocationURL = (event: VibefireEventT) => {
+  const { lat, lng } = event.location.position;
+  const { addressDescription } = event.location;
+  const queryParams = encodeQueryParameters({
+    ll: `${lat},${lng}`,
+    q: `${addressDescription}`,
+  });
+  const url = `http://maps.apple.com/?${queryParams}`;
   return url;
 };

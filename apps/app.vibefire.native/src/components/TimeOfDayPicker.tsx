@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
@@ -33,11 +33,6 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
         width={width}
         height={height}
         defaultIndex={todToIndexMapping[selectedTod]}
-        // mode="parallax"
-        // modeConfig={{
-        //   parallaxScrollingOffset: 90,
-        //   parallaxScrollingScale: 0.9,
-        // }}
         loop={false}
         overscrollEnabled={false}
         data={periods}
@@ -55,12 +50,31 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
           );
         }}
       />
-      <View className="absolute right-1">
+      <Pressable
+        className="absolute right-1"
+        onPress={() => {
+          // the ai wrote this
+          setSelectedTod(
+            _.invert(todToIndexMapping)[
+              (todToIndexMapping[selectedTod] + 1) % 5
+            ] as TimeOfDayT,
+          );
+        }}
+      >
         <MaterialIcons name="navigate-next" size={20} color="black" />
-      </View>
-      <View className="absolute left-1">
+      </Pressable>
+      <Pressable
+        className="absolute left-1"
+        onPress={() => {
+          setSelectedTod(
+            _.invert(todToIndexMapping)[
+              (todToIndexMapping[selectedTod] + 4) % 5
+            ] as TimeOfDayT,
+          );
+        }}
+      >
         <MaterialIcons name="navigate-before" size={20} color="black" />
-      </View>
+      </Pressable>
     </View>
   );
 };

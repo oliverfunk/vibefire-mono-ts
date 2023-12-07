@@ -374,6 +374,10 @@ export class FaunaManager {
     }
 
     // timeline
+    console.log(
+      "setTimeline.length",
+      JSON.stringify(setTimeline.length, null, 2),
+    );
     if (setTimeline.length > 0) {
       const updateTimeline: VibefireEventTimelineElementT[] = [];
       for (const el of setTimeline) {
@@ -384,6 +388,7 @@ export class FaunaManager {
         tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
         updateTimeline.push(tle);
       }
+      console.log("updateTimeline", JSON.stringify(updateTimeline, null, 2));
       updateData.timeline = updateTimeline;
     }
 

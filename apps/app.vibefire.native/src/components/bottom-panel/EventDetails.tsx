@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   Modal,
+  Platform,
   Pressable,
   Text,
   TouchableOpacity,
@@ -24,6 +25,8 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 import {
+  appleMapsOpenEventLocationURL,
+  googleMapsOpenEventLocationURL,
   isoNTZToUTCDateTime,
   organisationProfileImagePath,
   uberRequestToEventURL,
@@ -58,6 +61,72 @@ const ThreeDotsMenuOption = (props: {
       <Text className="text-base">{label}</Text>
       <View className="flex-auto" />
       {icon}
+    </TouchableOpacity>
+  );
+};
+
+const MapsModalMenu = (props: { event: VibefireEventT }) => {
+  const { event } = props;
+
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const openDropdown = (): void => {
+    setMenuVisible(true);
+  };
+
+  const onOpenInGoogleMaps = useCallback(async () => {
+    const url = googleMapsOpenEventLocationURL(event);
+    try {
+      await Linking.openURL(url);
+    } catch (error: unknown) {
+      console.warn(JSON.stringify(error, null, 2));
+    }
+  }, [event]);
+
+  const onOpenInAppleMaps = useCallback(async () => {
+    const url = appleMapsOpenEventLocationURL(event);
+    try {
+      await Linking.openURL(url);
+    } catch (error: unknown) {
+      console.warn(JSON.stringify(error, null, 2));
+    }
+  }, [event]);
+
+  return (
+    <TouchableOpacity
+      onPress={async () => {
+        if (Platform.OS === "android") {
+          await onOpenInGoogleMaps();
+          return;
+        }
+        menuVisible ? setMenuVisible(false) : openDropdown();
+      }}
+    >
+      <Modal visible={menuVisible} transparent animationType="fade">
+        <Pressable
+          className="h-full w-full items-center justify-center"
+          onPress={() => setMenuVisible(false)}
+        >
+          <View className="flex-col space-y-4 overflow-hidden rounded bg-white p-4">
+            <Text className="text-xl font-bold">Open in maps</Text>
+            <Text className="text-base">
+              {"Open the event's location in another maps app"}
+            </Text>
+            <View className="flex-col items-end space-y-2">
+              <TouchableOpacity onPress={onOpenInGoogleMaps}>
+                <Text className="text-base font-bold">Google Maps</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onOpenInAppleMaps}>
+                <Text className="text-base font-bold">Apple Maps</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
+      <View className="flex-col items-center justify-between">
+        <FontAwesome5 name="map" size={20} color="white" />
+        <Text className="text-sm text-white">Maps</Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -259,10 +328,6 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
     [event.images],
   );
 
-  const onMapsPressed = useCallback(() => {
-    // todo
-  }, []);
-
   const onShareEvent = useShareEventLink(event);
 
   const onGetToEvent = useCallback(async () => {
@@ -348,14 +413,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
       <View className="flex-col space-y-2 px-2">
         {/* Actions */}
         <View className="mt-2 h-10 flex-row justify-around">
-          <TouchableOpacity
-            className="flex-col items-center justify-between"
-            onPress={onMapsPressed}
-          >
-            <FontAwesome5 name="map" size={20} color="white" />
-            <Text className="text-sm text-white">Maps</Text>
-          </TouchableOpacity>
-
+          <MapsModalMenu event={event} />
           <TouchableOpacity
             className="flex-col items-center justify-between"
             onPress={onGetToEvent}
@@ -401,9 +459,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
               onPress={onMoveToEvent}
             >
               <FontAwesome5 name="clock" size={20} color="black" />
-              <Text className="text-sm text-black">
-                Show event start on map
-              </Text>
+              <Text className="text-sm text-black">Open event time on map</Text>
             </TouchableOpacity>
           </View>
         )}

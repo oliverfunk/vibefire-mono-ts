@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
-import { navEditEvent, navEditEventClose } from "~/nav";
+import { navEditEvent } from "~/nav";
 import { FormTitleTextInput, ScrollViewSheet, SectionHeader } from "../_shared";
 
 export const CreateEventForm = () => {
