@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Image from "next/image";
 
 import { Navbar } from "~/components/navbar";
-import iPhoneMockImage from "~/public/iPhone14-Vibefire-MU.png";
+import iPhoneMockImage from "~/public/ex.png";
 
 const Home: NextPage = () => {
   return (
