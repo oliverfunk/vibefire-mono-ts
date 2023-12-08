@@ -9,8 +9,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { type VibefireUserT } from "@vibefire/models";
 import {
   mapPositionDateEventsQueryResultAtom,
-  selectedDateDTAtom,
-  todayDTAtom,
   upcomingEventsQueryResultAtom,
 } from "@vibefire/shared-state";
 
@@ -23,15 +21,9 @@ import {
   SEARCH_HANDLE_HEIGHT,
 } from "~/components/bottom-panel/BottomPanelHandle";
 import { EventsList } from "~/components/event/EventList";
-import { trpc } from "~/apis/trpc-client";
 import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
-import {
-  LinearRedOrangeView,
-  LoadingSheet,
-  ScrollViewSheet,
-  useSheetBackdrop,
-} from "./_shared";
+import { LinearRedOrangeView, LoadingSheet, ScrollViewSheet } from "./_shared";
 
 const _Profile = () => {
   const user = useAtomValue(userAtom);
@@ -116,7 +108,7 @@ const _Profile = () => {
                 </View>
               </View>
 
-              <View className="w-full flex-col">
+              {/* <View className="w-full flex-col">
                 <Text className="ml-4">Phone number</Text>
                 <View className="rounded-lg bg-slate-200 py-2">
                   {userInfo.phoneNumber ? (
@@ -135,37 +127,39 @@ const _Profile = () => {
                     </TouchableOpacity>
                   )}
                 </View>
-              </View>
+              </View> */}
             </View>
 
-            <LinearRedOrangeView className="w-full flex-col space-y-4 px-6 py-4">
-              <Text className="text-center text-xl text-white">
-                Create or view your events
-              </Text>
-              <View className="flex-row items-center justify-around">
-                <TouchableOpacity
-                  className="rounded-lg bg-black px-4 py-4"
-                  onPress={() => {
-                    navCreateEvent();
-                  }}
-                >
-                  <Text className="text-lg font-bold text-white">
-                    Create event
-                  </Text>
-                </TouchableOpacity>
+            <View className="w-full px-2">
+              <LinearRedOrangeView className="flex-col space-y-10 overflow-hidden rounded-lg px-2 py-10">
+                <Text className="text-center text-xl text-white">
+                  View your previous events or create new ones from here
+                </Text>
+                <View className="flex-row items-center justify-around">
+                  <TouchableOpacity
+                    className="rounded-lg bg-black px-4 py-4"
+                    onPress={() => {
+                      navCreateEvent();
+                    }}
+                  >
+                    <Text className="text-lg font-bold text-white">
+                      Create event
+                    </Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  className="rounded-lg bg-black px-4 py-4"
-                  onPress={() => {
-                    navOwnEventsByOrganiser();
-                  }}
-                >
-                  <Text className="text-lg font-bold text-white">
-                    Your events
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </LinearRedOrangeView>
+                  <TouchableOpacity
+                    className="rounded-lg bg-black px-4 py-4"
+                    onPress={() => {
+                      navOwnEventsByOrganiser();
+                    }}
+                  >
+                    <Text className="text-lg font-bold text-white">
+                      Your events
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </LinearRedOrangeView>
+            </View>
 
             <View className="flex-row pt-20">
               <SignOut />

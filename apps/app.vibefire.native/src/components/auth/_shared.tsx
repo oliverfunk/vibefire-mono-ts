@@ -3,7 +3,9 @@ import { Text, TouchableOpacity, View } from "react-native";
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { useAuth, useOAuth, type UseOAuthFlowParams } from "@clerk/clerk-expo";
+import { useSetAtom } from "jotai";
 
+import { userAtom } from "~/atoms";
 import { useWarmUpBrowser } from "~/hooks/useWarmUpBrowser";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -16,6 +18,8 @@ export const AuthButton = (props: {
   classNameText?: string;
 }) => {
   useWarmUpBrowser();
+
+  const setUser = useSetAtom(userAtom);
 
   const { signOut } = useAuth();
 
@@ -30,23 +34,22 @@ export const AuthButton = (props: {
 
   const onPress = useCallback(async () => {
     try {
+      setUser({ state: "loading" });
+
       await signOut();
 
       const { createdSessionId, setActive } = await startOAuthFlow({
         redirectUrl: oauthRedirectUrl,
       });
-
-      if (createdSessionId) {
-        if (!setActive) {
-          return;
-        }
-
+      if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
+        return;
       }
     } catch (err) {
       console.error("OAuth error", err);
     }
-  }, [oauthRedirectUrl, signOut, startOAuthFlow]);
+    setUser({ state: "unauthenticated", anonId: "anon" });
+  }, [oauthRedirectUrl, setUser, signOut, startOAuthFlow]);
 
   return (
     <TouchableOpacity

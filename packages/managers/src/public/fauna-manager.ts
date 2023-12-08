@@ -665,8 +665,16 @@ export class FaunaManager {
 
   async getUserInfo(userAc: ClerkSignedInAuthContext) {
     let res = await getUserByAid(this.faunaClient, userAc.userId);
+    console.log("getting user 1", JSON.stringify(res, null, 2));
     if (!res) {
-      throw new Error("User not found");
+      console.log("not found, waiting");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      res = await getUserByAid(this.faunaClient, userAc.userId);
+      console.log("getting user 2", JSON.stringify(res, null, 2));
+      if (!res) {
+        console.log("not found, fail");
+        throw new Error("User not found");
+      }
     }
     res = tbValidator(VibefireUserSchema)(res);
     return res;
