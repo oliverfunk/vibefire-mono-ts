@@ -142,7 +142,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
         }}
-        enableContentPanningGesture={Platform.OS === "android" ? false : true}
+        enableContentPanningGesture={false}
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
@@ -160,7 +160,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Manage Event", ...p })
         }
-        enableContentPanningGesture={Platform.OS === "android" ? false : true}
+        enableContentPanningGesture={false}
         // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
@@ -184,7 +184,8 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Edit Event", ...p })
         }
-        enableContentPanningGesture={Platform.OS === "android" ? false : true}
+        keyboardBehavior="interactive"
+        enableContentPanningGesture={false}
         enablePanDownToClose={true}
         stackBehavior="push"
         backgroundStyle={{
@@ -208,6 +209,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Create Event", ...p })
         }
+        enableContentPanningGesture={false}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",

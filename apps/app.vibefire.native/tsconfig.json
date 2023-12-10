@@ -5,7 +5,10 @@
     "paths": {
       "~/*": [
         "./src/*"
-      ]
+      ],
+      "#/*": [
+        "./assets/*"
+      ],
     },
     "types": [
       "@types/jest",

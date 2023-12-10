@@ -1,6 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Text, View } from "react-native";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
+import { Image } from "expo-image";
+import {
+  useBottomSheet,
+  type BottomSheetScrollViewMethods,
+} from "@gorhom/bottom-sheet";
 import _ from "lodash";
 import { type PartialDeep } from "type-fest";
 
@@ -9,7 +13,7 @@ import { type CoordT, type VibefireEventT } from "@vibefire/models";
 import { trpc } from "~/apis/trpc-client";
 import { navEditEventEditSection, navManageEvent } from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
-import { BackNextButtons, ScrollViewSheet } from "../_shared";
+import { BackNextButtons, ScrollViewSheetWithRef } from "../_shared";
 import { EditEventDescription } from "./sections/EditEventDescriptions";
 import { EditEventImages } from "./sections/EditEventImages";
 import { EditEventLocation } from "./sections/EditEventLocation";
@@ -24,6 +28,8 @@ export const EditEventForm = (props: {
   const { eventId, currentEventData, dataRefetch, section } = props;
 
   const { close } = useBottomSheet();
+
+  const formRef = useRef<BottomSheetScrollViewMethods>(null);
 
   const [editedEventData, setEditedEventData] = useState(currentEventData);
   const isEdited = !_.isEqual(currentEventData, editedEventData);
@@ -57,7 +63,7 @@ export const EditEventForm = (props: {
   const updateEventMut = trpc.events.updateEvent.useMutation();
 
   return (
-    <ScrollViewSheet>
+    <ScrollViewSheetWithRef ref={formRef}>
       <View className="flex-col bg-black p-4">
         {currentEventData.state === "draft" ? (
           <Text className="text-lg text-white">
@@ -67,8 +73,7 @@ export const EditEventForm = (props: {
         ) : (
           <Text className="text-lg text-white">
             &#x1F525; Your event is{" "}
-            <Text className="text-[#11ff11]">ready</Text>! You can manage it,
-            published it and share it now.
+            <Text className="text-[#11ff11]">ready</Text>!
           </Text>
         )}
         {displayValidations && (
@@ -140,6 +145,11 @@ export const EditEventForm = (props: {
                 navEditEventEditSection(eventId, "times");
                 break;
             }
+            formRef.current?.scrollTo({
+              x: 0,
+              y: 0,
+              animated: false,
+            });
           }}
           onCancelPressed={() => {
             setMayProceed(false);
@@ -189,6 +199,11 @@ export const EditEventForm = (props: {
                   break;
               }
             }
+            formRef.current?.scrollTo({
+              x: 0,
+              y: 0,
+              animated: false,
+            });
           }}
           mayProceed={mayProceedForm}
           // sets the background to orange for goto manage
@@ -196,7 +211,16 @@ export const EditEventForm = (props: {
           isEdited={isEdited}
           isLoading={updateEventMut.isLoading}
         />
+        <View className="items-center p-10">
+          <Image
+            alt="Vibefire Event icon"
+            contentFit={"contain"}
+            className="aspect-[4/4] w-44"
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            source={require("#/images/a.svg")}
+          />
+        </View>
       </View>
-    </ScrollViewSheet>
+    </ScrollViewSheetWithRef>
   );
 };

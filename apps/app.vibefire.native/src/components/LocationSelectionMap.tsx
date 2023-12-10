@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import Toast from "react-native-toast-message";
 
 import { type CoordT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { useSetMapCameraMarkerPositionElseUserLocation } from "~/hooks/useSetMapCameraMarkerPositionElseUserLocation";
+import { useLocationOnce } from "~/hooks/useLocation";
 
 export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;
@@ -16,13 +17,57 @@ export const LocationSelectionMap = (props: {
     props;
 
   const mvRef = useRef<MapView>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
     initialPosition,
   );
 
-  const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
+  const { location, locPermDeniedMsg } = useLocationOnce();
+  useEffect(() => {
+    if (!mapReady) {
+      return;
+    }
 
+    if (mvRef.current === null) {
+      return;
+    }
+
+    if (initialPosition) {
+      mvRef.current.setCamera({
+        center: {
+          latitude: initialPosition.lat,
+          longitude: initialPosition.lng,
+        },
+        zoom: 16,
+      });
+    } else {
+      if (location === null) {
+        return;
+      }
+      mvRef.current.setCamera({
+        center: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
+        zoom: 16,
+      });
+    }
+  }, [initialPosition, location, mapReady]);
+
+  useEffect(() => {
+    if (locPermDeniedMsg !== null) {
+      Toast.show({
+        type: "error",
+        text1: "Could not get your location",
+        text2: locPermDeniedMsg,
+        position: "bottom",
+        bottomOffset: 100,
+      });
+    }
+  }, [locPermDeniedMsg]);
+
+  const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
   useEffect(() => {
     if (!selectedPosition) {
       return;
@@ -39,13 +84,14 @@ export const LocationSelectionMap = (props: {
     void q();
   }, [selectedPosition]);
 
-  useSetMapCameraMarkerPositionElseUserLocation(mvRef, selectedPosition);
-
   return (
     <MapView
       ref={mvRef}
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
+      onMapReady={() => {
+        setMapReady(true);
+      }}
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
