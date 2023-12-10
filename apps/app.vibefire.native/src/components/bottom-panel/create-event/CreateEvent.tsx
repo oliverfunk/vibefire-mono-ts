@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { Image } from "expo-image";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
@@ -20,9 +21,9 @@ export const CreateEventForm = () => {
   return (
     <ScrollViewSheet>
       <SectionHeader
-        text="To get started, set an event title and press start. This will create a
-          draft event which you can edit to anytime! After your event is ready,
-          it can be published and shared."
+        text="To create an event, set the title and press start. This will create a
+          draft which you can edit anytime. After your event is ready,
+          publish and share it!"
       />
 
       <View className="w-full flex-col space-y-4 px-4 py-4">
@@ -59,6 +60,15 @@ export const CreateEventForm = () => {
           >
             <Text className="text-xl text-white">Start</Text>
           </TouchableOpacity>
+        </View>
+        <View className="items-center p-10">
+          <Image
+            alt="Vibefire Event icon"
+            contentFit={"contain"}
+            className="aspect-[4/4] w-44"
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            source={require("#/images/a.svg")}
+          />
         </View>
       </View>
     </ScrollViewSheet>

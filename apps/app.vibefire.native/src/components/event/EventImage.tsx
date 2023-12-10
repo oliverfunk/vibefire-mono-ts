@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Image, type ImageProps } from "expo-image";
 
 import { imgUrl } from "~/apis/base-urls";
@@ -14,17 +14,27 @@ export const StandardImage = ({
   cn: ImageProps["className"];
   source: ImageProps["source"];
   alt: ImageProps["alt"];
-}) => (
-  <Image
-    className={cn}
-    source={source}
-    alt={alt}
-    cachePolicy={"none"}
-    placeholder={blurhash}
-    contentFit="cover"
-    transition={500}
-  />
-);
+}) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  return (
+    <Image
+      className={cn}
+      source={source}
+      alt={alt}
+      cachePolicy={"memory"}
+      placeholder={blurhash}
+      onLoadStart={() => {
+        setIsLoading(true);
+      }}
+      onLoadEnd={() => {
+        setIsLoading(false);
+      }}
+      contentFit="cover"
+      transition={500}
+    />
+  );
+};
 
 export const EventImage = ({
   eventId,

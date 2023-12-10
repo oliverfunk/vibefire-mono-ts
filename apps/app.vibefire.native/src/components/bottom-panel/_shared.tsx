@@ -1,4 +1,9 @@
-import React, { useCallback, useEffect, type ReactNode } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  type ReactNode,
+} from "react";
 import {
   ActivityIndicator,
   Text,
@@ -12,6 +17,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import {
   BottomSheetBackdrop,
   BottomSheetScrollView,
+  BottomSheetScrollViewMethods,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
@@ -66,6 +72,7 @@ export const FormTitleInput = (props: {
         className={`px-4 text-lg ${props.inputRequired && "text-[#ff1111]"}`}
       >
         {props.title}
+        {props.inputRequired && "*"}
       </Text>
       <View>{props.children}</View>
     </View>
@@ -123,6 +130,20 @@ export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
     {props.children}
   </BottomSheetScrollView>
 );
+
+const _ScrollViewSheetWithRef = (
+  props: { children: React.ReactNode },
+  ref: React.Ref<BottomSheetScrollViewMethods>,
+) => (
+  <BottomSheetScrollView
+    ref={ref}
+    automaticallyAdjustKeyboardInsets={true}
+    focusHook={useFocusEffect}
+  >
+    {props.children}
+  </BottomSheetScrollView>
+);
+export const ScrollViewSheetWithRef = forwardRef(_ScrollViewSheetWithRef);
 
 export const BackNextButtons = (props: {
   onBackPressed: () => void;

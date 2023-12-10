@@ -35,6 +35,7 @@ export const useSetMapCameraMarkerPositionElseUserLocation = (
       }, 100);
     }
   }, [location, mapRef, markerCoord]);
+
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
       Toast.show({

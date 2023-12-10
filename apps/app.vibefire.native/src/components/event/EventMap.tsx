@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Touchable, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
@@ -15,7 +8,6 @@ import Toast from "react-native-toast-message";
 import { ErrorBoundary, type ErrorBoundaryProps } from "expo-router";
 import { useSetAtom } from "jotai";
 
-import { type CoordT } from "@vibefire/models";
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
 import { debounce } from "~/utils/debounce";
@@ -23,7 +15,7 @@ import { EventIcon } from "~/components/SvgIcon";
 import { eventMapMapRefAtom } from "~/atoms";
 import { useLocationOnce } from "~/hooks/useLocation";
 import { useDisplayEvents } from "~/hooks/useMapQuery";
-import { navClearAll, navCreateEvent, navRefresh, navViewEvent } from "~/nav";
+import { navViewEvent } from "~/nav";
 import { SEARCH_HANDLE_HEIGHT } from "../bottom-panel/BottomPanelHandle";
 
 export class Try extends React.Component<
@@ -60,8 +52,9 @@ export class Try extends React.Component<
   }
 }
 
-const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
+const EventMapComponent = () => {
   const mvRef = useRef<MapView>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const setEventMapMapRef = useSetAtom(eventMapMapRefAtom);
 
@@ -72,39 +65,25 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
 
   const { location, locPermDeniedMsg } = useLocationOnce();
 
-  const displayEvents = useDisplayEvents();
-
   //#region effects
   useEffect(() => {
-    if (location !== null) {
-      void mvRef.current?.getCamera().then((camera) => {
-        if (camera !== null) {
-          mvRef.current?.setCamera({
-            center: {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            },
-            zoom: 14,
-          });
-        }
-      });
+    if (!mapReady) {
+      return;
     }
-
-    // const a = mvRef.current;
-
-    // if (a !== null && location !== null) {
-    //   void (async () => {
-    //     const _camera = await a.getCamera();
-    //     a.setCamera({
-    //       center: {
-    //         latitude: location.coords.latitude,
-    //         longitude: location.coords.longitude,
-    //       },
-    //       zoom: 14,
-    //     });
-    //   })();
-    // }
-  }, [location]);
+    if (mvRef.current === null) {
+      return;
+    }
+    if (location === null) {
+      return;
+    }
+    mvRef.current.setCamera({
+      center: {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      },
+      zoom: 16,
+    });
+  }, [location, mapReady]);
 
   useEffect(() => {
     if (locPermDeniedMsg !== null) {
@@ -149,11 +128,14 @@ const EventMapComponent = (props: { initialMapPosition?: CoordT }) => {
     return SEARCH_HANDLE_HEIGHT * 1;
   });
 
+  const displayEvents = useDisplayEvents();
+
   return (
     <>
       <MapView
         ref={mvRef}
         onMapReady={() => {
+          setMapReady(true);
           setEventMapMapRef(mvRef.current);
         }}
         className="h-full w-full"

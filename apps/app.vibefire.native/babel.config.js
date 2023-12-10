@@ -27,7 +27,7 @@ module.exports = function (api) {
       ],
       "@babel/plugin-proposal-export-namespace-from",
       "react-native-reanimated/plugin",
-      ["module-resolver", { alias: { "~": "./src" } }],
+      ["module-resolver", { alias: { "~": "./src", "#": "./assets" } }],
     ],
   };
 };
