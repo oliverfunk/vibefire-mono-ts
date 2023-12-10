@@ -6,8 +6,8 @@ const PrivacyPolicyPage: NextPage = () => {
   return (
     <>
       <Navbar active="privacy" />
-      <div className="mx-5 mt-10 flex flex-col items-center">
-        <h1 className="text-4xl font-bold">{"Privacy Policy"}</h1>
+      <div className="flex flex-col items-center p-5">
+        <h1 className="text-4xl font-bold">Privacy Policy</h1>
         <div className="mx-10 mt-10 w-auto flex-col gap-5 md:w-3/6">
           <p>
             This privacy policy governs the manner in which Vibefire Limited

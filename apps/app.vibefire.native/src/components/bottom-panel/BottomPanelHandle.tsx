@@ -33,7 +33,7 @@ import { selectedDateDTAtom } from "@vibefire/shared-state";
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
 import { profileSelectedAtom } from "~/atoms";
 
-export const SEARCH_HANDLE_HEIGHT = 70;
+export const SEARCH_HANDLE_HEIGHT = 75;
 
 const DatePicker = () => {
   const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
@@ -189,28 +189,11 @@ const transformOrigin = ({ x, y }, ...transformations) => {
   ];
 };
 
-interface HandleProps extends BottomSheetHandleProps {
-  style?: StyleProp<ViewStyle>;
-}
-
-const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
+const AnimatedArrow = ({ animatedIndex }: BottomSheetHandleProps) => {
   const indicatorTransformOriginY = useDerivedValue(() =>
-    interpolate(animatedIndex.value, [0, 1, 2], [-1, 0, 1], Extrapolate.CLAMP),
+    interpolate(animatedIndex.value, [0, 1], [-1, 1], Extrapolate.CLAMP),
   );
 
-  const containerStyle = useMemo(() => [style], [style]);
-  const containerAnimatedStyle = useAnimatedStyle(() => {
-    const borderTopRadius = interpolate(
-      animatedIndex.value,
-      [1, 2],
-      [20, 0],
-      Extrapolate.CLAMP,
-    );
-    return {
-      borderTopLeftRadius: borderTopRadius,
-      borderTopRightRadius: borderTopRadius,
-    };
-  });
   const leftIndicatorStyle = useMemo(
     () => ({
       ...styles.indicator,
@@ -221,8 +204,8 @@ const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
   const leftIndicatorAnimatedStyle = useAnimatedStyle(() => {
     const leftIndicatorRotate = interpolate(
       animatedIndex.value,
-      [0, 1, 2],
-      [toRad(-30), 0, toRad(30)],
+      [0, 1],
+      [toRad(-30), toRad(30)],
       Extrapolate.CLAMP,
     );
     return {
@@ -247,8 +230,8 @@ const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
   const rightIndicatorAnimatedStyle = useAnimatedStyle(() => {
     const rightIndicatorRotate = interpolate(
       animatedIndex.value,
-      [0, 1, 2],
-      [toRad(30), 0, toRad(-30)],
+      [0, 1],
+      [toRad(30), toRad(-30)],
       Extrapolate.CLAMP,
     );
     return {
@@ -265,10 +248,7 @@ const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
   });
 
   return (
-    <Animated.View
-      style={[containerStyle, containerAnimatedStyle]}
-      renderToHardwareTextureAndroid={true}
-    >
+    <Animated.View renderToHardwareTextureAndroid={true}>
       <Animated.View style={[leftIndicatorStyle, leftIndicatorAnimatedStyle]} />
       <Animated.View
         style={[rightIndicatorStyle, rightIndicatorAnimatedStyle]}
@@ -277,17 +257,20 @@ const AnimatedArrow = ({ style, animatedIndex }: HandleProps) => {
   );
 };
 
-export const BottomPanelHandle = (props: HandleProps) => {
+export const BottomPanelHandle = ({
+  animatedIndex,
+  animatedPosition,
+}: BottomSheetHandleProps) => {
   const width = Dimensions.get("window").width;
+
   return (
-    <View className={`flex-row items-end justify-around pb-2 pt-1`}>
+    <View className={`flex-row items-end justify-around pb-2 pt-2`}>
       <SearchButton />
 
       <View className="flex-col items-center justify-center space-y-5">
         <AnimatedArrow
-          style={props.style}
-          animatedIndex={props.animatedIndex}
-          animatedPosition={props.animatedPosition}
+          animatedIndex={animatedIndex}
+          animatedPosition={animatedPosition}
         />
         <View className="flex-row space-x-1">
           <View className="items-center justify-center rounded-lg border px-2">

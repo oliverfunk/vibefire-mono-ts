@@ -7,7 +7,7 @@ import VibefireIcon from "~/public/Icon_Circle_wOutline.svg";
 
 // import VibefireIcon from "@/public/Icon_Circle_Border.svg";
 interface NavbarProps {
-  active: "none" | "support" | "privacy";
+  active: "none" | "support" | "privacy" | "terms";
 }
 
 const Navbar: React.FC<NavbarProps> = ({ active }) => {
@@ -42,17 +42,29 @@ const Navbar: React.FC<NavbarProps> = ({ active }) => {
         >
           Privacy Policy
         </Link>
-        <a
+        <Link
           role="button"
-          href="https://management.vibefire.app/"
+          href="/terms"
+          className={
+            "m-1 rounded px-3 py-2 font-semibold " +
+            (active == "terms"
+              ? "bg-slate-500"
+              : "hover:bg-slate-500 hover:bg-opacity-50")
+          }
+        >
+          Terms
+        </Link>
+        {/* <a
+          role="button"
+          href="https://web.vibefire.app/"
           className="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           <Squares2X2Icon
             className="-ml-0.5 mr-1.5 w-5 flex-shrink-0"
             aria-hidden="true"
           />
-          Management Dashboard
-        </a>
+          Launch app
+        </a> */}
       </nav>
     </header>
   );

@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 
 import "~/styles/globals.css";
@@ -18,8 +18,12 @@ const roboto_mono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: "Vibefire - Coming soon!",
-  description: "Event discovery evolved",
-  viewport: "width=device-width, initial-scale=1",
+  description: "We put events on the map!",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
