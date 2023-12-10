@@ -6,7 +6,7 @@ const SupportPage: NextPage = () => {
   return (
     <>
       <Navbar active="support" />
-      <header className="mx-5 mt-10 flex flex-col items-center gap-1">
+      <header className="flex flex-col items-center gap-1 p-5">
         <h1 className="text-4xl font-bold">{"Support"}</h1>
         <p className="mt-10">
           For support with onboarding or help with the app, please contact the

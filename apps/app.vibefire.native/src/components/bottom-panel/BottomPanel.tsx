@@ -142,6 +142,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
         }}
+        enableContentPanningGesture={Platform.OS === "android" ? false : true}
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
@@ -159,6 +160,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Manage Event", ...p })
         }
+        enableContentPanningGesture={Platform.OS === "android" ? false : true}
         // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
