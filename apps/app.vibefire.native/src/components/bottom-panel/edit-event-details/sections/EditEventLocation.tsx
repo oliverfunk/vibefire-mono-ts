@@ -27,7 +27,7 @@ export const EditEventLocation = (props: FormSectionProps) => {
     <View className="w-full flex-col space-y-4 p-4">
       <View>
         <FormTitleInput
-          title="Location (tap to select)"
+          title="Location"
           inputRequired={!editedEventData.location?.position}
         >
           <View className="aspect-[4/4] border-2 border-slate-200">

@@ -1,8 +1,7 @@
-import { type ConfigContext, type ExpoConfig } from "expo/config";
-
-const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
+const expoConfig = ({ config }) => ({
   ...config,
   name: "Vibefire",
+  owner: "vibefire",
   slug: "vibefire-native",
   scheme: "vifr",
   version: "0.1.0",
@@ -23,15 +22,23 @@ const expoConfig = ({ config }: ConfigContext): ExpoConfig => ({
   },
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "app.vibefire.native",
+    bundleIdentifier: "app.vibefire.ios",
     associatedDomains: ["applinks:vifr.io"],
-    config: {},
+    config: { googleMapsApiKey: "***REMOVED***" },
+    entitlements: {
+      "com.apple.developer.applesignin": ["Default"],
+    },
     infoPlist: {
       LSApplicationQueriesSchemes: ["uber"],
     },
   },
   android: {
-    package: "app.vibefire.native",
+    package: "app.vibefire.and",
+    config: {
+      googleMaps: {
+        apiKey: "***REMOVED***",
+      },
+    },
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#010101",

@@ -4,7 +4,8 @@
   "globalEnv": [
     "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
     "EXPO_PUBLIC_CF_IMAGES_ACC_HASH",
-    "EXPO_PUBLIC_UBER_CLIENT_ID"
+    "EXPO_PUBLIC_UBER_CLIENT_ID",
+    "EXPO_PUBLIC_ENVIRONMENT"
   ],
   "pipeline": {
     "build": {

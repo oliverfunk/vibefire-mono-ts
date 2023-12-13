@@ -17,8 +17,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import {
   BottomSheetBackdrop,
   BottomSheetScrollView,
-  BottomSheetScrollViewMethods,
   BottomSheetView,
+  type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 import { useFocusEffect } from "@react-navigation/native";
@@ -64,17 +64,23 @@ export const useSheetBackdrop = () => {
 export const FormTitleInput = (props: {
   title: string;
   children: React.ReactNode;
+  underneathText?: string;
   inputRequired?: boolean;
 }) => {
   return (
     <View className="flex-col">
       <Text
-        className={`px-4 text-lg ${props.inputRequired && "text-[#ff1111]"}`}
+        className={`px-4 text-lg font-bold ${
+          props.inputRequired && "text-[#ff1111]"
+        }`}
       >
         {props.title}
         {props.inputRequired && "*"}
       </Text>
       <View>{props.children}</View>
+      {props.underneathText && (
+        <Text className="px-4 text-center text-sm">{props.underneathText}</Text>
+      )}
     </View>
   );
 };
@@ -125,6 +131,8 @@ export const FormTextInput = (props: FormTextInputProps) => {
 export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
   <BottomSheetScrollView
     automaticallyAdjustKeyboardInsets={true}
+    keyboardShouldPersistTaps={"handled"}
+    keyboardDismissMode={"interactive"}
     focusHook={useFocusEffect}
   >
     {props.children}
@@ -138,6 +146,8 @@ const _ScrollViewSheetWithRef = (
   <BottomSheetScrollView
     ref={ref}
     automaticallyAdjustKeyboardInsets={true}
+    keyboardShouldPersistTaps={"handled"}
+    keyboardDismissMode={"interactive"}
     focusHook={useFocusEffect}
   >
     {props.children}

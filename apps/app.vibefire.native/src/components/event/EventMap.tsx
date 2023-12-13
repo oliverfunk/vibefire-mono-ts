@@ -73,7 +73,7 @@ const EventMapComponent = () => {
     if (mvRef.current === null) {
       return;
     }
-    if (location === null) {
+    if (!location) {
       return;
     }
     mvRef.current.setCamera({
@@ -86,7 +86,7 @@ const EventMapComponent = () => {
   }, [location, mapReady]);
 
   useEffect(() => {
-    if (locPermDeniedMsg !== null) {
+    if (locPermDeniedMsg) {
       Toast.show({
         type: "error",
         text1: "Could not get your location",
@@ -131,53 +131,52 @@ const EventMapComponent = () => {
   const displayEvents = useDisplayEvents();
 
   return (
-    <>
-      <MapView
-        ref={mvRef}
-        onMapReady={() => {
-          setMapReady(true);
-          setEventMapMapRef(mvRef.current);
-        }}
-        className="h-full w-full"
-        mapPadding={{
-          top: bottomPanelHeight,
-          right: 0,
-          bottom: bottomPanelHeight,
-          left: 0,
-        }}
-        provider={PROVIDER_GOOGLE}
-        showsUserLocation={true}
-        showsMyLocationButton={false}
-        pitchEnabled={false}
-        zoomControlEnabled={false}
-        toolbarEnabled={false}
-        loadingEnabled={true}
-        onRegionChangeComplete={onMapRegionChange}
-        moveOnMarkerPress={false}
-        rotateEnabled={false}
-        maxZoomLevel={20}
-        minZoomLevel={3}
-      >
-        {displayEvents.length > 0 &&
-          displayEvents.map((event, _index) => (
-            <Marker
-              key={event.id}
-              coordinate={{
-                latitude: event.location.position.lat,
-                longitude: event.location.position.lng,
-              }}
-              anchor={{ x: 0.5, y: 1 }} // bottom center
-              onPress={() => {
-                navViewEvent(event.id);
-                mvRef.current?.animateCamera({
-                  center: {
-                    latitude: event.location.position.lat,
-                    longitude: event.location.position.lng,
-                  },
-                });
-              }}
-            >
-              {/* <Callout
+    <MapView
+      ref={mvRef}
+      onMapReady={() => {
+        setMapReady(true);
+        setEventMapMapRef(mvRef.current);
+      }}
+      className="h-full w-full"
+      mapPadding={{
+        top: bottomPanelHeight,
+        right: 0,
+        bottom: bottomPanelHeight,
+        left: 0,
+      }}
+      provider={PROVIDER_GOOGLE}
+      showsUserLocation={true}
+      showsMyLocationButton={false}
+      pitchEnabled={false}
+      zoomControlEnabled={false}
+      toolbarEnabled={false}
+      loadingEnabled={true}
+      onRegionChangeComplete={onMapRegionChange}
+      moveOnMarkerPress={false}
+      rotateEnabled={false}
+      maxZoomLevel={20}
+      minZoomLevel={3}
+    >
+      {displayEvents.length > 0 &&
+        displayEvents.map((event, _index) => (
+          <Marker
+            key={event.id}
+            coordinate={{
+              latitude: event.location.position.lat,
+              longitude: event.location.position.lng,
+            }}
+            anchor={{ x: 0.5, y: 1 }} // bottom center
+            onPress={() => {
+              navViewEvent(event.id);
+              mvRef.current?.animateCamera({
+                center: {
+                  latitude: event.location.position.lat,
+                  longitude: event.location.position.lng,
+                },
+              });
+            }}
+          >
+            {/* <Callout
                 tooltip={true}
                 onPress={() => {
                   navViewEvent(event.id);
@@ -187,17 +186,10 @@ const EventMapComponent = () => {
                   <View className="h-full w-full bg-white" />
                 </View>
               </Callout> */}
-              <EventIcon vibeIndex={event.vibe} />
-            </Marker>
-          ))}
-      </MapView>
-      {/* <TouchableOpacity
-        className="absolute bottom-[100px] right-0 mb-4 mr-4 rounded-full bg-white p-2"
-        onPress={() => {
-          navCreateEvent();
-        }}
-      /> */}
-    </>
+            <EventIcon vibeIndex={event.vibe} />
+          </Marker>
+        ))}
+    </MapView>
   );
 };
 

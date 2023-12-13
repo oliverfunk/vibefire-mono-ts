@@ -3,9 +3,10 @@ import * as Location from "expo-location";
 
 async function getLocationWithRetry(
   retries = 2,
-): Promise<Location.LocationObject> {
+  timeoutMillis = 1000,
+): Promise<Location.LocationObject | undefined> {
   const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error("Timeout exceeded")), 1000),
+    setTimeout(() => reject(new Error("Timeout exceeded")), timeoutMillis),
   );
   try {
     return await Promise.race([Location.getCurrentPositionAsync({}), timeout]);
@@ -13,16 +14,18 @@ async function getLocationWithRetry(
     if (retries > 0) {
       return getLocationWithRetry(retries - 1);
     } else {
-      throw Error("Could not get location");
+      return undefined;
     }
   }
 }
 
 export const useLocationOnce = () => {
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null,
+  const [location, setLocation] = useState<Location.LocationObject | undefined>(
+    undefined,
   );
-  const [locPermDeniedMsg, setLocPermDeniedMsg] = useState<string | null>(null);
+  const [locPermDeniedMsg, setLocPermDeniedMsg] = useState<string | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     void (async () => {

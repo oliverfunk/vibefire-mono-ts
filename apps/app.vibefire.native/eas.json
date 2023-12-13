@@ -1,15 +1,43 @@
 {
     "build": {
+        "base": {
+            "node": "20.9.0",
+            "pnpm": "8.6.11",
+            "env": {
+                "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "***REMOVED***",
+                "EXPO_PUBLIC_CF_IMAGES_ACC_HASH": "***REMOVED***",
+                "EXPO_PUBLIC_UBER_CLIENT_ID": "***REMOVED***",
+            }
+        },
         "development": {
+            "extends": "base",
             "developmentClient": true,
             "distribution": "internal",
+            "env": {
+                "EXPO_PUBLIC_ENVIRONMENT": "development"
+            }
+        },
+        "development-simulator": {
+            "extends": "development",
             "ios": {
                 "simulator": true
+            },
+            "env": {
+                "EXPO_PUBLIC_ENVIRONMENT": "local"
             }
         },
         "preview": {
-            "distribution": "internal"
+            "extends": "base",
+            "distribution": "internal",
+            "env": {
+                "EXPO_PUBLIC_ENVIRONMENT": "preview"
+            }
         },
-        "production": {}
+        "production": {
+            "extends": "base",
+            "env": {
+                "EXPO_PUBLIC_ENVIRONMENT": "production"
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { router } from "../trpc-router";
-import { authRouter } from "./auth";
-import { eventsRouter } from "./events";
+import { authRouter } from "./auth-route";
+import { eventsRouter } from "./events-route";
 import { userRouter } from "./user";
 
 export const apiRouter = router({
