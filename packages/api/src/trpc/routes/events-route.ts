@@ -4,6 +4,7 @@ import { type PartialDeep } from "type-fest";
 import {
   CoordSchema,
   MapQuerySchema,
+  VibefireEventSchema,
   type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";
@@ -203,6 +204,24 @@ export const eventsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
+    }),
+  setVisibility: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+          visibility: VibefireEventSchema.properties.visibility,
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.fauna.eventSetVisibility(
+        ctx.auth,
+        input.eventId,
+        input.visibility,
+        input.organisationId,
+      );
     }),
   starredOwnedEvents: publicProcedure
     .input(

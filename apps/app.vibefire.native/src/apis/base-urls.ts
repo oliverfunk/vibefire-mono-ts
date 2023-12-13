@@ -1,19 +1,18 @@
 import Constants from "expo-constants";
 
-import { BASEPATH_REST } from "@vibefire/api/src/basepaths";
-
-const _localApiPort = 8787;
-
 export const apiBaseUrl = () => {
-  // return "https://api.vibefire.app";
+  const env = process.env.EXPO_PUBLIC_ENVIRONMENT;
+  console.log("env", env);
+
+  if (env !== "local") {
+    return "https://api.vibefire.app";
+  }
   const debuggerHost =
     Constants.expoConfig?.hostUri ??
     Constants.manifest2?.extra?.expoGo?.debuggerHost;
   const localhost = debuggerHost?.split(":")[0];
-  if (!localhost) {
-    return "https://api.vibefire.app";
-  }
-  return `http://${localhost}:${_localApiPort}`;
+  const localApiPort = 8787;
+  return `http://${localhost}:${localApiPort}`;
 };
 
 export const imgUrl = (imagePath?: string) => {

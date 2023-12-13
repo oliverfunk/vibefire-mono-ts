@@ -6,7 +6,8 @@ workers_dev = false
 routes = [{ pattern = "vifr.io", custom_domain = true }]
 
 [vars]
-VIBEFIRE_NATIVE_APPLE_APP_ID = "B623YXPG6K.app.vibefire.native"
+VIBEFIRE_NATIVE_APPLE_APP_ID = "B623YXPG6K.app.vibefire.ios"
+VIBEFIRE_ANDROID_APP_ID = "app.vibefire.and"
 
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]

@@ -522,6 +522,24 @@ export class FaunaManager {
     await updateEvent(this.faunaClient, eventId, organiserId, updateData);
   }
 
+  async eventSetVisibility(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    visibility: VibefireEventT["visibility"],
+    organisationId?: string,
+  ): Promise<void> {
+    checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const updateData: Partial<VibefireEventT> = {
+      visibility,
+    };
+
+    removeUndef(updateData);
+
+    await updateEvent(this.faunaClient, eventId, organiserId, updateData);
+  }
+
   async eventFromStarredOwnedInPeriodForUser(
     userAc: ClerkSignedInAuthContext,
     onDateIsoNTZ: string,
@@ -664,18 +682,21 @@ export class FaunaManager {
   }
 
   async getUserInfo(userAc: ClerkSignedInAuthContext) {
+    const retries = 3;
+    const retryTimeout = 2000;
+
     let res = await getUserByAid(this.faunaClient, userAc.userId);
-    console.log("getting user 1", JSON.stringify(res, null, 2));
     if (!res) {
-      console.log("not found, waiting");
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      res = await getUserByAid(this.faunaClient, userAc.userId);
-      console.log("getting user 2", JSON.stringify(res, null, 2));
-      if (!res) {
-        console.log("not found, fail");
-        throw new Error("User not found");
+      for (let i = 0; i < retries; i++) {
+        await new Promise((resolve) => setTimeout(resolve, retryTimeout));
+        res = await getUserByAid(this.faunaClient, userAc.userId);
       }
     }
+
+    if (!res) {
+      throw new Error("User not found");
+    }
+
     res = tbValidator(VibefireUserSchema)(res);
     return res;
   }

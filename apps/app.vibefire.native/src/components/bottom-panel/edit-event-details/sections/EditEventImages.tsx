@@ -35,7 +35,8 @@ export const EditEventImages = (props: FormSectionProps) => {
     <View className="w-full flex-col space-y-4 py-4">
       <View>
         <FormTitleInput
-          title="Banner image (tap to change)"
+          title="Banner image"
+          underneathText="(Tap to change)"
           inputRequired={!eventData.images?.banner}
         >
           <UploadableEventImage
@@ -54,7 +55,14 @@ export const EditEventImages = (props: FormSectionProps) => {
       </View>
 
       <View>
-        <FormTitleInput title="Additional images (scroll to add)">
+        <FormTitleInput
+          title="Additional images"
+          underneathText={
+            selectedAdditionalImages.length > 1
+              ? "(Scroll to add more)"
+              : undefined
+          }
+        >
           <EventImageCarousel
             width={width}
             eventId={eventData.id!}

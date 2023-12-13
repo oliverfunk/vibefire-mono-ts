@@ -13,22 +13,21 @@ export const HandleWithHeader = (
   const { close } = useBottomSheet();
   return (
     <View className="overflow-hidden rounded-t-lg bg-black p-2">
-      <LinearRedOrangeView className="flex-row items-center overflow-hidden rounded-lg p-2">
-        <View className="flex-1 items-start">
+      <LinearRedOrangeView className="flex-row items-center overflow-hidden rounded-lg px-1 py-2">
+        <View className="flex-1" />
+        <Text className="text-center text-2xl font-bold text-white">
+          {props.header}
+        </Text>
+        <View className="flex-1 items-end">
           <TouchableOpacity
-            className="flex-row items-center justify-center space-x-1 rounded-lg bg-black p-2"
+            className="h-5 w-5 flex-row items-center justify-center rounded-full bg-black/60"
             onPress={() => {
               close();
             }}
           >
-            <FontAwesome name="close" size={15} color="white" />
-            <Text className="text-white">Close</Text>
+            <FontAwesome name="close" size={10} color="white" />
           </TouchableOpacity>
         </View>
-        <Text className="text-center text-2xl font-bold text-white">
-          {props.header}
-        </Text>
-        <View className="flex-1" />
       </LinearRedOrangeView>
     </View>
   );

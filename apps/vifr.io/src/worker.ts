@@ -3,7 +3,8 @@ import { HTTPException } from "hono/http-exception";
 import { timing } from "hono/timing";
 
 type Bindings = {
-  VIBEFIRE_NATIVE_APPLE_APP_ID: string;
+  VIBEFIRE_APPLE_APP_ID: string;
+  VIBEFIRE_ANDROID_APP_ID: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -30,7 +31,7 @@ app.get("/.well-known/apple-app-site-association", (c) => {
       apps: [],
       details: [
         {
-          appID: c.env.VIBEFIRE_NATIVE_APPLE_APP_ID,
+          appID: c.env.VIBEFIRE_APPLE_APP_ID,
           // All paths that should support redirecting
           paths: ["/*"],
         },
@@ -38,11 +39,11 @@ app.get("/.well-known/apple-app-site-association", (c) => {
     },
     // This section enables Apple Handoff
     activitycontinuation: {
-      apps: [c.env.VIBEFIRE_NATIVE_APPLE_APP_ID],
+      apps: [c.env.VIBEFIRE_APPLE_APP_ID],
     },
     // This section enable Shared Web Credentials
     webcredentials: {
-      apps: [c.env.VIBEFIRE_NATIVE_APPLE_APP_ID],
+      apps: [c.env.VIBEFIRE_APPLE_APP_ID],
     },
   });
 });
@@ -52,7 +53,7 @@ app.get("/.well-known/assetlinks.json", (c) => {
       relation: ["delegate_permission/common.handle_all_urls"],
       target: {
         namespace: "android_app",
-        package_name: "app.vibefire.native",
+        package_name: c.env.VIBEFIRE_ANDROID_APP_ID,
         sha256_cert_fingerprints: [
           // Supports multiple fingerprints for different apps and keys
           "{sha256_cert_fingerprints}",

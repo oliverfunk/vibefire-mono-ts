@@ -97,6 +97,8 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
 
   const insets = useSafeAreaInsets();
 
+  const a = 89;
+
   return (
     <BottomSheetModalProvider>
       <EventsListAndProfile ref={mapQueryEventsListSheetRef} />
@@ -105,6 +107,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
       <BottomSheetModal
         ref={eventDetailsDisplaySheetRef}
         // backdropComponent={backdrop}
+        keyboardBehavior="extend"
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "black",
@@ -142,7 +145,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
         }}
-        enableContentPanningGesture={false}
+        enablePanDownToClose={Platform.OS === "android" ? false : true}
         bottomInset={insets.bottom}
         index={0}
         snapPoints={["80%"]}
@@ -160,7 +163,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Manage Event", ...p })
         }
-        enableContentPanningGesture={false}
+        enablePanDownToClose={Platform.OS === "android" ? false : true}
         // backdropComponent={backdrop}
         stackBehavior="push"
         backgroundStyle={{
@@ -184,9 +187,8 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Edit Event", ...p })
         }
-        keyboardBehavior="interactive"
-        enableContentPanningGesture={false}
-        enablePanDownToClose={true}
+        // enableContentPanningGesture={false}
+        enablePanDownToClose={Platform.OS === "android" ? false : true}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",
@@ -209,7 +211,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
         handleComponent={(p) =>
           HandleWithHeader({ header: "Create Event", ...p })
         }
-        enableContentPanningGesture={false}
+        enablePanDownToClose={Platform.OS === "android" ? false : true}
         stackBehavior="push"
         backgroundStyle={{
           backgroundColor: "rgba(255,255,255,1)",

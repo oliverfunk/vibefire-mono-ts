@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
+import { Image } from "expo-image";
 import { Entypo } from "@expo/vector-icons";
 import { DateTime } from "luxon";
 
@@ -15,7 +16,11 @@ import { EventCard } from "~/components/event/EventCard";
 import { trpc } from "~/apis/trpc-client";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navEditEvent, navViewEventAsPreview } from "~/nav";
-import { LinearRedOrangeView, ScrollViewSheet } from "../../_shared";
+import {
+  FormTitleInput,
+  LinearRedOrangeView,
+  ScrollViewSheet,
+} from "../../_shared";
 
 const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
   const { event } = props;
@@ -65,34 +70,25 @@ export const ManagementView = (props: {
 
   const setPublishedMut = trpc.events.setPublished.useMutation();
   const setUnpublishedMut = trpc.events.setUnpublished.useMutation();
-
-  useEffect(() => {
-    if (setPublishedMut.status === "success") {
-      dataRefetch();
-    }
-  }, [setPublishedMut.status, dataRefetch]);
-  useEffect(() => {
-    if (setUnpublishedMut.status === "success") {
-      dataRefetch();
-    }
-  }, [setUnpublishedMut.status, dataRefetch]);
+  const setVisibilityMut = trpc.events.setVisibility.useMutation();
 
   return (
     <ScrollViewSheet>
       <View className="flex-col space-y-4 bg-black p-2">
         <Text className="text-left text-lg text-white">
           {event.published
-            ? "To hide this event, tap the button below:"
-            : "Your event is currently hidden, tap the button below to make it visible to other:"}
+            ? "To hide this event, tap the button below"
+            : "Your event is currently hidden, tap the button below to make it visible to others"}
         </Text>
 
         <View className="items-center">
           {event.published ? (
             <TouchableOpacity
-              onPress={() => {
-                setUnpublishedMut.mutate({
+              onPress={async () => {
+                await setUnpublishedMut.mutateAsync({
                   eventId: event.id,
                 });
+                dataRefetch();
               }}
               className="items-center"
             >
@@ -102,10 +98,11 @@ export const ManagementView = (props: {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              onPress={() => {
-                setPublishedMut.mutate({
+              onPress={async () => {
+                await setPublishedMut.mutateAsync({
                   eventId: event.id,
                 });
+                dataRefetch();
               }}
               className="items-center rounded-lg bg-green-400 px-4 py-2"
             >
@@ -122,11 +119,28 @@ export const ManagementView = (props: {
           {(event.visibility === "public" && (
             <>
               <Text className="text-lg">
-                This event is public and can seen on the map by anyone when
-                published.
+                {`This event is public. It can seen on the map by anyone ${
+                  !event.published && "(when published)"
+                }.`}
               </Text>
               <View>
                 <ShareEventLinkComponent event={event} />
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={async () => {
+                    await setVisibilityMut.mutateAsync({
+                      eventId: event.id,
+                      visibility: "link-only",
+                    });
+                    dataRefetch();
+                  }}
+                  className="items-center rounded-lg bg-black px-4 py-2"
+                >
+                  <Text className="text-lg font-bold text-white">
+                    Make private
+                  </Text>
+                </TouchableOpacity>
               </View>
             </>
           )) ||
@@ -139,10 +153,29 @@ export const ManagementView = (props: {
             (event.visibility === "link-only" && (
               <>
                 <Text className="text-lg">
-                  Share the link below to your event. Only those with the link
-                  can see it.
+                  {`This event is private, link-only. Only those with the link can see it ${
+                    !event.published && "(when published)"
+                  }.`}
                 </Text>
-                <ShareEventLinkComponent event={event} />
+                <View>
+                  <ShareEventLinkComponent event={event} />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      await setVisibilityMut.mutateAsync({
+                        eventId: event.id,
+                        visibility: "public",
+                      });
+                      dataRefetch();
+                    }}
+                    className="items-center rounded-lg bg-black px-4 py-2"
+                  >
+                    <Text className="text-lg font-bold text-white">
+                      Make public
+                    </Text>
+                  </TouchableOpacity>
+                </View>
                 {/* <Text className="text-center">(Tap to copy)</Text> */}
                 {/* Change share btn */}
                 {/* <View className="items-center">
@@ -159,12 +192,8 @@ export const ManagementView = (props: {
             ))}
         </View>
 
-        {/* Event card */}
-        <View className="flex-col space-y-2">
-          <Text className="text-lg font-bold">
-            Event Card (tap to preview):
-          </Text>
-          <View>
+        <View>
+          <FormTitleInput title="Event Card" underneathText="(Tap to preview)">
             <EventCard
               eventId={event.id}
               state="ready"
@@ -187,7 +216,7 @@ export const ManagementView = (props: {
                 navViewEventAsPreview(event.id);
               }}
             />
-          </View>
+          </FormTitleInput>
         </View>
 
         <View className="items-center">
@@ -200,6 +229,15 @@ export const ManagementView = (props: {
             <Text className="text-xl text-white">Edit event details</Text>
           </TouchableOpacity>
         </View>
+      </View>
+      <View className="items-center p-10">
+        <Image
+          alt="Vibefire Event icon"
+          contentFit={"contain"}
+          className="aspect-[4/4] w-44"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          source={require("#/images/a.svg")}
+        />
       </View>
     </ScrollViewSheet>
   );

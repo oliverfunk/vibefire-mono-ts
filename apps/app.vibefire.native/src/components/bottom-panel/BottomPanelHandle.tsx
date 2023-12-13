@@ -8,8 +8,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  type StyleProp,
-  type ViewStyle,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Animated, {
@@ -33,7 +31,7 @@ import { selectedDateDTAtom } from "@vibefire/shared-state";
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
 import { profileSelectedAtom } from "~/atoms";
 
-export const SEARCH_HANDLE_HEIGHT = 75;
+export const SEARCH_HANDLE_HEIGHT = 80;
 
 const DatePicker = () => {
   const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
@@ -119,7 +117,7 @@ const SearchButton = () => {
                 value={searchString}
                 autoFocus={true}
                 // placeholder="Search for a place or an event"
-                placeholder="The search feature will be ready soon"
+                placeholder="Search will be ready soon!"
               />
             </View>
           </Pressable>
