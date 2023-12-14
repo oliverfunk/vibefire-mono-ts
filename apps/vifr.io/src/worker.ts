@@ -26,27 +26,28 @@ app.get("/", (c) => {
 
 app.get("/.well-known/apple-app-site-association", (c) => {
   return c.json({
-    // This section enables Universal Links
     applinks: {
-      apps: [],
       details: [
         {
-          appID: c.env.VIBEFIRE_APPLE_APP_ID,
-          // All paths that should support redirecting
-          paths: ["/*"],
+          appIDs: [c.env.VIBEFIRE_APPLE_APP_ID],
+          components: [
+            {
+              "/": "*",
+              comment: "Matches any URL",
+            },
+          ],
         },
       ],
     },
-    // This section enables Apple Handoff
     activitycontinuation: {
       apps: [c.env.VIBEFIRE_APPLE_APP_ID],
     },
-    // This section enable Shared Web Credentials
     webcredentials: {
       apps: [c.env.VIBEFIRE_APPLE_APP_ID],
     },
   });
 });
+
 app.get("/.well-known/assetlinks.json", (c) => {
   return c.json([
     {
