@@ -23,7 +23,7 @@ const expoConfig = ({ config }) => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",
-    associatedDomains: ["applinks:vifr.io"],
+    associatedDomains: ["applinks:vifr.io", "applinks:vibefire.app"],
     config: { googleMapsApiKey: "AIzaSyDKTHWr-CRxekBAM8Ky-Q9ZoXaW4bLngJI" },
     entitlements: {
       "com.apple.developer.applesignin": ["Default"],

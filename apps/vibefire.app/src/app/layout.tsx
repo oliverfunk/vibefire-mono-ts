@@ -31,6 +31,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
     <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
       <head>
         <link rel="icon" href="/favicon.png" />
+        <meta name="apple-itunes-app" content="app-id=6470950426" />
       </head>
       <body className="min-h-screen bg-black text-white antialiased">
         {children}
