@@ -53,6 +53,11 @@ const expoConfig = ({ config }) => ({
             host: "*.vifr.io",
             pathPrefix: "/",
           },
+          {
+            scheme: "https",
+            host: "*.vibefire.app",
+            pathPrefix: "/",
+          },
         ],
         category: ["BROWSABLE", "DEFAULT"],
       },

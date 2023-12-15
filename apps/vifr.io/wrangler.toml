@@ -8,6 +8,7 @@ routes = [{ pattern = "vifr.io", custom_domain = true }]
 [vars]
 VIBEFIRE_APPLE_APP_ID = "B623YXPG6K.app.vibefire.ios"
 VIBEFIRE_ANDROID_APP_ID = "app.vibefire.and"
+VIBEFIRE_ANDROID_APP_SHA256 = "41:94:75:45:05:CB:5F:DE:1E:AC:A0:65:EA:B9:65:16:53:AD:72:FB:94:AC:9B:26:5A:87:8C:D9:FD:FF:FB:D4"
 
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]
