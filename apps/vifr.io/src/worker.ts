@@ -5,6 +5,7 @@ import { timing } from "hono/timing";
 type Bindings = {
   VIBEFIRE_APPLE_APP_ID: string;
   VIBEFIRE_ANDROID_APP_ID: string;
+  VIBEFIRE_ANDROID_APP_SHA256: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -18,10 +19,6 @@ app.onError((err, c) => {
     return err.getResponse();
   }
   return c.text("internal error", 500);
-});
-
-app.get("/", (c) => {
-  return c.html("");
 });
 
 app.get("/.well-known/apple-app-site-association", (c) => {
@@ -53,14 +50,16 @@ app.get("/.well-known/assetlinks.json", (c) => {
     {
       relation: ["delegate_permission/common.handle_all_urls"],
       target: {
-        namespace: "android_app",
+        namespace: "Vibefire",
         package_name: c.env.VIBEFIRE_ANDROID_APP_ID,
-        sha256_cert_fingerprints: [
-          // Supports multiple fingerprints for different apps and keys
-          "{sha256_cert_fingerprints}",
-        ],
+        sha256_cert_fingerprints: [c.env.VIBEFIRE_ANDROID_APP_SHA256],
       },
     },
   ]);
 });
+
+app.get("/*", (c) => {
+  return c.html("");
+});
+
 export default app;
