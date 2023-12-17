@@ -50,7 +50,7 @@ app.get("/.well-known/assetlinks.json", (c) => {
     {
       relation: ["delegate_permission/common.handle_all_urls"],
       target: {
-        namespace: "Vibefire",
+        namespace: "android_app",
         package_name: c.env.VIBEFIRE_ANDROID_APP_ID,
         sha256_cert_fingerprints: [c.env.VIBEFIRE_ANDROID_APP_SHA256],
       },

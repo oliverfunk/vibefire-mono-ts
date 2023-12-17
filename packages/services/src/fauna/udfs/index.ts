@@ -38,10 +38,6 @@ export const callEventsInBBoxDuringPeriodForUser = async (
   northWest: { lat: number; lng: number },
   southEast: { lat: number; lng: number },
 ) => {
-  // console.log("userAid", userAid);
-  // console.log("timePeriod", timePeriod);
-  // console.log("northWest", JSON.stringify(northWest, null, 2));
-  // console.log("southEast", JSON.stringify(southEast, null, 2));
   const _fvLinkOnly: VibefireEventT["visibility"] = "link-only";
   const q = fql`
     // these can only be shown if user has starred them
