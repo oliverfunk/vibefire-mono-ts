@@ -8,12 +8,8 @@
   "scripts": {
     "build": "turbo build",
     "clean": "git clean -xdf node_modules */**/node_modules",
-    "clean:workspaces": "turbo clean",
-    "db:generate": "turbo db:generate",
-    "db:push": "turbo db:push db:generate",
-    "dev": "turbo dev --parallel",
     "vfa": "turbo dev --parallel --filter vibefire.app",
-    "app": "turbo dev --parallel --filter app.vibefire.native",
+    "app": "turbo dev --parallel --filter app.vibefire.native ----filter api.vibefire.app",
     "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
     "lint": "turbo lint && manypkg check",
     "lint:fix": "turbo lint:fix && manypkg fix",

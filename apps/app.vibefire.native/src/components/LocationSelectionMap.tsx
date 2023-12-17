@@ -42,7 +42,7 @@ export const LocationSelectionMap = (props: {
         zoom: 16,
       });
     } else {
-      if (location === null) {
+      if (!location) {
         return;
       }
       mvRef.current.setCamera({
@@ -55,17 +55,17 @@ export const LocationSelectionMap = (props: {
     }
   }, [initialPosition, location, mapReady]);
 
-  useEffect(() => {
-    if (locPermDeniedMsg !== null) {
-      Toast.show({
-        type: "error",
-        text1: "Could not get your location",
-        text2: locPermDeniedMsg,
-        position: "bottom",
-        bottomOffset: 100,
-      });
-    }
-  }, [locPermDeniedMsg]);
+  // useEffect(() => {
+  //   if (locPermDeniedMsg !== null) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Could not get your location",
+  //       text2: locPermDeniedMsg,
+  //       position: "bottom",
+  //       bottomOffset: 100,
+  //     });
+  //   }
+  // }, [locPermDeniedMsg]);
 
   const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
   useEffect(() => {
@@ -75,10 +75,12 @@ export const LocationSelectionMap = (props: {
     if (selectedPosition === initialPosition) {
       return;
     }
+    console.log("ADsadas");
     const q = async () => {
       const addressDesc = await positionAddressInfoMut.mutateAsync({
         position: selectedPosition,
       });
+      console.log("addressDesc", JSON.stringify(addressDesc, null, 2));
       onPositionInfo?.(selectedPosition, addressDesc);
     };
     void q();

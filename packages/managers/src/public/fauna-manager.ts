@@ -596,6 +596,19 @@ export class FaunaManager {
     //   timePeriod,
     //   h3ps,
     // );
+    console.log(
+      JSON.stringify(
+        {
+          ua: userAc.userId ?? "anon",
+          timePeriod,
+          northEast,
+          southWest,
+        },
+        null,
+        2,
+      ),
+    );
+
     const res = await callEventsInBBoxDuringPeriodForUser(
       this.faunaClient,
       userAc.userId ?? "anon",

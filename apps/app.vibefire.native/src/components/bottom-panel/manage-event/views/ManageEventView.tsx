@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
@@ -120,7 +119,7 @@ export const ManagementView = (props: {
             <>
               <Text className="text-lg">
                 {`This event is public. It can seen on the map by anyone ${
-                  !event.published && "(when published)"
+                  !event.published ? "(when published)" : ""
                 }.`}
               </Text>
               <View>
@@ -154,7 +153,7 @@ export const ManagementView = (props: {
               <>
                 <Text className="text-lg">
                   {`This event is private, link-only. Only those with the link can see it ${
-                    !event.published && "(when published)"
+                    !event.published ? "(when published)" : ""
                   }.`}
                 </Text>
                 <View>
