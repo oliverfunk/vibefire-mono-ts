@@ -1,11 +1,5 @@
 {
   "extends": "@vibefire/config/tsconfig/react-lib.json",
-  "include": [
-    "."
-  ],
-  "exclude": [
-    "dist",
-    "build",
-    "node_modules"
-  ]
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"]
 }
