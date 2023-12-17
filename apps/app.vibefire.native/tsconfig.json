@@ -3,27 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "#/*": [
-        "./assets/*"
-      ],
+      "~/*": ["./src/*"],
+      "#/*": ["./assets/*"]
     },
-    "types": [
-      "@types/jest",
-      "nativewind/types",
-      "webpack-env"
-    ]
+    "types": ["@types/jest", "nativewind/types", "webpack-env"]
   },
-  "include": [
-    "expo-plugins",
-    ".expo",
-    "src",
-    "*.ts",
-    "**/*.js"
-  ],
-  "exclude": [
-    "*.test.ts"
-  ]
+  "include": ["expo-plugins", ".expo", "src", "*.ts", "**/*.js"],
+  "exclude": ["*.test.ts"]
 }

@@ -52,5 +52,8 @@ web-build/
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
-apps/handle.vibefire.app/.dev.vars
+
+# ours
 apps/app.vibefire.native/android
+**/.dev.vars
+**/.wrangler/*
