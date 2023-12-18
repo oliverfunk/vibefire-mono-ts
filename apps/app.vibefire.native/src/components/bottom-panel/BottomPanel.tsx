@@ -17,7 +17,7 @@ import {
   navViewEventClose,
 } from "~/nav";
 import { type NavMainQueryParamsT } from "~/types";
-import { CreateEventForm } from "./create-event/CreateEvent";
+import { CreateEvent } from "./create-event/CreateEvent";
 import { EditEventDetails } from "./edit-event-details/EditEventDetails";
 import { EventDetails } from "./EventDetails";
 import { EventsByOrganiser } from "./EventsByOrganiser";
@@ -224,7 +224,7 @@ export const BottomPanel = (props: NavMainQueryParamsT) => {
           await utils.invalidate();
         }}
       >
-        {props.create && <CreateEventForm />}
+        {props.create && <CreateEvent navString={props.create} />}
       </BottomSheetModal>
     </BottomSheetModalProvider>
   );

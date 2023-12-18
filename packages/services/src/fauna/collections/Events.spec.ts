@@ -1,11 +1,11 @@
 import { Client } from "fauna";
 
-import { createUDFFilterEventIsPublishedAndViewable } from "..";
+import { createUDFFilterEventIsPublishedAndViewable, defineByLinkID } from "..";
 
 const faunaClient = new Client({
   secret: "***REMOVED***",
 });
 
 test("setting up events", async () => {
-  await createUDFFilterEventIsPublishedAndViewable(faunaClient);
+  await defineByLinkID(faunaClient);
 });

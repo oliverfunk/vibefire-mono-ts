@@ -7,12 +7,12 @@ import {
   type TimeOfDayT,
   type VibefireEventT,
 } from "@vibefire/models";
-import { nowAsNTZ } from "@vibefire/utils";
+import { nowAsUTCNoTime } from "@vibefire/utils";
 
-export const todayDTAtom = atom<DateTime>(nowAsNTZ());
+export const todayDTAtom = atom<DateTime>(nowAsUTCNoTime());
 
 export const selectedTimeOfDayAtom = atom<TimeOfDayT>("D");
-export const selectedDateDTAtom = atom<DateTime>(nowAsNTZ());
+export const selectedDateDTAtom = atom<DateTime>(nowAsUTCNoTime());
 
 export const mapPositionInfoAtom = atom<MapPositionInfoT | null>(null);
 

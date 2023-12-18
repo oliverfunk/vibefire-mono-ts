@@ -29,7 +29,7 @@ import {
   googleMapsOpenEventLocationURL,
   isoNTZToUTCDateTime,
   organisationProfileImagePath,
-  uberRequestToEventURL,
+  uberClientRequestToEventLocationURL,
 } from "@vibefire/utils";
 
 import { EventImage, StandardImage } from "~/components/event/EventImage";
@@ -332,7 +332,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
 
   const onGetToEvent = useCallback(async () => {
     const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
-    const url = uberRequestToEventURL(uberClientID, event);
+    const url = uberClientRequestToEventLocationURL(uberClientID, event);
 
     try {
       await Linking.openURL(url);

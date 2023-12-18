@@ -111,6 +111,23 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
+  createEventFromPrevious: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as { id: string })
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.fauna.eventCreateFromPrevious(
+        ctx.auth,
+        input.eventId,
+        input.organisationId,
+      );
+    }),
   updateEvent: authedProcedure
     .input(
       tbValidator(

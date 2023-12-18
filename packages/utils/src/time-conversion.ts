@@ -6,10 +6,12 @@ export const DATE_STR_FORMAT = "yyyyMMdd";
 
 export const toDateStr = (dt: DateTime) => dt.toFormat(DATE_STR_FORMAT);
 
+export const nowAtUTC = () => DateTime.now().setZone("utc");
+
 export const nowAsUTC = () =>
   DateTime.now().setZone("utc", { keepLocalTime: true });
 
-export const nowAsNTZ = () =>
+export const nowAsUTCNoTime = () =>
   nowAsUTC().set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
 export const isoNTZToUTCDateTime = (isoStr: string) => {

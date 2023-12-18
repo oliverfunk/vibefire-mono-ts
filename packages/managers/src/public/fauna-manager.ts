@@ -28,6 +28,7 @@ import {
   createEvent,
   createEventManagement,
   createUser,
+  deleteEvent,
   deleteUser,
   getEventFromIDByOrganiser,
   getEventManagementFromEventIDByOrganiser,
@@ -45,6 +46,8 @@ import {
   h3ToH3Parents,
   isoNTZToTZEpochSecs,
   latLngPositionToH3,
+  nowAsUTC,
+  nowAtUTC,
   removeUndef,
   tbValidator,
   trimAndCropText,
@@ -184,14 +187,14 @@ export class FaunaManager {
       // if the user is not part of an organisation, then they are creating
       // a user event, so set the type to user
       e.organiserType = "user";
-      // e.visibility = "link-only"; // by default
-      e.visibility = "public"; // by default
+      e.visibility = "link-only"; // by default
       const userInfo = await this.getUserInfo(userAc);
       e.organiserName = userInfo.name;
     } else {
       e.organiserType = "organisation";
       e.visibility = "public"; // by default
     }
+
     e.type = "one-time"; // by default
     e.linkId = crypto.randomUUID().slice(-9);
 
@@ -199,6 +202,63 @@ export class FaunaManager {
 
     const res = await createEvent(this.faunaClient, e);
     return res;
+  }
+
+  async eventCreateFromPrevious(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ) {
+    checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    const e = await getEventFromIDByOrganiser(
+      this.faunaClient,
+      eventId,
+      organiserId,
+    );
+    if (!e) {
+      throw new Error("Event not found");
+    }
+
+    const newEvent = Value.Create(
+      VibefireEventSchema,
+    ) as PartialDeep<VibefireEventT>;
+
+    newEvent.state = "draft";
+    newEvent.published = false;
+    newEvent.dateCreatedUTC = nowAtUTC().toISO()!;
+    newEvent.dateUpdatedUTC = nowAtUTC().toISO()!;
+
+    newEvent.organiserId = e.organiserId!;
+    newEvent.organiserType = e.organiserType!;
+    newEvent.organiserName = e.organiserName!;
+    newEvent.visibility = e.visibility!;
+    newEvent.type = e.type!;
+    newEvent.linkId = crypto.randomUUID().slice(-9);
+    newEvent.title = e.title!;
+
+    newEvent.description = e.description;
+    newEvent.tags = e.tags;
+    newEvent.location = e.location;
+    newEvent.timeZone = e.timeZone;
+    newEvent.images = e.images;
+
+    removeUndef(newEvent);
+
+    const res = await createEvent(this.faunaClient, newEvent);
+    return res;
+  }
+
+  async eventDelete(
+    userAc: ClerkSignedInAuthContext,
+    eventId: string,
+    organisationId?: string,
+  ) {
+    checkUserIsPartOfOrg(userAc, organisationId);
+    const organiserId = organisationId || userAc.userId;
+
+    await deleteEvent(this.faunaClient, eventId, organiserId);
   }
 
   async eventUpdate(
@@ -374,10 +434,6 @@ export class FaunaManager {
     }
 
     // timeline
-    console.log(
-      "setTimeline.length",
-      JSON.stringify(setTimeline.length, null, 2),
-    );
     if (setTimeline.length > 0) {
       const updateTimeline: VibefireEventTimelineElementT[] = [];
       for (const el of setTimeline) {
@@ -388,9 +444,10 @@ export class FaunaManager {
         tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
         updateTimeline.push(tle);
       }
-      console.log("updateTimeline", JSON.stringify(updateTimeline, null, 2));
       updateData.timeline = updateTimeline;
     }
+
+    updateData.dateUpdatedUTC = nowAtUTC().toISO()!;
 
     removeUndef(updateData);
 
@@ -400,6 +457,8 @@ export class FaunaManager {
       organiserId,
       updateData,
     );
+
+    console.log(JSON.stringify(updatedEvent, null, 2));
 
     if (updatedEvent.state === "draft") {
       await this._setEventReadyIfPossible(
@@ -421,6 +480,7 @@ export class FaunaManager {
     try {
       event = tbValidator(VibefireEventSchema)(e);
     } catch (e) {
+      console.log("event is invalid", e);
       return;
     }
 
@@ -449,6 +509,8 @@ export class FaunaManager {
     if (publish) {
       updateData.published = true;
     }
+
+    updateData.dateUpdatedUTC = nowAtUTC().toISO()!;
 
     removeUndef(updateData);
 
@@ -596,19 +658,6 @@ export class FaunaManager {
     //   timePeriod,
     //   h3ps,
     // );
-    console.log(
-      JSON.stringify(
-        {
-          ua: userAc.userId ?? "anon",
-          timePeriod,
-          northEast,
-          southWest,
-        },
-        null,
-        2,
-      ),
-    );
-
     const res = await callEventsInBBoxDuringPeriodForUser(
       this.faunaClient,
       userAc.userId ?? "anon",
