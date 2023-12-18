@@ -6,7 +6,6 @@ import type {
   VibefireEventLocationT,
   VibefireEventT,
 } from "@vibefire/models";
-import { type PartialDeepExceptRequired } from "@vibefire/utils";
 
 import { CreateCollectionIfDne, dfq } from "../utils";
 
@@ -119,6 +118,22 @@ export const defineBetweenLatLngIndex = async (faunaClient: Client) => {
   await dfq(faunaClient, q);
 };
 
+export const defineByLinkID = async (faunaClient: Client) => {
+  const linkIdField: keyof VibefireEventT = "linkId";
+  const q = fql`
+    Events.definition.update({
+      indexes: {
+        byLinkID: {
+          terms: [
+            { field: ${linkIdField} }
+          ],
+        },
+      }
+    })
+  `;
+  await dfq(faunaClient, q);
+};
+
 export const defineEventsUniqueConstraints = async (faunaClient: Client) => {
   const linkIdField: keyof VibefireEventT = "linkId";
   const q = fql`
@@ -133,7 +148,7 @@ export const defineEventsUniqueConstraints = async (faunaClient: Client) => {
 
 export const createEvent = async (
   faunaClient: Client,
-  createData: Partial<VibefireEventT>,
+  createData: PartialDeep<VibefireEventT>,
 ) => {
   const q = fql`
     Events.create(${createData}) {
@@ -166,6 +181,22 @@ export const updateEvent = async (
     throw new Error("Error updating event");
   }
   return res;
+};
+
+export const deleteEvent = async (
+  faunaClient: Client,
+  eventId: string,
+  organiserId: string,
+) => {
+  const q = fql`
+    let e = Events.byId(${eventId})
+    if (e?.organiserId == ${organiserId}) {
+      e.delete()
+    } else {
+      null
+    }
+  `;
+  return await dfq<{ id: string }>(faunaClient, q);
 };
 
 export const getEventFromIDByOrganiser = async (

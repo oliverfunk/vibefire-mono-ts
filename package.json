@@ -9,7 +9,7 @@
     "build": "turbo build",
     "clean": "git clean -xdf node_modules */**/node_modules",
     "vfa": "turbo dev --parallel --filter vibefire.app",
-    "app": "turbo dev --parallel --filter app.vibefire.native ----filter api.vibefire.app",
+    "app": "turbo dev --parallel --filter api.vibefire.app --filter app.vibefire.native",
     "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore --ignore-path .wrangler",
     "lint": "turbo lint && manypkg check",
     "lint:fix": "turbo lint:fix && manypkg fix",

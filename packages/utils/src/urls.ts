@@ -13,20 +13,20 @@ export const vibefireEventShareURL = (event: VibefireEventT) => {
   return `https://vifr.io/e/${event.linkId}`;
 };
 
-export const uberRequestToEventURL = (
+export const uberClientRequestToEventLocationURL = (
   uberClientID: string,
   event: VibefireEventT,
 ) => {
   const { lat, lng } = event.location.position;
   const { addressDescription } = event.location;
-  const queryParams = encodeQueryParameters({
+  const queryParams = new URLSearchParams({
     client_id: uberClientID,
     action: "setPickup",
     pickup: "my_location",
     "dropoff[latitude]": lat.toString(),
     "dropoff[longitude]": lng.toString(),
     "dropoff[nickname]": addressDescription,
-  });
+  }).toString();
   const url = `https://m.uber.com/ul/?${queryParams}`;
   return url;
 };

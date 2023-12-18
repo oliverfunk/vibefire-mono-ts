@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Text, View } from "react-native";
 import { type PartialDeep } from "type-fest";
 
@@ -13,6 +13,7 @@ type EventsListProps = {
   listTitle?: string;
   noEventsMessage?: string;
   showStatusBanner?: boolean;
+  sortAsc?: boolean;
 };
 
 export const EventsList = ({
@@ -21,7 +22,26 @@ export const EventsList = ({
   listTitle,
   noEventsMessage,
   showStatusBanner = false,
+  sortAsc = true,
 }: EventsListProps) => {
+  const sortedEvents = useMemo(() => {
+    return [...events].sort((a, b) => {
+      if (a.timeStartIsoNTZ && b.timeStartIsoNTZ) {
+        if (sortAsc) {
+          return (
+            new Date(a.timeStartIsoNTZ).getTime() -
+            new Date(b.timeStartIsoNTZ).getTime()
+          );
+        } else {
+          return (
+            new Date(b.timeStartIsoNTZ).getTime() -
+            new Date(a.timeStartIsoNTZ).getTime()
+          );
+        }
+      }
+      return 0;
+    });
+  }, [events, sortAsc]);
   const renderItem = useCallback(
     (event: PartialDeep<VibefireEventT>, item: React.Key) => (
       <View key={item}>
@@ -60,14 +80,14 @@ export const EventsList = ({
           <Text className="text-2xl font-bold">{listTitle}</Text>
         </View>
       )}
-      {events.length === 0 ? (
+      {sortedEvents.length === 0 ? (
         <View className="h-[30vh] items-center justify-center">
           <Text className="text-lg text-black">
             {noEventsMessage ? noEventsMessage : "No events here yet"}
           </Text>
         </View>
       ) : (
-        events.map(renderItem)
+        sortedEvents.map(renderItem)
       )}
     </View>
   );

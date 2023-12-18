@@ -46,6 +46,9 @@ export const navViewOrgClose = () => {
 export const navCreateEvent = () => {
   router.setParams({ create: "event" });
 };
+export const navCreateEventFromPrevious = () => {
+  router.setParams({ create: "event,fromPrevious" });
+};
 export const navCreateEventClose = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

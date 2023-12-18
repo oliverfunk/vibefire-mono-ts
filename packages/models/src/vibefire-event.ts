@@ -67,6 +67,9 @@ export const VibefireEventSchema = t.Object(
       { default: undefined },
     ),
 
+    dateCreatedUTC: t.String({ default: undefined }),
+    dateUpdatedUTC: t.String({ default: undefined }),
+
     organiserId: t.String({ default: undefined }),
     organiserName: t.String({ default: undefined }),
     organiserType: t.Union([t.Literal("user"), t.Literal("organisation")], {
