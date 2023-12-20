@@ -216,6 +216,23 @@ export const getEventFromIDByOrganiser = async (
   return await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
 };
 
+export const getEventFromLinkIdByOrganiser = async (
+  faunaClient: Client,
+  linkId: string,
+  organiserId: string,
+) => {
+  const _organiserField: keyof VibefireEventT = "organiserId";
+  const q = fql`
+    let e = Events.byLinkID(${linkId}).first()
+    if (e?.organiserId == ${organiserId}) {
+      e
+    } else {
+      null
+    }
+  `;
+  return await dfq<Partial<VibefireEventT> | null>(faunaClient, q);
+};
+
 export const getEventsByOrganiser = async (
   faunaClient: Client,
   organiserId: string,

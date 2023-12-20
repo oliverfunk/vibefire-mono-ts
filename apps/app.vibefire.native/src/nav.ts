@@ -32,11 +32,11 @@ export const navOwnEventsByOrganiser = () => {
   routerPush("/events-by-organiser");
 };
 
-export const navViewEvent = (eventId: string) => {
-  routerPush("/event/" + eventId);
+export const navViewEvent = (linkId: string) => {
+  routerPush("/event/" + linkId);
 };
-export const navViewEventAsPreview = (eventId: string) => {
-  navViewEvent(eventId);
+export const navViewEventAsPreview = (linkId: string) => {
+  navViewEvent(linkId);
   router.setParams({ isPreview: "true" });
 };
 
@@ -48,8 +48,8 @@ export const navSetFromPrevious = () => {
   router.setParams({ fromPrevious: "true" });
 };
 
-export const navManageEvent = (eventId: string) => {
-  routerPush("/event/" + eventId + "/manage");
+export const navManageEvent = (linkId: string) => {
+  routerPush("/event/" + linkId + "/manage");
 };
 // export const navManageEventReplace = (eventId: string) => {
 //   router.replace("/event/" + eventId + "/manage");

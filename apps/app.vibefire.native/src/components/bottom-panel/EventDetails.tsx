@@ -188,8 +188,7 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
                 }
                 onPress={() => {
                   setMenuVisible(false);
-                  close();
-                  navManageEvent(event.id);
+                  navManageEvent(event.linkId);
                 }}
               />
             ) : (
@@ -498,9 +497,9 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   );
 };
 
-const EventDetailsController = (props: { eventId: string }) => {
-  const { eventId } = props;
-  const eventQuery = trpc.events.eventForExternalView.useQuery({ eventId });
+const EventDetailsController = (props: { linkId: string }) => {
+  const { linkId } = props;
+  const eventQuery = trpc.events.eventForExternalView.useQuery({ linkId });
 
   switch (eventQuery.status) {
     case "loading":
@@ -512,13 +511,11 @@ const EventDetailsController = (props: { eventId: string }) => {
   }
 };
 
-const EventDetailsPreviewController = (props: { eventId: string }) => {
-  const { eventId } = props;
+const EventDetailsPreviewController = (props: { linkId: string }) => {
+  const { linkId } = props;
   const eventQuery = trpc.events.eventAllInfoForManagement.useQuery({
-    eventId,
+    linkId,
   });
-
-  console.log("EventDetailsPreviewController");
 
   switch (eventQuery.status) {
     case "loading":
@@ -534,7 +531,7 @@ export const EventDetails = (props: { linkId: string; isPreview: boolean }) => {
   const { linkId, isPreview } = props;
 
   if (isPreview) {
-    <EventDetailsPreviewController eventId={linkId} />;
+    return <EventDetailsPreviewController linkId={linkId} />;
   }
-  return <EventDetailsController eventId={linkId} />;
+  return <EventDetailsController linkId={linkId} />;
 };

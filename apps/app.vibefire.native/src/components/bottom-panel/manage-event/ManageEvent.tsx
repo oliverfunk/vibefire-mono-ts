@@ -2,14 +2,11 @@ import { trpc } from "~/apis/trpc-client";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { ManagementView } from "./views/ManageEventView";
 
-const ManageEventController = (props: {
-  eventId: string;
-  section?: string;
-}) => {
-  const { eventId, section } = props;
+const ManageEventController = (props: { linkId: string; section?: string }) => {
+  const { linkId, section } = props;
 
   const eventForManagement = trpc.events.eventAllInfoForManagement.useQuery({
-    eventId,
+    linkId,
   });
 
   switch (eventForManagement.status) {
@@ -31,5 +28,5 @@ const ManageEventController = (props: {
 export const ManageEvent = (props: { linkId: string; section?: string }) => {
   const { linkId, section } = props;
 
-  return <ManageEventController eventId={linkId} section={section} />;
+  return <ManageEventController linkId={linkId} section={section} />;
 };
