@@ -44,7 +44,7 @@ export const EditEventForm = (props: {
       section === "images"
     ) {
       close();
-      navManageEvent(eventId);
+      navManageEvent(currentEventData.linkId!);
     }
     setEditedEventData(currentEventData);
   }, [close, currentEventData, editedEventData.state, eventId, section]);
@@ -194,8 +194,7 @@ export const EditEventForm = (props: {
                   navEditEventSetSection("images");
                   break;
                 case "images":
-                  // close();
-                  navManageEvent(eventId);
+                  navManageEvent(currentEventData.linkId!);
                   break;
               }
             }

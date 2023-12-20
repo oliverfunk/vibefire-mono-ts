@@ -127,18 +127,18 @@ export const createUDFFilterEventIsPublishedAndViewable = async (
 //   `;
 //   return await dfq(faunaClient, q);
 // };
-export const callEventPublishedByIdForExternalUser = async (
+export const callEventPublishedByLinkIdForExternalUser = async (
   faunaClient: Client,
   userAidOrAnon: string,
-  eventId: string,
+  linkId: string,
 ) => {
   const q = fql`
     let userAidOrAnon = ${userAidOrAnon}
-    let eventId = ${eventId}
+    let linkId = ${linkId}
 
     let user = Users.withAid(userAidOrAnon).first() ?? {aid: "anon"}
-    let event = Events.byId(eventId)
-    if(event.exists() && filterEventIsPublishedAndViewable(user, eventId, event!)){
+    let event = Events.byLinkID(linkId).first()!
+    if(event.exists() && filterEventIsPublishedAndViewable(user, event!.id, event!)){
       event
     }else{
       null

@@ -60,7 +60,7 @@ export const eventsRouter = router({
     .input(
       tbValidator(
         t.Object({
-          eventId: t.String(),
+          linkId: t.String(),
           organisationId: t.Optional(t.String()),
         }),
       ),
@@ -75,7 +75,7 @@ export const eventsRouter = router({
     .query(async ({ ctx, input }) => {
       return await ctx.fauna.eventAllInfoForManagement(
         ctx.auth,
-        input.eventId,
+        input.linkId,
         input.organisationId,
       );
     }),
@@ -83,7 +83,7 @@ export const eventsRouter = router({
     .input(
       tbValidator(
         t.Object({
-          eventId: t.String(),
+          linkId: t.String(),
         }),
       ),
     )
@@ -91,7 +91,7 @@ export const eventsRouter = router({
     .query(async ({ ctx, input }) => {
       return await ctx.fauna.publishedEventForExternalView(
         ctx.auth.userId ?? "anon",
-        input.eventId,
+        input.linkId,
       );
     }),
   createEvent: authedProcedure
@@ -270,7 +270,7 @@ export const eventsRouter = router({
       if (!ctx.auth.userId) {
         return [];
       }
-      const res = await ctx.fauna.eventFromStarredOwnedInPeriodForUser(
+      const res = await ctx.fauna.eventsFromStarredOwnedInPeriodForUser(
         ctx.auth,
         input.onDateIsoNTZ,
         input.isUpcoming,

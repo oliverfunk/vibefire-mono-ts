@@ -167,7 +167,7 @@ const EventMapComponent = () => {
             }}
             anchor={{ x: 0.5, y: 1 }} // bottom center
             onPress={() => {
-              navViewEvent(event.id);
+              navViewEvent(event.linkId);
               mvRef.current?.animateCamera({
                 center: {
                   latitude: event.location.position.lat,

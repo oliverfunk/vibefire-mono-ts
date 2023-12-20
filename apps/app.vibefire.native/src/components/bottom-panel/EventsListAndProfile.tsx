@@ -224,8 +224,8 @@ const _EventsList = () => {
           <>
             <EventsList
               events={upcomingEvents}
-              onEventPress={(eventId) => {
-                navViewEvent(eventId);
+              onEventPress={(_eventId, event) => {
+                navViewEvent(event.linkId!);
               }}
               listTitle="Upcoming Starred Events"
             />
@@ -235,8 +235,8 @@ const _EventsList = () => {
         <EventsList
           events={mapPosDateEvents}
           noEventsMessage="No public events here yet"
-          onEventPress={(eventId) => {
-            navViewEvent(eventId);
+          onEventPress={(_eventId, event) => {
+            navViewEvent(event.linkId!);
           }}
         />
       </View>

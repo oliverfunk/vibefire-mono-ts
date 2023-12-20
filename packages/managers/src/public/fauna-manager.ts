@@ -4,7 +4,6 @@ import { DateTime } from "luxon";
 import type { PartialDeep } from "type-fest";
 
 import {
-  TimePeriodT,
   VibefireEventManagementSchema,
   VibefireEventSchema,
   VibefireEventTimelineElementSchema,
@@ -23,7 +22,7 @@ import {
 import {
   blockOrganiser,
   callAuthedEventsStarredOwnedDuringPeriods,
-  callEventPublishedByIdForExternalUser,
+  callEventPublishedByLinkIdForExternalUser,
   callEventsInBBoxDuringPeriodForUser,
   createEvent,
   createEventManagement,
@@ -31,6 +30,7 @@ import {
   deleteEvent,
   deleteUser,
   getEventFromIDByOrganiser,
+  getEventFromLinkIdByOrganiser,
   getEventManagementFromEventIDByOrganiser,
   getEventsByOrganiser,
   getUserByAid,
@@ -46,7 +46,6 @@ import {
   h3ToH3Parents,
   isoNTZToTZEpochSecs,
   latLngPositionToH3,
-  nowAsUTC,
   nowAtUTC,
   removeUndef,
   tbValidator,
@@ -111,27 +110,30 @@ export class FaunaManager {
 
   async eventAllInfoForManagement(
     userAc: ClerkSignedInAuthContext,
-    eventId: string,
+    linkId: string,
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
 
     const organiserId = organisationId || userAc.userId;
 
-    const event = await getEventFromIDByOrganiser(
+    const event = await getEventFromLinkIdByOrganiser(
       this.faunaClient,
-      eventId,
+      linkId,
       organiserId,
     );
-    const eventMang = await getEventManagementFromEventIDByOrganiser(
+    if (!event) {
+      throw new Error("Event not found");
+    }
+    const eventManage = await getEventManagementFromEventIDByOrganiser(
       this.faunaClient,
-      eventId,
+      event.id!,
       organiserId,
     );
     // const eOrg
 
     const e = tbValidator(VibefireEventSchema)(event);
-    const em = tbValidator(VibefireEventManagementSchema)(eventMang);
+    const em = tbValidator(VibefireEventManagementSchema)(eventManage);
 
     return {
       event: e,
@@ -139,11 +141,11 @@ export class FaunaManager {
     };
   }
 
-  async publishedEventForExternalView(userAidOrAnon: string, eventId: string) {
-    const e = await callEventPublishedByIdForExternalUser(
+  async publishedEventForExternalView(userAidOrAnon: string, linkId: string) {
+    const e = await callEventPublishedByLinkIdForExternalUser(
       this.faunaClient,
       userAidOrAnon,
-      eventId,
+      linkId,
     );
     if (!e) {
       throw new Error("Event unavailable");
@@ -209,15 +211,15 @@ export class FaunaManager {
 
   async eventCreateFromPrevious(
     userAc: ClerkSignedInAuthContext,
-    eventId: string,
+    linkId: string,
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await getEventFromIDByOrganiser(
+    const e = await getEventFromLinkIdByOrganiser(
       this.faunaClient,
-      eventId,
+      linkId,
       organiserId,
     );
     if (!e) {
@@ -605,7 +607,7 @@ export class FaunaManager {
     await updateEvent(this.faunaClient, eventId, organiserId, updateData);
   }
 
-  async eventFromStarredOwnedInPeriodForUser(
+  async eventsFromStarredOwnedInPeriodForUser(
     userAc: ClerkSignedInAuthContext,
     onDateIsoNTZ: string,
     isUpcoming: boolean,

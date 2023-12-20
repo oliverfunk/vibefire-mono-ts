@@ -211,7 +211,7 @@ export const ManagementView = (props: {
                   : undefined,
               }}
               onPress={() => {
-                navViewEventAsPreview(event.id);
+                navViewEventAsPreview(event.linkId);
               }}
             />
           </FormTitleInput>
