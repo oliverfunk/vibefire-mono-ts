@@ -37,12 +37,10 @@ export const StandardImage = ({
 };
 
 export const EventImage = ({
-  eventId,
   imgIdKey,
   alt,
   rounded = false,
 }: {
-  eventId: string;
   imgIdKey?: string;
   alt: ImageProps["alt"];
   rounded?: boolean;
@@ -55,7 +53,7 @@ export const EventImage = ({
       return imgIdKey;
     }
     return imgUrl(imgIdKey + "/public");
-  }, [eventId, imgIdKey]);
+  }, [imgIdKey]);
 
   return (
     <StandardImage

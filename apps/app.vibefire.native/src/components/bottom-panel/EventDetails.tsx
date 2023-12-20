@@ -383,11 +383,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
       <View className="relative">
         {/* Background image */}
         {imgs.length === 1 ? (
-          <EventImage
-            eventId={event.id}
-            imgIdKey={imgs[0]}
-            alt="Event Banner"
-          />
+          <EventImage imgIdKey={imgs[0]} alt="Event Banner" />
         ) : (
           <EventImageCarousel
             eventId={event.id}

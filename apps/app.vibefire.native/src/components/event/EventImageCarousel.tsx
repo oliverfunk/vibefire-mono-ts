@@ -92,11 +92,7 @@ export const EventImageCarousel = (props: {
             ? renderItem
             : ({ index, item: imgIdKey }) => {
                 return (
-                  <EventImage
-                    eventId={eventId}
-                    imgIdKey={imgIdKey}
-                    alt={`Image ${index}`}
-                  />
+                  <EventImage imgIdKey={imgIdKey} alt={`Image ${index}`} />
                 );
               }
         }

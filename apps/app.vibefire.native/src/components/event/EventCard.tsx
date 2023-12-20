@@ -40,7 +40,6 @@ export const EventCard = ({
   return (
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
       <EventImage
-        eventId={eventId}
         imgIdKey={event.bannerImgKey}
         rounded={true}
         alt="Event Banner"
