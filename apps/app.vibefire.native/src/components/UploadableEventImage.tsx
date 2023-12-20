@@ -187,12 +187,7 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
             : undefined
         }
       >
-        <EventImage
-          eventId={eventId}
-          imgIdKey={imgIdKey}
-          alt={alt}
-          rounded={rounded}
-        />
+        <EventImage imgIdKey={imgIdKey} alt={alt} rounded={rounded} />
       </Pressable>
       {onClosePress && (
         <TouchableOpacity
