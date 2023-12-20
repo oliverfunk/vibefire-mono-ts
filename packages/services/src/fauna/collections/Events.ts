@@ -191,7 +191,7 @@ export const deleteEvent = async (
   const q = fql`
     let e = Events.byId(${eventId})
     if (e?.organiserId == ${organiserId}) {
-      e.delete()
+      e!.delete()
     } else {
       null
     }

@@ -128,6 +128,22 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
+  deleteEvent: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          organisationId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.fauna.eventDelete(
+        ctx.auth,
+        input.eventId,
+        input.organisationId,
+      );
+    }),
   updateEvent: authedProcedure
     .input(
       tbValidator(

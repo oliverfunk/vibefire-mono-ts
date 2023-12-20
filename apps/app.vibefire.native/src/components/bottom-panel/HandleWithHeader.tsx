@@ -25,7 +25,7 @@ export const HandleWithHeader = (
               close();
             }}
           >
-            <FontAwesome name="close" size={10} color="white" />
+            <FontAwesome name="chevron-down" size={10} color="white" />
           </TouchableOpacity>
         </View>
       </LinearRedOrangeView>

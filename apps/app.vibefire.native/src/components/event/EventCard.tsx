@@ -1,15 +1,12 @@
-import {
-  Pressable,
-  Text,
-  View,
-  type GestureResponderEvent,
-} from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome } from "@expo/vector-icons";
 import { type DateTime } from "luxon";
 
 import { type VibefireEventT } from "@vibefire/models";
 import { organisationProfileImagePath } from "@vibefire/utils";
 
+import { IconButton } from "~/components/IconButton";
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
@@ -26,7 +23,8 @@ type EventCardProps = {
     timeEnd?: DateTime;
     bannerImgKey?: string;
   };
-  onPress: (event: GestureResponderEvent) => void;
+  onPress: () => void;
+  onCrossPress?: () => void;
   showStatusBanner?: boolean;
 };
 
@@ -36,6 +34,7 @@ export const EventCard = ({
   published,
   eventInfo: event,
   onPress,
+  onCrossPress,
   showStatusBanner = false,
 }: EventCardProps) => {
   return (
@@ -82,6 +81,18 @@ export const EventCard = ({
         )}
         <Text className="ml-2 text-lg text-white">{event.organiserName}</Text>
       </LinearGradient>
+
+      {onCrossPress && (
+        <View className="absolute right-[2%] top-[2%]">
+          <IconButton
+            icon={<FontAwesome name="close" size={15} color="white" />}
+            onPress={() => {
+              onCrossPress();
+            }}
+            cn="bg-black/80"
+          />
+        </View>
+      )}
 
       <LinearGradient
         className="absolute bottom-[-20px] left-0 w-full rounded-b-xl p-2 pt-4"

@@ -10,6 +10,10 @@ import { EventCard } from "./EventCard";
 type EventsListProps = {
   events: PartialDeep<VibefireEventT>[];
   onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void;
+  onEventCrossPress?: (
+    eventId: string,
+    event: PartialDeep<VibefireEventT>,
+  ) => void;
   listTitle?: string;
   noEventsMessage?: string;
   showStatusBanner?: boolean;
@@ -19,6 +23,7 @@ type EventsListProps = {
 export const EventsList = ({
   events,
   onEventPress,
+  onEventCrossPress,
   listTitle,
   noEventsMessage,
   showStatusBanner = false,
@@ -67,11 +72,18 @@ export const EventsList = ({
           onPress={() => {
             onEventPress(event.id!, event);
           }}
+          onCrossPress={
+            onEventCrossPress
+              ? () => {
+                  onEventCrossPress(event.id!, event);
+                }
+              : undefined
+          }
           showStatusBanner={showStatusBanner}
         />
       </View>
     ),
-    [onEventPress, showStatusBanner],
+    [onEventCrossPress, onEventPress, showStatusBanner],
   );
   return (
     <View className="flex-col space-y-5 py-5">

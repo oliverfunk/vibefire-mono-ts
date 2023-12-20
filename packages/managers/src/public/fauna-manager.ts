@@ -168,11 +168,12 @@ export class FaunaManager {
     );
     const draftEvents = organiserEvents.filter((e) => e.state === "draft");
     const readyEvents = organiserEvents.filter((e) => e.state === "ready");
+
     if (draftEvents.length >= 5) {
       throw new Error("Too many draft events");
     }
     if (draftEvents.length + readyEvents.length >= 10) {
-      throw new Error("Too many draft and ready events");
+      throw new Error("Too many draft or ready events");
     }
 
     const e = Value.Create(VibefireEventSchema);
