@@ -194,7 +194,6 @@ export const ManagementView = (props: {
         <View>
           <FormTitleInput title="Event Card" underneathText="(Tap to preview)">
             <EventCard
-              eventId={event.id}
               state="ready"
               published={event.published}
               eventInfo={{

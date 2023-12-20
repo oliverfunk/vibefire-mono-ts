@@ -63,12 +63,11 @@ const PaginationItem = (props: {
 };
 
 export const EventImageCarousel = (props: {
-  eventId: string;
   imgIdKeys: string[];
   width: number;
   renderItem?: (r: CarouselRenderItemInfo<string>) => React.JSX.Element;
 }) => {
-  const { eventId, imgIdKeys: imgIdKeys, width, renderItem } = props;
+  const { imgIdKeys: imgIdKeys, width, renderItem } = props;
 
   const progressValue = useSharedValue<number>(0);
 

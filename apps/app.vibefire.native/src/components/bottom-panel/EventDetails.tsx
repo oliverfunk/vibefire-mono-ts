@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
@@ -36,18 +36,9 @@ import { EventImage, StandardImage } from "~/components/event/EventImage";
 import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { trpc } from "~/apis/trpc-client";
-import {
-  eventMapMapRefAtom,
-  mainBottomSheetPresentToggleAtom,
-  userAtom,
-  userSessionRetryAtom,
-} from "~/atoms";
+import { eventMapMapRefAtom, userAtom, userSessionRetryAtom } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
-import {
-  navHomeWithMinimise,
-  navHomeWithProfileSelected,
-  navManageEvent,
-} from "~/nav";
+import { navHomeWithMinimise, navManageEvent } from "~/nav";
 import { LocationDisplayMap } from "../LocationDisplayMap";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
@@ -385,11 +376,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
         {imgs.length === 1 ? (
           <EventImage imgIdKey={imgs[0]} alt="Event Banner" />
         ) : (
-          <EventImageCarousel
-            eventId={event.id}
-            imgIdKeys={imgs}
-            width={width}
-          />
+          <EventImageCarousel imgIdKeys={imgs} width={width} />
         )}
 
         <LinearGradient

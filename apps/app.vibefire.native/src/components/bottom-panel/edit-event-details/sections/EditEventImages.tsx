@@ -65,7 +65,6 @@ export const EditEventImages = (props: FormSectionProps) => {
         >
           <EventImageCarousel
             width={width}
-            eventId={eventData.id!}
             imgIdKeys={selectedAdditionalImages}
             renderItem={({ index, item }) => {
               return (

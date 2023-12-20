@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Text, View } from "react-native";
 import { type PartialDeep } from "type-fest";
 
@@ -51,7 +51,6 @@ export const EventsList = ({
     (event: PartialDeep<VibefireEventT>, item: React.Key) => (
       <View key={item}>
         <EventCard
-          eventId={event.id!}
           state={event.state!}
           published={event.published!}
           eventInfo={{
