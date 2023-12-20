@@ -7,7 +7,7 @@ import { trpc } from "~/apis/trpc-client";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { EditEventForm } from "./EditEventDetailsForm";
 
-const EditEventController = (props: { eventId: string; section: string }) => {
+const EditEventController = (props: { eventId: string; section?: string }) => {
   const { eventId, section } = props;
 
   const eventForEdit = trpc.events.eventForEdit.useQuery({
@@ -49,10 +49,11 @@ const EditEventController = (props: { eventId: string; section: string }) => {
   }
 };
 
-export const EditEventDetails = (props: { queryString: string }) => {
-  const { queryString } = props;
-
-  const [eventId, section] = queryString.split(",", 2);
+export const EditEventDetails = (props: {
+  linkId: string;
+  section?: string;
+}) => {
+  const { linkId: eventId, section } = props;
 
   return <EditEventController eventId={eventId} section={section} />;
 };

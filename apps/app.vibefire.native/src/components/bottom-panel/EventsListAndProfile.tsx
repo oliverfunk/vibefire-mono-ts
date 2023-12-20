@@ -1,9 +1,6 @@
-import { forwardRef, useMemo, useState, type Ref } from "react";
+import { useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { type BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireUserT } from "@vibefire/models";
@@ -16,13 +13,9 @@ import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
-import {
-  BottomPanelHandle,
-  SEARCH_HANDLE_HEIGHT,
-} from "~/components/bottom-panel/BottomPanelHandle";
 import { EventsList } from "~/components/event/EventList";
 import { VibefireIconImage } from "~/components/VibefireIconImage";
-import { profileSelectedAtom, userAtom, userSessionRetryAtom } from "~/atoms";
+import { userAtom, userSessionRetryAtom } from "~/atoms";
 import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
 import {
   FormTextInput,
@@ -251,36 +244,12 @@ const _EventsList = () => {
   );
 };
 
-const _ViewControl = (props: unknown, ref: Ref<BottomSheetModalMethods>) => {
-  const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => [SEARCH_HANDLE_HEIGHT, "80%"], []);
+export const EventsListAndProfile = (props: { profileSelected?: boolean }) => {
+  const { profileSelected } = props;
 
-  const profileSelected = useAtomValue(profileSelectedAtom);
+  if (profileSelected) {
+    return <_Profile />;
+  }
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      enableDismissOnClose={false}
-      enablePanDownToClose={false}
-      backgroundStyle={{
-        backgroundColor: "rgba(255,255,255,0.9)",
-      }}
-      bottomInset={insets.bottom}
-      index={0}
-      snapPoints={snapPoints}
-      handleHeight={SEARCH_HANDLE_HEIGHT}
-      handleComponent={BottomPanelHandle}
-    >
-      {/* This is supposed to render both
-      profile and events list but only display one */}
-      {
-        {
-          true: <_Profile />,
-          false: <_EventsList />,
-        }[profileSelected ? "true" : "false"]
-      }
-    </BottomSheetModal>
-  );
+  return <_EventsList />;
 };
-
-export const EventsListAndProfile = forwardRef(_ViewControl);

@@ -19,7 +19,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
+import { useBottomSheet, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
@@ -43,7 +43,11 @@ import {
   userSessionRetryAtom,
 } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
-import { navClearAll, navManageEvent, navViewOrg } from "~/nav";
+import {
+  navHomeWithMinimise,
+  navHomeWithProfileSelected,
+  navManageEvent,
+} from "~/nav";
 import { LocationDisplayMap } from "../LocationDisplayMap";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
@@ -263,9 +267,7 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
 const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
   const { event } = props;
 
-  const onOrganiserPress = useCallback(() => {
-    navViewOrg(event.organiserId);
-  }, [event.organiserId]);
+  const onOrganiserPress = useCallback(() => {}, [event.organiserId]);
 
   return (
     <View className="flex-row items-center justify-center space-x-4 bg-black py-2 pl-2">
@@ -305,6 +307,8 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
 
 const EventDetailsView = (props: { event: VibefireEventT }) => {
   const { event } = props;
+
+  const { dismissAll } = useBottomSheetModal();
 
   const width = Dimensions.get("window").width;
 
@@ -370,12 +374,13 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
         longitude: event.location.position.lng,
       },
     });
-    navClearAll();
-    setPresentMainToggle((prev) => ({
-      initial: false,
-      present: false,
-      toggle: !prev.toggle,
-    }));
+    // dismissAll();
+    navHomeWithMinimise();
+    // setPresentMainToggle((prev) => ({
+    //   initial: false,
+    //   present: false,
+    //   toggle: !prev.toggle,
+    // }));
   }, [event, eventMapMapRef, setPresentMainToggle, setSelectedDateDT]);
 
   return (
@@ -548,17 +553,11 @@ const EventDetailsPreviewController = (props: { eventId: string }) => {
   }
 };
 
-export const EventDetails = (props: { eventQuery: string }) => {
-  const { eventQuery } = props;
+export const EventDetails = (props: { linkId: string; isPreview: boolean }) => {
+  const { linkId, isPreview } = props;
 
-  const [eventId, preview] = useMemo(() => {
-    const [eventId, preview] = eventQuery.split(",");
-    return [eventId, preview === "preview"];
-  }, [eventQuery]);
-
-  return preview ? (
-    <EventDetailsPreviewController eventId={eventId} />
-  ) : (
-    <EventDetailsController eventId={eventId} />
-  );
+  if (isPreview) {
+    <EventDetailsPreviewController eventId={linkId} />;
+  }
+  return <EventDetailsController eventId={linkId} />;
 };

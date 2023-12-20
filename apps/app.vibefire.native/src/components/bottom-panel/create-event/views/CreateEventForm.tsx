@@ -4,7 +4,7 @@ import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
-import { navCreateEventFromPrevious, navEditEvent } from "~/nav";
+import { navEditEvent, navSetFromPrevious } from "~/nav";
 import {
   FormTitleTextInput,
   ScrollViewSheet,
@@ -71,7 +71,7 @@ export const CreateEventForm = () => {
         <TouchableOpacity
           className="rounded-lg bg-black px-4 py-2"
           onPress={() => {
-            navCreateEventFromPrevious();
+            navSetFromPrevious();
           }}
         >
           <Text className="text-center text-xl text-white">

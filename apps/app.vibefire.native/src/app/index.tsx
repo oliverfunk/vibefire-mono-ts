@@ -1,60 +1,33 @@
-import { useLayoutEffect } from "react";
-import * as Linking from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 
-import { BottomPanel } from "~/components/bottom-panel/BottomPanel";
-import { EventMap } from "~/components/event/EventMap";
-import { NoTopContainer } from "~/components/NoTopContainer";
-import { navViewEvent } from "~/nav";
+import {
+  BottomPanelHandle,
+  SEARCH_HANDLE_HEIGHT,
+} from "~/components/bottom-panel/BottomPanelHandle";
+import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
+import { EventsListAndProfile } from "~/components/bottom-panel/EventsListAndProfile";
+import { useTsQueryParam } from "~/hooks/useTs";
 
-const Home = () => {
-  const params = useLocalSearchParams<{
-    eventId?: string;
-    orgId?: string;
-    manageEvent?: string;
-    eventsBy?: string;
-    editEvent?: string;
-    create?: string;
+const Screen = () => {
+  const { profileSelected, minimise } = useLocalSearchParams<{
+    profileSelected?: string;
+    minimise?: string;
   }>();
 
-  const url = Linking.useURL();
-
-  useLayoutEffect(() => {
-    if (url) {
-      const { hostname, path, queryParams } = Linking.parse(url);
-      if (path) {
-        const [pathDirective, data] = path.split("/").filter((x) => x !== "");
-        console.log(
-          `deeplink - pathDirective: ${pathDirective}, data: ${data}`,
-        );
-        if (pathDirective === "e") {
-          navViewEvent(data);
-        }
-      }
-
-      console.log(
-        `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
-          queryParams,
-        )}`,
-      );
-    }
-  }, [url]);
-
-  console.log("routing params");
-  console.log(JSON.stringify(params, null, 2));
+  const ts = useTsQueryParam();
 
   return (
-    <NoTopContainer>
-      <EventMap />
-      <BottomPanel
-        eventID={params.eventId}
-        orgID={params.orgId}
-        manageEvent={params.manageEvent}
-        eventsBy={params.eventsBy}
-        editEvent={params.editEvent}
-        create={params.create}
-      />
-    </NoTopContainer>
+    <BottomPanelModal
+      ts={ts}
+      handleHeight={SEARCH_HANDLE_HEIGHT}
+      handleComponent={BottomPanelHandle}
+      backgroundColor="rgba(255,255,255,0.9)"
+      snapPoints={[SEARCH_HANDLE_HEIGHT, "80%"]}
+      minimiseTwiddle={minimise}
+    >
+      <EventsListAndProfile profileSelected={!!profileSelected} />
+    </BottomPanelModal>
   );
 };
-export default Home;
+export default Screen;

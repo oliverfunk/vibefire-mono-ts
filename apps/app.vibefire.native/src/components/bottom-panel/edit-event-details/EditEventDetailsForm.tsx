@@ -11,7 +11,7 @@ import { type PartialDeep } from "type-fest";
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { navEditEventEditSection, navManageEvent } from "~/nav";
+import { navEditEventSetSection, navManageEvent } from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
 import { BackNextButtons, ScrollViewSheetWithRef } from "../_shared";
 import { EditEventDescription } from "./sections/EditEventDescriptions";
@@ -136,13 +136,13 @@ export const EditEventForm = (props: {
                 close();
                 break;
               case "location":
-                navEditEventEditSection(eventId, "description");
+                navEditEventSetSection("description");
                 break;
               case "times":
-                navEditEventEditSection(eventId, "location");
+                navEditEventSetSection("location");
                 break;
               case "images":
-                navEditEventEditSection(eventId, "times");
+                navEditEventSetSection("times");
                 break;
             }
             formRef.current?.scrollTo({
@@ -185,16 +185,16 @@ export const EditEventForm = (props: {
               setDisplayValidations(false);
               switch (section) {
                 case "description":
-                  navEditEventEditSection(eventId, "location");
+                  navEditEventSetSection("location");
                   break;
                 case "location":
-                  navEditEventEditSection(eventId, "times");
+                  navEditEventSetSection("times");
                   break;
                 case "times":
-                  navEditEventEditSection(eventId, "images");
+                  navEditEventSetSection("images");
                   break;
                 case "images":
-                  close();
+                  // close();
                   navManageEvent(eventId);
                   break;
               }

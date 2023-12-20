@@ -1,80 +1,62 @@
 import { router } from "expo-router";
 
-import { NavMainQueryParamsT, type EditEventFormSectionT } from "./types";
+import { type EditEventFormSectionT } from "./types";
 
-export const navClearAll = () => {
-  router.setParams({
-    eventId: undefined,
-    editEvent: undefined,
-    manageEvent: undefined,
-    orgId: undefined,
-    eventsBy: undefined,
-    create: undefined,
-  });
+const routerPush = (path: string) => {
+  router.push(path);
+  router.setParams({ ts: new Date().getTime().toString() });
 };
 
-export const navOwnEventsByOrganiser = (organiserId?: string) => {
-  router.setParams({ eventsBy: organiserId ?? "personal" });
+export const navHomeWithProfileSelected = (selected?: boolean) => {
+  routerPush("/");
+  if (selected === true) {
+    router.setParams({ profileSelected: "true" });
+  } else if (selected === false) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    router.setParams({ profileSelected: undefined });
+  }
 };
-export const navOwnEventsByOrganiserClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ eventsBy: undefined });
+export const navHomeWithMinimise = () => {
+  routerPush("/");
+  router.setParams({ minimise: "true" + Math.random() });
+};
+
+export const navPop = () => {
+  if (router.canGoBack()) {
+    router.back();
+  }
+};
+
+export const navOwnEventsByOrganiser = () => {
+  routerPush("/events-by-organiser");
 };
 
 export const navViewEvent = (eventId: string) => {
-  router.setParams({ eventId: eventId });
+  routerPush("/event/" + eventId);
 };
 export const navViewEventAsPreview = (eventId: string) => {
-  router.setParams({ eventId: `${eventId},preview` });
-};
-export const navViewEventClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ eventId: undefined });
-};
-
-export const navViewOrg = (orgId: string) => {
-  router.setParams({ orgId: orgId });
-};
-export const navViewOrgClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ orgId: undefined });
+  navViewEvent(eventId);
+  router.setParams({ isPreview: "true" });
 };
 
 export const navCreateEvent = () => {
-  router.setParams({ create: "event" });
+  routerPush("/event/create");
 };
-export const navCreateEventFromPrevious = () => {
-  router.setParams({ create: "event,fromPrevious" });
-};
-export const navCreateEventClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ create: undefined });
-};
-
-export const navEditEvent = (eventId: string) => {
-  router.setParams({ editEvent: eventId });
-};
-export const navEditEventClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ editEvent: undefined });
-};
-export const navEditEventEditSection = (
-  eventId: string,
-  section: EditEventFormSectionT,
-) => {
-  router.setParams({ editEvent: `${eventId},${section}` });
+export const navSetFromPrevious = () => {
+  navCreateEvent();
+  router.setParams({ fromPrevious: "true" });
 };
 
 export const navManageEvent = (eventId: string) => {
-  router.setParams({ manageEvent: eventId });
+  routerPush("/event/" + eventId + "/manage");
 };
-export const navManageEventClose = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  router.setParams({ manageEvent: undefined });
+// export const navManageEventReplace = (eventId: string) => {
+//   router.replace("/event/" + eventId + "/manage");
+// };
+export const navEditEvent = (eventId: string) => {
+  routerPush("/event/" + eventId + "/edit");
+};
+export const navEditEventSetSection = (section: EditEventFormSectionT) => {
+  router.setParams({ section });
 };

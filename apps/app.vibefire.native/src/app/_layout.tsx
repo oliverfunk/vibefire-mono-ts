@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import Toast from "react-native-toast-message";
-import { Stack } from "expo-router";
+import * as Linking from "expo-linking";
+import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { ClerkLoaded } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
@@ -10,6 +11,11 @@ import * as Sentry from "sentry-expo";
 import AppProviders from "~/providers";
 
 import "~/global.css";
+
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+
+import { EventMap } from "~/components/event/EventMap";
+import { NoTopContainer } from "~/components/NoTopContainer";
 
 const routingInstrumentation =
   new Sentry.Native.ReactNavigationInstrumentation();
@@ -42,6 +48,14 @@ const RootLayout = () => {
     })();
   }, [fontsLoaded]);
 
+  const pathname = usePathname();
+  const params = useGlobalSearchParams();
+
+  useEffect(() => {
+    console.log("pathname", pathname);
+    console.log("path params", JSON.stringify(params, null, 2));
+  }, [pathname, params]);
+
   if (!fontsLoaded) {
     return null;
   }
@@ -49,18 +63,18 @@ const RootLayout = () => {
   return (
     <AppProviders>
       <ClerkLoaded>
-        {/* Idk what this is */}
-        <StatusBar />
-        <Stack>
-          <Stack.Screen
-            name="index"
-            options={{
-              // Hide the header for all other routes.
-              headerShown: false,
-            }}
-          />
-        </Stack>
-        <Toast />
+        <BottomSheetModalProvider>
+          <NoTopContainer>
+            <StatusBar />
+            <EventMap />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            />
+            <Toast />
+          </NoTopContainer>
+        </BottomSheetModalProvider>
       </ClerkLoaded>
     </AppProviders>
   );

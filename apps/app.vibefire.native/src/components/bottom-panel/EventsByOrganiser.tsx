@@ -9,9 +9,11 @@ import { trpc } from "~/apis/trpc-client";
 import { navEditEvent, navManageEvent } from "~/nav";
 import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
 
-const EventsByOrganiserView: React.FC<{
+const EventsByOrganiserView = (props: {
   events: PartialDeep<VibefireEventT>[];
-}> = ({ events }) => {
+}) => {
+  const { events } = props;
+
   return (
     <ScrollViewSheet>
       <View className="flex-col items-center justify-center space-y-4 px-2">
