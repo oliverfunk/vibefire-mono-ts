@@ -10,7 +10,6 @@ import { IconButton } from "~/components/IconButton";
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
-  eventId: string;
   state: VibefireEventT["state"];
   published: VibefireEventT["published"];
   eventInfo: {
@@ -29,7 +28,6 @@ type EventCardProps = {
 };
 
 export const EventCard = ({
-  eventId,
   state,
   published,
   eventInfo: event,
