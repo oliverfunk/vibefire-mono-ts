@@ -197,6 +197,8 @@ export class FaunaManager {
 
     e.type = "one-time"; // by default
     e.linkId = crypto.randomUUID().slice(-9);
+    e.dateCreatedUTC = nowAtUTC().toISO()!;
+    e.dateUpdatedUTC = nowAtUTC().toISO()!;
 
     removeUndef(e);
 

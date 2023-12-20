@@ -1,10 +1,8 @@
 import { CreateEventForm } from "./views/CreateEventForm";
 import { CreateEventFromPreviousController } from "./views/CreateEventFromPrevious";
 
-export const CreateEvent = (props: { navString: string }) => {
-  const { navString } = props;
-
-  const [create, fromPrevious] = navString.split(",");
+export const CreateEvent = (props: { fromPrevious: boolean }) => {
+  const { fromPrevious } = props;
 
   if (fromPrevious) {
     return <CreateEventFromPreviousController />;

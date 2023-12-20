@@ -30,6 +30,7 @@ import { selectedDateDTAtom } from "@vibefire/shared-state";
 
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
 import { profileSelectedAtom } from "~/atoms";
+import { navHomeWithProfileSelected } from "~/nav";
 
 export const SEARCH_HANDLE_HEIGHT = 80;
 
@@ -145,14 +146,15 @@ const SearchButton = () => {
 };
 
 const ProfileButton = () => {
-  const [profileSelected, setProfileSelected] = useAtom(profileSelectedAtom);
-
   const { expand } = useBottomSheet();
+
+  const [profileSelected, setProfileSelected] = useState(false);
 
   return profileSelected ? (
     <IconButton
       icon={<MaterialIcons name="view-list" size={24} color="white" />}
       onPress={() => {
+        navHomeWithProfileSelected(false);
         setProfileSelected(false);
       }}
       cn="bg-black"
@@ -161,6 +163,7 @@ const ProfileButton = () => {
     <IconButton
       icon={<FontAwesome5 name="user-alt" size={20} color="black" />}
       onPress={() => {
+        navHomeWithProfileSelected(true);
         setProfileSelected(true);
         expand();
       }}
