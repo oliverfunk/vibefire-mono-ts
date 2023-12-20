@@ -28,8 +28,8 @@ import { DateTime } from "luxon";
 
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 
+import { IconButton } from "~/components/IconButton";
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
-import { profileSelectedAtom } from "~/atoms";
 import { navHomeWithProfileSelected } from "~/nav";
 
 export const SEARCH_HANDLE_HEIGHT = 80;
@@ -67,21 +67,6 @@ const DatePicker = () => {
       <FontAwesome5 name="calendar-alt" size={20} color="black" />
       <Text className="text-lg">{selectedDate.toFormat("d")}</Text>
     </TouchableOpacity>
-  );
-};
-
-const IconButton = (props: {
-  icon: React.ReactNode;
-  onPress: () => void;
-  cn?: string;
-}) => {
-  return (
-    <Pressable
-      className={`h-10 w-10 items-center justify-center rounded-full border ${props.cn}`}
-      onPress={props.onPress}
-    >
-      {props.icon}
-    </Pressable>
   );
 };
 

@@ -108,7 +108,7 @@ const MapsModalMenu = (props: { event: VibefireEventT }) => {
     >
       <Modal visible={menuVisible} transparent animationType="fade">
         <Pressable
-          className="h-full w-full items-center justify-center"
+          className="h-full w-full items-center justify-center bg-black/50 p-4"
           onPress={() => setMenuVisible(false)}
         >
           <View className="flex-col space-y-4 overflow-hidden rounded bg-white p-4">
@@ -118,10 +118,14 @@ const MapsModalMenu = (props: { event: VibefireEventT }) => {
             </Text>
             <View className="flex-col items-end space-y-2">
               <TouchableOpacity onPress={onOpenInGoogleMaps}>
-                <Text className="text-base font-bold">Google Maps</Text>
+                <Text className="text-base font-bold text-gray-500">
+                  Google Maps
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={onOpenInAppleMaps}>
-                <Text className="text-base font-bold">Apple Maps</Text>
+                <Text className="text-base font-bold text-gray-500">
+                  Apple Maps
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -308,8 +312,6 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
 const EventDetailsView = (props: { event: VibefireEventT }) => {
   const { event } = props;
 
-  const { dismissAll } = useBottomSheetModal();
-
   const width = Dimensions.get("window").width;
 
   const [eventMapMapRef] = useAtom(eventMapMapRefAtom);
@@ -364,8 +366,6 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
     setUserSessionRetry((prev) => !prev);
   }, [event.id, eventFollowed, setUserSessionRetry, starEventMut, user.state]);
 
-  const setPresentMainToggle = useSetAtom(mainBottomSheetPresentToggleAtom);
-
   const onMoveToEvent = useCallback(() => {
     setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));
     eventMapMapRef?.animateCamera({
@@ -374,14 +374,8 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
         longitude: event.location.position.lng,
       },
     });
-    // dismissAll();
     navHomeWithMinimise();
-    // setPresentMainToggle((prev) => ({
-    //   initial: false,
-    //   present: false,
-    //   toggle: !prev.toggle,
-    // }));
-  }, [event, eventMapMapRef, setPresentMainToggle, setSelectedDateDT]);
+  }, [event, eventMapMapRef, setSelectedDateDT]);
 
   return (
     <ScrollViewSheet>
