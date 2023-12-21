@@ -9,7 +9,10 @@ import {
   type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";
-import { vibefireEventShareURL } from "@vibefire/utils";
+import {
+  vibefireEventShareLocalURL,
+  vibefireEventShareURL,
+} from "@vibefire/utils";
 
 import { EventCard } from "~/components/event/EventCard";
 import { trpc } from "~/apis/trpc-client";
@@ -53,7 +56,7 @@ const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
           selectable={true}
           className="text-center text-lg text-black"
         >
-          {vibefireEventShareURL(event)}
+          {vibefireEventShareLocalURL(event)}
         </Text>
       </View>
     </Pressable>

@@ -24,8 +24,8 @@ import {
   ScrollViewSheet,
 } from "./_shared";
 
-const FeedbackCard = () => {
-  const [enableFeedback, setEnableFeedback] = useState(false);
+const _FeedbackCard = () => {
+  const [_enableFeedback, setEnableFeedback] = useState(false);
 
   const [feedback, setFeedback] = useState("");
 
