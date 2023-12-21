@@ -48,18 +48,30 @@ const RootLayout = () => {
     })();
   }, [fontsLoaded]);
 
+  const deeplinkURL = Linking.useURL();
+  useEffect(() => {
+    if (deeplinkURL) {
+      const { hostname, path, queryParams } = Linking.parse(deeplinkURL);
+
+      console.log(
+        `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+          queryParams,
+        )}`,
+      );
+    }
+  }, [deeplinkURL]);
+
   const pathname = usePathname();
   const params = useGlobalSearchParams();
 
   useEffect(() => {
-    console.log("pathname", pathname);
-    console.log("path params", JSON.stringify(params, null, 2));
+    console.log("routing pathname", pathname);
+    console.log("routing params", JSON.stringify(params, null, 2));
   }, [pathname, params]);
 
   if (!fontsLoaded) {
     return null;
   }
-
   return (
     <AppProviders>
       <ClerkLoaded>
@@ -72,9 +84,9 @@ const RootLayout = () => {
                 headerShown: false,
               }}
             />
-            <Toast />
           </NoTopContainer>
         </BottomSheetModalProvider>
+        <Toast />
       </ClerkLoaded>
     </AppProviders>
   );

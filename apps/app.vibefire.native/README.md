@@ -1,1 +1,22 @@
-npx expo install --fix
+# Vibefire mobile app
+
+## Development Client build
+
+```bash
+eas build --profile development --platform all
+```
+
+Or for the simulator
+
+```bash
+eas build --profile development-simulator --platform all
+```
+
+## Preview build
+
+This lets you create a full, standalone app that can be installed
+via a url
+
+```bash
+eas build --profile preview --platform all
+```

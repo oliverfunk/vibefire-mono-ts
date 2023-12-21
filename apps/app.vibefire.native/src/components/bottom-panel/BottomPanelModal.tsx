@@ -1,19 +1,25 @@
 import { useLayoutEffect, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BottomSheetModal, type BottomSheetProps } from "@gorhom/bottom-sheet";
+import { useNavigation } from "expo-router";
+import {
+  BottomSheetModal,
+  type BottomSheetModalProps,
+} from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
+import { navHomeWithMinimise } from "~/nav";
 import { HandleWithHeader } from "./HandleWithHeader";
 
 type BottomPanelModalPropsT = {
-  snapPoints: BottomSheetProps["snapPoints"];
+  snapPoints: BottomSheetModalProps["snapPoints"];
   ts: number;
   headerText?: string;
-  handleComponent?: BottomSheetProps["handleComponent"];
-  handleHeight?: BottomSheetProps["handleHeight"];
+  handleComponent?: BottomSheetModalProps["handleComponent"];
+  handleHeight?: BottomSheetModalProps["handleHeight"];
   minimiseTwiddle?: string;
   backgroundColor?: string;
-  enablePanDownToClose?: boolean;
+  enablePanDownToClose?: BottomSheetModalProps["enablePanDownToClose"];
+  enableDismissOnClose?: BottomSheetModalProps["enableDismissOnClose"];
 };
 
 export const BottomPanelModal = (
@@ -21,17 +27,20 @@ export const BottomPanelModal = (
 ) => {
   const {
     snapPoints,
+    ts,
     headerText,
     handleComponent,
     handleHeight,
     minimiseTwiddle,
     backgroundColor,
     enablePanDownToClose,
-    ts,
+    enableDismissOnClose,
     children,
   } = props;
 
   const modalPanelRef = useRef<BottomSheetModal>(null);
+
+  const navigation = useNavigation();
 
   const insets = useSafeAreaInsets();
   const utils = trpc.useUtils();
@@ -64,7 +73,8 @@ export const BottomPanelModal = (
               ? (p) => HandleWithHeader({ header: headerText, ...p })
               : undefined
       }
-      enablePanDownToClose={enablePanDownToClose ?? true}
+      enableDismissOnClose={enableDismissOnClose}
+      enablePanDownToClose={enablePanDownToClose}
       stackBehavior="push"
       backgroundStyle={{
         backgroundColor: backgroundColor ?? "rgba(255,255,255,1)",
@@ -73,6 +83,10 @@ export const BottomPanelModal = (
       index={0}
       snapPoints={snapPoints}
       onDismiss={async () => {
+        if (!navigation.canGoBack()) {
+          navHomeWithMinimise();
+        }
+
         await utils.invalidate();
       }}
     >

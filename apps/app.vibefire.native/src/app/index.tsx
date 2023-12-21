@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from "expo-router";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import {
   BottomPanelHandle,
@@ -25,6 +24,8 @@ const Screen = () => {
       backgroundColor="rgba(255,255,255,0.9)"
       snapPoints={[SEARCH_HANDLE_HEIGHT, "80%"]}
       minimiseTwiddle={minimise}
+      enableDismissOnClose={false}
+      enablePanDownToClose={false}
     >
       <EventsListAndProfile profileSelected={!!profileSelected} />
     </BottomPanelModal>
