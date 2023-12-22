@@ -9,6 +9,7 @@ const Screen = () => {
 
   return (
     <BottomPanelModal
+      modalPath="events-by-organiser"
       ts={ts}
       headerText={"Your Events"}
       enablePanDownToClose={Platform.OS === "android" ? false : true}

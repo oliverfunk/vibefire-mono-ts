@@ -18,6 +18,7 @@ const Screen = () => {
 
   return (
     <BottomPanelModal
+      modalPath="event/[linkId]/index"
       ts={ts}
       snapPoints={["80%"]}
       backgroundColor="black"

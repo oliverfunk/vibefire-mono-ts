@@ -6,10 +6,9 @@ const expoConfig = ({ config }) => ({
   scheme: "vifr",
   version: "0.1.0",
   orientation: "portrait",
-  icon: "./assets/icon.png",
   userInterfaceStyle: "automatic",
   splash: {
-    image: "./assets/icon.png",
+    image: "./assets/app-icon.png",
     resizeMode: "contain",
     backgroundColor: "#010101",
   },
@@ -23,7 +22,8 @@ const expoConfig = ({ config }) => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",
-    associatedDomains: ["applinks:vifr.io", "applinks:vibefire.app"],
+    associatedDomains: ["applinks:vifr.io"],
+    icon: "./assets/app-icon.png",
     config: { googleMapsApiKey: "***REMOVED***" },
     entitlements: {
       "com.apple.developer.applesignin": ["Default"],
@@ -40,7 +40,7 @@ const expoConfig = ({ config }) => ({
       },
     },
     adaptiveIcon: {
-      foregroundImage: "./assets/icon.png",
+      foregroundImage: "./assets/app-icon.png",
       backgroundColor: "#010101",
     },
     intentFilters: [
@@ -50,12 +50,7 @@ const expoConfig = ({ config }) => ({
         data: [
           {
             scheme: "https",
-            host: "*.vifr.io",
-            pathPrefix: "/",
-          },
-          {
-            scheme: "https",
-            host: "*.vibefire.app",
+            host: "vifr.io",
             pathPrefix: "/",
           },
         ],

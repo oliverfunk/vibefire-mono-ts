@@ -62,10 +62,10 @@ app.get("/*", (c) => {
   return c.html(`
     <!DOCTYPE html>
     <html>
-        <head>
-            <title>Vibefire</title>
+      <head>
+        <title>Vibefire</title>
         <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content="1; URL=https://vibefire.app/" />
+        <meta http-equiv="refresh" content="3; URL=https://vibefire.app/" />
       </head>
       <body></body>
     </html>

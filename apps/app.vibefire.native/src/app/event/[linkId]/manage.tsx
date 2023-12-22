@@ -19,6 +19,7 @@ const Screen = () => {
 
   return (
     <BottomPanelModal
+      modalPath="event/[linkId]/manage"
       ts={ts}
       headerText={"Manage Event"}
       enablePanDownToClose={Platform.OS === "android" ? false : true}

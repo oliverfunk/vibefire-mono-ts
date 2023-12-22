@@ -9,7 +9,7 @@ export const VibefireIconImage = () => {
         contentFit={"contain"}
         className="aspect-[4/4] w-44"
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        source={require("#/images/a.svg")}
+        source={require("#/images/mapmarker-neutral.svg")}
       />
     </View>
   );

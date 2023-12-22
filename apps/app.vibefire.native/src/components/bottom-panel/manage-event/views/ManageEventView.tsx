@@ -1,7 +1,6 @@
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
-import { Image } from "expo-image";
 import { Entypo } from "@expo/vector-icons";
 import { DateTime } from "luxon";
 
@@ -9,12 +8,10 @@ import {
   type VibefireEventManagementT,
   type VibefireEventT,
 } from "@vibefire/models";
-import {
-  vibefireEventShareLocalURL,
-  vibefireEventShareURL,
-} from "@vibefire/utils";
+import { vibefireEventShareURL } from "@vibefire/utils";
 
 import { EventCard } from "~/components/event/EventCard";
+import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navEditEvent, navViewEventAsPreview } from "~/nav";
@@ -56,7 +53,7 @@ const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
           selectable={true}
           className="text-center text-lg text-black"
         >
-          {vibefireEventShareLocalURL(event)}
+          {vibefireEventShareURL(event)}
         </Text>
       </View>
     </Pressable>
@@ -231,15 +228,7 @@ export const ManagementView = (props: {
           </TouchableOpacity>
         </View>
       </View>
-      <View className="items-center p-10">
-        <Image
-          alt="Vibefire Event icon"
-          contentFit={"contain"}
-          className="aspect-[4/4] w-44"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          source={require("#/images/a.svg")}
-        />
-      </View>
+      <VibefireIconImage />
     </ScrollViewSheet>
   );
 };

@@ -18,6 +18,7 @@ const Screen = () => {
 
   return (
     <BottomPanelModal
+      modalPath="index"
       ts={ts}
       handleHeight={SEARCH_HANDLE_HEIGHT}
       handleComponent={BottomPanelHandle}
