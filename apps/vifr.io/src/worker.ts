@@ -59,7 +59,17 @@ app.get("/.well-known/assetlinks.json", (c) => {
 });
 
 app.get("/*", (c) => {
-  return c.html("");
+  return c.html(`
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>Vibefire</title>
+        <meta charset="UTF-8" />
+        <meta http-equiv="refresh" content="1; URL=https://vibefire.app/" />
+      </head>
+      <body></body>
+    </html>
+  `);
 });
 
 export default app;

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -13,19 +13,21 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
 
   const [selectedTod, setSelectedTod] = useAtom(selectedTimeOfDayAtom);
 
-  const periods = useMemo(() => {
-    return ["All Day", "12am - 6am", "6am - 12pm", "12pm - 6pm", "6pm - 12am"];
-  }, []);
+  const [periods] = useState([
+    "All Day",
+    "12am - 6am",
+    "6am - 12pm",
+    "12pm - 6pm",
+    "6pm - 12am",
+  ]);
 
-  const todToIndexMapping = useMemo(() => {
-    return {
-      D: 0,
-      E: 1,
-      M: 2,
-      A: 3,
-      N: 4,
-    };
-  }, []);
+  const [todToIndexMapping] = useState({
+    D: 0,
+    E: 1,
+    M: 2,
+    A: 3,
+    N: 4,
+  });
 
   return (
     <View className="relative flex-row items-center justify-center">
