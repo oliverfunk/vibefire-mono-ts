@@ -356,7 +356,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
     setUserSessionRetry((prev) => !prev);
   }, [event.id, eventFollowed, setUserSessionRetry, starEventMut, user.state]);
 
-  const onMoveToEvent = useCallback(() => {
+  const onGoToEvent = useCallback(() => {
     setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));
     eventMapMapRef?.animateCamera({
       center: {
@@ -437,10 +437,12 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
           <View className="items-center pt-2">
             <TouchableOpacity
               className="flex-col items-center justify-between rounded-lg bg-white px-4 py-2"
-              onPress={onMoveToEvent}
+              onPress={onGoToEvent}
             >
               <FontAwesome5 name="clock" size={20} color="black" />
-              <Text className="text-sm text-black">Open event time on map</Text>
+              <Text className="text-sm text-black">
+                Go to event time and place
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -484,7 +486,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
           </Pressable>
           <Pressable
             className="aspect-[4/4] overflow-hidden rounded-lg"
-            onPress={onMoveToEvent}
+            onPress={onGoToEvent}
           >
             <LocationDisplayMap markerPosition={event.location.position} />
           </Pressable>

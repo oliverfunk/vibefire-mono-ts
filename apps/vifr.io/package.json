@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
-    "start": "wrangler dev",
+    "dev": "wrangler dev",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
