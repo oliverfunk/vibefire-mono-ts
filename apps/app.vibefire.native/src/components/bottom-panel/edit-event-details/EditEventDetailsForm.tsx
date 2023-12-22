@@ -10,6 +10,7 @@ import { type PartialDeep } from "type-fest";
 
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
+import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
 import { navEditEventSetSection, navManageEvent } from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
@@ -210,16 +211,8 @@ export const EditEventForm = (props: {
           isEdited={isEdited}
           isLoading={updateEventMut.isLoading}
         />
-        <View className="items-center p-10">
-          <Image
-            alt="Vibefire Event icon"
-            contentFit={"contain"}
-            className="aspect-[4/4] w-44"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            source={require("#/images/a.svg")}
-          />
-        </View>
       </View>
+      <VibefireIconImage />
     </ScrollViewSheetWithRef>
   );
 };

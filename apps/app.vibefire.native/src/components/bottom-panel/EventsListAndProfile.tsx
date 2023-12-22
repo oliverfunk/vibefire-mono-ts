@@ -202,7 +202,9 @@ const _Profile = () => {
               <FeedbackCard />
             </View> */}
 
-            <VibefireIconImage />
+            <View>
+              <VibefireIconImage />
+            </View>
 
             <View className="flex-row">
               <SignOut />

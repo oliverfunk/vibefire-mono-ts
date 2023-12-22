@@ -7,10 +7,11 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import { trpc } from "~/apis/trpc-client";
-import { navHomeWithMinimise } from "~/nav";
+import { navReplaceHomeWithMinimise } from "~/nav";
 import { HandleWithHeader } from "./HandleWithHeader";
 
 type BottomPanelModalPropsT = {
+  modalPath: string;
   snapPoints: BottomSheetModalProps["snapPoints"];
   ts: number;
   headerText?: string;
@@ -26,6 +27,7 @@ export const BottomPanelModal = (
   props: BottomPanelModalPropsT & { children?: React.ReactNode },
 ) => {
   const {
+    modalPath,
     snapPoints,
     ts,
     headerText,
@@ -83,8 +85,17 @@ export const BottomPanelModal = (
       index={0}
       snapPoints={snapPoints}
       onDismiss={async () => {
-        if (!navigation.canGoBack()) {
-          navHomeWithMinimise();
+        const navState = navigation.getState();
+        const routes = navState.routes;
+
+        const isTopRoute = routes.at(-1)?.name === modalPath;
+
+        if (isTopRoute) {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navReplaceHomeWithMinimise();
+          }
         }
 
         await utils.invalidate();

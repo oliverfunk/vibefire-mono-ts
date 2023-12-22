@@ -61,10 +61,15 @@ const RootLayout = () => {
 
   const pathname = usePathname();
   const params = useGlobalSearchParams();
+  // const navigation = useNavigation();
 
   useEffect(() => {
     console.log("routing pathname", pathname);
     console.log("routing params", JSON.stringify(params, null, 2));
+    // console.log(
+    //   "routing state",
+    //   JSON.stringify(navigation.getState(), null, 2),
+    // );
   }, [pathname, params]);
 
   if (!fontsLoaded) {

@@ -16,6 +16,7 @@ const Screen = () => {
 
   return (
     <BottomPanelModal
+      modalPath="event/create"
       headerText={"Create Event"}
       enablePanDownToClose={Platform.OS === "android" ? false : true}
       snapPoints={["80%"]}

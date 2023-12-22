@@ -7,6 +7,11 @@ const routerPush = (path: string) => {
   router.setParams({ ts: new Date().getTime().toString() });
 };
 
+const routerReplace = (path: string) => {
+  router.replace(path);
+  router.setParams({ ts: new Date().getTime().toString() });
+};
+
 export const navHomeWithProfileSelected = (selected?: boolean) => {
   routerPush("/");
   if (selected === true) {
@@ -19,6 +24,10 @@ export const navHomeWithProfileSelected = (selected?: boolean) => {
 };
 export const navHomeWithMinimise = () => {
   routerPush("/");
+  router.setParams({ minimise: "true" + Math.random() });
+};
+export const navReplaceHomeWithMinimise = () => {
+  routerReplace("/");
   router.setParams({ minimise: "true" + Math.random() });
 };
 
