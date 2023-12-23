@@ -23,7 +23,12 @@ export const EventTimeline = (props: {
   } = props;
 
   const data = useMemo(() => {
-    let rtn = [];
+    let rtn: {
+      ts?: number;
+      time: string;
+      title: string;
+      dotColor: string;
+    }[] = [];
     if (timeStartIsoNTZ) {
       rtn.push({
         ts: isoNTZToUTCDateTime(timeStartIsoNTZ).toUnixInteger(),

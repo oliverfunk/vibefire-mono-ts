@@ -76,7 +76,7 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
   const [hasError, setHasError] = useState(false);
   const [pickedImageUri, setPickedImageUri] = useState("");
 
-  const getImageUploadLink = trpc.events.getImageUploadLink.useMutation();
+  const getImageUploadLink = trpc.events.createImageUploadLink.useMutation();
 
   useEffect(() => {
     if (getImageUploadLink.status === "idle") {

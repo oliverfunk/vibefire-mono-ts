@@ -10,7 +10,7 @@ import { IconButton } from "~/components/IconButton";
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
-  state: VibefireEventT["state"];
+  state?: VibefireEventT["state"];
   published: VibefireEventT["published"];
   eventInfo: {
     title: string;
@@ -43,7 +43,7 @@ export const EventCard = ({
         alt="Event Banner"
       />
 
-      {showStatusBanner && (
+      {showStatusBanner && state && (
         <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
           <Text className="text-2xl font-bold text-white">
             {state == "draft"
@@ -51,7 +51,7 @@ export const EventCard = ({
               : state === "ready"
                 ? published
                   ? "Published"
-                  : "Hidden"
+                  : "Ready to publish"
                 : "Archived"}
           </Text>
         </View>

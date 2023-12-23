@@ -89,16 +89,16 @@ export class FaunaManager {
 
   async eventForEdit(
     userAc: ClerkSignedInAuthContext,
-    eventId: string,
+    linkId: string,
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
 
     const organiserId = organisationId || userAc.userId;
 
-    const e = await getEventFromIDByOrganiser(
+    const e = await getEventFromLinkIdByOrganiser(
       this.faunaClient,
-      eventId,
+      linkId,
       organiserId,
     );
     if (!e) {
@@ -211,15 +211,15 @@ export class FaunaManager {
 
   async eventCreateFromPrevious(
     userAc: ClerkSignedInAuthContext,
-    linkId: string,
+    eventId: string,
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const e = await getEventFromLinkIdByOrganiser(
+    const e = await getEventFromIDByOrganiser(
       this.faunaClient,
-      linkId,
+      eventId,
       organiserId,
     );
     if (!e) {
@@ -472,8 +472,6 @@ export class FaunaManager {
         updatedEvent.organiserType === "user",
       );
     }
-
-    return { id: eventId };
   }
 
   async _setEventReadyIfPossible(
@@ -512,7 +510,7 @@ export class FaunaManager {
       state: "ready",
     };
     if (publish) {
-      updateData.published = true;
+      updateData.published = false;
     }
 
     updateData.dateUpdatedUTC = nowAtUTC().toISO()!;

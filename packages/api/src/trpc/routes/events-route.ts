@@ -43,7 +43,7 @@ export const eventsRouter = router({
     .input(
       tbValidator(
         t.Object({
-          eventId: t.String(),
+          linkId: t.String(),
           organisationId: t.Optional(t.String()),
         }),
       ),
@@ -52,7 +52,7 @@ export const eventsRouter = router({
     .query(async ({ ctx, input }) => {
       return await ctx.fauna.eventForEdit(
         ctx.auth,
-        input.eventId,
+        input.linkId,
         input.organisationId,
       );
     }),
@@ -103,7 +103,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as { id: string })
+    .output((value) => value as { linkId: string })
     .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventCreate(
         ctx.auth,
@@ -120,7 +120,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as { id: string })
+    .output((value) => value as { linkId: string })
     .mutation(async ({ ctx, input }) => {
       return await ctx.fauna.eventCreateFromPrevious(
         ctx.auth,
@@ -193,7 +193,7 @@ export const eventsRouter = router({
         input.timeline,
       );
     }),
-  getImageUploadLink: authedProcedure
+  createImageUploadLink: authedProcedure
     .input(
       tbValidator(
         t.Object({

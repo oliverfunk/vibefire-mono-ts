@@ -43,6 +43,10 @@ export const EventsList = ({
             new Date(a.timeStartIsoNTZ).getTime()
           );
         }
+      } else if (a.timeStartIsoNTZ) {
+        return 1;
+      } else if (b.timeStartIsoNTZ) {
+        return -1;
       }
       return 0;
     });
@@ -51,7 +55,6 @@ export const EventsList = ({
     (event: PartialDeep<VibefireEventT>, item: React.Key) => (
       <View key={item}>
         <EventCard
-          state={event.state!}
           published={event.published!}
           eventInfo={{
             bannerImgKey: event.images?.banner ?? undefined,
@@ -78,6 +81,7 @@ export const EventsList = ({
                 }
               : undefined
           }
+          state={event.state}
           showStatusBanner={showStatusBanner}
         />
       </View>

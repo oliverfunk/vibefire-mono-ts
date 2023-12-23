@@ -33,12 +33,11 @@ const CreateEventFromPreviousView = (props: {
           events={events}
           noEventsMessage="You have made no events yet"
           onEventPress={async (eventId, _event) => {
-            const { id: createdId } =
-              await createEventFromPreviousMut.mutateAsync({
-                eventId,
-              });
+            const { linkId } = await createEventFromPreviousMut.mutateAsync({
+              eventId,
+            });
             close();
-            navEditEvent(createdId);
+            navEditEvent(linkId);
           }}
           showStatusBanner={true}
           sortAsc={false}
