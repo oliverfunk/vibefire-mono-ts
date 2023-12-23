@@ -25,7 +25,7 @@ const Screen = () => {
   //     ?.create({
   //       strategy: "ticket",
   //       ticket:
-  //         "***REMOVED***",
+  //         "",
   //     })
   //     .then((p) => {
   //       console.log("signed in", JSON.stringify(p, null, 2));

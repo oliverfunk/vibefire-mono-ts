@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { View } from "react-native";
 import _ from "lodash";
 

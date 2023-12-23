@@ -55,11 +55,11 @@ export const CreateEventForm = () => {
               if (!createEventState.title) {
                 return;
               }
-              const { id } = await createEventMut.mutateAsync({
+              const { linkId } = await createEventMut.mutateAsync({
                 title: createEventState.title,
               });
               close();
-              navEditEvent(id);
+              navEditEvent(linkId);
             }}
           >
             <Text className="text-xl text-white">Start</Text>

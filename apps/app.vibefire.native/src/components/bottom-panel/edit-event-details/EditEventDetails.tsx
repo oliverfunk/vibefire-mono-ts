@@ -7,11 +7,11 @@ import { trpc } from "~/apis/trpc-client";
 import { ErrorSheet, LoadingSheet } from "../_shared";
 import { EditEventForm } from "./EditEventDetailsForm";
 
-const EditEventController = (props: { eventId: string; section?: string }) => {
-  const { eventId, section } = props;
+const EditEventController = (props: { linkId: string; section?: string }) => {
+  const { linkId, section } = props;
 
   const eventForEdit = trpc.events.eventForEdit.useQuery({
-    eventId,
+    linkId,
   });
 
   const selectedSection = useMemo(() => {
@@ -40,9 +40,10 @@ const EditEventController = (props: { eventId: string; section?: string }) => {
       const currentEventData = eventForEdit.data as Partial<VibefireEventT>;
       return (
         <EditEventForm
+          eventId={currentEventData.id!}
+          linkId={linkId}
           section={selectedSection}
           currentEventData={currentEventData}
-          eventId={eventId}
           dataRefetch={eventForEdit.refetch}
         />
       );
@@ -53,7 +54,7 @@ export const EditEventDetails = (props: {
   linkId: string;
   section?: string;
 }) => {
-  const { linkId: eventId, section } = props;
+  const { linkId, section } = props;
 
-  return <EditEventController eventId={eventId} section={section} />;
+  return <EditEventController linkId={linkId} section={section} />;
 };

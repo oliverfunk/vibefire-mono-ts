@@ -150,12 +150,13 @@ export const createEvent = async (
   faunaClient: Client,
   createData: PartialDeep<VibefireEventT>,
 ) => {
+  const _linkIdField: keyof VibefireEventT = "linkId";
   const q = fql`
     Events.create(${createData}) {
-        id
+        linkId
     }
   `;
-  return await dfq<{ id: string }>(faunaClient, q);
+  return await dfq<{ linkId: string }>(faunaClient, q);
 };
 
 export const updateEvent = async (

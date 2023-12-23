@@ -194,7 +194,6 @@ export const ManagementView = (props: {
         <View>
           <FormTitleInput title="Event Card" underneathText="(Tap to preview)">
             <EventCard
-              state="ready"
               published={event.published}
               eventInfo={{
                 title: event.title,
@@ -221,7 +220,7 @@ export const ManagementView = (props: {
           <TouchableOpacity
             className="items-center rounded-lg bg-black p-4"
             onPress={() => {
-              navEditEvent(event.id);
+              navEditEvent(event.linkId);
             }}
           >
             <Text className="text-xl text-white">Edit event details</Text>

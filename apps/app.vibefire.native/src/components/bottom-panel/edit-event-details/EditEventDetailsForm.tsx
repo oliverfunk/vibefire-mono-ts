@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Text, View } from "react-native";
-import { Image } from "expo-image";
 import {
   useBottomSheet,
   type BottomSheetScrollViewMethods,
@@ -22,11 +21,12 @@ import { EditEventTimes } from "./sections/EditEventTimes";
 
 export const EditEventForm = (props: {
   eventId: string;
+  linkId: string;
   currentEventData: PartialDeep<VibefireEventT>;
   dataRefetch: () => void;
   section: EditEventFormSectionT;
 }) => {
-  const { eventId, currentEventData, dataRefetch, section } = props;
+  const { eventId, linkId, currentEventData, dataRefetch, section } = props;
 
   const { close } = useBottomSheet();
 
@@ -45,10 +45,10 @@ export const EditEventForm = (props: {
       section === "images"
     ) {
       close();
-      navManageEvent(currentEventData.linkId!);
+      navManageEvent(linkId);
     }
     setEditedEventData(currentEventData);
-  }, [close, currentEventData, editedEventData.state, eventId, section]);
+  }, [close, currentEventData, editedEventData.state, linkId, section]);
 
   // set by each section
   const [mayProceed, setMayProceed] = useState(false);

@@ -20,3 +20,11 @@ via a url
 ```bash
 eas build --profile preview --platform all
 ```
+
+## To resign a build
+
+This lets you sign a build for another device
+
+```bash
+eas build:resign
+```
