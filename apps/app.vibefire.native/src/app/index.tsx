@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
+import { useSignIn } from "@clerk/clerk-expo";
 
 import {
   BottomPanelHandle,
@@ -15,6 +16,24 @@ const Screen = () => {
   }>();
 
   const ts = useTsQueryParam();
+
+  // const impersonating = true;
+
+  // const { signIn } = useSignIn();
+  // if (impersonating) {
+  //   signIn
+  //     ?.create({
+  //       strategy: "ticket",
+  //       ticket:
+  //         "***REMOVED***",
+  //     })
+  //     .then((p) => {
+  //       console.log("signed in", JSON.stringify(p, null, 2));
+  //     })
+  //     .catch((err) => {
+  //       console.error("sign in error", JSON.stringify(err, null, 2));
+  //     });
+  // }
 
   return (
     <BottomPanelModal

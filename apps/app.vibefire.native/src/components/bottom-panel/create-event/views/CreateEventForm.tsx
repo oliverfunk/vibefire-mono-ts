@@ -20,7 +20,7 @@ export const CreateEventForm = () => {
     title: undefined,
   });
 
-  const createEventMS = trpc.events.createEvent.useMutation();
+  const createEventMut = trpc.events.createEvent.useMutation();
 
   return (
     <ScrollViewSheet>
@@ -55,7 +55,7 @@ export const CreateEventForm = () => {
               if (!createEventState.title) {
                 return;
               }
-              const { id } = await createEventMS.mutateAsync({
+              const { id } = await createEventMut.mutateAsync({
                 title: createEventState.title,
               });
               close();

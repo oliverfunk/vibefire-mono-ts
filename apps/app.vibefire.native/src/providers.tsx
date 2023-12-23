@@ -10,7 +10,10 @@ import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
+import * as Sentry from "sentry-expo";
 import superjson from "superjson";
+
+import { type VibefireUserT } from "@vibefire/models";
 
 import { debounce } from "~/utils/debounce";
 import { tokenCache } from "~/utils/sec-store-cache";
@@ -54,7 +57,18 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         getSessionMutDbcLong();
         break;
       case "success":
-        // Sentry.Native.setUser({ email: "john.doe@example.com" });
+        const d = getSession.data;
+        if (d.state === "authenticated") {
+          const userInfo = d.userInfo as VibefireUserT;
+          Sentry.Native.setUser({
+            id: userInfo.id,
+            email: userInfo.contactEmail,
+          });
+        } else {
+          Sentry.Native.setUser({
+            id: d.anonId,
+          });
+        }
         setUser(getSession.data);
         break;
     }
@@ -63,7 +77,9 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-const _AppProviders: FC<{ children: ReactNode }> = ({ children }) => {
+const _AppProviders = (props: { children: ReactNode }) => {
+  const { children } = props;
+
   const { getToken } = useAuth();
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
