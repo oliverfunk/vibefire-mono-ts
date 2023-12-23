@@ -176,9 +176,15 @@ importers:
       '@vibefire/api':
         specifier: ^0.1.0
         version: link:../../packages/api
+      '@vibefire/managers':
+        specifier: ^0.1.0
+        version: link:../../packages/managers
       '@vibefire/models':
         specifier: ^0.1.0
         version: link:../../packages/models
+      '@vibefire/services':
+        specifier: ^0.1.0
+        version: link:../../packages/services
       '@vibefire/shared-state':
         specifier: ^0.1.0
         version: link:../../packages/shared-state

@@ -4,7 +4,7 @@ import Toast from "react-native-toast-message";
 import * as Linking from "expo-linking";
 import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { ClerkLoaded } from "@clerk/clerk-expo";
+import { ClerkLoaded, useSignIn } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 import * as Sentry from "sentry-expo";
 

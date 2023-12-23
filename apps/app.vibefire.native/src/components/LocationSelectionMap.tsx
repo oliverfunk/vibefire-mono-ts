@@ -10,10 +10,10 @@ import { useLocationOnce } from "~/hooks/useLocation";
 export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;
   onPositionSelected?: (position: CoordT) => void;
-  onPositionInfo?: (position: CoordT, addressDescription: string) => void;
+  onAddressDescription?: (addressDescription: string) => void;
   onPress?: () => void;
 }) => {
-  const { initialPosition, onPositionInfo, onPositionSelected, onPress } =
+  const { initialPosition, onPositionSelected, onAddressDescription, onPress } =
     props;
 
   const mvRef = useRef<MapView>(null);
@@ -69,21 +69,26 @@ export const LocationSelectionMap = (props: {
 
   const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
   useEffect(() => {
+    if (!onAddressDescription) {
+      return;
+    }
     if (!selectedPosition) {
       return;
     }
     if (selectedPosition === initialPosition) {
       return;
     }
-    console.log("ADsadas");
-    const q = async () => {
-      const addressDesc = await positionAddressInfoMut.mutateAsync({
+    positionAddressInfoMut
+      .mutateAsync({
         position: selectedPosition,
+      })
+      .then((res) => {
+        onAddressDescription(res);
+      })
+      .catch((err) => {
+        console.error(JSON.stringify(err, null, 2));
+        onAddressDescription("");
       });
-      console.log("addressDesc", JSON.stringify(addressDesc, null, 2));
-      onPositionInfo?.(selectedPosition, addressDesc);
-    };
-    void q();
   }, [selectedPosition]);
 
   return (

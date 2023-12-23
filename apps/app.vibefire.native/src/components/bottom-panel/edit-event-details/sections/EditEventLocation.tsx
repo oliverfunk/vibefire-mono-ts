@@ -35,10 +35,17 @@ export const EditEventLocation = (props: FormSectionProps) => {
               initialPosition={
                 (currentEventData.location?.position as CoordT) ?? undefined
               }
-              onPositionInfo={(position, addressDescription) => {
+              onPositionSelected={(position) => {
                 setEditedEventData(
                   _.merge({}, editedEventData, {
-                    location: { position, addressDescription },
+                    location: { position },
+                  } as typeof editedEventData),
+                );
+              }}
+              onAddressDescription={(addressDescription) => {
+                setEditedEventData(
+                  _.merge({}, editedEventData, {
+                    location: { addressDescription },
                   } as typeof editedEventData),
                 );
               }}
