@@ -4,7 +4,5 @@ import { Hono } from "hono";
 type Bindings = {};
 
 const restRouter = new Hono<{ Bindings: Bindings }>();
-restRouter.get("/img/*", (c) => {
-  return c.text("");
-});
+
 export { restRouter };

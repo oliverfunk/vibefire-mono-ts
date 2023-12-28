@@ -4,7 +4,7 @@ import Toast from "react-native-toast-message";
 import * as Linking from "expo-linking";
 import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { ClerkLoaded, useSignIn } from "@clerk/clerk-expo";
+import { ClerkLoaded } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 import * as Sentry from "sentry-expo";
 
@@ -12,10 +12,12 @@ import AppProviders from "~/providers";
 
 import "~/global.css";
 
+import * as Notifications from "expo-notifications";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { EventMap } from "~/components/event/EventMap";
 import { NoTopContainer } from "~/components/NoTopContainer";
+import { useNotificationObserver } from "~/hooks/useNotificationObserver";
 
 const routingInstrumentation =
   new Sentry.Native.ReactNavigationInstrumentation();
@@ -29,6 +31,15 @@ Sentry.init({
       routingInstrumentation,
     }),
   ],
+});
+
+Notifications.setNotificationHandler({
+  // eslint-disable-next-line @typescript-eslint/require-await
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: true,
+  }),
 });
 
 void SplashScreen.preventAutoHideAsync();

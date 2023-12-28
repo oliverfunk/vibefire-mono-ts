@@ -23,6 +23,7 @@
   },
   "exports": {
     "./fauna": "./src/fauna/index.ts",
+    "./vibefire-notifications-service": "./src/vibefire-notifications-service/index.ts",
     "./clerk": "./src/clerk/index.ts",
     "./cf-images": "./src/cloudflare-images/index.ts",
     "./g-maps": "./src/google-maps/index.ts"

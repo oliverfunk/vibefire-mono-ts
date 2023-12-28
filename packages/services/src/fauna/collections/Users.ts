@@ -152,6 +152,37 @@ export const blockOrganiser = async (
   return await dfq(faunaClient, q);
 };
 
+export const setUserPushToken = async (
+  faunaClient: Client,
+  aid: string,
+  token: string,
+) => {
+  const _pushTokenField: keyof VibefireUserT = "pushToken";
+  const q = fql`
+    let u = Users.withAid(${aid}).first()
+    u?.update({ pushToken: ${token} })
+  `;
+  return await dfq(faunaClient, q);
+};
+
+export const clearUserPushToken = async (faunaClient: Client, aid: string) => {
+  const _pushTokenField: keyof VibefireUserT = "pushToken";
+  const q = fql`
+    let u = Users.withAid(${aid}).first()
+    u?.update({ pushToken: null })
+  `;
+  return await dfq(faunaClient, q);
+};
+
+export const getUserPushToken = async (faunaClient: Client, aid: string) => {
+  const _pushTokenField: keyof VibefireUserT = "pushToken";
+  const q = fql`
+    let u = Users.withAid(${aid}).first()
+    u?.pushToken
+  `;
+  return await dfq<string | null>(faunaClient, q);
+};
+
 // function userByEmail(email) {
 //   return fql`Users.byEmail(${email}).first()`;
 // )

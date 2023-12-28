@@ -19,6 +19,7 @@ const expoConfig = ({ config }) => ({
   web: {
     bundler: "metro",
   },
+  notification: {},
   ios: {
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",

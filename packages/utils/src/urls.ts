@@ -9,12 +9,12 @@ const encodeQueryParameters = (params: { [key: string]: string }) => {
     .join("&");
 };
 
-export const vibefireEventShareURL = (event: VibefireEventT) => {
-  return `https://vifr.io/event/${event.linkId}`;
+export const vibefireEventShareURL = (linkId: string) => {
+  return `https://vifr.io/event/${linkId}`;
 };
 
-export const vibefireEventShareLocalURL = (event: VibefireEventT) => {
-  return `vifr:///event/${event.linkId}`;
+export const vibefireEventShareLocalURL = (linkId: string) => {
+  return `vifr:///event/${linkId}`;
 };
 
 export const uberClientRequestToEventLocationURL = (

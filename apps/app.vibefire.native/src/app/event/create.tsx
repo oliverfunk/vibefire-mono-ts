@@ -12,8 +12,6 @@ const Screen = () => {
 
   const ts = useTsQueryParam();
 
-  console.log("CREATE");
-
   return (
     <BottomPanelModal
       modalPath="event/create"

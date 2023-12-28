@@ -1,0 +1,29 @@
+{
+  "name": "expo-notifications-service",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
+    "build-watch": "esbuild src/index.ts --bundle --watch --platform=node --target=node20 --outfile=dist/index.js",
+    "dev": " npm-watch start & pnpm run build-watch",
+    "watch": "npm-watch start",
+    "start": "bash scripts/start.sh",
+    "deploy": "pnpm run build && bash scripts/deploy.sh"
+  },
+  "watch": {
+    "start": "dist/index.js"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.3.0",
+    "@vibefire/managers": "^0.1.0",
+    "@vibefire/services": "^0.1.0",
+    "@vibefire/utils": "^0.1.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.10",
+    "npm-watch": "^0.11.0",
+    "typescript": "^5.3.2"
+  }
+}

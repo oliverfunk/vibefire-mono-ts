@@ -3,6 +3,7 @@ import { Type as t, type Static } from "@sinclair/typebox";
 export const VibefireUserSchema = t.Object({
   id: t.String({ default: undefined }),
   aid: t.String({ default: undefined }),
+  pushToken: t.Optional(t.String()),
   onboardingComplete: t.Boolean({ default: false }),
   name: t.String({ default: undefined }),
   contactEmail: t.Optional(t.String()),
