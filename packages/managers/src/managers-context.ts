@@ -7,6 +7,7 @@ export type ManagersContext = Partial<{
   googleMapsApiKey: string;
   faunaClientKey: string;
   supabaseClientKey: string;
+  expoAccessToken: string;
 }>;
 
 let _ManagersContext: ManagersContext | undefined;

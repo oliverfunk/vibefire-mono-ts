@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from "expo-router";
-import { useSignIn } from "@clerk/clerk-expo";
 
 import {
   BottomPanelHandle,
@@ -7,6 +6,7 @@ import {
 } from "~/components/bottom-panel/BottomPanelHandle";
 import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
 import { EventsListAndProfile } from "~/components/bottom-panel/EventsListAndProfile";
+import { useNotificationObserver } from "~/hooks/useNotificationObserver";
 import { useTsQueryParam } from "~/hooks/useTs";
 
 const Screen = () => {
@@ -16,6 +16,14 @@ const Screen = () => {
   }>();
 
   const ts = useTsQueryParam();
+
+  // this isn't the best place for this
+  // should use a nested group and put it in the layout there
+  // but is okay for now as the index route should also be
+  // loaded on app start
+  useNotificationObserver();
+
+  console.log("profileSelected", JSON.stringify(profileSelected, null, 2));
 
   // const impersonating = true;
 

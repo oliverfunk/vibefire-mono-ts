@@ -9,7 +9,7 @@ export const useShareEventLink = (event: VibefireEventT) => {
     try {
       await Share.share({
         message: `Vibefire | Checkout out this event!\n${vibefireEventShareURL(
-          event,
+          event.linkId,
         )}`,
       });
     } catch (error: unknown) {

@@ -24,6 +24,7 @@ import {
   callAuthedEventsStarredOwnedDuringPeriods,
   callEventPublishedByLinkIdForExternalUser,
   callEventsInBBoxDuringPeriodForUser,
+  clearUserPushToken,
   createEvent,
   createEventManagement,
   createUser,
@@ -34,7 +35,9 @@ import {
   getEventManagementFromEventIDByOrganiser,
   getEventsByOrganiser,
   getUserByAid,
+  getUserPushToken,
   hideEvent,
+  setUserPushToken,
   starEvent,
   unstarEvent,
   updateEvent,
@@ -56,6 +59,7 @@ import { managersContext } from "~/managers-context";
 import { getImagesManager } from "~/private/images-manager";
 import { getGoogleMapsManager } from "~/public/google-maps-manager";
 import { checkUserIsPartOfOrg, safeGet } from "~/utils";
+import { ExpoManager } from "./expo-manager";
 
 let _FaunaManager: FaunaManager | undefined;
 export const getFaunaManager = (): FaunaManager => {
@@ -74,6 +78,11 @@ export class FaunaManager {
       secret: faunaKey,
     });
   }
+
+  // region Notifications
+
+  // #endregion
+
   // #region Event
   async eventsByUser(
     userAc: ClerkSignedInAuthContext,
@@ -206,6 +215,17 @@ export class FaunaManager {
     removeUndef(e);
 
     const res = await createEvent(this.faunaClient, e);
+
+    const exp = new ExpoManager();
+    await exp.sendPushNotification(
+      "ExponentPushToken[j0tExQJycwSCBOjnzCaORr]",
+      "Event Created",
+      "Well done",
+      {
+        linkId: res.linkId,
+      },
+    );
+
     return res;
   }
 
@@ -803,6 +823,27 @@ export class FaunaManager {
       throw new Error("Cannot block yourself");
     }
     await blockOrganiser(this.faunaClient, userAc.userId, organiserId);
+  }
+
+  async userRegisterPushToken(
+    userAc: ClerkSignedInAuthContext,
+    token: string,
+  ): Promise<void> {
+    await setUserPushToken(this.faunaClient, userAc.userId, token);
+  }
+
+  async userUnregisterPushToken(
+    userAc: ClerkSignedInAuthContext,
+  ): Promise<void> {
+    await clearUserPushToken(this.faunaClient, userAc.userId);
+  }
+
+  async externalGetUserPushToken(userAid: string): Promise<string> {
+    const token = await getUserPushToken(this.faunaClient, userAid);
+    if (!token) {
+      throw new Error("Token not set for user");
+    }
+    return token;
   }
   // #endregion
 }

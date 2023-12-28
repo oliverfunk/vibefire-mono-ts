@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useMemo,
   useState,
-  type FC,
   type ReactNode,
 } from "react";
 import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
@@ -20,9 +19,11 @@ import { tokenCache } from "~/utils/sec-store-cache";
 import { trpc, trpcUrl } from "~/apis/trpc-client";
 import { userAtom, userSessionRetryAtom } from "~/atoms";
 
-const myStore = createStore();
+const myAtomStore = createStore();
 
-const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
+const UserSessionProvider = (props: { children: ReactNode }) => {
+  const { children } = props;
+
   // for manually proc'ing a retry
   const userSessionRetry = useAtomValue(userSessionRetryAtom);
 
@@ -74,10 +75,15 @@ const _UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [getSession, getSessionMutDbcLong, setUser]);
 
-  return <>{children}</>;
+  return children;
 };
 
-const _AppProviders = (props: { children: ReactNode }) => {
+const JotaiAtomsProvider = (props: { children: ReactNode }) => {
+  const { children } = props;
+  return <Provider store={myAtomStore}>{children}</Provider>;
+};
+
+const TrpcProvider = (props: { children: ReactNode }) => {
   const { children } = props;
 
   const { getToken } = useAuth();
@@ -101,26 +107,37 @@ const _AppProviders = (props: { children: ReactNode }) => {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <Provider store={myStore}>
-          <_UserProvider>{children}</_UserProvider>
-        </Provider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </trpc.Provider>
   );
 };
 
-const AppProviders: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const ClerkAuthProvider = (props: { children: ReactNode }) => {
+  const { children } = props;
+
   const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
   if (!clerkKey) {
     throw new Error("Missing Clerk publishable key");
   }
+
   return (
     <ClerkProvider publishableKey={clerkKey} tokenCache={tokenCache}>
-      <_AppProviders>{children}</_AppProviders>
+      {children}
     </ClerkProvider>
+  );
+};
+
+const AppProviders = (props: { children: ReactNode }) => {
+  const { children } = props;
+
+  return (
+    <JotaiAtomsProvider>
+      <ClerkAuthProvider>
+        <TrpcProvider>
+          <UserSessionProvider>{children}</UserSessionProvider>
+        </TrpcProvider>
+      </ClerkAuthProvider>
+    </JotaiAtomsProvider>
   );
 };
 

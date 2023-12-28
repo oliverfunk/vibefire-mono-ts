@@ -56,4 +56,18 @@ export const userRouter = router({
       }
       return await ctx.fauna.blockOrganiserForUser(ctx.auth, input.organiserId);
     }),
+  registerToken: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          token: t.String(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.fauna.userRegisterPushToken(ctx.auth, input.token);
+    }),
+  unregisterToken: authedProcedure.mutation(async ({ ctx }) => {
+    return await ctx.fauna.userUnregisterPushToken(ctx.auth);
+  }),
 });
