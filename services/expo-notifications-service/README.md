@@ -11,5 +11,5 @@ curl -X POST \
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"title":"Notfi Title", "body": "Notfi Body", "toEventLinkId": "edecec82d"}' \
-  https://us-central1-vibefire-prod-x.cloudfunctions.net/expo-notifications-service/send/user/user_2ZMC8dTLfkmaxZuqVmu59ALHtrN
+  https://us-central1-vibefire-prod-x.cloudfunctions.net/expo-notifications-service/send/user/user_2aEI4eIVGVbE96szdGBSPyKja5e
 ```
