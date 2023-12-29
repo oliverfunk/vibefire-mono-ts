@@ -28,9 +28,6 @@ export const AuthButton = (props: {
     () =>
       AuthSession.makeRedirectUri({
         path: "/",
-        queryParams: {
-          profileSelected: "true",
-        },
       }),
     [],
   );
