@@ -5,7 +5,14 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { ClerkProvider, useAuth, useUser } from "@clerk/clerk-expo";
+import Toast from "react-native-toast-message";
+import {
+  ClerkLoaded,
+  ClerkProvider,
+  useAuth,
+  useUser,
+} from "@clerk/clerk-expo";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
@@ -134,7 +141,12 @@ const AppProviders = (props: { children: ReactNode }) => {
     <JotaiAtomsProvider>
       <ClerkAuthProvider>
         <TrpcProvider>
-          <UserSessionProvider>{children}</UserSessionProvider>
+          <UserSessionProvider>
+            <BottomSheetModalProvider>
+              <ClerkLoaded>{children}</ClerkLoaded>
+            </BottomSheetModalProvider>
+            <Toast />
+          </UserSessionProvider>
         </TrpcProvider>
       </ClerkAuthProvider>
     </JotaiAtomsProvider>

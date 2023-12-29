@@ -35,6 +35,7 @@ const expoConfig = ({ config }) => ({
   },
   android: {
     package: "app.vibefire.and",
+    googleServicesFile: "./google-services.json",
     config: {
       googleMaps: {
         apiKey: "***REMOVED***",

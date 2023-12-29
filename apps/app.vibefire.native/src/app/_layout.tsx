@@ -1,23 +1,20 @@
 import { useEffect } from "react";
 import { StatusBar } from "react-native";
-import Toast from "react-native-toast-message";
 import * as Linking from "expo-linking";
 import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { ClerkLoaded } from "@clerk/clerk-expo";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
 import * as Sentry from "sentry-expo";
 
+import { useRegisterPushToken } from "~/hooks/useRegisterPushToken";
 import AppProviders from "~/providers";
 
 import "~/global.css";
 
 import * as Notifications from "expo-notifications";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { EventMap } from "~/components/event/EventMap";
 import { NoTopContainer } from "~/components/NoTopContainer";
-import { useNotificationObserver } from "~/hooks/useNotificationObserver";
 
 const routingInstrumentation =
   new Sentry.Native.ReactNavigationInstrumentation();
@@ -44,18 +41,8 @@ Notifications.setNotificationHandler({
 
 void SplashScreen.preventAutoHideAsync();
 
-const RootLayout = () => {
-  const [fontsLoaded] = useFonts({
-    Inter_500Medium,
-  });
-
-  useEffect(() => {
-    void (async () => {
-      if (fontsLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    })();
-  }, [fontsLoaded]);
+const PostProvidersInject = () => {
+  useRegisterPushToken();
 
   const deeplinkURL = Linking.useURL();
   useEffect(() => {
@@ -83,25 +70,38 @@ const RootLayout = () => {
     // );
   }, [pathname, params]);
 
+  return null;
+};
+
+const RootLayout = () => {
+  const [fontsLoaded] = useFonts({
+    Inter_500Medium,
+  });
+
+  useEffect(() => {
+    void (async () => {
+      if (fontsLoaded) {
+        await SplashScreen.hideAsync();
+      }
+    })();
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
     return null;
   }
+
   return (
     <AppProviders>
-      <ClerkLoaded>
-        <BottomSheetModalProvider>
-          <NoTopContainer>
-            <StatusBar />
-            <EventMap />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            />
-          </NoTopContainer>
-        </BottomSheetModalProvider>
-        <Toast />
-      </ClerkLoaded>
+      <PostProvidersInject />
+      <StatusBar barStyle={"dark-content"} />
+      <NoTopContainer>
+        <EventMap />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </NoTopContainer>
     </AppProviders>
   );
 };

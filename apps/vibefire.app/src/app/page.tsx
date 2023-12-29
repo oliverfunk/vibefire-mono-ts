@@ -18,7 +18,7 @@ const Home: NextPage = () => {
             </span>
           </h1>
           <h2 className="mt-5 text-center text-2xl">
-            {"Discover events around you"}
+            {"Discover events near you!"}
           </h2>
         </div>
 

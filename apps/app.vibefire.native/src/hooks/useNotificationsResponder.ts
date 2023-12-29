@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 
-export const useNotificationObserver = () => {
-  useLayoutEffect(() => {
+export const useNotificationsResponder = () => {
+  useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
         // do stuff based on the type of notification
@@ -13,7 +13,7 @@ export const useNotificationObserver = () => {
     return () => subscription.remove();
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let isMounted = true;
 
     const redirectOnNotificationURL = (
