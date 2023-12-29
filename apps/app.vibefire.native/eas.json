@@ -39,7 +39,11 @@
     },
     "production": {
       "extends": "base",
+      "developmentClient": false,
       "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
       "env": {
         "EXPO_PUBLIC_ENVIRONMENT": "production"
       }

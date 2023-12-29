@@ -45,6 +45,9 @@ const PostProvidersInject = () => {
   useRegisterPushToken();
 
   const deeplinkURL = Linking.useURL();
+  const pathname = usePathname();
+  const params = useGlobalSearchParams();
+
   useEffect(() => {
     if (deeplinkURL) {
       const { hostname, path, queryParams } = Linking.parse(deeplinkURL);
@@ -57,17 +60,9 @@ const PostProvidersInject = () => {
     }
   }, [deeplinkURL]);
 
-  const pathname = usePathname();
-  const params = useGlobalSearchParams();
-  // const navigation = useNavigation();
-
   useEffect(() => {
     console.log("routing pathname", pathname);
     console.log("routing params", JSON.stringify(params, null, 2));
-    // console.log(
-    //   "routing state",
-    //   JSON.stringify(navigation.getState(), null, 2),
-    // );
   }, [pathname, params]);
 
   return null;
