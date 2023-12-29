@@ -6,7 +6,7 @@ import {
 } from "~/components/bottom-panel/BottomPanelHandle";
 import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
 import { EventsListAndProfile } from "~/components/bottom-panel/EventsListAndProfile";
-import { useNotificationObserver } from "~/hooks/useNotificationObserver";
+import { useNotificationsResponder } from "~/hooks/useNotificationsResponder";
 import { useTsQueryParam } from "~/hooks/useTs";
 
 const Screen = () => {
@@ -21,9 +21,7 @@ const Screen = () => {
   // should use a nested group and put it in the layout there
   // but is okay for now as the index route should also be
   // loaded on app start
-  useNotificationObserver();
-
-  console.log("profileSelected", JSON.stringify(profileSelected, null, 2));
+  useNotificationsResponder();
 
   // const impersonating = true;
 

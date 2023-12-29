@@ -1,14 +1,53 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import { atom, useAtomValue } from "jotai";
 
 import { type VibefireUserT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
+import { userAtom } from "~/atoms";
+
+const allowsNotifications = async () => {
+  const settings = await Notifications.getPermissionsAsync();
+  return (
+    settings.granted ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+  );
+};
+
+const requestNotificationsPermissions = async () => {
+  const settings = await Notifications.requestPermissionsAsync({
+    ios: {
+      allowAlert: true,
+      allowBadge: true,
+      allowSound: true,
+      allowAnnouncements: true,
+    },
+  });
+  return (
+    settings.granted ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+  );
+};
 
 const getExpoPushNotificationToken = async () => {
+  if (!Device.isDevice) {
+    console.log("Must use physical device for Push Notifications");
+    return undefined;
+  }
+
+  let allows = await allowsNotifications();
+  if (!allows) {
+    allows = await requestNotificationsPermissions();
+  }
+  if (!allows) {
+    console.log("Insufficient permission for push notifications!");
+    return null;
+  }
+
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
       name: "default",
@@ -16,61 +55,59 @@ const getExpoPushNotificationToken = async () => {
     });
   }
 
-  if (Device.isDevice) {
-    const { status: currentNotfStatus } =
-      await Notifications.getPermissionsAsync();
-
-    let finalStatus = currentNotfStatus;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    if (finalStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    if (finalStatus !== "granted") {
-      console.log("Insufficient permission for push notifications!");
-      return "";
-    }
-
-    const token = await Notifications.getExpoPushTokenAsync({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      projectId: Constants.expoConfig!.extra!.eas.projectId,
-    });
-    return token;
-  } else {
-    console.log("Must use physical device for Push Notifications");
-  }
-
-  return undefined;
+  const token = await Notifications.getExpoPushTokenAsync({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    projectId: Constants.expoConfig!.extra!.eas.projectId,
+  });
+  return token;
 };
 
-export const useRegisterPushToken = (userInfo: VibefireUserT) => {
+const userPushTokenAtom = atom((get) => {
+  const user = get(userAtom);
+  if (user.state !== "authenticated") {
+    return undefined;
+  }
+  return (user.userInfo as VibefireUserT).pushToken ?? null;
+});
+
+export const useRegisterPushToken = () => {
+  const userPushToken = useAtomValue(userPushTokenAtom);
+  const [tokenChecked, setTokenChecked] = useState(false);
+
   const registerUserTokenMut = trpc.user.registerToken.useMutation();
   const unregisterUserTokenMut = trpc.user.unregisterToken.useMutation();
 
   useEffect(() => {
-    getExpoPushNotificationToken()
-      .then(async (token) => {
-        if (token === undefined) {
-          return;
-        }
-        if (token === "") {
+    if (userPushToken === undefined) {
+      return;
+    }
+    if (tokenChecked) {
+      return;
+    }
+
+    const tokenFlow = async () => {
+      if (userPushToken) {
+        const allows = await allowsNotifications();
+        if (!allows) {
           await unregisterUserTokenMut.mutateAsync();
-        } else {
+        }
+      } else {
+        const token = await getExpoPushNotificationToken();
+        if (token) {
           const expoPushToken = token.data;
-          if (userInfo.pushToken === expoPushToken) {
-            return;
-          }
+          console.log("registering user push notification token");
           await registerUserTokenMut.mutateAsync({ token: expoPushToken });
         }
-      })
-      .catch((error) => {
-        console.error(
-          "An error occurred while registering for push notifications",
-          JSON.stringify(error, null, 2),
-        );
-      });
+      }
+      setTokenChecked(true);
+    };
+
+    tokenFlow().catch((error) => {
+      console.error(
+        "An error occurred while registering for push notifications",
+        JSON.stringify(error, null, 2),
+      );
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo.pushToken]);
+  }, [userPushToken]);
 };

@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Image from "next/image";
 import Link from "next/link";
-import { Squares2X2Icon } from "@heroicons/react/24/solid";
 
 import VibefireIcon from "~/public/Icon_Circle_wOutline.svg";
 
 // import VibefireIcon from "@/public/Icon_Circle_Border.svg";
 interface NavbarProps {
-  active: "none" | "support" | "privacy" | "terms";
+  active: "none" | "support" | "privacy" | "terms" | "faq";
 }
 
 const Navbar: React.FC<NavbarProps> = ({ active }) => {
@@ -53,6 +52,18 @@ const Navbar: React.FC<NavbarProps> = ({ active }) => {
           }
         >
           Terms
+        </Link>
+        <Link
+          role="button"
+          href="/faq"
+          className={
+            "m-1 rounded px-3 py-2 font-semibold " +
+            (active == "terms"
+              ? "bg-slate-500"
+              : "hover:bg-slate-500 hover:bg-opacity-50")
+          }
+        >
+          FAQ
         </Link>
         {/* <a
           role="button"

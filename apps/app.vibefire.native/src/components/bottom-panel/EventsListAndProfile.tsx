@@ -16,7 +16,6 @@ import { SignOut } from "~/components/auth/SignOut";
 import { EventsList } from "~/components/event/EventList";
 import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { userAtom, userSessionRetryAtom } from "~/atoms";
-import { useRegisterPushToken } from "~/hooks/useRegisterPushToken";
 import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
 import {
   FormTextInput,
@@ -61,12 +60,6 @@ const _FeedbackCard = () => {
       </TouchableOpacity>
     </View>
   );
-};
-
-const PushTokenRegister = (props: { userInfo: VibefireUserT }) => {
-  useRegisterPushToken(props.userInfo);
-
-  return null;
 };
 
 const _Profile = () => {
@@ -131,8 +124,6 @@ const _Profile = () => {
       return (
         <ScrollViewSheet>
           <View className="flex-col items-center space-y-10 py-5">
-            <PushTokenRegister userInfo={userInfo} />
-
             {/* Name */}
             <View className="flex-row items-center justify-center space-x-1">
               <View className="rounded-lg bg-black p-4">

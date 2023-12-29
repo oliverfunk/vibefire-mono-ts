@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "877515566282",
+    "project_id": "vibefire-prod-x",
+    "storage_bucket": "vibefire-prod-x.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877515566282:android:886a11c8fba198decc1833",
+        "android_client_info": {
+          "package_name": "app.vibefire.and"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877515566282-ahegbin4ee56t5pn16dr8ug77gfcs86r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDViR5d8Bmf18cjUktov77Ty8NFDeYDl5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877515566282-ahegbin4ee56t5pn16dr8ug77gfcs86r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
