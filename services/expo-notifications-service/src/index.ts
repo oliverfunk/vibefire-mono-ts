@@ -60,7 +60,7 @@ app.post("/send/user/:userAid", async (req, res) => {
   try {
     const userPushToken = await faunaManager.externalGetUserPushToken(userAid);
     if (toEventLinkId) {
-      // makes sure the user can see the event
+      // makes sure the event is visible for the user, will throw if not
       await faunaManager.publishedEventForExternalView(userAid, toEventLinkId);
       sendEventURL = true;
     }
@@ -92,5 +92,3 @@ app.post("/check", (req, res) => {
 });
 
 export const service = app;
-
-app.routes;

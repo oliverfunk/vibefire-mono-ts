@@ -6,6 +6,7 @@ type Bindings = {
   VIBEFIRE_APPLE_APP_ID: string;
   VIBEFIRE_ANDROID_APP_ID: string;
   VIBEFIRE_ANDROID_APP_SHA256: string;
+  VIBEFIRE_ANDROID_APP_SHA256_2: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -52,7 +53,10 @@ app.get("/.well-known/assetlinks.json", (c) => {
       target: {
         namespace: "android_app",
         package_name: c.env.VIBEFIRE_ANDROID_APP_ID,
-        sha256_cert_fingerprints: [c.env.VIBEFIRE_ANDROID_APP_SHA256],
+        sha256_cert_fingerprints: [
+          c.env.VIBEFIRE_ANDROID_APP_SHA256,
+          c.env.VIBEFIRE_ANDROID_APP_SHA256_2,
+        ],
       },
     },
   ]);
