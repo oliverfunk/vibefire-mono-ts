@@ -2,6 +2,7 @@
   "cli": {
     "version": ">= 5.9.1",
     "requireCommit": false,
+    "appVersionSource": "remote"
   },
   "build": {
     "base": {
@@ -44,6 +45,7 @@
       "android": {
         "buildType": "app-bundle"
       },
+      "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_ENVIRONMENT": "production"
       }
@@ -53,6 +55,12 @@
     "production": {
       "android": {
         "track": "production"
+      },
+      "ios": {}
+    },
+    "internal": {
+      "android": {
+        "track": "internal"
       },
       "ios": {}
     }
