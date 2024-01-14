@@ -220,29 +220,26 @@ const _EventsList = () => {
   const mapPosDateEvents = useAtomValue(mapPositionDateEventsQueryResultAtom);
 
   return (
-    <ScrollViewSheet>
-      <View className="px-2 pb-5">
-        {upcomingEvents.length > 0 && (
-          <>
-            <EventsList
-              events={upcomingEvents}
-              onEventPress={(_eventId, event) => {
-                navViewEvent(event.linkId!);
-              }}
-              listTitle="Upcoming Starred Events"
-            />
-            <View className="border" />
-          </>
-        )}
-        <EventsList
-          events={mapPosDateEvents}
-          noEventsMessage="No public events here yet"
-          onEventPress={(_eventId, event) => {
-            navViewEvent(event.linkId!);
-          }}
-        />
-      </View>
-    </ScrollViewSheet>
+    <View className="flex-1 pb-5">
+      {upcomingEvents.length > 0 && (
+        <>
+          <EventsList
+            events={upcomingEvents}
+            onEventPress={(_eventId, event) => {
+              navViewEvent(event.linkId!);
+            }}
+            listTitle="Upcoming Starred Events"
+          />
+          <View className="border" />
+        </>
+      )}
+      <EventsList
+        events={mapPosDateEvents}
+        onEventPress={(_eventId, event) => {
+          navViewEvent(event.linkId!);
+        }}
+      />
+    </View>
   );
 };
 

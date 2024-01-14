@@ -18,7 +18,8 @@
   },
   "exports": {
     "./context": "./src/managers-context.ts",
-    "./fauna": "./src/public/fauna-manager.ts",
+    "./fauna-user": "./src/public/fauna-user-manager.ts",
+    "./fauna-external": "./src/public/fauna-external-manager.ts",
     "./expo": "./src/public/expo-manager.ts",
     "./google-maps": "./src/public/google-maps-manager.ts",
     "./clerk-webhook": "./src/public/clerk-wh-manager.ts"

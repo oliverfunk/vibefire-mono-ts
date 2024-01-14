@@ -16,11 +16,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   BottomSheetBackdrop,
+  BottomSheetFlatList,
   BottomSheetScrollView,
   BottomSheetView,
   type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
+import { type BottomSheetFlatListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { usePrevious } from "~/hooks/usePrevious";
@@ -127,6 +129,16 @@ export const FormTextInput = (props: FormTextInputProps) => {
     </View>
   );
 };
+
+export const FlatListViewSheet = <T,>(props: BottomSheetFlatListProps<T>) => (
+  <BottomSheetFlatList
+    automaticallyAdjustKeyboardInsets={true}
+    keyboardShouldPersistTaps={"handled"}
+    keyboardDismissMode={"interactive"}
+    focusHook={useFocusEffect}
+    {...props}
+  />
+);
 
 export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
   <BottomSheetScrollView

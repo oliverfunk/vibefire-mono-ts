@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from "react";
-import { Text, View } from "react-native";
+import { Text, View, type ListRenderItemInfo } from "react-native";
 import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 import { isoNTZToUTCDateTime } from "@vibefire/utils";
 
+import { FlatListViewSheet } from "../bottom-panel/_shared";
 import { EventCard } from "./EventCard";
 
 type EventsListProps = {
@@ -52,8 +53,8 @@ export const EventsList = ({
     });
   }, [events, sortAsc]);
   const renderItem = useCallback(
-    (event: PartialDeep<VibefireEventT>, item: React.Key) => (
-      <View key={item}>
+    ({ item: event }: ListRenderItemInfo<PartialDeep<VibefireEventT>>) => (
+      <View>
         <EventCard
           published={event.published!}
           eventInfo={{
@@ -88,22 +89,50 @@ export const EventsList = ({
     ),
     [onEventCrossPress, onEventPress, showStatusBanner],
   );
+
+  const header = useCallback(() => {
+    return <Text className="text-2xl font-bold text-black">{listTitle}</Text>;
+  }, [listTitle]);
+
+  const noEventsText = useCallback(() => {
+    return (
+      <View className="h-[30vh] items-center justify-center">
+        <Text className="text-lg font-bold text-black">
+          {noEventsMessage ? noEventsMessage : "No events here yet"}
+        </Text>
+      </View>
+    );
+  }, [noEventsMessage]);
+
   return (
-    <View className="flex-col space-y-5 py-5">
-      {listTitle && (
-        <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold">{listTitle}</Text>
-        </View>
-      )}
-      {sortedEvents.length === 0 ? (
-        <View className="h-[30vh] items-center justify-center">
-          <Text className="text-lg text-black">
-            {noEventsMessage ? noEventsMessage : "No events here yet"}
-          </Text>
-        </View>
-      ) : (
-        sortedEvents.map(renderItem)
-      )}
-    </View>
+    <FlatListViewSheet
+      ListEmptyComponent={noEventsText}
+      ListHeaderComponent={listTitle ? header : undefined}
+      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      data={sortedEvents}
+      contentContainerStyle={{ padding: 5 }}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id!}
+    />
   );
+  // return (
+  //   <View className="items-center">
+  //     {listTitle && (
+
+  //     )}
+  //     {sortedEvents.length === 0 ? (
+  //       <View className="h-[30vh] items-center justify-center">
+  //         <Text className="text-lg text-black">
+  //           {noEventsMessage ? noEventsMessage : "No events here yet"}
+  //         </Text>
+  //       </View>
+  //     ) : (
+  //       <FlatListViewSheet
+  //         data={sortedEvents}
+  //         renderItem={renderItem}
+  //         keyExtractor={(item) => item.id!}
+  //       />
+  //     )}
+  //   </View>
+  // );
 };

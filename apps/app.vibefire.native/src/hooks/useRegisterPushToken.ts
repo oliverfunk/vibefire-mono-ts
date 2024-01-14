@@ -12,10 +12,7 @@ import { userAtom } from "~/atoms";
 
 const allowsNotifications = async () => {
   const settings = await Notifications.getPermissionsAsync();
-  return (
-    settings.granted ||
-    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
-  );
+  return settings.granted;
 };
 
 const requestNotificationsPermissions = async () => {
@@ -27,10 +24,7 @@ const requestNotificationsPermissions = async () => {
       allowAnnouncements: true,
     },
   });
-  return (
-    settings.granted ||
-    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
-  );
+  return settings.granted;
 };
 
 const getExpoPushNotificationToken = async () => {
@@ -88,7 +82,9 @@ export const useRegisterPushToken = () => {
     const tokenFlow = async () => {
       if (userPushToken) {
         const allows = await allowsNotifications();
-        if (!allows) {
+        const isDevice = Device.isDevice;
+        if (!allows && isDevice) {
+          // if it's on an emulator, don't unregister
           await unregisterUserTokenMut.mutateAsync();
         }
       } else {

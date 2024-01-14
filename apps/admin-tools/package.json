@@ -1,0 +1,21 @@
+{
+  "name": "tools",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
+    "run": "pnpm run build && node dist/index.js"
+  },
+  "dependencies": {
+    "@vibefire/managers": "^0.1.0",
+    "@vibefire/services": "^0.1.0",
+    "@vibefire/utils": "^0.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.10",
+    "npm-watch": "^0.11.0",
+    "typescript": "^5.3.2"
+  }
+}

@@ -35,7 +35,6 @@ import {
   getEventManagementFromEventIDByOrganiser,
   getEventsByOrganiser,
   getUserByAid,
-  getUserPushToken,
   hideEvent,
   setUserPushToken,
   starEvent,
@@ -59,19 +58,20 @@ import { managersContext } from "~/managers-context";
 import { getImagesManager } from "~/private/images-manager";
 import { getGoogleMapsManager } from "~/public/google-maps-manager";
 import { checkUserIsPartOfOrg, safeGet } from "~/utils";
-import { ExpoManager } from "./expo-manager";
 
-let _FaunaManager: FaunaManager | undefined;
-export const getFaunaManager = (): FaunaManager => {
+let _FaunaUserManager: FaunaUserManager | undefined;
+export const getFaunaUserManager = (
+  faunaClientKey?: string,
+): FaunaUserManager => {
   "use strict";
-  if (!_FaunaManager) {
-    const faunaKey = managersContext().faunaClientKey!;
-    _FaunaManager = new FaunaManager(faunaKey);
+  if (!_FaunaUserManager) {
+    const faunaKey = faunaClientKey ?? managersContext().faunaClientKey!;
+    _FaunaUserManager = new FaunaUserManager(faunaKey);
   }
-  return _FaunaManager;
+  return _FaunaUserManager;
 };
 
-export class FaunaManager {
+export class FaunaUserManager {
   private faunaClient: Client;
   constructor(faunaKey: string) {
     this.faunaClient = new Client({
@@ -177,14 +177,11 @@ export class FaunaManager {
       this.faunaClient,
       organiserId,
     );
+
     const draftEvents = organiserEvents.filter((e) => e.state === "draft");
-    const readyEvents = organiserEvents.filter((e) => e.state === "ready");
 
     if (draftEvents.length >= 5) {
       throw new Error("Too many draft events");
-    }
-    if (draftEvents.length + readyEvents.length >= 10) {
-      throw new Error("Too many draft or ready events");
     }
 
     const e = Value.Create(VibefireEventSchema);
@@ -215,16 +212,6 @@ export class FaunaManager {
     removeUndef(e);
 
     const res = await createEvent(this.faunaClient, e);
-
-    const exp = new ExpoManager();
-    await exp.sendPushNotification(
-      "ExponentPushToken[j0tExQJycwSCBOjnzCaORr]",
-      "Event Created",
-      "Well done",
-      {
-        linkId: res.linkId,
-      },
-    );
 
     return res;
   }
@@ -289,21 +276,23 @@ export class FaunaManager {
   async eventUpdate(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    organisationId?: string,
-    title?: VibefireEventT["title"],
-    description?: VibefireEventT["description"],
-    tags?: VibefireEventT["tags"],
-    timeStartIsoNTZ?: string,
-    timeEndIsoNTZ?: string | null,
-    position?: VibefireEventLocationT["position"],
-    addressDescription?: VibefireEventLocationT["addressDescription"],
-    bannerImageId?: string,
-    additionalImageIds?: string[],
+    update: {
+      title?: VibefireEventT["title"];
+      description?: VibefireEventT["description"];
+      tags?: VibefireEventT["tags"];
+      timeStartIsoNTZ?: string;
+      timeEndIsoNTZ?: string | null;
+      position?: VibefireEventLocationT["position"];
+      addressDescription?: VibefireEventLocationT["addressDescription"];
+      bannerImageId?: string;
+      additionalImageIds?: string[];
+    },
     setTimeline: {
       id: string;
       timeIsoNTZ: string;
       message: string;
     }[] = [],
+    organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
@@ -320,6 +309,19 @@ export class FaunaManager {
       timeStart: dbEvent.timeStart,
       timeEnd: dbEvent.timeEnd,
     };
+
+    let {
+      title,
+      description,
+      tags,
+      timeStartIsoNTZ,
+      timeEndIsoNTZ,
+      position,
+      // eslint-disable-next-line prefer-const
+      addressDescription,
+      bannerImageId,
+      additionalImageIds,
+    } = update;
 
     // descriptions
     if (title || description || tags) {
@@ -836,14 +838,6 @@ export class FaunaManager {
     userAc: ClerkSignedInAuthContext,
   ): Promise<void> {
     await clearUserPushToken(this.faunaClient, userAc.userId);
-  }
-
-  async externalGetUserPushToken(userAid: string): Promise<string> {
-    const token = await getUserPushToken(this.faunaClient, userAid);
-    if (!token) {
-      throw new Error("Token not set for user");
-    }
-    return token;
   }
   // #endregion
 }

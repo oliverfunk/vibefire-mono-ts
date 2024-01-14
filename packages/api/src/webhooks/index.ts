@@ -2,7 +2,7 @@ import { Hono } from "hono";
 
 import { getClerkWebhookManager } from "@vibefire/managers/clerk-webhook";
 import { setManagersContext } from "@vibefire/managers/context";
-import { getFaunaManager } from "@vibefire/managers/fauna";
+import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
 
 import { BASEPATH_WEBHOOKS } from "~/basepaths";
 import { validateToHttpExp } from "./utils";
@@ -25,7 +25,7 @@ webhooksRouter.use("*", async (c, next) => {
 webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 
 webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
-  const fauna = getFaunaManager();
+  const fauna = getFaunaUserManager();
   const webhooksClerkManager = getClerkWebhookManager();
 
   const headers = c.req.header();

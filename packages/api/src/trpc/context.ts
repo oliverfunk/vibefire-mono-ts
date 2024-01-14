@@ -5,7 +5,7 @@ import {
   setManagersContext,
   type ManagersContext,
 } from "@vibefire/managers/context";
-import { getFaunaManager } from "@vibefire/managers/fauna";
+import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
 import { getGoogleMapsManager } from "@vibefire/managers/google-maps";
 import {
   authRequestWithClerk,
@@ -14,7 +14,7 @@ import {
 
 type ContextProps = {
   auth: ClerkAuthContext;
-  fauna: ReturnType<typeof getFaunaManager>;
+  fauna: ReturnType<typeof getFaunaUserManager>;
   googleMapsManager: ReturnType<typeof getGoogleMapsManager>;
 };
 
@@ -27,7 +27,7 @@ export const createContext = async ({ req, env }: CreateContextOptions) => {
       env.clerkIssuerApiUrl!,
       req,
     ),
-    fauna: getFaunaManager(),
+    fauna: getFaunaUserManager(),
     googleMapsManager: getGoogleMapsManager(),
   } as ContextProps;
 };

@@ -144,14 +144,30 @@ importers:
         specifier: ^3.17.1
         version: 3.17.1
 
-  apps/api.vibefire.app:
+  apps/admin-tools:
     dependencies:
-      '@vibefire/api':
+      '@vibefire/managers':
         specifier: ^0.1.0
-        version: link:../../packages/api
+        version: link:../../packages/managers
+      '@vibefire/services':
+        specifier: ^0.1.0
+        version: link:../../packages/services
       '@vibefire/utils':
         specifier: ^0.1.0
         version: link:../../packages/utils
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.10
+        version: 0.19.10
+      npm-watch:
+        specifier: ^0.11.0
+        version: 0.11.0
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   apps/app.vibefire.native:
     dependencies:
@@ -334,15 +350,6 @@ importers:
         specifier: 3.3.2
         version: 3.3.2
 
-  apps/handle.vibefire.app:
-    devDependencies:
-      '@vibefire/api':
-        specifier: ^0.1.0
-        version: link:../../packages/api
-      '@vibefire/utils':
-        specifier: ^0.1.0
-        version: link:../../packages/utils
-
   apps/vibefire.app:
     dependencies:
       '@headlessui/react':
@@ -505,6 +512,15 @@ importers:
         specifier: ^0.1.0
         version: link:../config
 
+  services/api.vibefire.app:
+    dependencies:
+      '@vibefire/api':
+        specifier: ^0.1.0
+        version: link:../../packages/api
+      '@vibefire/utils':
+        specifier: ^0.1.0
+        version: link:../../packages/utils
+
   services/expo-notifications-service:
     dependencies:
       '@google-cloud/functions-framework':
@@ -532,6 +548,15 @@ importers:
       typescript:
         specifier: ^5.3.2
         version: 5.3.2
+
+  services/handle.vibefire.app:
+    devDependencies:
+      '@vibefire/api':
+        specifier: ^0.1.0
+        version: link:../../packages/api
+      '@vibefire/utils':
+        specifier: ^0.1.0
+        version: link:../../packages/utils
 
 packages:
 
@@ -6563,6 +6588,11 @@ packages:
 
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
     dev: false
 
