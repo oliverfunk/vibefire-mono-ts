@@ -153,10 +153,11 @@ export const createEvent = async (
   const _linkIdField: keyof VibefireEventT = "linkId";
   const q = fql`
     Events.create(${createData}) {
-        linkId
+      id,
+      linkId
     }
   `;
-  return await dfq<{ linkId: string }>(faunaClient, q);
+  return await dfq<{ id: string; linkId: string }>(faunaClient, q);
 };
 
 export const updateEvent = async (

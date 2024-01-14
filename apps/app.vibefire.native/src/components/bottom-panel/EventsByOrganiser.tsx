@@ -59,31 +59,29 @@ const EventsByOrganiserView = (props: {
   >(undefined);
 
   return (
-    <ScrollViewSheet>
-      <View className="flex-col items-center justify-center space-y-4 px-2">
-        <DeleteConfirmationModal
-          showModal={!!showModalUsingEventId}
-          hideModal={() => setShowModalUsingEventId(undefined)}
-          eventId={showModalUsingEventId}
-        />
-        <EventsList
-          events={events}
-          noEventsMessage="You have made no events yet"
-          onEventPress={(_eventId, event) => {
-            if (event?.state === "draft") {
-              navEditEvent(event.linkId!);
-            } else {
-              navManageEvent(event.linkId!);
-            }
-          }}
-          onEventCrossPress={(eventId, _event) => {
-            setShowModalUsingEventId(eventId);
-          }}
-          showStatusBanner={true}
-          sortAsc={false}
-        />
-      </View>
-    </ScrollViewSheet>
+    <View className="flex-1 pt-2">
+      <DeleteConfirmationModal
+        showModal={!!showModalUsingEventId}
+        hideModal={() => setShowModalUsingEventId(undefined)}
+        eventId={showModalUsingEventId}
+      />
+      <EventsList
+        events={events}
+        noEventsMessage="You have made no events yet"
+        onEventPress={(_eventId, event) => {
+          if (event?.state === "draft") {
+            navEditEvent(event.linkId!);
+          } else {
+            navManageEvent(event.linkId!);
+          }
+        }}
+        onEventCrossPress={(eventId, _event) => {
+          setShowModalUsingEventId(eventId);
+        }}
+        showStatusBanner={true}
+        sortAsc={false}
+      />
+    </View>
   );
 };
 

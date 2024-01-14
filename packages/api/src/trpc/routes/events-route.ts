@@ -180,17 +180,11 @@ export const eventsRouter = router({
       await ctx.fauna.eventUpdate(
         ctx.auth,
         input.eventId,
-        input.organisationId,
-        input.title,
-        input.description,
-        input.tags,
-        input.timeStartIsoNTZ,
-        input.timeEndIsoNTZ,
-        input.position,
-        input.addressDescription,
-        input.bannerImageId,
-        input.additionalImageIds,
+        {
+          ...input,
+        },
         input.timeline,
+        input.organisationId,
       );
     }),
   createImageUploadLink: authedProcedure

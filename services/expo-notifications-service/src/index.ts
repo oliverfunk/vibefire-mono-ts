@@ -4,7 +4,8 @@ import express, { type RequestHandler } from "express";
 
 import { setManagersContext } from "@vibefire/managers/context";
 import { getExpoManager } from "@vibefire/managers/expo";
-import { getFaunaManager } from "@vibefire/managers/fauna";
+import { getFaunaExternalManager } from "@vibefire/managers/fauna-external";
+import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
 import {
   checkNotification,
   type ExpoNotificationsService,
@@ -15,7 +16,8 @@ setManagersContext({
   faunaClientKey: process.env.FAUNA_SECRET,
   expoAccessToken: process.env.EXPO_API_ACCESS_TOKEN,
 });
-const faunaManager = getFaunaManager();
+const faunaUserManager = getFaunaUserManager();
+const faunaExternalManager = getFaunaExternalManager();
 const expoManager = getExpoManager();
 
 const vibefireNotificationService: ExpoNotificationsService = {
@@ -58,10 +60,13 @@ app.post("/send/user/:userAid", async (req, res) => {
   let sendEventURL = false;
 
   try {
-    const userPushToken = await faunaManager.externalGetUserPushToken(userAid);
+    const userPushToken = await faunaExternalManager.getUserPushToken(userAid);
     if (toEventLinkId) {
       // makes sure the event is visible for the user, will throw if not
-      await faunaManager.publishedEventForExternalView(userAid, toEventLinkId);
+      await faunaUserManager.publishedEventForExternalView(
+        userAid,
+        toEventLinkId,
+      );
       sendEventURL = true;
     }
     const ticket = await expoManager.sendPushNotification(
