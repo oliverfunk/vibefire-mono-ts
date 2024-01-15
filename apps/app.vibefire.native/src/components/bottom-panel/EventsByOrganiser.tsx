@@ -7,7 +7,7 @@ import { type VibefireEventT } from "@vibefire/models";
 import { EventsList } from "~/components/event/EventList";
 import { trpc } from "~/apis/trpc-client";
 import { navEditEvent, navManageEvent } from "~/nav";
-import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
+import { ErrorSheet, LoadingSheet } from "./_shared";
 
 const DeleteConfirmationModal = (props: {
   showModal: boolean;
@@ -54,12 +54,14 @@ const EventsByOrganiserView = (props: {
 }) => {
   const { events } = props;
 
+  console.log("events.len", JSON.stringify(events.length, null, 2));
+
   const [showModalUsingEventId, setShowModalUsingEventId] = useState<
     string | undefined
   >(undefined);
 
   return (
-    <View className="flex-1 pt-2">
+    <View className="flex-1">
       <DeleteConfirmationModal
         showModal={!!showModalUsingEventId}
         hideModal={() => setShowModalUsingEventId(undefined)}

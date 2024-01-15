@@ -18,11 +18,15 @@ import {
   BottomSheetBackdrop,
   BottomSheetFlatList,
   BottomSheetScrollView,
+  BottomSheetSectionList,
   BottomSheetView,
   type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
-import { type BottomSheetFlatListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types";
+import {
+  type BottomSheetFlatListProps,
+  type BottomSheetSectionListProps,
+} from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { usePrevious } from "~/hooks/usePrevious";
@@ -129,6 +133,18 @@ export const FormTextInput = (props: FormTextInputProps) => {
     </View>
   );
 };
+
+export const SectionListViewSheet = <T, S>(
+  props: BottomSheetSectionListProps<T, S>,
+) => (
+  <BottomSheetSectionList
+    automaticallyAdjustKeyboardInsets={true}
+    keyboardShouldPersistTaps={"handled"}
+    keyboardDismissMode={"interactive"}
+    focusHook={useFocusEffect}
+    {...props}
+  />
+);
 
 export const FlatListViewSheet = <T,>(props: BottomSheetFlatListProps<T>) => (
   <BottomSheetFlatList
