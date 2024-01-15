@@ -13,7 +13,10 @@ import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
-import { EventsList } from "~/components/event/EventList";
+import {
+  EventsList,
+  EventsListWithSections,
+} from "~/components/event/EventList";
 import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { userAtom, userSessionRetryAtom } from "~/atoms";
 import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
@@ -221,20 +224,9 @@ const _EventsList = () => {
 
   return (
     <View className="flex-1 pb-5">
-      {upcomingEvents.length > 0 && (
-        <>
-          <EventsList
-            events={upcomingEvents}
-            onEventPress={(_eventId, event) => {
-              navViewEvent(event.linkId!);
-            }}
-            listTitle="Upcoming Starred Events"
-          />
-          <View className="border" />
-        </>
-      )}
-      <EventsList
+      <EventsListWithSections
         events={mapPosDateEvents}
+        upcomingEvents={upcomingEvents}
         onEventPress={(_eventId, event) => {
           navViewEvent(event.linkId!);
         }}
