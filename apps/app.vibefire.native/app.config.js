@@ -8,7 +8,7 @@ const expoConfig = ({ config }) => ({
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   splash: {
-    image: "./assets/app-icon.png",
+    image: "./assets/icons/appicon-ios.png",
     resizeMode: "contain",
     backgroundColor: "#010101",
   },
@@ -24,7 +24,7 @@ const expoConfig = ({ config }) => ({
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",
     associatedDomains: ["applinks:vifr.io"],
-    icon: "./assets/app-icon.png",
+    icon: "./assets/icons/appicon-ios.png",
     config: { googleMapsApiKey: "AIzaSyDKTHWr-CRxekBAM8Ky-Q9ZoXaW4bLngJI" },
     entitlements: {
       "com.apple.developer.applesignin": ["Default"],
@@ -42,7 +42,7 @@ const expoConfig = ({ config }) => ({
       },
     },
     adaptiveIcon: {
-      foregroundImage: "./assets/app-icon.png",
+      foregroundImage: "./assets/icons/appicon-and.png",
       backgroundColor: "#010101",
     },
     intentFilters: [
