@@ -6,24 +6,21 @@ import { setManagersContext } from "@vibefire/managers/context";
 import { getExpoManager } from "@vibefire/managers/expo";
 import { getFaunaExternalManager } from "@vibefire/managers/fauna-external";
 import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
-import {
-  checkNotification,
-  type ExpoNotificationsService,
-} from "@vibefire/services/vibefire-notifications-service";
+import { getVibefireNotificationManager } from "@vibefire/managers/vf-notification";
 import { vibefireEventShareLocalURL } from "@vibefire/utils";
+
+// this code should live in a
+// api-node package (the routes should be importable from the package)
 
 setManagersContext({
   faunaClientKey: process.env.FAUNA_SECRET,
   expoAccessToken: process.env.EXPO_API_ACCESS_TOKEN,
+  vfNotifServiceAccessToken: process.env.VF_NOTIF_SERVICE_ACCESS_TOKEN!,
 });
 const faunaUserManager = getFaunaUserManager();
 const faunaExternalManager = getFaunaExternalManager();
 const expoManager = getExpoManager();
-
-const vibefireNotificationService: ExpoNotificationsService = {
-  endpoint: process.env.VIBEFIRE_NOTIFICATIONS_SERVICE_ENDPOINT!,
-  secret: process.env.VIBEFIRE_NOTIFICATIONS_SERVICE_SECRET!,
-};
+const vfNotifManager = getVibefireNotificationManager();
 
 const app = express();
 
@@ -44,7 +41,7 @@ app.use(express.json());
 app.use(logger);
 
 app.get("/", (req, res) => {
-  res.send("Hello from the Vibefire Expo Notifications Service!");
+  res.send("Hello from the Vibefire Notification Service!");
 });
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -79,8 +76,13 @@ app.post("/send/user/:userAid", async (req, res) => {
           }
         : undefined,
     );
-    console.log("notfi ticket", JSON.stringify(ticket, null, 2));
-    await checkNotification(vibefireNotificationService);
+    if (ticket.status === "error") {
+      // probably should handle the case where the push token is invalid
+      // e.g. remove the expo push token?
+      console.error("expo ticket error", JSON.stringify(ticket, null, 2));
+    } else {
+      await vfNotifManager.checkNotification(ticket.id);
+    }
   } catch (err) {
     res.status(400).json({ status: "error", reason: err });
     return;

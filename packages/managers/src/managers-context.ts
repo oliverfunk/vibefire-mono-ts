@@ -8,6 +8,8 @@ export type ManagersContext = Partial<{
   faunaClientKey: string;
   supabaseClientKey: string;
   expoAccessToken: string;
+  vfNotifServiceAccessToken: string;
+  vfSmsServiceAccessToken: string;
 }>;
 
 let _ManagersContext: ManagersContext | undefined;

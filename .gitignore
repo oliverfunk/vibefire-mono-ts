@@ -55,5 +55,6 @@ web-build/
 
 # ours
 apps/app.vibefire.native/android
+apps/app.vibefire.native/ios
 **/.dev.vars
 **/.wrangler/*
