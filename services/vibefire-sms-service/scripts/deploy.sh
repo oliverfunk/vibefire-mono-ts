@@ -1,0 +1,11 @@
+gcloud functions deploy vibefire-sms-service \
+  --env-vars-file .env.yaml \
+  --gen2 \
+  --source ./dist/ \
+  --runtime nodejs20 \
+  --max-instances 2 \
+  --region=us-central1 \
+  --memory=256M \
+  --entry-point service \
+  --trigger-http \
+  --allow-unauthenticated

@@ -1,3 +1,6 @@
+// NOTE: this manager requires a node runtime
+// (this is the expo node sdk)
+
 import { Expo } from "expo-server-sdk";
 
 import { managersContext } from "~/managers-context";
@@ -15,6 +18,8 @@ export const getExpoManager = (): ExpoManager => {
 export class ExpoManager {
   private expoClient: Expo;
   constructor(accessToken?: string) {
+    // the accessToken is optional because it is only after enabling
+    // the security setting in expo
     this.expoClient = new Expo({ accessToken });
   }
 
@@ -26,8 +31,7 @@ export class ExpoManager {
   ) {
     // Check that all your push tokens appear to be valid Expo push tokens
     if (!Expo.isExpoPushToken(pushToken)) {
-      console.error(`Push token ${pushToken} is not a valid Expo push token`);
-      return;
+      throw Error(`Push token ${pushToken} is not a valid Expo push token`);
     }
 
     // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
@@ -39,7 +43,15 @@ export class ExpoManager {
       data,
     };
 
-    const ticket = await this.expoClient.sendPushNotificationsAsync([message]);
+    const sendRes = await this.expoClient.sendPushNotificationsAsync([message]);
+
+    if (sendRes.length !== 1) {
+      throw new Error(
+        `Expected sendRes.length to be 1, but got ${sendRes.length}`,
+      );
+    }
+
+    const ticket = sendRes[0]!;
     return ticket;
   }
 

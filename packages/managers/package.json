@@ -22,6 +22,7 @@
     "./fauna-external": "./src/public/fauna-external-manager.ts",
     "./expo": "./src/public/expo-manager.ts",
     "./google-maps": "./src/public/google-maps-manager.ts",
-    "./clerk-webhook": "./src/public/clerk-wh-manager.ts"
+    "./clerk-webhook": "./src/public/clerk-wh-manager.ts",
+    "./vf-notification": "./src/public/vibefire-notification-manager.ts"
   }
 }

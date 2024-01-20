@@ -1,4 +1,4 @@
-gcloud functions deploy expo-notifications-service \
+gcloud functions deploy vibefire-notification-service \
   --env-vars-file .env.yaml \
   --gen2 \
   --source ./dist/ \

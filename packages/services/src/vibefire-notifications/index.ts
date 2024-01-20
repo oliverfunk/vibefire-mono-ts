@@ -1,18 +1,14 @@
-//api url - https://webhooks.vibefire.app/eMFLssyIDapK - post
-// set header - X-Vibefire-Expo-Notf-Service-Key - ***REMOVED***
-
-const API_URL = "";
-const API_KEY = "";
-
-export type ExpoNotificationsService = {
-  endpoint: string;
-  secret: string;
+export type VibefireNotificationsClient = {
+  accessToken: string;
+  endpoint?: string;
 };
+
+const serviceEndpoint = "https://webhooks.vibefire.app/eMFLssyIDapK";
 
 type MessageType = "notification/check" | "notification/send";
 
 const connector = async (
-  s: ExpoNotificationsService,
+  c: VibefireNotificationsClient,
   route: string,
   type: MessageType,
   payload: Record<string, string>,
@@ -20,11 +16,12 @@ const connector = async (
   if (route[0] !== "/") {
     throw new Error("Route must start with /");
   }
-  return fetch(s.endpoint + route, {
+  const ep = c.endpoint || serviceEndpoint;
+  return fetch(ep + route, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Vibefire-Webhooks-Permit-Secret": s.secret,
+      "X-Vibefire-Webhooks-Access-Token": c.accessToken,
     },
     body: JSON.stringify({
       type,
@@ -34,7 +31,7 @@ const connector = async (
 };
 
 export const sendUserNotification = async (
-  s: ExpoNotificationsService,
+  c: VibefireNotificationsClient,
   userAid: string,
   content: {
     title: string;
@@ -43,23 +40,24 @@ export const sendUserNotification = async (
   },
 ) => {
   const response = await connector(
-    s,
+    c,
     `/send/user/${userAid}`,
     "notification/send",
     content,
   );
-
-  console.log(JSON.stringify(response, null, 2));
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 };
 
-export const checkNotification = async (s: ExpoNotificationsService) => {
-  const response = await connector(s, `/check`, "notification/check", {});
-
-  console.log(JSON.stringify(response, null, 2));
+export const checkNotification = async (
+  c: VibefireNotificationsClient,
+  notificationId: string,
+) => {
+  const response = await connector(c, `/check`, "notification/check", {
+    notificationId,
+  });
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
