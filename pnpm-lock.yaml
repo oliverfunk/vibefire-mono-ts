@@ -521,7 +521,16 @@ importers:
         specifier: ^0.1.0
         version: link:../../packages/utils
 
-  services/expo-notifications-service:
+  services/handle.vibefire.app:
+    devDependencies:
+      '@vibefire/api':
+        specifier: ^0.1.0
+        version: link:../../packages/api
+      '@vibefire/utils':
+        specifier: ^0.1.0
+        version: link:../../packages/utils
+
+  services/vibefire-notification-service:
     dependencies:
       '@google-cloud/functions-framework':
         specifier: ^3.3.0
@@ -549,14 +558,33 @@ importers:
         specifier: ^5.3.2
         version: 5.3.2
 
-  services/handle.vibefire.app:
-    devDependencies:
-      '@vibefire/api':
+  services/vibefire-sms-service:
+    dependencies:
+      '@google-cloud/functions-framework':
+        specifier: ^3.3.0
+        version: 3.3.0
+      '@vibefire/managers':
         specifier: ^0.1.0
-        version: link:../../packages/api
+        version: link:../../packages/managers
+      '@vibefire/services':
+        specifier: ^0.1.0
+        version: link:../../packages/services
       '@vibefire/utils':
         specifier: ^0.1.0
         version: link:../../packages/utils
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.10
+        version: 0.19.10
+      npm-watch:
+        specifier: ^0.11.0
+        version: 0.11.0
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
 packages:
 
