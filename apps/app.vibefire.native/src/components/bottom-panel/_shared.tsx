@@ -76,7 +76,7 @@ export const FormTitleInput = (props: {
   return (
     <View className="flex-col">
       <Text
-        className={`px-4 text-lg font-bold ${
+        className={`pl-3 text-lg font-bold ${
           props.inputRequired && "text-[#ff1111]"
         }`}
       >
@@ -121,7 +121,7 @@ export const FormTextInput = (props: FormTextInputProps) => {
   return (
     <View className="rounded-lg bg-slate-200">
       <TextInput
-        className="px-4 py-2"
+        className="px-3 py-2"
         style={{ fontSize: props.fontSize ?? 18 }}
         multiline={props.multiline ?? false}
         placeholderTextColor={"#000000FF"}

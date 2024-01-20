@@ -118,8 +118,8 @@ export const ManagementView = (props: {
           {(event.visibility === "public" && (
             <>
               <Text className="text-lg">
-                {`This event is public. It can seen on the map by anyone ${
-                  !event.published ? "(when published)" : ""
+                {`This event is public. It can seen on the map by anyone${
+                  !event.published ? " (when published)" : ""
                 }.`}
               </Text>
               <View>
@@ -152,8 +152,8 @@ export const ManagementView = (props: {
             (event.visibility === "link-only" && (
               <>
                 <Text className="text-lg">
-                  {`This event is private, link-only. Only those with the link can see it ${
-                    !event.published ? "(when published)" : ""
+                  {`This event is private, link-only. Only those with the link can see it${
+                    !event.published ? " (when published)" : ""
                   }.`}
                 </Text>
                 <View>
