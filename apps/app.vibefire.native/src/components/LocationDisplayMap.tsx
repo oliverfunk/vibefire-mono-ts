@@ -3,6 +3,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
 
+import { defaultCameraForPosition } from "~/utils/constants";
 import { EventIcon } from "./SvgIcon";
 
 export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
@@ -14,15 +15,7 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
     <MapView
       ref={mvRef}
       className="h-full w-full"
-      initialCamera={{
-        center: {
-          latitude: markerPosition.lat,
-          longitude: markerPosition.lng,
-        },
-        zoom: 16,
-        heading: 0,
-        pitch: 0,
-      }}
+      initialCamera={defaultCameraForPosition(markerPosition)}
       provider={PROVIDER_GOOGLE}
       pointerEvents={"none"}
       zoomEnabled={false}

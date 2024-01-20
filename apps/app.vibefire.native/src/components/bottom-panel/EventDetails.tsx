@@ -32,6 +32,7 @@ import {
   uberClientRequestToEventLocationURL,
 } from "@vibefire/utils";
 
+import { defaultCameraForPosition } from "~/utils/constants";
 import { EventImage, StandardImage } from "~/components/event/EventImage";
 import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { EventTimeline } from "~/components/event/EventTimeline";
@@ -341,11 +342,11 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   const onStarEvent = useCallback(async () => {
     if (user.state !== "authenticated") {
       Toast.show({
-        type: "warn",
+        type: "error",
         text1: "Sign in to star events",
         position: "bottom",
         bottomOffset: 50,
-        visibilityTime: 3000,
+        visibilityTime: 2000,
       });
       return;
     }
@@ -358,12 +359,9 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
 
   const onGoToEvent = useCallback(() => {
     setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));
-    eventMapMapRef?.animateCamera({
-      center: {
-        latitude: event.location.position.lat,
-        longitude: event.location.position.lng,
-      },
-    });
+    eventMapMapRef?.animateCamera(
+      defaultCameraForPosition(event.location.position),
+    );
     navHomeWithMinimise();
   }, [event, eventMapMapRef, setSelectedDateDT]);
 
