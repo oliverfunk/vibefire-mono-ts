@@ -10,7 +10,7 @@ export const DateTimeSelectionAndDisplayIos = (props: {
   const { currentDate, onChange } = props;
 
   return (
-    <>
+    <View className="ml-[-7] flex-row">
       <DateTimePicker
         value={currentDate}
         mode={"date"}
@@ -29,7 +29,7 @@ export const DateTimeSelectionAndDisplayIos = (props: {
         is24Hour={true}
         onChange={(_event, date) => onChange(date)}
       />
-    </>
+    </View>
   );
 };
 

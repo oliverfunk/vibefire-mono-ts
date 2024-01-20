@@ -327,16 +327,19 @@ export const EditEventTimes = (props: FormSectionProps) => {
       </View>
 
       <View className="flex-col space-y-5">
-        {timelineElements.map((tl, i) => (
+        {timelineElements.map((tl_e, i) => (
           <View key={i}>
             <_TimelineElementView
-              timeIsoNTZ={tl.timeStr}
-              message={tl.message}
+              timeIsoNTZ={tl_e.timeStr}
+              message={tl_e.message}
               onMessageEdit={(message) => {
                 const tl = editedEventData.timeline;
                 if (tl) {
                   const newTl = _.cloneDeep(tl);
-                  const tlIndex = _.findIndex(newTl, (tl) => tl.id === tl.id);
+                  const tlIndex = _.findIndex(
+                    newTl,
+                    (tl_inner_e) => tl_inner_e.id === tl_e.id,
+                  );
                   newTl[tlIndex].message = message;
                   setEditedEventData({
                     ...editedEventData,
@@ -348,7 +351,10 @@ export const EditEventTimes = (props: FormSectionProps) => {
                 const tl = editedEventData.timeline;
                 if (tl) {
                   const newTl = _.cloneDeep(tl);
-                  const tlIndex = _.findIndex(newTl, (tl) => tl.id === tl.id);
+                  const tlIndex = _.findIndex(
+                    newTl,
+                    (tl_inner_e) => tl_inner_e.id === tl_e.id,
+                  );
                   newTl.splice(tlIndex, 1);
                   setEditedEventData({
                     ...editedEventData,
