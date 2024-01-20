@@ -13,10 +13,7 @@ import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
 import { SignOut } from "~/components/auth/SignOut";
-import {
-  EventsList,
-  EventsListWithSections,
-} from "~/components/event/EventList";
+import { EventsListWithSections } from "~/components/event/EventList";
 import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { userAtom, userSessionRetryAtom } from "~/atoms";
 import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
@@ -223,7 +220,7 @@ const _EventsList = () => {
   const mapPosDateEvents = useAtomValue(mapPositionDateEventsQueryResultAtom);
 
   return (
-    <View className="flex-1 pb-5">
+    <View className="flex-1">
       <EventsListWithSections
         events={mapPosDateEvents}
         upcomingEvents={upcomingEvents}
