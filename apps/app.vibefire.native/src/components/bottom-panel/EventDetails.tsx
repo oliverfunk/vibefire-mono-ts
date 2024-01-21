@@ -37,7 +37,13 @@ import { EventImage, StandardImage } from "~/components/event/EventImage";
 import { EventImageCarousel } from "~/components/event/EventImageCarousel";
 import { EventTimeline } from "~/components/event/EventTimeline";
 import { trpc } from "~/apis/trpc-client";
-import { eventMapMapRefAtom, userAtom, userSessionRetryAtom } from "~/atoms";
+import {
+  eventMapMapRefAtom,
+  userAtom,
+  userAuthStateAtom,
+  userInfoAtom,
+  userSessionRetryAtom,
+} from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navHomeWithMinimise, navManageEvent } from "~/nav";
 import { LocationDisplayMap } from "../LocationDisplayMap";
@@ -134,7 +140,7 @@ const MapsModalMenu = (props: { event: VibefireEventT }) => {
 const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
   const { event } = props;
 
-  const user = useAtomValue(userAtom);
+  const [userInfo] = useAtom(userInfoAtom);
 
   const [menuVisible, setMenuVisible] = useState(false);
   const DropdownButton = useRef<View>(null);
@@ -152,11 +158,8 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
   };
 
   const eventOrganisedByUser = useMemo(() => {
-    if (user.state === "authenticated") {
-      return (user.userInfo as VibefireUserT).aid === event.organiserId;
-    }
-    return false;
-  }, [user, event.organiserId]);
+    return userInfo?.aid === event.organiserId;
+  }, [userInfo, event.organiserId]);
 
   const hideEventMut = trpc.user.hideEvent.useMutation();
   const blockOrganiserMut = trpc.user.blockOrganiser.useMutation();
@@ -308,17 +311,13 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
   const [eventMapMapRef] = useAtom(eventMapMapRefAtom);
   const [selectedDateDT, setSelectedDateDT] = useAtom(selectedDateDTAtom);
 
-  const user = useAtomValue(userAtom);
+  const [userInfo] = useAtom(userInfoAtom);
+  const [userAuthState] = useAtom(userAuthStateAtom);
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const eventFollowed = useMemo(() => {
-    if (user.state === "authenticated") {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      return user.userInfo.followedEvents.includes(event.id);
-    }
-    return false;
-  }, [user, event.id]);
+    return userInfo?.followedEvents.includes(event.id) ?? false;
+  }, [userInfo?.followedEvents, event.id]);
 
   const imgs = useMemo(
     () => [event.images.banner].concat(event.images.additional ?? []),
@@ -340,7 +339,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
 
   const starEventMut = trpc.user.starEvent.useMutation();
   const onStarEvent = useCallback(async () => {
-    if (user.state !== "authenticated") {
+    if (userAuthState !== "authenticated") {
       Toast.show({
         type: "error",
         text1: "Sign in to star events",
@@ -355,7 +354,13 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
       starIt: !eventFollowed,
     });
     setUserSessionRetry((prev) => !prev);
-  }, [event.id, eventFollowed, setUserSessionRetry, starEventMut, user.state]);
+  }, [
+    event.id,
+    eventFollowed,
+    setUserSessionRetry,
+    starEventMut,
+    userAuthState,
+  ]);
 
   const onGoToEvent = useCallback(() => {
     setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));

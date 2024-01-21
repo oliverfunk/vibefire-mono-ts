@@ -2,6 +2,7 @@ import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import { Entypo } from "@expo/vector-icons";
+import { useAtom } from "jotai";
 import { DateTime } from "luxon";
 
 import {
@@ -13,6 +14,7 @@ import { vibefireEventShareURL } from "@vibefire/utils";
 import { EventCard } from "~/components/event/EventCard";
 import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
+import { userInfoAtom } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navEditEvent, navViewEventAsPreview } from "~/nav";
 import {
@@ -65,7 +67,9 @@ export const ManagementView = (props: {
   eventManagement: VibefireEventManagementT;
   dataRefetch: () => void;
 }) => {
-  const { event, eventManagement, dataRefetch } = props;
+  const { event, eventManagement: _, dataRefetch } = props;
+
+  const [userInfo] = useAtom(userInfoAtom);
 
   const setPublishedMut = trpc.events.setPublished.useMutation();
   const setUnpublishedMut = trpc.events.setUnpublished.useMutation();
@@ -159,22 +163,25 @@ export const ManagementView = (props: {
                 <View>
                   <ShareEventLinkComponent event={event} />
                 </View>
-                <View>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      await setVisibilityMut.mutateAsync({
-                        eventId: event.id,
-                        visibility: "public",
-                      });
-                      dataRefetch();
-                    }}
-                    className="items-center rounded-lg bg-black px-4 py-2"
-                  >
-                    <Text className="text-lg font-bold text-white">
-                      Make public
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+
+                {userInfo?.kycStatus === "approved" && (
+                  <View>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        await setVisibilityMut.mutateAsync({
+                          eventId: event.id,
+                          visibility: "public",
+                        });
+                        dataRefetch();
+                      }}
+                      className="items-center rounded-lg bg-black px-4 py-2"
+                    >
+                      <Text className="text-lg font-bold text-white">
+                        Make public
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
                 {/* <Text className="text-center">(Tap to copy)</Text> */}
                 {/* Change share btn */}
                 {/* <View className="items-center">
