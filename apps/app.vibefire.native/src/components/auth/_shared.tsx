@@ -34,7 +34,6 @@ export const AuthButton = (props: {
 
   const onPress = useCallback(async () => {
     try {
-      console.log("auth btn loading");
       setUser({ state: "loading" });
 
       await signOut();
@@ -44,13 +43,11 @@ export const AuthButton = (props: {
       });
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
-        console.log("OAuth success");
         return;
       }
     } catch (err) {
       console.error("OAuth error", err);
     }
-    console.log("unauthing");
     setUser({ state: "unauthenticated", anonId: "anon" });
   }, [oauthRedirectUrl, setUser, signOut, startOAuthFlow]);
 

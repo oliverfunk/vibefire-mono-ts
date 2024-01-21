@@ -58,7 +58,6 @@ const UserSessionProvider = (props: { children: ReactNode }) => {
   useEffect(() => {
     switch (getSession.status) {
       case "loading":
-        console.log("getSession loading");
         setUser({ state: "loading" });
         break;
       case "error":
@@ -78,7 +77,6 @@ const UserSessionProvider = (props: { children: ReactNode }) => {
             id: d.anonId,
           });
         }
-        console.log("getSession setting data");
         setUser(getSession.data);
         break;
     }
