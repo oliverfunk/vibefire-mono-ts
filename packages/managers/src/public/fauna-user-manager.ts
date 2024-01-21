@@ -618,6 +618,14 @@ export class FaunaUserManager {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
+    const userInfo = await this.getUserInfo(userAc);
+    if (visibility === "public" && userInfo.kycStatus !== "approved") {
+      throw new Error(
+        "Cannot make public events, KYC not verified for user " +
+          JSON.stringify(userAc.userId, null, 2),
+      );
+    }
+
     const updateData: Partial<VibefireEventT> = {
       visibility,
     };

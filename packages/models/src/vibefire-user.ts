@@ -12,6 +12,7 @@ export const VibefireUserSchema = t.Object({
   followedEvents: t.Array(t.String(), { default: [] }),
   hiddenEvents: t.Array(t.String(), { default: [] }),
   blockedOrganisers: t.Array(t.String(), { default: [] }),
+  kycStatus: t.Optional(t.Union([t.Literal("pending"), t.Literal("approved")])),
 });
 
 export type VibefireUserT = Static<typeof VibefireUserSchema>;

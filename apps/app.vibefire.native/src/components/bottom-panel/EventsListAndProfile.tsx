@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 
 import { type VibefireUserT } from "@vibefire/models";
 import {
@@ -63,7 +63,7 @@ const _FeedbackCard = () => {
 };
 
 const _Profile = () => {
-  const user = useAtomValue(userAtom);
+  const [user] = useAtom(userAtom);
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   switch (user.state) {
@@ -76,7 +76,6 @@ const _Profile = () => {
             <FontAwesome5 name="user-alt" size={150} color="black" />
             <View className="flex-col items-center space-y-2">
               <Text>There was an issue loading your account</Text>
-              <Text>{user.error}</Text>
             </View>
             <View className="flex-row">
               <TouchableOpacity
@@ -216,8 +215,8 @@ const _Profile = () => {
 };
 
 const _EventsList = () => {
-  const upcomingEvents = useAtomValue(upcomingEventsQueryResultAtom);
-  const mapPosDateEvents = useAtomValue(mapPositionDateEventsQueryResultAtom);
+  const [upcomingEvents] = useAtom(upcomingEventsQueryResultAtom);
+  const [mapPosDateEvents] = useAtom(mapPositionDateEventsQueryResultAtom);
 
   return (
     <View className="flex-1">

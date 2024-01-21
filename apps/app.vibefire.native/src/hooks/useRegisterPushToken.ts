@@ -3,12 +3,17 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { atom, useAtomValue } from "jotai";
-
-import { type VibefireUserT } from "@vibefire/models";
+import { atom, useAtom, useAtomValue } from "jotai";
 
 import { trpc } from "~/apis/trpc-client";
-import { userAtom } from "~/atoms";
+import { userAuthStateAtom, userInfoAtom } from "~/atoms";
+
+// TODO: this should be refactored
+// to be called when the user logs in
+// and then you compare the token gotten
+// from expo to the one in the database
+// and if they are different, then you
+// update the database with the new token
 
 const allowsNotifications = async () => {
   const settings = await Notifications.getPermissionsAsync();
@@ -56,23 +61,18 @@ const getExpoPushNotificationToken = async () => {
   return token;
 };
 
-const userPushTokenAtom = atom((get) => {
-  const user = get(userAtom);
-  if (user.state !== "authenticated") {
-    return undefined;
-  }
-  return (user.userInfo as VibefireUserT).pushToken ?? null;
-});
+const userPushTokenAtom = atom((get) => get(userInfoAtom)?.pushToken);
 
 export const useRegisterPushToken = () => {
-  const userPushToken = useAtomValue(userPushTokenAtom);
+  const [userAuthState] = useAtomValue(userAuthStateAtom);
+  const [userPushToken] = useAtom(userPushTokenAtom);
   const [tokenChecked, setTokenChecked] = useState(false);
 
   const registerUserTokenMut = trpc.user.registerToken.useMutation();
   const unregisterUserTokenMut = trpc.user.unregisterToken.useMutation();
 
   useEffect(() => {
-    if (userPushToken === undefined) {
+    if (userAuthState !== "authenticated") {
       return;
     }
     if (tokenChecked) {
