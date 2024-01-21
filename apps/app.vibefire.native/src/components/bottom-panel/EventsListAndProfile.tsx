@@ -17,6 +17,7 @@ import { EventsListWithSections } from "~/components/event/EventList";
 import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { userAtom, userSessionRetryAtom } from "~/atoms";
 import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
+import { QrScanner } from "../qr-scanner";
 import {
   FormTextInput,
   LinearRedOrangeView,
@@ -124,7 +125,7 @@ const _Profile = () => {
         <ScrollViewSheet>
           <View className="flex-col items-center space-y-10 py-5">
             {/* Name */}
-            <View className="flex-row items-center justify-center space-x-1">
+            <View className="flex-col items-center justify-center space-y-2 pt-5">
               <View className="rounded-lg bg-black p-4">
                 <Text className="text-2xl text-white">{userInfo.name}</Text>
               </View>

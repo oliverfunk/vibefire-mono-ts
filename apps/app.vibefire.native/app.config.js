@@ -92,6 +92,13 @@ const expoConfig = ({ config }) => ({
         photosPermission: "Allow $(PRODUCT_NAME) to accesses your photos.",
       },
     ],
+    [
+      "react-native-vision-camera",
+      {
+        cameraPermissionText: "$(PRODUCT_NAME) needs access to your Camera.",
+        enableCodeScanner: true,
+      },
+    ],
     "sentry-expo",
   ],
 });
