@@ -94,7 +94,7 @@ const _Profile = () => {
     case "unauthenticated":
       return (
         <ScrollViewSheet>
-          <View className="mt-10 flex h-full flex-col items-center space-y-10">
+          <View className="flex h-full flex-col items-center space-y-10 py-10">
             <FontAwesome5 name="user-alt" size={150} />
             <View className="mx-10 flex-row">
               <Text className="text-center">
