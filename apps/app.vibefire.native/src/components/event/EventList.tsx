@@ -129,7 +129,6 @@ export const EventsListWithSections = ({
   upcomingEvents,
   onEventPress,
   onEventCrossPress,
-  listTitle,
   noEventsMessage,
   showStatusBanner = false,
   sortAsc = true,
@@ -141,7 +140,7 @@ export const EventsListWithSections = ({
     const r = [];
     if (sortedUpcomingEvents.length > 0) {
       r.push({
-        title: "Upcoming Starred Events",
+        title: "Upcoming Events",
         data: sortedUpcomingEvents,
       });
     }
