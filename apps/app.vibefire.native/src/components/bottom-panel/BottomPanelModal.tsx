@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "expo-router";
 import {
@@ -63,45 +64,47 @@ export const BottomPanelModal = (
   }, [minimiseTwiddle]);
 
   return (
-    <BottomSheetModal
-      ref={modalPanelRef}
-      handleHeight={handleHeight}
-      handleComponent={
-        handleComponent === null
-          ? null
-          : handleComponent
-            ? handleComponent
-            : headerText
-              ? (p) => HandleWithHeader({ header: headerText, ...p })
-              : undefined
-      }
-      enableDismissOnClose={enableDismissOnClose}
-      enablePanDownToClose={enablePanDownToClose}
-      stackBehavior="push"
-      backgroundStyle={{
-        backgroundColor: backgroundColor ?? "rgba(255,255,255,1)",
-      }}
-      bottomInset={insets.bottom}
-      index={0}
-      snapPoints={snapPoints}
-      onDismiss={async () => {
-        const navState = navigation.getState();
-        const routes = navState.routes;
-
-        const isTopRoute = routes.at(-1)?.name === modalPath;
-
-        if (isTopRoute) {
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-          } else {
-            navReplaceHomeWithMinimise();
-          }
+    <View className="left-[50%]">
+      <BottomSheetModal
+        ref={modalPanelRef}
+        // style={{
+        //   maxWidth: 800,
+        // }}
+        handleHeight={handleHeight}
+        handleComponent={
+          handleComponent === null
+            ? null
+            : handleComponent
+              ? handleComponent
+              : headerText
+                ? (p) => HandleWithHeader({ header: headerText, ...p })
+                : undefined
         }
-
-        await utils.invalidate();
-      }}
-    >
-      {children}
-    </BottomSheetModal>
+        enableDismissOnClose={enableDismissOnClose}
+        enablePanDownToClose={enablePanDownToClose}
+        stackBehavior="push"
+        backgroundStyle={{
+          backgroundColor: backgroundColor ?? "rgba(255,255,255,1)",
+        }}
+        bottomInset={insets.bottom}
+        index={0}
+        snapPoints={snapPoints}
+        onDismiss={async () => {
+          const navState = navigation.getState();
+          const routes = navState.routes;
+          const isTopRoute = routes.at(-1)?.name === modalPath;
+          if (isTopRoute) {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navReplaceHomeWithMinimise();
+            }
+          }
+          await utils.invalidate();
+        }}
+      >
+        {children}
+      </BottomSheetModal>
+    </View>
   );
 };
