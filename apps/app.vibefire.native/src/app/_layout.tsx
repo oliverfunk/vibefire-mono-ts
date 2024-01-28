@@ -39,7 +39,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-void SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(console.warn);
 
 const PostProvidersInject = () => {
   useRegisterPushToken();
