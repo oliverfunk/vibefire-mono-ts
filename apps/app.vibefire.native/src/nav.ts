@@ -2,8 +2,8 @@ import { router } from "expo-router";
 
 import { type EditEventFormSectionT } from "./types";
 
-const routerPush = (path: string) => {
-  router.push(path);
+const routerNav = (path: string) => {
+  router.navigate(path);
   router.setParams({ ts: new Date().getTime().toString() });
 };
 
@@ -13,7 +13,7 @@ const routerReplace = (path: string) => {
 };
 
 export const navHomeWithProfileSelected = (selected?: boolean) => {
-  routerPush("/");
+  routerNav("/");
   if (selected === true) {
     router.setParams({ profileSelected: "true" });
   } else if (selected === false) {
@@ -23,7 +23,7 @@ export const navHomeWithProfileSelected = (selected?: boolean) => {
   }
 };
 export const navHomeWithMinimise = () => {
-  routerPush("/");
+  routerNav("/");
   router.setParams({ minimise: "true" + Math.random() });
 };
 export const navReplaceHomeWithMinimise = () => {
@@ -38,11 +38,11 @@ export const navPop = () => {
 };
 
 export const navOwnEventsByOrganiser = () => {
-  routerPush("/events-by-organiser");
+  routerNav("/events-by-organiser");
 };
 
 export const navViewEvent = (linkId: string) => {
-  routerPush("/event/" + linkId);
+  routerNav("/event/" + linkId);
 };
 export const navViewEventAsPreview = (linkId: string) => {
   navViewEvent(linkId);
@@ -50,7 +50,7 @@ export const navViewEventAsPreview = (linkId: string) => {
 };
 
 export const navCreateEvent = () => {
-  routerPush("/event/create");
+  routerNav("/event/create");
 };
 export const navSetFromPrevious = () => {
   navCreateEvent();
@@ -58,13 +58,13 @@ export const navSetFromPrevious = () => {
 };
 
 export const navManageEvent = (linkId: string) => {
-  routerPush("/event/" + linkId + "/manage");
+  routerNav("/event/" + linkId + "/manage");
 };
 // export const navManageEventReplace = (eventId: string) => {
 //   router.replace("/event/" + eventId + "/manage");
 // };
 export const navEditEvent = (eventId: string) => {
-  routerPush("/event/" + eventId + "/edit");
+  routerNav("/event/" + eventId + "/edit");
 };
 export const navEditEventSetSection = (section: EditEventFormSectionT) => {
   router.setParams({ section });

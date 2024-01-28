@@ -1,10 +1,15 @@
 import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import * as Linking from "expo-linking";
-import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
+import {
+  Stack,
+  useGlobalSearchParams,
+  useNavigationContainerRef,
+  usePathname,
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
-import * as Sentry from "sentry-expo";
+import * as Sentry from "@sentry/react-native";
 
 import { useRegisterPushToken } from "~/hooks/useRegisterPushToken";
 import AppProviders from "~/providers";
@@ -16,16 +21,15 @@ import * as Notifications from "expo-notifications";
 import { EventMap } from "~/components/event/EventMap";
 import { NoTopContainer } from "~/components/NoTopContainer";
 
-const routingInstrumentation =
-  new Sentry.Native.ReactNavigationInstrumentation();
+const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 
 Sentry.init({
   dsn: "https://959cd563f46e2574f10469f5b03e8d6e@o4506169650315264.ingest.sentry.io/4506169652412416",
-  enableInExpoDevelopment: false,
   debug: process.env.EXPO_PUBLIC_ENVIRONMENT === "local", // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
   integrations: [
-    new Sentry.Native.ReactNativeTracing({
-      routingInstrumentation,
+    new Sentry.ReactNativeTracing({
+      // routingInstrumentation,
+      // enableUserInteractionTracing: true,
     }),
   ],
 });
@@ -81,6 +85,14 @@ const RootLayout = () => {
     })();
   }, [fontsLoaded]);
 
+  const ref = useNavigationContainerRef();
+
+  useEffect(() => {
+    if (ref) {
+      routingInstrumentation.registerNavigationContainer(ref);
+    }
+  }, [ref]);
+
   if (!fontsLoaded) {
     return null;
   }
@@ -101,4 +113,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout;
+export default Sentry.wrap(RootLayout);

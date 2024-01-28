@@ -61,15 +61,7 @@ const expoConfig = ({ config }) => ({
     ],
   },
   hooks: {
-    postPublish: [
-      {
-        file: "sentry-expo/upload-sourcemaps",
-        config: {
-          organization: "vibefire",
-          project: "vibefire-native",
-        },
-      },
-    ],
+    postPublish: [],
   },
   extra: {
     eas: {
@@ -99,7 +91,14 @@ const expoConfig = ({ config }) => ({
         enableCodeScanner: true,
       },
     ],
-    "sentry-expo",
+    [
+      "@sentry/react-native/expo",
+      {
+        url: "https://sentry.io/",
+        organization: "vibefire",
+        project: "vibefire-native",
+      },
+    ],
   ],
 });
 export default expoConfig;

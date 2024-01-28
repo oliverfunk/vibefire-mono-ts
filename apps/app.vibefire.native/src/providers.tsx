@@ -5,6 +5,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import {
   ClerkLoaded,
@@ -13,10 +14,10 @@ import {
   useUser,
 } from "@clerk/clerk-expo";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
-import * as Sentry from "sentry-expo";
 import superjson from "superjson";
 
 import { type VibefireUserT } from "@vibefire/models";
@@ -68,12 +69,12 @@ const UserSessionProvider = (props: { children: ReactNode }) => {
         const d = getSession.data;
         if (d.state === "authenticated") {
           const userInfo = d.userInfo as VibefireUserT;
-          Sentry.Native.setUser({
+          Sentry.setUser({
             id: userInfo.id,
             email: userInfo.contactEmail,
           });
         } else {
-          Sentry.Native.setUser({
+          Sentry.setUser({
             id: d.anonId,
           });
         }
@@ -143,10 +144,12 @@ const AppProviders = (props: { children: ReactNode }) => {
       <ClerkAuthProvider>
         <TrpcProvider>
           <UserSessionProvider>
-            <BottomSheetModalProvider>
-              <ClerkLoaded>{children}</ClerkLoaded>
-            </BottomSheetModalProvider>
-            <Toast />
+            <ClerkLoaded>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+              </GestureHandlerRootView>
+              <Toast />
+            </ClerkLoaded>
           </UserSessionProvider>
         </TrpcProvider>
       </ClerkAuthProvider>

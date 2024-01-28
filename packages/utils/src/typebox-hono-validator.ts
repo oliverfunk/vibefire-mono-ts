@@ -1,13 +1,13 @@
-//from https://github.com/honojs/middleware/tree/main/packages/typebox-validator
-import type { Static, TSchema } from "@sinclair/typebox";
-import { Value, type ValueError } from "@sinclair/typebox/value";
-import type { Context, Env, MiddlewareHandler, ValidationTargets } from "hono";
-import { validator } from "hono/validator";
+// //from https://github.com/honojs/middleware/tree/main/packages/typebox-validator
+// import type { Static, TSchema } from "@sinclair/typebox";
+// import { Value, type ValueError } from "@sinclair/typebox/value";
+// import type { Context, Env, MiddlewareHandler, ValidationTargets } from "hono";
+// import { validator } from "hono/validator";
 
-type Hook<T, E extends Env, P extends string> = (
-  result: { success: true; data: T } | { success: false; errors: ValueError[] },
-  c: Context<E, P>,
-) => Response | Promise<Response> | void;
+// type Hook<T, E extends Env, P extends string> = (
+//   result: { success: true; data: T } | { success: false; errors: ValueError[] },
+//   c: Context<E, P>,
+// ) => Response | Promise<Response> | void;
 
 /**
  * Hono middleware that validates incoming data via a [TypeBox](https://github.com/sinclairzx81/typebox) schema.
@@ -54,35 +54,35 @@ type Hook<T, E extends Env, P extends string> = (
  * )
  * ```
  */
-export function tbHonoValidator<
-  T extends TSchema,
-  Target extends keyof ValidationTargets,
-  E extends Env,
-  P extends string,
-  V extends {
-    in: { [K in Target]: Static<T> };
-    out: { [K in Target]: Static<T> };
-  },
->(
-  target: Target,
-  schema: T,
-  hook?: Hook<Static<T>, E, P>,
-): MiddlewareHandler<E, P, V> {
-  // Compile the provided schema once rather than per validation. This could be optimized further using a shared schema
-  // compilation pool similar to the Fastify implementation.
-  return validator(target, (data, c) => {
-    if (Value.Check(schema, data)) {
-      if (hook) {
-        const hookResult = hook({ success: true, data }, c);
-        if (hookResult instanceof Response || hookResult instanceof Promise) {
-          return hookResult;
-        }
-      }
-      return data as Static<T>;
-    }
-    return c.json(
-      { success: false, errors: [...Value.Errors(schema, data)] },
-      400,
-    );
-  });
-}
+// export function tbHonoValidator<
+//   T extends TSchema,
+//   Target extends keyof ValidationTargets,
+//   E extends Env,
+//   P extends string,
+//   V extends {
+//     in: { [K in Target]: Static<T> };
+//     out: { [K in Target]: Static<T> };
+//   },
+// >(
+//   target: Target,
+//   schema: T,
+//   hook?: Hook<Static<T>, E, P>,
+// ): MiddlewareHandler<E, P, V> {
+//   // Compile the provided schema once rather than per validation. This could be optimized further using a shared schema
+//   // compilation pool similar to the Fastify implementation.
+//   return validator(target, (data, c) => {
+//     if (Value.Check(schema, data)) {
+//       if (hook) {
+//         const hookResult = hook({ success: true, data }, c);
+//         if (hookResult instanceof Response || hookResult instanceof Promise) {
+//           return hookResult;
+//         }
+//       }
+//       return data as Static<T>;
+//     }
+//     return c.json(
+//       { success: false, errors: [...Value.Errors(schema, data)] },
+//       400,
+//     );
+//   });
+// }
