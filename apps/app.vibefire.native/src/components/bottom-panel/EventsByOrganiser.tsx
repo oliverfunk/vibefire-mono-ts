@@ -54,8 +54,6 @@ const EventsByOrganiserView = (props: {
 }) => {
   const { events } = props;
 
-  console.log("events.len", JSON.stringify(events.length, null, 2));
-
   const [showModalUsingEventId, setShowModalUsingEventId] = useState<
     string | undefined
   >(undefined);

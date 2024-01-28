@@ -1,12 +1,12 @@
 // Learn more: https://docs.expo.dev/guides/monorepos/
-const { getDefaultConfig } = require("@expo/metro-config");
 const path = require("path");
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
 
 // Create the default Metro config
-const config = getDefaultConfig(projectRoot, {
+const config = getSentryExpoConfig(projectRoot, {
   isCSSEnabled: true,
 });
 
@@ -16,7 +16,7 @@ config.resolver.alias = {
 };
 
 // support package.json "exports"
-config.resolver.unstable_enablePackageExports = true;
+config.resolver.unstable_enablePackageExports = false;
 
 // Add the additional `cjs` extension to the resolver
 config.resolver.sourceExts.push("cjs");

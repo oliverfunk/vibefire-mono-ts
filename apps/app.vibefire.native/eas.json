@@ -16,6 +16,7 @@
     },
     "development": {
       "extends": "base",
+      "channel": "development",
       "developmentClient": true,
       "distribution": "internal",
       "env": {
@@ -24,6 +25,7 @@
     },
     "development-simulator": {
       "extends": "development",
+      "channel": "development-simulator",
       "ios": {
         "simulator": true
       },
@@ -33,6 +35,7 @@
     },
     "preview": {
       "extends": "base",
+      "channel": "preview",
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_ENVIRONMENT": "preview"
@@ -40,6 +43,7 @@
     },
     "production": {
       "extends": "base",
+      "channel": "production",
       "developmentClient": false,
       "distribution": "store",
       "android": {
