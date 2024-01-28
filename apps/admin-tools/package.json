@@ -8,9 +8,9 @@
     "run": "pnpm run build && node dist/index.js"
   },
   "dependencies": {
-    "@vibefire/managers": "^0.1.0",
-    "@vibefire/services": "^0.1.0",
-    "@vibefire/utils": "^0.1.0",
+    "@vibefire/managers": "0.1.0",
+    "@vibefire/services": "0.1.0",
+    "@vibefire/utils": "0.1.0",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {

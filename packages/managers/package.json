@@ -9,12 +9,12 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "*",
-    "@vibefire/services": "*",
-    "@vibefire/utils": "*"
+    "@vibefire/models": "0.1.0",
+    "@vibefire/services": "0.1.0",
+    "@vibefire/utils": "0.1.0"
   },
   "devDependencies": {
-    "@vibefire/config": "*"
+    "@vibefire/config": "0.1.0"
   },
   "exports": {
     "./context": "./src/managers-context.ts",
