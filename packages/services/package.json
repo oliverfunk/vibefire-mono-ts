@@ -12,14 +12,14 @@
     "@googlemaps/google-maps-services-js": "^3.3.36",
     "@supabase/supabase-js": "^2.33.1",
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
-    "@vibefire/models": "^0.1.0",
-    "@vibefire/utils": "^0.1.0",
+    "@vibefire/models": "0.1.0",
+    "@vibefire/utils": "0.1.0",
     "axios": "0.27.2",
     "fauna": "^1.1.0",
     "svix": "^1.10.0"
   },
   "devDependencies": {
-    "@vibefire/config": "^0.1.0"
+    "@vibefire/config": "0.1.0"
   },
   "exports": {
     "./fauna": "./src/fauna/index.ts",

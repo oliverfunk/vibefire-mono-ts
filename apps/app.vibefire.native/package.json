@@ -22,10 +22,10 @@
     "@react-navigation/stack": "^6.3.20",
     "@sentry/react-native": "5.17.0",
     "@th3rdwave/react-navigation-bottom-sheet": "^0.2.7",
-    "@vibefire/api": "^0.1.0",
-    "@vibefire/models": "^0.1.0",
-    "@vibefire/shared-state": "^0.1.0",
-    "@vibefire/utils": "^0.1.0",
+    "@vibefire/api": "0.1.0",
+    "@vibefire/models": "0.1.0",
+    "@vibefire/shared-state": "0.1.0",
+    "@vibefire/utils": "0.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "eslint-config-universe": "^12.0.0",
     "eslint-plugin-import": "^2.29.1",
@@ -51,7 +51,7 @@
     "expo-updates": "~0.24.9",
     "expo-web-browser": "^12.8.2",
     "nativewind": "^2.0.11",
-    "react": "18.2.0",
+    "react": "^18.2.0",
     "react-native": "0.73.2",
     "react-native-element-dropdown": "^2.10.1",
     "react-native-gesture-handler": "~2.14.1",
@@ -77,8 +77,8 @@
     "@expo/config-plugins": "^7.8.4",
     "@tsconfig/react-native": "^3.0.3",
     "@types/webpack-env": "^1.18.4",
-    "@vibefire/config": "^0.1.0",
+    "@vibefire/config": "0.1.0",
     "babel-preset-expo": "^10.0.1",
-    "tailwindcss": "3.3.2"
+    "tailwindcss": "^3.3.3"
   }
 }
