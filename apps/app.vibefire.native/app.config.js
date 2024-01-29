@@ -75,19 +75,21 @@ const expoConfig = ({ config }) => ({
       "expo-location",
       {
         locationAlwaysAndWhenInUsePermission:
-          "Allow $(PRODUCT_NAME) to use your location.",
+          "Allow $(PRODUCT_NAME) to use your location. This allows the app to show your location on the map and to show you nearby events.",
       },
     ],
     [
       "expo-image-picker",
       {
-        photosPermission: "Allow $(PRODUCT_NAME) to accesses your photos.",
+        photosPermission:
+          "Allow $(PRODUCT_NAME) to accesses your photos. This allows you to upload photos from your library.",
       },
     ],
     [
       "react-native-vision-camera",
       {
-        cameraPermissionText: "$(PRODUCT_NAME) needs access to your Camera.",
+        cameraPermissionText:
+          "$(PRODUCT_NAME) needs access to your Camera. This allows you to take photos and videos to upload to events and scan QR code.",
         enableCodeScanner: true,
       },
     ],

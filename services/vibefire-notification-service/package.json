@@ -4,7 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
+    "build": "bun build src/b.ts --target=node --outdir=dist/",
     "build-watch": "esbuild src/index.ts --bundle --watch --platform=node --target=node20 --outfile=dist/index.js",
     "dev": " npm-watch start & pnpm run build-watch",
     "watch": "npm-watch start",
