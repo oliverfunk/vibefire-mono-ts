@@ -8,7 +8,11 @@ import {
   usePathname,
 } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { Inter_500Medium, useFonts } from "@expo-google-fonts/inter";
+import {
+  Inter_500Medium,
+  Inter_700Bold,
+  useFonts,
+} from "@expo-google-fonts/inter";
 import * as Sentry from "@sentry/react-native";
 
 import { useRegisterPushToken } from "~/hooks/useRegisterPushToken";
@@ -73,8 +77,9 @@ const PostProvidersInject = () => {
 };
 
 const RootLayout = () => {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontsError] = useFonts({
     Inter_500Medium,
+    Inter_700Bold,
   });
 
   useEffect(() => {
@@ -92,6 +97,8 @@ const RootLayout = () => {
       routingInstrumentation.registerNavigationContainer(ref);
     }
   }, [ref]);
+
+  if (!!fontsError) console.warn(fontsError);
 
   if (!fontsLoaded) {
     return null;

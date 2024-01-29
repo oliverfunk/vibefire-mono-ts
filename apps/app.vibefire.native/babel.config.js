@@ -24,8 +24,6 @@ module.exports = function (api) {
           tailwindConfig: lazyLoadConfig(),
         },
       ],
-      "@babel/plugin-proposal-export-namespace-from",
-      "react-native-reanimated/plugin",
       ["module-resolver", { alias: { "~": "./src", "#": "./assets" } }],
     ],
   };

@@ -15,10 +15,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^0.19.30",
+    "@clerk/clerk-expo": "^0.20.1",
     "@expo-google-fonts/inter": "^0.2.3",
     "@gorhom/bottom-sheet": "^4.6.0",
-    "@react-native-community/datetimepicker": "7.6.1",
+    "@react-native-community/datetimepicker": "7.6.2",
     "@react-navigation/stack": "^6.3.20",
     "@sentry/react-native": "5.17.0",
     "@th3rdwave/react-navigation-bottom-sheet": "^0.2.7",
@@ -55,7 +55,7 @@
     "react-native": "0.73.2",
     "react-native-element-dropdown": "^2.10.1",
     "react-native-gesture-handler": "~2.14.1",
-    "react-native-maps": "1.8.0",
+    "react-native-maps": "1.10.0",
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-popup-menu": "^0.16.1",
     "react-native-reanimated": "~3.6.2",
@@ -71,8 +71,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
-    "@babel/preset-env": "^7.23.9",
     "@babel/runtime": "^7.23.9",
     "@expo/config-plugins": "^7.8.4",
     "@tsconfig/react-native": "^3.0.3",
