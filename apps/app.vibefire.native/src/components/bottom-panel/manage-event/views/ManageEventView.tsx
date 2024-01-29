@@ -16,7 +16,7 @@ import { VibefireIconImage } from "~/components/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
 import { userInfoAtom } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
-import { navEditEvent, navViewEventAsPreview } from "~/nav";
+import { navEditEvent, navViewEvent } from "~/nav";
 import {
   FormTitleInput,
   LinearRedOrangeView,
@@ -217,7 +217,9 @@ export const ManagementView = (props: {
                   : undefined,
               }}
               onPress={() => {
-                navViewEventAsPreview(event.linkId);
+                navViewEvent(event.linkId, {
+                  preview: true,
+                });
               }}
             />
           </FormTitleInput>

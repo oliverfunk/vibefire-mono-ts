@@ -5,9 +5,9 @@ import { EventDetails } from "~/components/bottom-panel/EventDetails";
 import { useTsQueryParam } from "~/hooks/useTs";
 
 const Screen = () => {
-  const { linkId, isPreview } = useLocalSearchParams<{
+  const { linkId, preview } = useLocalSearchParams<{
     linkId: string;
-    isPreview: string;
+    preview: string;
   }>();
 
   const ts = useTsQueryParam();
@@ -24,7 +24,7 @@ const Screen = () => {
       backgroundColor="black"
       handleComponent={null}
     >
-      <EventDetails linkId={linkId} isPreview={!!isPreview} />
+      <EventDetails linkId={linkId} preview={!!preview} />
     </BottomPanelModal>
   );
 };

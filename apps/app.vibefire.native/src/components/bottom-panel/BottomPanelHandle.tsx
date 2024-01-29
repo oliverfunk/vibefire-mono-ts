@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Animated, {
-  Extrapolate,
+  Extrapolation,
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
@@ -139,7 +139,7 @@ const ProfileButton = () => {
     <IconButton
       icon={<MaterialIcons name="view-list" size={24} color="white" />}
       onPress={() => {
-        navHomeWithProfileSelected(false);
+        navHomeWithProfileSelected({ profileSelected: false });
         setProfileSelected(false);
       }}
       cn="bg-black"
@@ -148,7 +148,7 @@ const ProfileButton = () => {
     <IconButton
       icon={<FontAwesome5 name="user-alt" size={20} color="black" />}
       onPress={() => {
-        navHomeWithProfileSelected(true);
+        navHomeWithProfileSelected({ profileSelected: true });
         setProfileSelected(true);
         expand();
       }}
@@ -177,7 +177,7 @@ const transformOrigin = ({ x, y }, ...transformations) => {
 
 const AnimatedArrow = ({ animatedIndex }: BottomSheetHandleProps) => {
   const indicatorTransformOriginY = useDerivedValue(() =>
-    interpolate(animatedIndex.value, [0, 1], [-1, 1], Extrapolate.CLAMP),
+    interpolate(animatedIndex.value, [0, 1], [-1, 1], Extrapolation.CLAMP),
   );
 
   const leftIndicatorStyle = useMemo(
@@ -192,7 +192,7 @@ const AnimatedArrow = ({ animatedIndex }: BottomSheetHandleProps) => {
       animatedIndex.value,
       [0, 1],
       [toRad(-30), toRad(30)],
-      Extrapolate.CLAMP,
+      Extrapolation.CLAMP,
     );
     return {
       transform: transformOrigin(
@@ -218,7 +218,7 @@ const AnimatedArrow = ({ animatedIndex }: BottomSheetHandleProps) => {
       animatedIndex.value,
       [0, 1],
       [toRad(30), toRad(-30)],
-      Extrapolate.CLAMP,
+      Extrapolation.CLAMP,
     );
     return {
       transform: transformOrigin(
