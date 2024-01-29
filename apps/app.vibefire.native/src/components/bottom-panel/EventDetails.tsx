@@ -532,10 +532,10 @@ const EventDetailsPreviewController = (props: { linkId: string }) => {
   }
 };
 
-export const EventDetails = (props: { linkId: string; isPreview: boolean }) => {
-  const { linkId, isPreview } = props;
+export const EventDetails = (props: { linkId: string; preview: boolean }) => {
+  const { linkId, preview } = props;
 
-  if (isPreview) {
+  if (preview) {
     return <EventDetailsPreviewController linkId={linkId} />;
   }
   return <EventDetailsController linkId={linkId} />;

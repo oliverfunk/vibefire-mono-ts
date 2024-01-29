@@ -2,29 +2,27 @@ import { router } from "expo-router";
 
 import { type EditEventFormSectionT } from "./types";
 
-const routerNav = (path: string) => {
+const routerNav = (path: string, params: Record<string, string> = {}) => {
+  params.ts = new Date().getTime().toString();
   router.navigate(path);
-  router.setParams({ ts: new Date().getTime().toString() });
+  router.setParams(params);
 };
 
-const routerReplace = (path: string) => {
+const routerReplace = (path: string, params: Record<string, string> = {}) => {
+  params.ts = new Date().getTime().toString();
   router.replace(path);
-  router.setParams({ ts: new Date().getTime().toString() });
+  router.setParams(params);
 };
 
-export const navHomeWithProfileSelected = (selected?: boolean) => {
-  routerNav("/");
-  if (selected === true) {
-    router.setParams({ profileSelected: "true" });
-  } else if (selected === false) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    router.setParams({ profileSelected: undefined });
-  }
+export const navHomeWithProfileSelected = ({
+  profileSelected,
+}: {
+  profileSelected?: boolean;
+}) => {
+  routerNav("/", profileSelected ? { profileSelected: "true" } : {});
 };
 export const navHomeWithMinimise = () => {
-  routerNav("/");
-  router.setParams({ minimise: "true" + Math.random() });
+  routerNav("/", { minimise: "true" + Math.random() });
 };
 export const navReplaceHomeWithMinimise = () => {
   routerReplace("/");
@@ -41,21 +39,17 @@ export const navOwnEventsByOrganiser = () => {
   routerNav("/events-by-organiser");
 };
 
-export const navViewEvent = (linkId: string) => {
-  routerNav("/event/" + linkId);
-};
-export const navViewEventAsPreview = (linkId: string) => {
-  navViewEvent(linkId);
-  router.setParams({ isPreview: "true" });
+export const navViewEvent = (linkId: string, p?: { preview?: boolean }) => {
+  routerNav("/event/" + linkId, p?.preview ? { preview: "true" } : {});
 };
 
-export const navCreateEvent = () => {
-  routerNav("/event/create");
+export const navCreateEvent = (p?: { fromPrevious?: boolean }) => {
+  routerNav("/event/create", p?.fromPrevious ? { fromPrevious: "true" } : {});
 };
-export const navSetFromPrevious = () => {
-  navCreateEvent();
-  router.setParams({ fromPrevious: "true" });
-};
+// export const navSetFromPrevious = () => {
+//   navCreateEvent();
+//   router.setParams({ fromPrevious: "true" });
+// };
 
 export const navManageEvent = (linkId: string) => {
   routerNav("/event/" + linkId + "/manage");

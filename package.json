@@ -7,7 +7,7 @@
   "packageManager": "pnpm@8.5.1",
   "scripts": {
     "build": "turbo build",
-    "clean": "git clean -xdf node_modules */**/node_modules",
+    "clean": "git clean -xdf ./node_modules */**/node_modules",
     "vfa": "turbo dev --parallel --filter vibefire.app",
     "app": "turbo dev --parallel --filter api.vibefire.app --filter app.vibefire.native",
     "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore --ignore-path .wrangler",
@@ -55,7 +55,7 @@
     "react-error-boundary": "^4.0.11",
     "server@next": "link:trpc/server@next",
     "superjson": "^2.2.1",
-    "tailwindcss": "^3.3.3",
+    "tailwindcss": "3.3.2",
     "ts-jest": "^29.1.1",
     "turbo": "^1.10.16",
     "type-fest": "^4.8.2",
