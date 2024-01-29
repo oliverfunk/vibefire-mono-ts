@@ -6,14 +6,12 @@ const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
 
 // Create the default Metro config
-const config = getSentryExpoConfig(projectRoot, {
-  isCSSEnabled: true,
-});
+const config = getSentryExpoConfig(projectRoot);
 
-// Add import aliases
-config.resolver.alias = {
-  "~": path.resolve(projectRoot, "src"),
-};
+// // Add import aliases
+// config.resolver.alias = {
+//   "~": path.resolve(projectRoot, "src"),
+// };
 
 // support package.json "exports"
 config.resolver.unstable_enablePackageExports = false;
