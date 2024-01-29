@@ -21,7 +21,16 @@ via a url
 eas build --profile preview --platform all
 ```
 
-## To resign a build
+## Production build
+
+This lets you create a full, standalone app that can be installed
+via a url
+
+```bash
+eas build --profile production --platform all
+```
+
+## To re-sign a build
 
 This lets you sign a build for another device
 
