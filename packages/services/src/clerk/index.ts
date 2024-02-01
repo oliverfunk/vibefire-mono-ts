@@ -1,4 +1,5 @@
 import {
+  Clerk,
   signedInAuthObject,
   signedOutAuthObject,
   verifyToken,
@@ -8,6 +9,16 @@ import {
 } from "@clerk/backend";
 import { Webhook } from "svix";
 
+const clerkApiUrl = "https://advanced-buffalo-6.clerk.accounts.dev";
+
+export type ClerkClientType = ReturnType<typeof Clerk>;
+
+export const getClerkClient = (clerkSecretKey: string): ClerkClientType =>
+  Clerk({
+    // apiUrl: clerkApiUrl,
+    secretKey: clerkSecretKey,
+  });
+
 export type ClerkAuthContext =
   | ClerkSignedInAuthContext
   | ClerkSignedOutAuthContext;
@@ -16,7 +27,6 @@ export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
 export const authRequestWithClerk = async (
   clerkPemString: string,
-  clerkIssuerApiUrl: string,
   req: Request,
 ): Promise<ClerkAuthContext> => {
   const reqJwtToken = req.headers.get("Authorization");
@@ -25,14 +35,14 @@ export const authRequestWithClerk = async (
   }
 
   const jwtPayload = await verifyToken(reqJwtToken, {
-    issuer: clerkIssuerApiUrl,
+    issuer: clerkApiUrl,
     jwtKey: clerkPemString,
   });
 
   return signedInAuthObject(jwtPayload, {
     // idk why you need these atm,
     // has something to do with loading the Clerk client
-    apiUrl: clerkIssuerApiUrl,
+    apiUrl: clerkApiUrl,
     apiVersion: "2023-06-07",
     token: reqJwtToken,
   });
@@ -49,5 +59,23 @@ export const validateClerkWebhook = (
   } catch (err) {
     console.error(err);
     return undefined;
+  }
+};
+
+export const deleteUser = async (clerkSecretKey: string, userAid: string) => {
+  const res = await fetch(`https://api.clerk.com/v1/users/${userAid}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${clerkSecretKey}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(
+      `Failed to delete user ${userAid}\n${JSON.stringify(
+        await res.json(),
+        null,
+        2,
+      )}`,
+    );
   }
 };

@@ -88,7 +88,7 @@ export const updateUserInfo = async (
 
 export const deleteUser = async (faunaClient: Client, aid: string) => {
   const q = fql`
-    Users.withAid(${aid}).delete()
+    Users.withAid(${aid}).first()?.delete()
   `;
   return await dfq<{ id: string }>(faunaClient, q);
 };

@@ -77,7 +77,12 @@ export const VibefireEventSchema = t.Object(
     }),
 
     state: t.Union(
-      [t.Literal("draft"), t.Literal("ready"), t.Literal("archived")],
+      [
+        t.Literal("draft"),
+        t.Literal("ready"),
+        t.Literal("archived"),
+        t.Literal("deleted"),
+      ],
       { default: "draft" },
     ),
 

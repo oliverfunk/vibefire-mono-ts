@@ -22,11 +22,7 @@ export const createContext = async ({ req, env }: CreateContextOptions) => {
   setManagersContext(env);
 
   return {
-    auth: await authRequestWithClerk(
-      env.clerkPemString!,
-      env.clerkIssuerApiUrl!,
-      req,
-    ),
+    auth: await authRequestWithClerk(env.clerkPemString!, req),
     fauna: getFaunaUserManager(),
     googleMapsManager: getGoogleMapsManager(),
   } as ContextProps;

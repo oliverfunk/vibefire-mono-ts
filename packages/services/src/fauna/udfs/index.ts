@@ -77,7 +77,7 @@ export const createUDFFilterEventIsPublishedAndViewable = async (
       body: <<-END
         (userProfile, eventId, event) => {
           // I hate the nesting too...
-          if (event.published == false) {
+          if (event.state != "ready" || event.published == false) {
             false
           } else {
             if (event.visibility == "invite-only") {

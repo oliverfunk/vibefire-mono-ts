@@ -14,7 +14,7 @@ export const DateTimeSelectionAndDisplayIos = (props: {
       <DateTimePicker
         value={currentDate}
         mode={"date"}
-        timeZoneOffsetInMinutes={0}
+        timeZoneName={"utc"}
         is24Hour={true}
         onChange={(_event, date) => onChange(date)}
         minuteInterval={15}
@@ -24,7 +24,7 @@ export const DateTimeSelectionAndDisplayIos = (props: {
       <DateTimePicker
         value={currentDate}
         mode={"time"}
-        timeZoneOffsetInMinutes={0}
+        timeZoneName={"utc"}
         minuteInterval={15}
         is24Hour={true}
         onChange={(_event, date) => onChange(date)}
@@ -60,7 +60,7 @@ export const DateTimeSelectionAndDisplayAnd = (props: {
             <DateTimePicker
               value={currentDate}
               mode={"date"}
-              timeZoneOffsetInMinutes={0}
+              timeZoneName={"utc"}
               is24Hour={true}
               onChange={(_event, date) => {
                 setShowDatePicker(false);
@@ -90,7 +90,7 @@ export const DateTimeSelectionAndDisplayAnd = (props: {
               value={currentDate}
               mode={"time"}
               display="spinner"
-              timeZoneOffsetInMinutes={0}
+              timeZoneName={"utc"}
               minuteInterval={15}
               is24Hour={true}
               onChange={(_event, date) => {

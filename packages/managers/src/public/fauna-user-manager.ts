@@ -28,7 +28,6 @@ import {
   createEvent,
   createEventManagement,
   createUser,
-  deleteEvent,
   deleteUser,
   getEventFromIDByOrganiser,
   getEventFromLinkIdByOrganiser,
@@ -58,6 +57,7 @@ import { managersContext } from "~/managers-context";
 import { getImagesManager } from "~/private/images-manager";
 import { getGoogleMapsManager } from "~/public/google-maps-manager";
 import { checkUserIsPartOfOrg, safeGet } from "~/utils";
+import { getClerkManager } from "./clerk-manager";
 
 let _FaunaUserManager: FaunaUserManager | undefined;
 export const getFaunaUserManager = (
@@ -270,7 +270,9 @@ export class FaunaUserManager {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    await deleteEvent(this.faunaClient, eventId, organiserId);
+    await updateEvent(this.faunaClient, eventId, organiserId, {
+      state: "deleted",
+    });
   }
 
   async eventUpdate(
@@ -485,8 +487,6 @@ export class FaunaUserManager {
       updateData,
     );
 
-    console.log(JSON.stringify(updatedEvent, null, 2));
-
     if (updatedEvent.state === "draft") {
       await this._setEventReadyIfPossible(
         organiserId,
@@ -505,7 +505,6 @@ export class FaunaUserManager {
     try {
       event = tbValidator(VibefireEventSchema)(e);
     } catch (e) {
-      console.log("event is invalid", e);
       return;
     }
 
@@ -641,17 +640,22 @@ export class FaunaUserManager {
     isUpcoming: boolean,
   ) {
     const queryPeriods = displayPeriodsFor(onDateIsoNTZ, isUpcoming ? 7 : 1);
-    const res = await callAuthedEventsStarredOwnedDuringPeriods(
-      this.faunaClient,
-      userAc.userId,
-      queryPeriods,
-    );
-    // todo: do fauna side
-    const resFiltered = res.filter(
-      (event, index, self) =>
-        self.findIndex((e) => e.id === event.id) === index,
-    );
-    return resFiltered;
+    try {
+      const res = await callAuthedEventsStarredOwnedDuringPeriods(
+        this.faunaClient,
+        userAc.userId,
+        queryPeriods,
+      );
+      // todo: do fauna side
+      const resFiltered = res.filter(
+        (event, index, self) =>
+          self.findIndex((e) => e.id === event.id) === index,
+      );
+      return resFiltered;
+    } catch (e) {
+      console.error("error", e);
+      return [];
+    }
   }
 
   async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {
@@ -691,41 +695,46 @@ export class FaunaUserManager {
     //   timePeriod,
     //   h3ps,
     // );
-    const res = await callEventsInBBoxDuringPeriodForUser(
-      this.faunaClient,
-      userAc.userId ?? "anon",
-      timePeriod,
-      northEast,
-      southWest,
-    );
+    try {
+      const res = await callEventsInBBoxDuringPeriodForUser(
+        this.faunaClient,
+        userAc.userId ?? "anon",
+        timePeriod,
+        northEast,
+        southWest,
+      );
 
-    // the extent to which this is necessary is questionable,
-    // given the data comes from our db,
-    // esp given the critical path nature of this function
-    let events = res.map((eventData) =>
-      tbValidator(VibefireEventSchema)(eventData),
-    );
+      // the extent to which this is necessary is questionable,
+      // given the data comes from our db,
+      // esp given the critical path nature of this function
+      let events = res.map((eventData) =>
+        tbValidator(VibefireEventSchema)(eventData),
+      );
 
-    // todo: optimise this by doing it fauna side
-    if (userAc.userId) {
-      const userInfo = await this.getUserInfo(userAc);
-      const hiddenEvents = userInfo.hiddenEvents ?? [];
-      const blockedOrganisers = userInfo.blockedOrganisers ?? [];
+      // todo: optimise this by doing it fauna side
+      if (userAc.userId) {
+        const userInfo = await this.getUserInfo(userAc);
+        const hiddenEvents = userInfo.hiddenEvents ?? [];
+        const blockedOrganisers = userInfo.blockedOrganisers ?? [];
 
-      events = events.filter((e) => {
-        if (hiddenEvents.includes(e.id)) {
-          return false;
-        }
-        if (blockedOrganisers.includes(e.organiserId)) {
-          return false;
-        }
-        return true;
-      });
+        events = events.filter((e) => {
+          if (hiddenEvents.includes(e.id)) {
+            return false;
+          }
+          if (blockedOrganisers.includes(e.organiserId)) {
+            return false;
+          }
+          return true;
+        });
+      }
+
+      console.log("events.length", events.length);
+
+      return events;
+    } catch (e) {
+      console.error("error", e);
+      return [];
     }
-
-    console.log("events.length", events.length);
-
-    return events;
   }
 
   // #endregion
@@ -804,9 +813,24 @@ export class FaunaUserManager {
     return res;
   }
 
-  async deleteUser(userAc: ClerkSignedInAuthContext) {
-    const res = await deleteUser(this.faunaClient, userAc.userId);
-    return res;
+  async deleteUserAccount(userAc: ClerkSignedInAuthContext) {
+    const userAid = userAc.userId;
+    // todo: will take too long, need another way
+
+    // todo: This is a potential security issue, as it allows users to
+    // delete their accounts, and then create new ones, and then
+    // delete them again, etc.! Need to add a cooldown period
+    // before a user's account will actually be deleted.
+
+    // const userEvents = await this.eventsByUser(userAc);
+    // if (userEvents.length > 0) {
+    //   for (const event of userEvents) {
+    //     await this.eventDelete(userAc, event.id!);
+    //   }
+    // }
+    console.log("deleting user", JSON.stringify(userAid, null, 2));
+    await getClerkManager().userDeleteProfile(userAid);
+    await deleteUser(this.faunaClient, userAc.userId);
   }
 
   async setStarEventForUser(
