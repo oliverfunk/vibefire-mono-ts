@@ -1,8 +1,8 @@
 import {
   deleteUser,
-  getClerkClient,
+  // getClerkClient,
   validateClerkWebhook,
-  type ClerkClientType,
+  // type ClerkClientType,
 } from "@vibefire/services/clerk";
 
 import { managersContext } from "~/managers-context";
