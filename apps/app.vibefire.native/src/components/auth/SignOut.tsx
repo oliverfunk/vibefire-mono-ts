@@ -1,5 +1,4 @@
 import { Text, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "@clerk/clerk-expo";
 
 export const SignOut = () => {

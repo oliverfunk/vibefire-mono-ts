@@ -241,7 +241,9 @@ export const getEventsByOrganiser = async (
 ) => {
   const _organiserField: keyof VibefireEventT = "organiserId";
   const q = fql`
-    Events.byOrganiserID(${organiserId}).paginate(30)
+    Events.byOrganiserID(${organiserId})
+      .where(.state == "ready" || .state == "draft")
+      .paginate(30)
   `;
   return (await dfq<{ data: PartialDeep<VibefireEventT>[] }>(faunaClient, q))
     .data;

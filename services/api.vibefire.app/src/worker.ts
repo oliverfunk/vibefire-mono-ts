@@ -12,8 +12,7 @@ type Bindings = {
   CF_ACCOUNT_ID: string;
   CF_IMAGES_API_KEY: string;
   CLERK_PEM: string;
-  CLERK_ISSUER_API_URL: string;
-  CLERK_WEBHOOK_SECRET: string;
+  CLERK_SECRET_KEY: string;
   FAUNA_SECRET: string;
   SUPABASE_SECRET: string;
   GOOGLE_MAPS_API_KEY: string;
@@ -45,7 +44,7 @@ app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
           cfAccountId: c.env.CF_ACCOUNT_ID,
           cfImagesApiKey: c.env.CF_IMAGES_API_KEY,
           clerkPemString: c.env.CLERK_PEM,
-          clerkIssuerApiUrl: c.env.CLERK_ISSUER_API_URL,
+          clerkSecretKey: c.env.CLERK_SECRET_KEY,
           faunaClientKey: c.env.FAUNA_SECRET,
           supabaseClientKey: c.env.SUPABASE_SECRET,
           googleMapsApiKey: c.env.GOOGLE_MAPS_API_KEY,

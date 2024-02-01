@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { getClerkWebhookManager } from "@vibefire/managers/clerk-webhook";
+import { getClerkManager } from "@vibefire/managers/clerk";
 import { setManagersContext } from "@vibefire/managers/context";
 import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
 
@@ -9,7 +9,7 @@ import { validateToHttpExp } from "./utils";
 
 type Bindings = {
   FAUNA_SECRET: string;
-  CLERK_WEBHOOK_SECRET: string;
+  CLERK_WEBHOOK_EVENT_SECRET: string;
 };
 
 const webhooksRouter = new Hono<{ Bindings: Bindings }>();
@@ -17,7 +17,7 @@ const webhooksRouter = new Hono<{ Bindings: Bindings }>();
 webhooksRouter.use("*", async (c, next) => {
   setManagersContext({
     faunaClientKey: c.env.FAUNA_SECRET,
-    clerkWebhookSecret: c.env.CLERK_WEBHOOK_SECRET,
+    clerkWebhookEventSecret: c.env.CLERK_WEBHOOK_EVENT_SECRET,
   });
   await next();
 });
@@ -26,13 +26,13 @@ webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 
 webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
   const fauna = getFaunaUserManager();
-  const webhooksClerkManager = getClerkWebhookManager();
+  const clerkManager = getClerkManager();
 
   const headers = c.req.header();
   const payload = await c.req.text();
 
   const event = validateToHttpExp(() =>
-    webhooksClerkManager.validateWebhookEvent(headers, payload),
+    clerkManager.validateWebhookEvent(headers, payload),
   );
   switch (event.type) {
     case "user.created": {

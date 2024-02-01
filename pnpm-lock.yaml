@@ -177,6 +177,9 @@ importers:
       '@expo-google-fonts/inter':
         specifier: ^0.2.3
         version: 0.2.3
+      '@expo/html-elements':
+        specifier: ^0.9.1
+        version: 0.9.1
       '@gorhom/bottom-sheet':
         specifier: ^4.6.0
         version: 4.6.0(@types/react@18.2.38)(react-native-gesture-handler@2.14.1)(react-native-reanimated@3.6.2)(react-native@0.73.2)(react@18.2.0)
@@ -2951,6 +2954,10 @@ packages:
       resolve-from: 5.0.0
     transitivePeerDependencies:
       - supports-color
+
+  /@expo/html-elements@0.9.1:
+    resolution: {integrity: sha512-HOWw6tkOknG98CTTCaT3S+wRRcS00FY6v6JIc3b8LEcIxppFnNDDhxzvtdMbATzg+wQ6c2xxqfxA6FeibGNSNQ==}
+    dev: false
 
   /@expo/image-utils@0.4.1:
     resolution: {integrity: sha512-EZb+VHSmw+a5s2hS9qksTcWylY0FDaIAVufcxoaRS9tHIXLjW5zcKW7Rhj9dSEbZbRVy9yXXdHKa3GQdUQIOFw==}

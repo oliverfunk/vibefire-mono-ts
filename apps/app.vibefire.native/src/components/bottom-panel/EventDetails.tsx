@@ -20,9 +20,9 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 
-import { type VibefireEventT, type VibefireUserT } from "@vibefire/models";
+import { type VibefireEventT } from "@vibefire/models";
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 import {
   appleMapsOpenEventLocationURL,
@@ -39,7 +39,6 @@ import { EventTimeline } from "~/components/event/EventTimeline";
 import { trpc } from "~/apis/trpc-client";
 import {
   eventMapMapRefAtom,
-  userAtom,
   userAuthStateAtom,
   userInfoAtom,
   userSessionRetryAtom,

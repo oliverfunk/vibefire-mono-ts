@@ -1,6 +1,6 @@
 import { type AppUserState } from "@vibefire/models";
 
-import { publicProcedure, router } from "../trpc-router";
+import { authedProcedure, publicProcedure, router } from "../trpc-router";
 
 export const authRouter = router({
   getSession: publicProcedure.mutation(async ({ ctx }) => {
@@ -19,5 +19,8 @@ export const authRouter = router({
       };
     }
     return session;
+  }),
+  deleteAccount: authedProcedure.mutation(async ({ ctx }) => {
+    await ctx.fauna.deleteUserAccount(ctx.auth);
   }),
 });
