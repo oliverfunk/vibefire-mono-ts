@@ -6,14 +6,12 @@ export const trpcApiUrl = () => {
   if (env !== "local") {
     return "https://api.vibefire.app";
   }
-  return "https://api.vibefire.app";
   const debuggerHost =
     Constants.expoConfig?.hostUri ??
     Constants.manifest2?.extra?.expoGo?.debuggerHost;
   const localhost = debuggerHost?.split(":")[0];
   const localApiPort = 8787;
   const url = `http://${localhost}:${localApiPort}`;
-  console.log("url", JSON.stringify(url, null, 2));
   return url;
 };
 
