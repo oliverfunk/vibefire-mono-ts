@@ -62,6 +62,6 @@
     "turbo": "^1.10.16",
     "type-fest": "^4.8.2",
     "typescript": "^5.3.2",
-    "wrangler": "^3.17.1"
+    "wrangler": "3.17.1"
   }
 }
