@@ -8,10 +8,10 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "0.1.0",
+    "@vibefire/models": "workspace:*",
     "h3-js": "^4.1.0"
   },
   "devDependencies": {
-    "@vibefire/config": "0.1.0"
+    "@vibefire/config": "workspace:*"
   }
 }

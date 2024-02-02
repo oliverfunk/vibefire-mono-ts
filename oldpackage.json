@@ -1,14 +1,12 @@
 {
   "name": "vibefire-mono-babe",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "services/*"
-  ],
+  "engines": {
+    "node": ">=v20.9.0"
+  },
+  "packageManager": "pnpm@8.5.1",
   "scripts": {
     "build": "turbo build",
-    "clean-nms": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean": "git clean -xdf ./node_modules */**/node_modules",
     "vfa": "turbo dev --parallel --filter vibefire.app",
     "app": "turbo dev --parallel --filter api.vibefire.app --filter app.vibefire.native",
@@ -35,8 +33,7 @@
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
-    "@vibefire/config": "workspace:*",
-    "ajv": "^7",
+    "@vibefire/config": "0.1.0",
     "autoprefixer": "^10.4.16",
     "css-to-react-native": "^3.2.0",
     "eslint": "^8.54.0",
@@ -56,12 +53,13 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
+    "server@next": "link:trpc/server@next",
     "superjson": "^2.2.1",
     "tailwindcss": "3.3.2",
     "ts-jest": "^29.1.1",
     "turbo": "^1.10.16",
     "type-fest": "^4.8.2",
     "typescript": "^5.3.2",
-    "wrangler": "3.17.1"
+    "wrangler": "^3.17.1"
   }
 }

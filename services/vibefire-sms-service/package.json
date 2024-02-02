@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^3.3.0",
-    "@vibefire/managers": "0.1.0",
-    "@vibefire/services": "0.1.0",
-    "@vibefire/utils": "0.1.0",
+    "@vibefire/managers": "workspace:*",
+    "@vibefire/services": "workspace:*",
+    "@vibefire/utils": "workspace:*",
     "express": "^4.18.2"
   },
   "devDependencies": {
