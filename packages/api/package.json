@@ -8,13 +8,19 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "workspace:*",
-    "@vibefire/managers": "workspace:*",
-    "@vibefire/services": "workspace:*",
-    "@vibefire/utils": "workspace:*"
+    "@vibefire/models": "0.1.0",
+    "@vibefire/managers": "0.1.0",
+    "@vibefire/services": "0.1.0",
+    "@vibefire/utils": "0.1.0",
+    "@trpc/react-query": "10.44.1",
+    "@trpc/server": "10.44.1",
+    "@sinclair/typebox": "^0.31.28",
+    "hono": "^3.10.2",
+    "superjson": "^2.2.1",
+    "type-fest": "^4.8.2"
   },
   "devDependencies": {
-    "@vibefire/config": "workspace:*"
+    "@vibefire/config": "0.1.0"
   },
   "exports": {
     "./trpc": "./src/trpc/index.ts",

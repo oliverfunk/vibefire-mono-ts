@@ -7,10 +7,12 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "workspace:*",
-    "@vibefire/utils": "workspace:*"
+    "@vibefire/models": "0.1.0",
+    "@vibefire/utils": "0.1.0",
+    "jotai": "^2.6.0",
+    "luxon": "^3.4.4"
   },
   "devDependencies": {
-    "@vibefire/config": "workspace:*"
+    "@vibefire/config": "0.1.0"
   }
 }
