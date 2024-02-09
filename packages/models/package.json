@@ -7,7 +7,10 @@
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
+  "dependencies": {
+    "@sinclair/typebox": "^0.31.28"
+  },
   "devDependencies": {
-    "@vibefire/config": "workspace:*"
+    "@vibefire/config": "0.1.0"
   }
 }

@@ -9,7 +9,13 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/api": "workspace:*",
-    "@vibefire/utils": "workspace:*"
+    "@vibefire/api": "0.1.0",
+    "@vibefire/utils": "0.1.0",
+    "@cloudflare/workers-types": "^4.20231121.0",
+    "@hono/trpc-server": "^0.1.0",
+    "hono": "^3.10.2"
+  },
+  "devDependencies": {
+    "wrangler": "3.17.1"
   }
 }

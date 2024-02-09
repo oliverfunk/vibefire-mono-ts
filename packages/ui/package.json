@@ -10,6 +10,6 @@
     "update-latest": "pnpm update --latest"
   },
   "devDependencies": {
-    "@vibefire/config": "workspace:*"
+    "@vibefire/config": "0.1.0"
   }
 }

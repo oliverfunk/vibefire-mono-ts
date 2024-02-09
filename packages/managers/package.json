@@ -9,12 +9,14 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "workspace:*",
-    "@vibefire/services": "workspace:*",
-    "@vibefire/utils": "workspace:*"
+    "@vibefire/models": "0.1.0",
+    "@vibefire/services": "0.1.0",
+    "@vibefire/utils": "0.1.0",
+    "expo-server-sdk": "^3.7.0",
+    "type-fest": "^4.8.2"
   },
   "devDependencies": {
-    "@vibefire/config": "workspace:*"
+    "@vibefire/config": "0.1.0"
   },
   "exports": {
     "./context": "./src/managers-context.ts",

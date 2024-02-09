@@ -8,10 +8,14 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@vibefire/models": "workspace:*",
-    "h3-js": "^4.1.0"
+    "@vibefire/models": "0.1.0",
+    "h3-js": "^4.1.0",
+    "@sinclair/typebox": "^0.31.28",
+    "hono": "^3.10.2",
+    "luxon": "^3.4.4",
+    "type-fest": "^4.8.2"
   },
   "devDependencies": {
-    "@vibefire/config": "workspace:*"
+    "@vibefire/config": "0.1.0"
   }
 }
