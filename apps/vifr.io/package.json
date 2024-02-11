@@ -12,9 +12,9 @@
     "@cloudflare/workers-types": "^4.20231121.0",
     "@vibefire/api": "0.1.0",
     "@vibefire/utils": "0.1.0",
-    "hono": "^3.10.2"
+    "hono": "4.0.0"
   },
   "devDependencies": {
-    "wrangler": "3.17.1"
+    "wrangler": "3.28.1"
   }
 }

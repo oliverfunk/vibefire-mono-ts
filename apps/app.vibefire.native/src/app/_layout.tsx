@@ -98,7 +98,7 @@ const RootLayout = () => {
     }
   }, [ref]);
 
-  if (!!fontsError) console.warn(fontsError);
+  if (fontsError) console.warn(fontsError);
 
   if (!fontsLoaded) {
     return null;

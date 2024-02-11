@@ -417,7 +417,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
             className="flex-col items-center justify-between"
             onPress={onStarEvent}
           >
-            {!!eventFollowed ? (
+            {eventFollowed ? (
               <FontAwesome name="star" size={20} color="gold" />
             ) : (
               <FontAwesome5 name="star" size={20} color="white" />
