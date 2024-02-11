@@ -209,7 +209,7 @@ export const EditEventForm = (props: {
           // sets the background to orange for goto manage
           mayProceedBg={section === "images" ? "bg-[#FF4500]" : undefined}
           isEdited={isEdited}
-          isLoading={updateEventMut.isLoading}
+          isLoading={updateEventMut.isPending}
         />
       </View>
       <VibefireIconImage />

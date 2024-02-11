@@ -79,19 +79,19 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
   const getImageUploadLink = trpc.events.createImageUploadLink.useMutation();
 
   useEffect(() => {
-    if (getImageUploadLink.status === "idle") {
+    if (getImageUploadLink.isIdle) {
       setLoading(false);
       setHasError(false);
     }
-    if (getImageUploadLink.status === "loading") {
+    if (getImageUploadLink.isPending) {
       setLoading(true);
       setHasError(false);
     }
-    if (getImageUploadLink.status === "error") {
+    if (getImageUploadLink.isError) {
       setHasError(true);
       setLoading(false);
     }
-    if (getImageUploadLink.status === "success") {
+    if (getImageUploadLink.isSuccess) {
       const { id, uploadURL } = getImageUploadLink.data;
 
       const selectImageAndUpload = async (

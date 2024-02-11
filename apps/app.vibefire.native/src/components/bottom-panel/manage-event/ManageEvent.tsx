@@ -10,7 +10,7 @@ const ManageEventController = (props: { linkId: string; section?: string }) => {
   });
 
   switch (eventForManagement.status) {
-    case "loading":
+    case "pending":
       return <LoadingSheet />;
     case "error":
       return <ErrorSheet message="Couldn't load the event" />;

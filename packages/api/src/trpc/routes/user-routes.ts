@@ -2,7 +2,7 @@ import { Type as t } from "@sinclair/typebox";
 
 import { tbValidator } from "@vibefire/utils";
 
-import { authedProcedure, publicProcedure, router } from "../trpc-router";
+import { authedProcedure, publicProcedure, router } from "../trpc-router.js";
 
 // These are public becuase you can view an event without being logged in
 // not the best

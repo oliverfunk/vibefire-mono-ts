@@ -27,6 +27,7 @@ export const createContext = async ({ req, env }: CreateContextOptions) => {
     googleMapsManager: getGoogleMapsManager(),
   } as ContextProps;
 };
+
 export type Context = inferAsyncReturnType<typeof createContext>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
   env: ManagersContext;

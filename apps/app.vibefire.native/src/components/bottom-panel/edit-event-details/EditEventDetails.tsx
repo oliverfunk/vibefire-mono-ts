@@ -32,12 +32,12 @@ const EditEventController = (props: { linkId: string; section?: string }) => {
   }, [section]);
 
   switch (eventForEdit.status) {
-    case "loading":
+    case "pending":
       return <LoadingSheet />;
     case "error":
       return <ErrorSheet message="Couldn't load the event" />;
     case "success":
-      const currentEventData = eventForEdit.data as Partial<VibefireEventT>;
+      const currentEventData = eventForEdit.data;
       return (
         <EditEventForm
           eventId={currentEventData.id!}

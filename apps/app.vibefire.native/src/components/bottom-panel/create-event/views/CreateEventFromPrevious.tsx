@@ -51,7 +51,7 @@ export const CreateEventFromPreviousController = () => {
   const eventsQuery = trpc.events.eventsByUser.useQuery({});
 
   switch (eventsQuery.status) {
-    case "loading":
+    case "pending":
       return <LoadingSheet />;
     case "error":
       return <ErrorSheet message="Failed to load events" />;
