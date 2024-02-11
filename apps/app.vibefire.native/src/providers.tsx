@@ -58,7 +58,7 @@ const UserSessionProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     switch (getSession.status) {
-      case "loading":
+      case "pending":
         setUser({ state: "loading" });
         break;
       case "error":
@@ -99,7 +99,6 @@ const TrpcProvider = (props: { children: ReactNode }) => {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      transformer: superjson,
       links: [
         httpBatchLink({
           async headers() {
@@ -109,6 +108,7 @@ const TrpcProvider = (props: { children: ReactNode }) => {
             };
           },
           url: trpcUrl,
+          transformer: superjson,
         }),
       ],
     }),

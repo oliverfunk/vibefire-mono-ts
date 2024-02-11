@@ -6,7 +6,7 @@ import { timing } from "hono/timing";
 
 import { BASEPATH_REST, BASEPATH_TRPC } from "@vibefire/api/basepaths";
 import { restRouter } from "@vibefire/api/rest";
-import { apiRouter, createContext } from "@vibefire/api/trpc";
+import { createContext, trpcRouter } from "@vibefire/api/trpc";
 
 type Bindings = {
   CF_ACCOUNT_ID: string;
@@ -33,7 +33,7 @@ app.onError((err, c) => {
 
 app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
   const trpcHandler = trpcServer({
-    router: apiRouter,
+    router: trpcRouter,
     onError({ error }) {
       console.error(error);
     },

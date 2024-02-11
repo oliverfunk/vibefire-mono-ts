@@ -506,7 +506,7 @@ const EventDetailsController = (props: { linkId: string }) => {
   const eventQuery = trpc.events.eventForExternalView.useQuery({ linkId });
 
   switch (eventQuery.status) {
-    case "loading":
+    case "pending":
       return <LoadingSheet />;
     case "error":
       return <ErrorSheet message="This event is unavailable" />;
@@ -522,7 +522,7 @@ const EventDetailsPreviewController = (props: { linkId: string }) => {
   });
 
   switch (eventQuery.status) {
-    case "loading":
+    case "pending":
       return <LoadingSheet />;
     case "error":
       return <ErrorSheet message="This event is unavailable" />;

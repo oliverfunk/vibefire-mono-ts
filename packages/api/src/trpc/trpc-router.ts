@@ -11,12 +11,6 @@ import superjson from "superjson";
 
 import { type Context } from "./context";
 
-/**
- * 2. INITIALIZATION
- *
- * This is where the trpc api is initialized, connecting the context and
- * transformer
- */
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
 });
