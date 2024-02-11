@@ -4,8 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
-    "run": "pnpm run build && node dist/index.js"
+    "dev": "bun run src/index.ts"
   },
   "dependencies": {
     "@vibefire/managers": "0.1.0",
@@ -13,10 +12,5 @@
     "@vibefire/utils": "0.1.0",
     "dotenv": "^16.3.1",
     "luxon": "^3.4.4"
-  },
-  "devDependencies": {
-    "esbuild": "^0.19.10",
-    "npm-watch": "^0.11.0",
-    "typescript": "^5.3.2"
   }
 }
