@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
 import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
-import { EditEventDetails } from "~/components/bottom-panel/edit-event-details/EditEventDetails";
+import { EditEventWysiwyg } from "~/features/edit-event";
 import { useTsQueryParam } from "~/hooks/useTs";
 
 const Screen = () => {
@@ -24,8 +24,9 @@ const Screen = () => {
       headerText={"Edit Event"}
       enablePanDownToClose={Platform.OS === "android" ? false : true}
       snapPoints={["80%"]}
+      backgroundColor="black"
     >
-      <EditEventDetails linkId={linkId} section={section} />
+      <EditEventWysiwyg eventLinkId={linkId} />
     </BottomPanelModal>
   );
 };
