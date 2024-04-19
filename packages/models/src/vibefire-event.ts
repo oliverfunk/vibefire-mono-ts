@@ -1,7 +1,11 @@
 import { Type as t, type Static } from "@sinclair/typebox";
 
-import { CoordSchema, TimePeriodSchema } from "./general";
-import { unsettable } from "./utils";
+import {
+  CoordSchema,
+  TimePeriodSchema,
+  VibefireIndexableLocationSchema,
+} from "./general";
+import { clearable } from "./utils";
 
 export const VibefireEventOfferSchema = t.Object({
   id: t.String(),
@@ -35,16 +39,9 @@ export const VibefireEventPoiSchema = t.Object({
 });
 export type VibefireEventPoiT = Static<typeof VibefireEventPoiSchema>;
 
-export const VibefireEventLocationSchema = t.Object(
-  {
-    addressDescription: t.String(),
-    position: CoordSchema,
-    h3: t.Number(),
-    h3Parents: t.Array(t.Number()),
-  },
-  { default: undefined },
-);
-export type VibefireEventLocationT = Static<typeof VibefireEventLocationSchema>;
+export type VibefireEventLocationT = Static<
+  typeof VibefireIndexableLocationSchema
+>;
 
 export const VibefireEventImagesSchema = t.Object({
   banner: t.String({ default: undefined }),
@@ -71,7 +68,7 @@ export const VibefireEventSchema = t.Object({
 
   organiserId: t.String({ default: undefined }),
   organiserName: t.String({ default: undefined }),
-  organiserType: t.Union([t.Literal("user"), t.Literal("organisation")], {
+  organiserType: t.Union([t.Literal("user"), t.Literal("group")], {
     default: undefined,
   }),
 
@@ -91,8 +88,8 @@ export const VibefireEventSchema = t.Object({
   images: VibefireEventImagesSchema,
   timeStart: t.Number({ default: undefined }),
   timeStartIsoNTZ: t.String({ default: undefined }),
-  timeEnd: unsettable(t.Number()),
-  timeEndIsoNTZ: unsettable(t.String()),
+  timeEnd: clearable(t.Number()),
+  timeEndIsoNTZ: clearable(t.String()),
   timeZone: t.String({ default: undefined }),
 
   timeline: t.Array(VibefireEventTimelineElementSchema, { default: [] }),
@@ -113,7 +110,7 @@ export const VibefireEventSchema = t.Object({
 
   // search related
   rank: t.Number({ default: 0 }),
-  location: VibefireEventLocationSchema,
+  location: VibefireIndexableLocationSchema,
   displayZoomGroup: t.Union(
     [
       t.Literal(0), // "local"

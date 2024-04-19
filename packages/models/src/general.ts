@@ -38,3 +38,13 @@ export const MapQuerySchema = t.Object({
   zoomLevel: t.Number({ minimum: 0, maximum: 24 }),
 });
 export type MapQueryT = Static<typeof MapQuerySchema>;
+
+export const VibefireIndexableLocationSchema = t.Object(
+  {
+    addressDescription: t.String(),
+    position: CoordSchema,
+    h3: t.Number(),
+    h3Parents: t.Array(t.Number()),
+  },
+  { default: undefined },
+);
