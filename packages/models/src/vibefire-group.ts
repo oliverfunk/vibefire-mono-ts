@@ -1,4 +1,4 @@
-import { Type as t } from "@sinclair/typebox";
+import { Static, Type as t } from "@sinclair/typebox";
 
 import { VibefireIndexableLocationSchema } from "./general";
 
@@ -39,3 +39,4 @@ export const VibefireGroup = t.Object({
     t.Literal("private-invite-only"),
   ]),
 });
+export type VibefireGroupT = Static<typeof VibefireGroup>;
