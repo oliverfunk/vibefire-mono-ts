@@ -5,8 +5,8 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { atom, useAtom, useAtomValue } from "jotai";
 
-import { trpc } from "~/apis/trpc-client";
-import { userAuthStateAtom, userInfoAtom } from "~/atoms";
+import { trpc } from "!/apis/trpc-client";
+import { userAuthStateAtom, userInfoAtom } from "!/atoms";
 
 // TODO: this should be refactored
 // to be called when the user logs in

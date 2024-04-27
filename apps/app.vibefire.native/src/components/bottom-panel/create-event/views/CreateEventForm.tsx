@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
-import { VibefireIconImage } from "~/components/utils/VibefireIconImage";
-import { trpc } from "~/apis/trpc-client";
-import { navCreateEvent, navEditEvent } from "~/nav";
+import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
+import { trpc } from "!/apis/trpc-client";
+import { navCreateEvent, navEditEvent } from "!/nav";
+
 import {
   FormTitleTextInput,
   ScrollViewSheet,

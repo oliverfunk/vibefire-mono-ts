@@ -4,8 +4,8 @@ import Toast from "react-native-toast-message";
 
 import { type CoordT } from "@vibefire/models";
 
-import { trpc } from "~/apis/trpc-client";
-import { useLocationOnce } from "~/hooks/useLocation";
+import { trpc } from "!/apis/trpc-client";
+import { useLocationOnce } from "!/hooks/useLocation";
 
 export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;

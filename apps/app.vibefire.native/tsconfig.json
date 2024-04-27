@@ -8,7 +8,7 @@
     "strictNullChecks": true,
     "paths": {
       "#/*": ["./assets/*"],
-      "~/*": ["./src/*"],
+      "!/*": ["./src/*"],
       "!/*": ["./src/*"],
       "!api/*": ["../../packages/api/src/*"]
     },

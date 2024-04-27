@@ -3,11 +3,11 @@ import { useLocalSearchParams } from "expo-router";
 import {
   BottomPanelHandle,
   SEARCH_HANDLE_HEIGHT,
-} from "~/components/bottom-panel/BottomPanelHandle";
-import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
-import { EventsListAndProfile } from "~/components/bottom-panel/EventsListAndProfile";
-import { useNotificationsResponder } from "~/hooks/useNotificationsResponder";
-import { useTsQueryParam } from "~/hooks/useTs";
+} from "!/components/bottom-panel/BottomPanelHandle";
+import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
+import { EventsListAndProfile } from "!/components/bottom-panel/EventsListAndProfile";
+import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
+import { useTsQueryParam } from "!/hooks/useTs";
 
 const Screen = () => {
   const { profileSelected, minimise } = useLocalSearchParams<{

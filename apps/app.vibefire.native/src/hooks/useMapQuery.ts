@@ -12,7 +12,7 @@ import {
 } from "@vibefire/shared-state";
 import { toDateStr } from "@vibefire/utils";
 
-import { trpc } from "~/apis/trpc-client";
+import { trpc } from "!/apis/trpc-client";
 
 const useUpcomingEventsQuery = () => {
   const [todayDT] = useAtom(todayDTAtom);

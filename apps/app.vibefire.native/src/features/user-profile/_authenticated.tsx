@@ -7,16 +7,16 @@ import {
   type VibefireUserT,
 } from "@vibefire/models";
 
-import { DeleteAccount } from "~/components/auth/DeleteAccount";
-import { SignOut } from "~/components/auth/SignOut";
-import { IconButton } from "~/components/button/IconButton";
+import { DeleteAccount } from "!/components/auth/DeleteAccount";
+import { SignOut } from "!/components/auth/SignOut";
+import { IconButton } from "!/components/button/IconButton";
 import {
   LinearRedOrangeView,
   ScrollViewSheet,
-} from "~/components/utils/sheet-utils";
-import { VibefireIconImage } from "~/components/utils/VibefireIconImage";
-import { GroupsListAllForUser } from "~/features/groups-list";
-import { navCreateEvent, navOwnEventsByOrganiser } from "~/nav";
+} from "!/components/utils/sheet-utils";
+import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
+import { GroupsListAllForUser } from "!/features/groups-list";
+import { navCreateEvent, navOwnEventsByOrganiser } from "!/nav";
 
 const UserEventsChipListEmbed = () => {
   return (
@@ -81,7 +81,7 @@ export const UserProfileAuthenticatedView = (props: {
 
   return (
     <ScrollViewSheet>
-      <View className="flex-col space-y-10 px-2 py-10">
+      <View className="flex-col space-y-10 py-10">
         {/* Name */}
         <View className="flex-col items-center justify-center space-y-2">
           <View className="rounded-lg bg-black p-4">
@@ -91,7 +91,7 @@ export const UserProfileAuthenticatedView = (props: {
           </View>
         </View>
 
-        <View className="flex-col items-center space-y-2">
+        <View className="flex-col items-center space-y-2 px-2">
           <View className="w-full flex-col">
             <Text className="ml-4">Email</Text>
             <View className="rounded-lg bg-slate-200 py-2">

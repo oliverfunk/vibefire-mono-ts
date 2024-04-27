@@ -32,19 +32,20 @@ import {
   uberClientRequestToEventLocationURL,
 } from "@vibefire/utils";
 
-import { defaultCameraForPosition } from "~/utils/constants";
-import { EventImage, StandardImage } from "~/components/event/EventImage";
-import { EventImageCarousel } from "~/components/event/EventImageCarousel";
-import { EventTimeline } from "~/components/event/EventTimeline";
-import { trpc } from "~/apis/trpc-client";
+import { defaultCameraForPosition } from "!/utils/constants";
+import { EventImage, StandardImage } from "!/components/event/EventImage";
+import { EventImageCarousel } from "!/components/event/EventImageCarousel";
+import { EventTimeline } from "!/components/event/EventTimeline";
+import { trpc } from "!/apis/trpc-client";
 import {
   eventMapMapRefAtom,
   userAuthStateAtom,
   userInfoAtom,
   userSessionRetryAtom,
-} from "~/atoms";
-import { useShareEventLink } from "~/hooks/useShareEventLink";
-import { navHomeWithMinimise, navManageEvent } from "~/nav";
+} from "!/atoms";
+import { useShareEventLink } from "!/hooks/useShareEventLink";
+import { navHomeWithMinimise, navManageEvent } from "!/nav";
+
 import { LocationDisplayMap } from "../map/LocationDisplayMap";
 import {
   ErrorSheet,

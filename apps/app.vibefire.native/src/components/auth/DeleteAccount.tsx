@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "@clerk/clerk-expo";
 import { A } from "@expo/html-elements";
 
-import { trpc } from "~/apis/trpc-client";
+import { trpc } from "!/apis/trpc-client";
 
 const DeleteConfirmationModal = (props: {
   showModal: boolean;
