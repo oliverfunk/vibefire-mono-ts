@@ -10,7 +10,7 @@ import { type PartialDeep } from "type-fest";
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 import { navEditEventSetSection, navManageEvent } from "!/nav";
 import { type EditEventFormSectionT } from "!/types";
 

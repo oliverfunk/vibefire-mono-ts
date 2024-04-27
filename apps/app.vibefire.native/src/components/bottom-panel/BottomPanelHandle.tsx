@@ -125,6 +125,7 @@ const SearchButton = () => {
       onPress={() => {
         setShowSearchModal(true);
       }}
+      border={true}
       cn="bg-white"
     >
       <FontAwesome5 name="search" size={20} color="black" />
@@ -154,6 +155,7 @@ const ProfileButton = () => {
         setProfileSelected(true);
         expand();
       }}
+      border={true}
       cn="bg-white"
     >
       <FontAwesome5 name="user-alt" size={20} color="black" />

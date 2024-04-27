@@ -5,7 +5,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { atom, useAtom, useAtomValue } from "jotai";
 
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 import { userAuthStateAtom, userInfoAtom } from "!/atoms";
 
 // TODO: this should be refactored

@@ -16,12 +16,30 @@ import {
 } from "!/components/utils/sheet-utils";
 import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
 import { GroupsListAllForUser } from "!/features/groups-list";
-import { navCreateEvent, navOwnEventsByOrganiser } from "!/nav";
+import { navCreateEvent, navCreateGroup, navOwnEventsByOrganiser } from "!/nav";
+
+const EmbedRowHeader = (props: { title: string; onPress: () => void }) => {
+  const { title, onPress } = props;
+  return (
+    <View className="flex-row items-center p-2">
+      <Text className="text-xl font-bold text-white">{title}</Text>
+      <View className="grow" />
+      <IconButton onPress={onPress}>
+        <View className="flex-col items-center justify-center">
+          <FontAwesome name="plus" size={15} color="white" />
+          <Text className="text-sm text-white">New</Text>
+        </View>
+      </IconButton>
+      {/* Find and create groups */}
+    </View>
+  );
+};
 
 const UserEventsChipListEmbed = () => {
   return (
-    <LinearRedOrangeView className="flex-col space-y-10 px-2 py-10">
-      <Text className="text-center text-xl text-white">
+    <LinearRedOrangeView className="flex-col p-2">
+      <EmbedRowHeader title="Your Events" onPress={navCreateEvent} />
+      <Text className="text-center text-xl text-black">
         View your previous events or create new ones from here
       </Text>
       <View className="flex-row items-center justify-around">
@@ -50,23 +68,8 @@ const UserEventsChipListEmbed = () => {
 const GroupsChipListEmbed = () => {
   return (
     <View className="flex-col bg-black p-2">
-      <View className="flex-row items-center p-2">
-        <Text className="text-xl font-bold text-white">Your groups</Text>
-        <View className="grow" />
-        <IconButton
-          onPress={() => {
-            // todo
-            // create join
-          }}
-          cn="bg-black/80"
-        >
-          <View className="flex-col items-center justify-center">
-            <FontAwesome name="plus" size={15} color="white" />
-            <Text className="text-sm text-white">New</Text>
-          </View>
-        </IconButton>
-        {/* Find and create groups */}
-      </View>
+      <EmbedRowHeader title="Your Groups" onPress={navCreateGroup} />
+
       <GroupsListAllForUser />
     </View>
   );
@@ -129,9 +132,6 @@ export const UserProfileAuthenticatedView = (props: {
 
         <View>
           <UserEventsChipListEmbed />
-        </View>
-
-        <View>
           <GroupsChipListEmbed />
         </View>
 

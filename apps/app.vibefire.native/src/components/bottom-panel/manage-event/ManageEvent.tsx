@@ -1,4 +1,4 @@
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 
 import { ErrorSheet, LoadingSheet } from "../../utils/sheet-utils";
 import { ManagementView } from "./views/ManageEventView";

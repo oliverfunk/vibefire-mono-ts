@@ -36,7 +36,7 @@ import { defaultCameraForPosition } from "!/utils/constants";
 import { EventImage, StandardImage } from "!/components/event/EventImage";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import { EventTimeline } from "!/components/event/EventTimeline";
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 import {
   eventMapMapRefAtom,
   userAuthStateAtom,
