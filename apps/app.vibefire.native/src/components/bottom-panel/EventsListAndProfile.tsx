@@ -9,21 +9,21 @@ import {
   upcomingEventsQueryResultAtom,
 } from "@vibefire/shared-state";
 
-import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
-import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
-import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
-import { DeleteAccount } from "~/components/auth/DeleteAccount";
-import { SignOut } from "~/components/auth/SignOut";
-import { EventsListWithSections } from "~/components/event/EventsList";
+import { ContinueWithApple } from "!/components/auth/ContinueWithApple";
+import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
+import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
+import { DeleteAccount } from "!/components/auth/DeleteAccount";
+import { SignOut } from "!/components/auth/SignOut";
+import { EventsListWithSections } from "!/components/event/EventsList";
 import {
   LinearRedOrangeView,
   LoadingSheet,
   ScrollViewSheet,
-} from "~/components/utils/sheet-utils";
-import { VibefireIconImage } from "~/components/utils/VibefireIconImage";
-import { userAtom, userSessionRetryAtom } from "~/atoms";
-import { UserProfile } from "~/features/user-profile";
-import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
+} from "!/components/utils/sheet-utils";
+import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
+import { userAtom, userSessionRetryAtom } from "!/atoms";
+import { UserProfile } from "!/features/user-profile";
+import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "!/nav";
 
 const _Profile = () => {
   const [user] = useAtom(userAtom);

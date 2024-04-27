@@ -30,7 +30,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { FallbackProps } from "react-error-boundary";
 
-import { usePrevious } from "~/hooks/usePrevious";
+import { usePrevious } from "!/hooks/usePrevious";
 
 export const LoadingSheet = () => {
   return (
@@ -309,7 +309,7 @@ export const LinearRedOrangeView = (
   props: { children: React.ReactNode } & ViewProps,
 ) => (
   <LinearGradient
-    colors={["#FF0000", "#FF4500"]}
+    colors={["#FF0000", "#FFA000", "#462DFF"]}
     start={[0, 0]}
     end={[1, 1]}
     {...props}

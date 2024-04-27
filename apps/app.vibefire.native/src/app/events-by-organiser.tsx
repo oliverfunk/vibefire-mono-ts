@@ -1,8 +1,8 @@
 import { Platform } from "react-native";
 
-import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
-import { EventsByOrganiser } from "~/components/bottom-panel/EventsByOrganiser";
-import { useTsQueryParam } from "~/hooks/useTs";
+import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
+import { EventsByOrganiser } from "!/components/bottom-panel/EventsByOrganiser";
+import { useTsQueryParam } from "!/hooks/useTs";
 
 const Screen = () => {
   const ts = useTsQueryParam();

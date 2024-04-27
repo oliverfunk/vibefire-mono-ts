@@ -6,7 +6,7 @@ import { type DateTime } from "luxon";
 import { type VibefireEventT } from "@vibefire/models";
 import { organisationProfileImagePath } from "@vibefire/utils";
 
-import { IconButton } from "~/components/button/IconButton";
+import { IconButton } from "!/components/button/IconButton";
 
 import { EventImage, StandardImage } from "./EventImage";
 

@@ -4,9 +4,10 @@ import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
-import { EventsList } from "~/components/event/EventsList";
-import { trpc } from "~/apis/trpc-client";
-import { navEditEvent, navManageEvent } from "~/nav";
+import { EventsList } from "!/components/event/EventsList";
+import { trpc } from "!/apis/trpc-client";
+import { navEditEvent, navManageEvent } from "!/nav";
+
 import { ErrorSheet, LoadingSheet } from "../utils/sheet-utils";
 
 const DeleteConfirmationModal = (props: {

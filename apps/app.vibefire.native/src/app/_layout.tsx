@@ -15,15 +15,15 @@ import {
 } from "@expo-google-fonts/inter";
 import * as Sentry from "@sentry/react-native";
 
-import { useRegisterPushToken } from "~/hooks/useRegisterPushToken";
-import AppProviders from "~/providers";
+import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
+import AppProviders from "!/providers";
 
-import "~/global.css";
+import "!/global.css";
 
 import * as Notifications from "expo-notifications";
 
-import { EventMap } from "~/components/event/EventMap";
-import { NoTopContainer } from "~/components/utils/NoTopContainer";
+import { EventMap } from "!/components/event/EventMap";
+import { NoTopContainer } from "!/components/utils/NoTopContainer";
 
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 

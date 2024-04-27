@@ -2,11 +2,12 @@ import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useAtom, useSetAtom } from "jotai";
 
-import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
-import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
-import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
-import { LoadingSheet, ScrollViewSheet } from "~/components/utils/sheet-utils";
-import { userAtom, userSessionRetryAtom } from "~/atoms";
+import { ContinueWithApple } from "!/components/auth/ContinueWithApple";
+import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
+import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
+import { LoadingSheet, ScrollViewSheet } from "!/components/utils/sheet-utils";
+import { userAtom, userSessionRetryAtom } from "!/atoms";
+
 import { UserProfileAuthenticatedView } from "./_authenticated";
 
 const UserProfileErrorView = () => {

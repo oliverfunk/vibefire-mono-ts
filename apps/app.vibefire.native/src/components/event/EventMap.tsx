@@ -10,12 +10,13 @@ import { useSetAtom } from "jotai";
 
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
-import { debounce } from "~/utils/debounce";
-import { EventIcon } from "~/components/SvgIcon";
-import { eventMapMapRefAtom } from "~/atoms";
-import { useLocationOnce } from "~/hooks/useLocation";
-import { useDisplayEvents } from "~/hooks/useMapQuery";
-import { navViewEvent } from "~/nav";
+import { debounce } from "!/utils/debounce";
+import { EventIcon } from "!/components/SvgIcon";
+import { eventMapMapRefAtom } from "!/atoms";
+import { useLocationOnce } from "!/hooks/useLocation";
+import { useDisplayEvents } from "!/hooks/useMapQuery";
+import { navViewEvent } from "!/nav";
+
 import { SEARCH_HANDLE_HEIGHT } from "../bottom-panel/BottomPanelHandle";
 
 export class Try extends React.Component<

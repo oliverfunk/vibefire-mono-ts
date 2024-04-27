@@ -1,9 +1,9 @@
 import { Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { BottomPanelModal } from "~/components/bottom-panel/BottomPanelModal";
-import { EditEventWysiwyg } from "~/features/edit-event";
-import { useTsQueryParam } from "~/hooks/useTs";
+import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
+import { EditEventWysiwyg } from "!/features/edit-event";
+import { useTsQueryParam } from "!/hooks/useTs";
 
 const Screen = () => {
   const { linkId, section } = useLocalSearchParams<{
