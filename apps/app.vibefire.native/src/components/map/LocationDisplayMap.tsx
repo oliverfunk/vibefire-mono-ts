@@ -4,7 +4,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { type CoordT } from "@vibefire/models";
 
 import { defaultCameraForPosition } from "~/utils/constants";
-import { EventIcon } from "./SvgIcon";
+import { EventIcon } from "../SvgIcon";
 
 export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
   const { markerPosition } = props;

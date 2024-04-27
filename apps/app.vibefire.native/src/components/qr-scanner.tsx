@@ -20,7 +20,6 @@ export const QrScanner = () => {
     },
   });
   const device = useCameraDevice("back");
-
   console.log("hasPermission", device === undefined);
 
   if (device == null) return <NoCameraDeviceError />;

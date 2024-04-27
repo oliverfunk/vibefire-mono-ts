@@ -23,6 +23,11 @@
     "^~/components/(.*)$",
     "^~/styles/(.*)$",
     "^~/(.*)$",
+    "^!/utils/(.*)$",
+    "^!/components/(.*)$",
+    "^!/styles/(.*)$",
+    "^(\\!.*)/(.*)$",
+    "",
     "^[./]"
   ],
   "importOrderSeparation": false,

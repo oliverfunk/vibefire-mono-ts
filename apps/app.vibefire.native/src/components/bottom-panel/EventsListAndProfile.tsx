@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useAtom, useSetAtom } from "jotai";
@@ -13,57 +12,18 @@ import {
 import { ContinueWithApple } from "~/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "~/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "~/components/auth/ContinueWithGoogle";
+import { DeleteAccount } from "~/components/auth/DeleteAccount";
 import { SignOut } from "~/components/auth/SignOut";
-import { EventsListWithSections } from "~/components/event/EventList";
-import { VibefireIconImage } from "~/components/VibefireIconImage";
-import { userAtom, userSessionRetryAtom } from "~/atoms";
-import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
-import { DeleteAccount } from "../auth/DeleteAccount";
-import { QrScanner } from "../qr-scanner";
+import { EventsListWithSections } from "~/components/event/EventsList";
 import {
-  FormTextInput,
   LinearRedOrangeView,
   LoadingSheet,
   ScrollViewSheet,
-} from "./_shared";
-
-const _FeedbackCard = () => {
-  const [_enableFeedback, setEnableFeedback] = useState(false);
-
-  const [feedback, setFeedback] = useState("");
-
-  return (
-    <View className="flex-col items-center space-y-5 overflow-hidden rounded-lg bg-black px-2 py-10">
-      <Text className="text-center text-lg text-white">
-        Vibefire is in open beta and we&apos;d love to hear your feedback.
-      </Text>
-      <View className="w-full flex-col space-y-2">
-        <FormTextInput
-          placeholder="Your feedback"
-          value={feedback}
-          onChangeText={setFeedback}
-        />
-        <TouchableOpacity
-          className="overflow-hidden rounded-lg border bg-green-400 px-4 py-2"
-          onPress={() => {
-            setEnableFeedback((prev) => !prev);
-          }}
-        >
-          <Text className="text-center text-xl text-white">Send</Text>
-        </TouchableOpacity>
-        {/* If you have any features or ideas, please let us know */}
-      </View>
-      <TouchableOpacity
-        className="rounded-lg border border-white  px-4 py-2"
-        onPress={() => {
-          setEnableFeedback((prev) => !prev);
-        }}
-      >
-        <Text className="text-xl text-white">Give feedback</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+} from "~/components/utils/sheet-utils";
+import { VibefireIconImage } from "~/components/utils/VibefireIconImage";
+import { userAtom, userSessionRetryAtom } from "~/atoms";
+import { UserProfile } from "~/features/user-profile";
+import { navCreateEvent, navOwnEventsByOrganiser, navViewEvent } from "~/nav";
 
 const _Profile = () => {
   const [user] = useAtom(userAtom);
@@ -241,7 +201,7 @@ export const EventsListAndProfile = (props: { profileSelected?: boolean }) => {
   const { profileSelected } = props;
 
   if (profileSelected) {
-    return <_Profile />;
+    return <UserProfile />;
   }
 
   return <_EventsList />;

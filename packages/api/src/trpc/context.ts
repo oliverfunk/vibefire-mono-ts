@@ -1,4 +1,3 @@
-import { type inferAsyncReturnType } from "@trpc/server";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 import {
@@ -28,7 +27,7 @@ export const createContext = async ({ req, env }: CreateContextOptions) => {
   } as ContextProps;
 };
 
-export type Context = inferAsyncReturnType<typeof createContext>;
+export type Context = Awaited<ReturnType<typeof createContext>>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
   env: ManagersContext;
 };

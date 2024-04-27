@@ -28,7 +28,7 @@ import { DateTime } from "luxon";
 
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 
-import { IconButton } from "~/components/IconButton";
+import { IconButton } from "~/components/button/IconButton";
 import { TimeOfDayPicker } from "~/components/TimeOfDayPicker";
 import { navHomeWithProfileSelected } from "~/nav";
 
@@ -109,24 +109,26 @@ const SearchButton = () => {
           </Pressable>
         </Modal>
         <IconButton
-          icon={<FontAwesome name="close" size={20} color="white" />}
           onPress={() => {
             setShowSearchModal(false);
           }}
           cn="bg-black"
-        />
+        >
+          <FontAwesome name="close" size={20} color="white" />
+        </IconButton>
       </>
     );
   }
 
   return (
     <IconButton
-      icon={<FontAwesome5 name="search" size={20} color="black" />}
       onPress={() => {
         setShowSearchModal(true);
       }}
       cn="bg-white"
-    />
+    >
+      <FontAwesome5 name="search" size={20} color="black" />
+    </IconButton>
   );
 };
 
@@ -137,23 +139,25 @@ const ProfileButton = () => {
 
   return profileSelected ? (
     <IconButton
-      icon={<MaterialIcons name="view-list" size={24} color="white" />}
       onPress={() => {
         navHomeWithProfileSelected({ profileSelected: false });
         setProfileSelected(false);
       }}
       cn="bg-black"
-    />
+    >
+      <MaterialIcons name="view-list" size={24} color="white" />
+    </IconButton>
   ) : (
     <IconButton
-      icon={<FontAwesome5 name="user-alt" size={20} color="black" />}
       onPress={() => {
         navHomeWithProfileSelected({ profileSelected: true });
         setProfileSelected(true);
         expand();
       }}
       cn="bg-white"
-    />
+    >
+      <FontAwesome5 name="user-alt" size={20} color="black" />
+    </IconButton>
   );
 };
 

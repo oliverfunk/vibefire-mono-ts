@@ -10,7 +10,11 @@ import {
 } from "@vibefire/models";
 import { tbValidator } from "@vibefire/utils";
 
-import { authedProcedure, publicProcedure, router } from "../trpc-router.js";
+import {
+  authedProcedure,
+  publicProcedure,
+  router,
+} from "!api/trpc/trpc-router";
 
 export const eventsRouter = router({
   positionAddressInfo: authedProcedure

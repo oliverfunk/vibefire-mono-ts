@@ -1,6 +1,10 @@
 import { type AppUserState } from "@vibefire/models";
 
-import { authedProcedure, publicProcedure, router } from "../trpc-router.js";
+import {
+  authedProcedure,
+  publicProcedure,
+  router,
+} from "!api/trpc/trpc-router.js";
 
 export const authRouter = router({
   getSession: publicProcedure.mutation(async ({ ctx }) => {

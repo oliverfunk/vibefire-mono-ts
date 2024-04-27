@@ -9,11 +9,14 @@ import { type PartialDeep } from "type-fest";
 
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
-import { VibefireIconImage } from "~/components/VibefireIconImage";
+import { VibefireIconImage } from "~/components/utils/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
 import { navEditEventSetSection, navManageEvent } from "~/nav";
 import { type EditEventFormSectionT } from "~/types";
-import { BackNextButtons, ScrollViewSheetWithRef } from "../_shared";
+import {
+  BackNextButtons,
+  ScrollViewSheetWithRef,
+} from "../../utils/sheet-utils";
 import { EditEventDescription } from "./sections/EditEventDescriptions";
 import { EditEventImages } from "./sections/EditEventImages";
 import { EditEventLocation } from "./sections/EditEventLocation";
