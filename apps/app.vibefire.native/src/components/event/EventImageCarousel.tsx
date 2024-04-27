@@ -1,118 +1,21 @@
-import { View } from "react-native";
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-} from "react-native-reanimated";
-import Carousel from "react-native-reanimated-carousel";
-import { type CarouselRenderItemInfo } from "react-native-reanimated-carousel/lib/typescript/types";
-
+import { ImageCarousel } from "../image/ImageCarousel";
 import { EventImage } from "./EventImage";
-
-const PaginationItem = (props: {
-  index: number;
-  length: number;
-  animValue: Animated.SharedValue<number>;
-}) => {
-  // if I ever come back
-  const { animValue, index, length } = props;
-  const width = 1;
-
-  const animStyle = useAnimatedStyle(() => {
-    let inputRange = [index - 1, index, index + 1];
-    let outputRangeTranslate = [-width, 0, width];
-    let outputRangeScale = [0, 1.1, 0];
-
-    if (index === 0 && animValue?.value > length - 1) {
-      inputRange = [length - 1, length, length + 1];
-      outputRangeTranslate = [-width, 0, width];
-      outputRangeScale = [0, 1.1, 0];
-    }
-
-    return {
-      transform: [
-        {
-          translateX: interpolate(
-            animValue?.value,
-            inputRange,
-            outputRangeTranslate,
-            Extrapolate.CLAMP,
-          ),
-        },
-        {
-          scale: interpolate(
-            animValue?.value,
-            inputRange,
-            outputRangeScale,
-            Extrapolate.CLAMP,
-          ),
-        },
-      ],
-    };
-  }, [animValue, index, length, width]);
-
-  return (
-    <View className={`overflow-hidden rounded-full bg-white p-[${width}px]`}>
-      <Animated.View
-        className={`rounded-full bg-black p-1`}
-        style={animStyle}
-      />
-    </View>
-  );
-};
 
 export const EventImageCarousel = (props: {
   imgIdKeys: string[];
   width: number;
-  renderItem?: (r: CarouselRenderItemInfo<string>) => React.JSX.Element;
+  offsetXToActive?: number;
 }) => {
-  const { imgIdKeys: imgIdKeys, width, renderItem } = props;
-
-  const progressValue = useSharedValue<number>(0);
+  const { imgIdKeys: imgIdKeys, width, offsetXToActive = 10 } = props;
 
   return (
-    <View className="relative">
-      <Carousel
-        width={width}
-        height={width}
-        defaultIndex={0}
-        loop={false}
-        overscrollEnabled={false}
-        onProgressChange={(_, absoluteProgress) =>
-          (progressValue.value = absoluteProgress)
-        }
-        data={imgIdKeys}
-        panGestureHandlerProps={{
-          activeOffsetX: [-10, 10],
-        }}
-        renderItem={
-          renderItem
-            ? renderItem
-            : ({ index, item: imgIdKey }) => {
-                return (
-                  <EventImage imgIdKey={imgIdKey} alt={`Image ${index}`} />
-                );
-              }
-        }
-      />
-      {imgIdKeys.length > 1 && (
-        <View className="absolute top-0 w-full items-center justify-center pt-2">
-          <View className="flex-row space-x-2 rounded-md bg-gray-800/10 p-1">
-            {imgIdKeys.map((_, index) => {
-              return (
-                <View key={index}>
-                  <PaginationItem
-                    animValue={progressValue}
-                    index={index}
-                    length={imgIdKeys.length}
-                  />
-                </View>
-              );
-            })}
-          </View>
-        </View>
-      )}
-    </View>
+    <ImageCarousel
+      imgIdKeys={imgIdKeys}
+      width={width}
+      renderItem={({ index, item: imgIdKey }) => {
+        return <EventImage imgIdKey={imgIdKey} alt={`Image ${index}`} />;
+      }}
+      offsetXToActive={offsetXToActive}
+    />
   );
 };

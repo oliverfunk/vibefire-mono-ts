@@ -28,6 +28,7 @@ import {
   type BottomSheetSectionListProps,
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types";
 import { useFocusEffect } from "@react-navigation/native";
+import { FallbackProps } from "react-error-boundary";
 
 import { usePrevious } from "~/hooks/usePrevious";
 
@@ -51,6 +52,30 @@ export const ErrorSheet = (props: { message: string | undefined }) => {
       </View>
     </BottomSheetView>
   );
+};
+
+// export const ErrorSheetSuspense = (props: { message: string | undefined }) => {
+//   return (
+//     <BottomSheetView focusHook={useFocusEffect}>
+//       <View className="flex h-full flex-col items-center justify-center">
+//         <Text className="text-center text-lg">
+//           {props.message ?? "There was an error"}
+//         </Text>
+//       </View>
+//     </BottomSheetView>
+//   );
+// };
+
+export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
+  return <ErrorSheet message="Couldn't load the event" />;
+}
+
+export const ErrorSheetSuspense = (props: FallbackProps) => {
+  // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
+  return <ErrorSheet message="Couldn't load the event" />;
 };
 
 export const useSheetBackdrop = () => {

@@ -1,17 +1,17 @@
 import { type VibefireUserT } from "~/vibefire-user";
 
-type AppUserLoading = {
+export type AppUserLoading = {
   state: "loading";
 };
-type AppUserError = {
+export type AppUserError = {
   state: "error";
   error: string;
 };
-type AppUserUnauthenticated = {
+export type AppUserUnauthenticated = {
   state: "unauthenticated";
   anonId: string;
 };
-type AppUserAuthenticated = {
+export type AppUserAuthenticated = {
   state: "authenticated";
   userId: string;
   userInfo: VibefireUserT;

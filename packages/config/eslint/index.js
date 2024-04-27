@@ -7,8 +7,13 @@ const config = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "prettier",
   ],
+  plugins: ["no-relative-import-paths"],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
+    "no-relative-import-paths/no-relative-import-paths": [
+      "warn",
+      { allowSameFolder: true },
+    ],
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",

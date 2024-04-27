@@ -138,7 +138,7 @@ export const VibefireEventManagementSchema = t.Object({
   id: t.String({ default: undefined }),
   eventId: t.String({ default: undefined }),
   organiserId: t.String({ default: undefined }),
-  organiserType: t.Union([t.Literal("user"), t.Literal("organisation")], {
+  organiserType: t.Union([t.Literal("user"), t.Literal("group")], {
     default: undefined,
   }),
 

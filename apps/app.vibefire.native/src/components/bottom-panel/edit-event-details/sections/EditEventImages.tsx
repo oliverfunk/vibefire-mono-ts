@@ -2,9 +2,9 @@ import { useLayoutEffect, useMemo } from "react";
 import { Dimensions, View } from "react-native";
 import _ from "lodash";
 
-import { EventImageCarousel } from "~/components/event/EventImageCarousel";
+import { ImageCarousel } from "~/components/image/ImageCarousel";
 import { UploadableEventImage } from "~/components/UploadableEventImage";
-import { FormTitleInput } from "../../_shared";
+import { FormTitleInput } from "../../../utils/sheet-utils";
 import { type FormSectionProps } from "./types";
 
 export const EditEventImages = (props: FormSectionProps) => {
@@ -63,7 +63,7 @@ export const EditEventImages = (props: FormSectionProps) => {
               : undefined
           }
         >
-          <EventImageCarousel
+          <ImageCarousel
             width={width}
             imgIdKeys={selectedAdditionalImages}
             renderItem={({ index, item }) => {

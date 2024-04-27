@@ -1,11 +1,16 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json",
+  "extends": [
+    "@tsconfig/react-native/tsconfig.json",
+    "../../tsconfig.eslint.json"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "strictNullChecks": true,
     "paths": {
+      "#/*": ["./assets/*"],
       "~/*": ["./src/*"],
-      "#/*": ["./assets/*"]
+      "!/*": ["./src/*"],
+      "!api/*": ["../../packages/api/src/*"]
     },
     "types": ["@types/jest", "nativewind/types", "webpack-env"]
   },

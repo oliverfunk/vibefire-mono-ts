@@ -23,7 +23,7 @@ import "~/global.css";
 import * as Notifications from "expo-notifications";
 
 import { EventMap } from "~/components/event/EventMap";
-import { NoTopContainer } from "~/components/NoTopContainer";
+import { NoTopContainer } from "~/components/utils/NoTopContainer";
 
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 

@@ -13,6 +13,7 @@ import {
   type VibefireEventLocationT,
   type VibefireEventT,
   type VibefireEventTimelineElementT,
+  type VibefireGroupT,
   type VibefireUserInfoT,
 } from "@vibefire/models";
 import {
@@ -200,7 +201,7 @@ export class FaunaUserManager {
       const userInfo = await this.getUserInfo(userAc);
       e.organiserName = userInfo.name;
     } else {
-      e.organiserType = "organisation";
+      e.organiserType = "group";
       e.visibility = "public"; // by default
     }
 
@@ -739,7 +740,46 @@ export class FaunaUserManager {
 
   // #endregion
 
+  // #region Groups
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async groupsForUser(userAc: ClerkSignedInAuthContext) {
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    const res = [
+      {
+        id: "test",
+        linkId: "test-group",
+        name: "Test Group",
+        description: "Test Group Description",
+        banner: "https://via.placeholder.com/150",
+        dateCreatedUTC: "2021-09-01T00:00:00.000Z",
+        dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
+        ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
+        ownerType: "user",
+        managerIds: [],
+        type: "public",
+      },
+      {
+        id: "test2",
+        linkId: "test-group",
+        name: "Test Group 2",
+        description: "Test Group Description 2",
+        banner: "https://via.placeholder.com/150",
+        dateCreatedUTC: "2021-09-01T00:00:00.000Z",
+        dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
+        ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
+        ownerType: "user",
+        managerIds: [],
+        type: "public",
+      },
+    ] as VibefireGroupT[];
+    return res;
+  }
+
+  // #endregion
+
   // #region User
+
   async userCreate(
     aid: string,
     firstName: string,

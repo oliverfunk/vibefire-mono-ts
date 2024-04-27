@@ -45,8 +45,12 @@ import {
 } from "~/atoms";
 import { useShareEventLink } from "~/hooks/useShareEventLink";
 import { navHomeWithMinimise, navManageEvent } from "~/nav";
-import { LocationDisplayMap } from "../LocationDisplayMap";
-import { ErrorSheet, LoadingSheet, ScrollViewSheet } from "./_shared";
+import { LocationDisplayMap } from "../map/LocationDisplayMap";
+import {
+  ErrorSheet,
+  LoadingSheet,
+  ScrollViewSheet,
+} from "../utils/sheet-utils";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
@@ -269,7 +273,7 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
   return (
     <View className="flex-row items-center justify-center space-x-4 bg-black py-2 pl-2">
       <Pressable onPress={onOrganiserPress}>
-        {event.organiserType === "organisation" ? (
+        {event.organiserType === "group" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
             source={organisationProfileImagePath(event.organiserId)}

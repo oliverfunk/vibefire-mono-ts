@@ -6,7 +6,8 @@ import { type DateTime } from "luxon";
 import { type VibefireEventT } from "@vibefire/models";
 import { organisationProfileImagePath } from "@vibefire/utils";
 
-import { IconButton } from "~/components/IconButton";
+import { IconButton } from "~/components/button/IconButton";
+
 import { EventImage, StandardImage } from "./EventImage";
 
 type EventCardProps = {
@@ -62,7 +63,7 @@ export const EventCard = ({
         colors={["rgba(50, 40, 40, 1)", "rgba(0,0,0,0)"]}
         locations={[0, 1]}
       >
-        {event.organiserType === "organisation" ? (
+        {event.organiserType === "group" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
             source={organisationProfileImagePath(event.organiserId)}
@@ -82,12 +83,13 @@ export const EventCard = ({
       {onCrossPress && (
         <View className="absolute right-[2%] top-[2%]">
           <IconButton
-            icon={<FontAwesome name="close" size={15} color="white" />}
             onPress={() => {
               onCrossPress();
             }}
             cn="bg-black/80"
-          />
+          >
+            <FontAwesome name="close" size={15} color="white" />
+          </IconButton>
         </View>
       )}
 

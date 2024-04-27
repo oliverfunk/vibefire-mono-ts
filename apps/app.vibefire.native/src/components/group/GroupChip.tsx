@@ -10,7 +10,7 @@ export const GroupChip = ({
 }) => {
   return (
     <View className="flex-row">
-      <Text>{group.name}</Text>
+      <Text className="text-white">{group.name}</Text>
       <Text>{group.name}</Text>
       <Text>{group.name}</Text>
     </View>

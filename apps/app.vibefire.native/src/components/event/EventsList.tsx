@@ -6,10 +6,7 @@ import { type VibefireEventT } from "@vibefire/models";
 import { isoNTZToUTCDateTime } from "@vibefire/utils";
 
 import { useSortedEvents } from "~/hooks/useSortedEvents";
-import {
-  FlatListViewSheet,
-  SectionListViewSheet,
-} from "../bottom-panel/_shared";
+import { FlatListViewSheet, SectionListViewSheet } from "../utils/sheet-utils";
 import { EventCard } from "./EventCard";
 
 const useEventCardRenderer = (

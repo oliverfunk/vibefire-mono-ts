@@ -4,7 +4,7 @@ import _ from "lodash";
 import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "~/apis/trpc-client";
-import { ErrorSheet, LoadingSheet } from "../_shared";
+import { ErrorSheet, LoadingSheet } from "../../utils/sheet-utils";
 import { EditEventForm } from "./EditEventDetailsForm";
 
 const EditEventController = (props: { linkId: string; section?: string }) => {

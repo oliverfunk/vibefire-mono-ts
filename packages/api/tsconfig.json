@@ -3,8 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "!api/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/trpc/trpc-router.ts"]
+  "include": ["src/**/*.ts"]
 }

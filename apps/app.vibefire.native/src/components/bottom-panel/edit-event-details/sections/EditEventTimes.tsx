@@ -11,12 +11,12 @@ import {
 } from "@vibefire/utils";
 
 import { EventTimeline } from "~/components/event/EventTimeline";
-import { PlatformSelect } from "~/components/PlatformSelect";
 import {
   DateTimeSelectionAndDisplayAnd,
   DateTimeSelectionAndDisplayIos,
 } from "~/components/TimeSelection";
-import { FormTextInput, FormTitleInput } from "../../_shared";
+import { PlatformSelect } from "~/components/utils/PlatformSelect";
+import { FormTextInput, FormTitleInput } from "../../../utils/sheet-utils";
 import { type FormSectionProps } from "./types";
 
 const _TimelineElementView = (props: {

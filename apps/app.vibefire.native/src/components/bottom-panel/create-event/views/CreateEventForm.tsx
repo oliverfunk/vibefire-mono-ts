@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
-import { VibefireIconImage } from "~/components/VibefireIconImage";
+import { VibefireIconImage } from "~/components/utils/VibefireIconImage";
 import { trpc } from "~/apis/trpc-client";
 import { navCreateEvent, navEditEvent } from "~/nav";
 import {
   FormTitleTextInput,
   ScrollViewSheet,
   SectionHeader,
-} from "../../_shared";
+} from "../../../utils/sheet-utils";
 
 export const CreateEventForm = () => {
   const { close } = useBottomSheet();
