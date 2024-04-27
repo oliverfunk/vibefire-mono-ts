@@ -7,7 +7,7 @@ import {
   type BottomSheetModalProps,
 } from "@gorhom/bottom-sheet";
 
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 import { navReplaceHomeWithMinimise } from "!/nav";
 
 import { HandleWithHeader } from "./HandleWithHeader";

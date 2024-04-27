@@ -15,7 +15,7 @@ export const IconButton = (props: {
     onPress,
     size = 10,
     circular = true,
-    border = true,
+    border = false,
     useOpacity = false,
     cn,
   } = props;
@@ -31,14 +31,7 @@ export const IconButton = (props: {
   }
 
   return (
-    <Pressable
-      className={classNameStr}
-      onPress={onPress}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.0 : 1,
-        backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
-      })}
-    >
+    <Pressable className={classNameStr} onPress={onPress}>
       {children}
     </Pressable>
   );

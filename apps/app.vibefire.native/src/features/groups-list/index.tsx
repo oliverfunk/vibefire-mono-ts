@@ -7,7 +7,7 @@ import {
   LoadingSheet,
 } from "!/components/utils/sheet-utils";
 import { withSuspenseErrorBoundary } from "!/components/utils/SuspenseWithError";
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 
 export const GroupsListAllForUser = withSuspenseErrorBoundary(
   () => {

@@ -13,7 +13,7 @@ import { vibefireEventShareURL } from "@vibefire/utils";
 
 import { EventCard } from "!/components/event/EventCard";
 import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 import { userInfoAtom } from "!/atoms";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
 import { navEditEvent, navViewEvent } from "!/nav";

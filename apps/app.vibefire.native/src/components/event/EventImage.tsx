@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Image, type ImageProps } from "expo-image";
 
-import { imgUrl } from "!/apis/base-urls";
+import { imgUrl } from "!/api/base-urls";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";

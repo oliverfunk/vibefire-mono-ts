@@ -1,13 +1,14 @@
 import { useRef } from "react";
 import { Text } from "react-native";
 
+import { trpc } from "!/api/trpc-client";
+
 import {
   ErrorSheet,
   LoadingSheet,
   ScrollViewSheetWithRef,
 } from "!/components/utils/sheet-utils";
 import { withSuspenseErrorBoundary } from "!/components/utils/SuspenseWithError";
-import { trpc } from "!/apis/trpc-client";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.

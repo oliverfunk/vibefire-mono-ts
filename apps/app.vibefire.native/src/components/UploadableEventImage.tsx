@@ -11,7 +11,7 @@ import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
 
 import { EventImage } from "!/components/event/EventImage";
-import { trpc } from "!/apis/trpc-client";
+import { trpc } from "!/api/trpc-client";
 
 const selectImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
