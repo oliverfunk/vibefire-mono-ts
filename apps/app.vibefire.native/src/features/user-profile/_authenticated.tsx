@@ -1,5 +1,4 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { capitalize } from "lodash";
 
 import {
@@ -7,38 +6,20 @@ import {
   type VibefireUserT,
 } from "@vibefire/models";
 
+import { UsersEventsSummary } from "!/features/events-list";
+import { UsersGroupsSummary } from "!/features/groups-list";
 import { DeleteAccount } from "!/components/auth/DeleteAccount";
 import { SignOut } from "!/components/auth/SignOut";
-import { IconButton } from "!/components/button/IconButton";
 import {
   LinearRedOrangeView,
   ScrollViewSheet,
 } from "!/components/utils/sheet-utils";
 import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
-import { GroupsListAllForUser } from "!/features/groups-list";
-import { navCreateEvent, navCreateGroup, navOwnEventsByOrganiser } from "!/nav";
-
-const EmbedRowHeader = (props: { title: string; onPress: () => void }) => {
-  const { title, onPress } = props;
-  return (
-    <View className="flex-row items-center p-2">
-      <Text className="text-xl font-bold text-white">{title}</Text>
-      <View className="grow" />
-      <IconButton onPress={onPress}>
-        <View className="flex-col items-center justify-center">
-          <FontAwesome name="plus" size={15} color="white" />
-          <Text className="text-sm text-white">New</Text>
-        </View>
-      </IconButton>
-      {/* Find and create groups */}
-    </View>
-  );
-};
+import { navCreateEvent, navOwnEventsByOrganiser } from "!/nav";
 
 const UserEventsChipListEmbed = () => {
   return (
     <LinearRedOrangeView className="flex-col p-2">
-      <EmbedRowHeader title="Your Events" onPress={navCreateEvent} />
       <Text className="text-center text-xl text-black">
         View your previous events or create new ones from here
       </Text>
@@ -62,16 +43,6 @@ const UserEventsChipListEmbed = () => {
         </TouchableOpacity>
       </View>
     </LinearRedOrangeView>
-  );
-};
-
-const GroupsChipListEmbed = () => {
-  return (
-    <View className="flex-col bg-black p-2">
-      <EmbedRowHeader title="Your Groups" onPress={navCreateGroup} />
-
-      <GroupsListAllForUser />
-    </View>
   );
 };
 
@@ -131,8 +102,12 @@ export const UserProfileAuthenticatedView = (props: {
         </View>
 
         <View>
-          <UserEventsChipListEmbed />
-          <GroupsChipListEmbed />
+          <LinearRedOrangeView className="p-2">
+            <UsersEventsSummary />
+          </LinearRedOrangeView>
+          <View className="bg-black p-2">
+            <UsersGroupsSummary />
+          </View>
         </View>
 
         {/* <View className="w-full px-2">

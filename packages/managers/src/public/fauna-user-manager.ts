@@ -58,6 +58,7 @@ import { managersContext } from "~/managers-context";
 import { getImagesManager } from "~/private/images-manager";
 import { getGoogleMapsManager } from "~/public/google-maps-manager";
 import { checkUserIsPartOfOrg, safeGet } from "~/utils";
+
 import { getClerkManager } from "./clerk-manager";
 
 let _FaunaUserManager: FaunaUserManager | undefined;
@@ -744,7 +745,7 @@ export class FaunaUserManager {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async groupsForUser(userAc: ClerkSignedInAuthContext) {
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     const res = [
       {
         id: "test",

@@ -3,10 +3,11 @@ import { Text, View, type ListRenderItemInfo } from "react-native";
 
 import { type VibefireGroupT } from "@vibefire/models";
 
+import { useSortedGroups } from "!/hooks/useSortedGroups";
+
 import { GroupCard } from "!/components/group/GroupCard";
 import { GroupChip } from "!/components/group/GroupChip";
 import { FlatListViewSheet } from "!/components/utils/sheet-utils";
-import { useSortedGroups } from "!/hooks/useSortedGroups";
 
 const useGroupChipRenderer = (
   onPress: (groupId: string, group: VibefireGroupT) => void,
@@ -102,7 +103,7 @@ export const GroupsList = ({
   );
 };
 
-export const GroupsChipSimpleList = ({
+export const GroupsListSimpleChipView = ({
   groups,
   onGroupPress,
   listTitle,

@@ -25,7 +25,22 @@ import { type VibefireUserT } from "@vibefire/models";
 import { debounce } from "!/utils/debounce";
 import { tokenCache } from "!/utils/sec-store-cache";
 import { trpc, trpcUrl } from "!/api/trpc-client";
+
 import { userAtom, userSessionRetryAtom } from "!/atoms";
+
+export const routingInstrumentation =
+  new Sentry.ReactNavigationInstrumentation();
+
+Sentry.init({
+  enabled: !__DEV__,
+  dsn: "https://959cd563f46e2574f10469f5b03e8d6e@o4506169650315264.ingest.sentry.io/4506169652412416",
+  integrations: [
+    new Sentry.ReactNativeTracing({
+      routingInstrumentation,
+      // enableUserInteractionTracing: true,
+    }),
+  ],
+});
 
 const myAtomStore = createStore();
 
@@ -96,23 +111,24 @@ const TrpcProvider = (props: { children: ReactNode }) => {
   const { children } = props;
 
   const { getToken } = useAuth();
-  const [queryClient] = useState(() => new QueryClient());
+  const [trpcLinks] = useState(() => [
+    httpBatchLink({
+      async headers() {
+        const authToken = await getToken();
+        return {
+          ...(!!authToken && { Authorization: authToken }),
+        };
+      },
+      url: trpcUrl,
+      transformer: superjson,
+    }),
+  ]);
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      links: [
-        httpBatchLink({
-          async headers() {
-            const authToken = await getToken();
-            return {
-              ...(!!authToken && { Authorization: authToken }),
-            };
-          },
-          url: trpcUrl,
-          transformer: superjson,
-        }),
-      ],
+      links: trpcLinks,
     }),
   );
+  const [queryClient] = useState(() => new QueryClient());
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
@@ -136,7 +152,7 @@ const ClerkAuthProvider = (props: { children: ReactNode }) => {
   );
 };
 
-const AppProviders = (props: { children: ReactNode }) => {
+const AppProviders = Sentry.wrap((props: { children: ReactNode }) => {
   const { children } = props;
 
   return (
@@ -155,6 +171,6 @@ const AppProviders = (props: { children: ReactNode }) => {
       </ClerkAuthProvider>
     </JotaiAtomsProvider>
   );
-};
+});
 
 export default memo(AppProviders);

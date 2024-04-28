@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { StatusBar } from "react-native";
 import * as Linking from "expo-linking";
 import {
@@ -13,10 +13,10 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import * as Sentry from "@sentry/react-native";
 
 import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
-import AppProviders from "!/providers";
+
+import AppProviders, { routingInstrumentation } from "!/providers";
 
 import "!/global.css";
 
@@ -24,19 +24,6 @@ import * as Notifications from "expo-notifications";
 
 import { EventMap } from "!/components/event/EventMap";
 import { NoTopContainer } from "!/components/utils/NoTopContainer";
-
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
-
-Sentry.init({
-  enabled: !__DEV__,
-  dsn: "https://959cd563f46e2574f10469f5b03e8d6e@o4506169650315264.ingest.sentry.io/4506169652412416",
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      // routingInstrumentation,
-      // enableUserInteractionTracing: true,
-    }),
-  ],
-});
 
 Notifications.setNotificationHandler({
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -49,12 +36,22 @@ Notifications.setNotificationHandler({
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
 
-const PostProvidersInject = () => {
+const PostProviders = (props: { children: ReactNode }) => {
+  const { children } = props;
+
   useRegisterPushToken();
 
   const deeplinkURL = Linking.useURL();
   const pathname = usePathname();
   const params = useGlobalSearchParams();
+
+  const navContRef = useNavigationContainerRef();
+
+  useEffect(() => {
+    if (navContRef) {
+      routingInstrumentation.registerNavigationContainer(navContRef);
+    }
+  }, [navContRef]);
 
   useEffect(() => {
     if (deeplinkURL) {
@@ -73,7 +70,7 @@ const PostProvidersInject = () => {
     console.log("routing params", JSON.stringify(params, null, 2));
   }, [pathname, params]);
 
-  return null;
+  return children;
 };
 
 const RootLayout = () => {
@@ -90,14 +87,6 @@ const RootLayout = () => {
     })();
   }, [fontsLoaded]);
 
-  const ref = useNavigationContainerRef();
-
-  useEffect(() => {
-    if (ref) {
-      routingInstrumentation.registerNavigationContainer(ref);
-    }
-  }, [ref]);
-
   if (fontsError) console.warn(fontsError);
 
   if (!fontsLoaded) {
@@ -106,18 +95,19 @@ const RootLayout = () => {
 
   return (
     <AppProviders>
-      <PostProvidersInject />
-      <StatusBar barStyle={"dark-content"} />
-      <NoTopContainer>
-        <EventMap />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
-      </NoTopContainer>
+      <PostProviders>
+        <StatusBar barStyle={"dark-content"} />
+        <NoTopContainer>
+          <EventMap />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+        </NoTopContainer>
+      </PostProviders>
     </AppProviders>
   );
 };
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout;
