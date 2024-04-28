@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Exponent Hermes",
+      "request": "launch",
+      "type": "reactnativedirect",
+      "cwd": "${workspaceFolder}/apps/app.vibefire.native/",
+      "platform": "exponent",
+      "expoHostType": "lan"
+    },
+    {
       "name": "Debug Android",
       "cwd": "${workspaceFolder}/apps/app.vibefire.native/",
       "type": "reactnativedirect",

@@ -1,7 +1,7 @@
 import { trpc } from "!/api/trpc-client";
 
 import { GroupsListSimpleChipView } from "!/components/group/GroupsList";
-import { SummaryList } from "!/components/structural/SummaryList";
+import { SummaryCompStructure } from "!/components/structural/SummaryComponent";
 import {
   ErrorDisplay,
   LoadingDisplay,
@@ -31,8 +31,11 @@ export const UsersGroupsSummary = () => {
   );
 
   return (
-    <SummaryList title="Your Groups" onTitleButtonPress={navCreateGroup}>
+    <SummaryCompStructure
+      headerTitle="Your Groups"
+      onHeaderButtonPress={navCreateGroup}
+    >
       <GroupsList />
-    </SummaryList>
+    </SummaryCompStructure>
   );
 };

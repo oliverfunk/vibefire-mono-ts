@@ -102,12 +102,11 @@ export const UserProfileAuthenticatedView = (props: {
         </View>
 
         <View>
-          <LinearRedOrangeView className="p-2">
+          <LinearRedOrangeView className="">
             <UsersEventsSummary />
-          </LinearRedOrangeView>
-          <View className="bg-black p-2">
+
             <UsersGroupsSummary />
-          </View>
+          </LinearRedOrangeView>
         </View>
 
         {/* <View className="w-full px-2">

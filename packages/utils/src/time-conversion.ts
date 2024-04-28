@@ -5,6 +5,8 @@ export const MONTH_DATE_TIME_LB_FORMAT = "LLL d\nT";
 export const DATE_STR_FORMAT = "yyyyMMdd";
 
 export const toDateStr = (dt: DateTime) => dt.toFormat(DATE_STR_FORMAT);
+export const toMonthDateTimeStr = (dt: DateTime) =>
+  dt.toFormat(MONTH_DATE_TIME_FORMAT);
 
 export const nowAtUTC = () => DateTime.now().setZone("utc");
 
