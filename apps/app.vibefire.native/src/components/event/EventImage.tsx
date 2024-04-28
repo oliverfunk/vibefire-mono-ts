@@ -6,15 +6,13 @@ import { imgUrl } from "!/api/base-urls";
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-export const StandardImage = ({
-  cn,
-  source,
-  alt,
-}: {
-  cn: ImageProps["className"];
+export const StandardImage = (props: {
   source: ImageProps["source"];
-  alt: ImageProps["alt"];
+  cn?: ImageProps["className"];
+  alt?: ImageProps["alt"];
 }) => {
+  const { source, cn, alt } = props;
+
   const [isLoading, setIsLoading] = useState(true);
 
   return (
@@ -36,15 +34,13 @@ export const StandardImage = ({
   );
 };
 
-export const EventImage = ({
-  imgIdKey,
-  alt,
-  rounded = false,
-}: {
+export const EventImage = (props: {
   imgIdKey?: string;
-  alt: ImageProps["alt"];
+  alt?: ImageProps["alt"];
   rounded?: boolean;
 }) => {
+  const { imgIdKey, alt, rounded } = props;
+
   const imgSourceUrl = useMemo(() => {
     if (!imgIdKey) {
       return "";

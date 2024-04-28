@@ -1,13 +1,16 @@
 import { useLocalSearchParams } from "expo-router";
 
+import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
+import { useTsQueryParam } from "!/hooks/useTs";
+
+import { EventsQueryListSheet } from "!/features/events-list";
+import { UserProfileSheet } from "!/features/user-profile";
 import {
   BottomPanelHandle,
   SEARCH_HANDLE_HEIGHT,
 } from "!/components/bottom-panel/BottomPanelHandle";
 import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
 import { EventsListAndProfile } from "!/components/bottom-panel/EventsListAndProfile";
-import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
-import { useTsQueryParam } from "!/hooks/useTs";
 
 const Screen = () => {
   const { profileSelected, minimise } = useLocalSearchParams<{
@@ -21,6 +24,7 @@ const Screen = () => {
   // should use a nested group and put it in the layout there
   // but is okay for now as the index route should also be
   // loaded on app start
+  // you need a route to have loaded before this can be called
   useNotificationsResponder();
 
   // const impersonating = true;
@@ -41,6 +45,9 @@ const Screen = () => {
   //     });
   // }
 
+  const UserProfile = <UserProfileSheet />;
+  const EventsQueryList = <EventsQueryListSheet />;
+
   return (
     <BottomPanelModal
       modalPath="index"
@@ -53,7 +60,7 @@ const Screen = () => {
       enableDismissOnClose={false}
       enablePanDownToClose={false}
     >
-      <EventsListAndProfile profileSelected={!!profileSelected} />
+      {profileSelected ? UserProfile : EventsQueryList}
     </BottomPanelModal>
   );
 };

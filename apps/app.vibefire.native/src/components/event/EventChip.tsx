@@ -1,22 +1,49 @@
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { type VibefireEventT } from "@vibefire/models";
+import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
+
+import { EventImage } from "./EventImage";
 
 type EventChipProps = {
-  linkId: string;
+  eventLinkId: string;
   eventInfo: {
     title: VibefireEventT["title"];
-    bannerImgKey?: string;
+    bannerImgKey?: VibefireEventT["images"]["banner"];
+    timeStartIsoNTZ?: VibefireEventT["timeStartIsoNTZ"];
+    state: VibefireEventT["state"];
   };
-  onPress: (linkId: string) => void;
+  onPress?: (eventLinkId: string) => void;
 };
 
 export const EventChip = (props: EventChipProps) => {
+  const { eventLinkId, eventInfo, onPress } = props;
+
   return (
-    <View className="flex-row">
-      <Text className="text-white">{group.name}</Text>
-      <Text>{group.name}</Text>
-      <Text>{group.name}</Text>
-    </View>
+    <Pressable
+      className="flex-row space-x-2"
+      onPress={onPress ? () => onPress(eventLinkId) : undefined}
+    >
+      <View className="flex-[2]">
+        <EventImage imgIdKey={eventInfo.bannerImgKey} />
+      </View>
+      <View className="flex-[10] flex-col justify-center">
+        <Text
+          className="font-bold text-white"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {eventInfo.title}
+        </Text>
+        <Text className="text-neutral-400">
+          {eventInfo.timeStartIsoNTZ
+            ? toMonthDateTimeStr(isoNTZToUTCDateTime(eventInfo.timeStartIsoNTZ))
+            : "<Start Time>"}
+        </Text>
+      </View>
+      <View className="items-center justify-center">
+        <Text className="text-white">{eventInfo.state}</Text>
+      </View>
+    </Pressable>
   );
 };

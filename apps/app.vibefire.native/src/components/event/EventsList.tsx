@@ -9,6 +9,7 @@ import { useSortedEvents } from "!/hooks/useSortedEvents";
 
 import { FlatListViewSheet, SectionListViewSheet } from "../utils/sheet-utils";
 import { EventCard } from "./EventCard";
+import { EventChip } from "./EventChip";
 
 const useEventCardRenderer = (
   onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void,
@@ -68,7 +69,8 @@ const useNoEventsText = (noEventsMessage?: string) => {
 
 const useItemSeparator = () => {
   return useCallback(() => {
-    return <View className="h-2" />;
+    return <View className="h-4" />;
+    // return <View className="mx-10 my-2 h-[1px] bg-white" />;
   }, []);
 };
 
@@ -181,4 +183,63 @@ export const EventsListWithSections = ({
       keyExtractor={(item) => item.id!}
     />
   );
+};
+
+const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
+  const ItemSep = useItemSeparator()();
+
+  return useCallback(
+    ({
+      item: event,
+      index,
+      length,
+    }: {
+      item: PartialDeep<VibefireEventT>;
+      index: number;
+      length: number;
+    }) => (
+      <View key={index} className="">
+        {index !== 0 && index < length && ItemSep}
+        <EventChip
+          eventLinkId={event.linkId!}
+          eventInfo={{
+            title: event.title!,
+            bannerImgKey: event?.images?.banner,
+            timeStartIsoNTZ: event.timeStartIsoNTZ,
+            state: event.state!,
+          }}
+          onPress={onPress}
+        />
+      </View>
+    ),
+    [onPress],
+  );
+};
+
+type EventsListSimpleChipViewProps = {
+  events: PartialDeep<VibefireEventT>[];
+  onPress: (eventLinkId: string) => void;
+  noEventsMessage?: string;
+  latestFirst?: boolean;
+};
+
+export const EventsListSimpleChipView = ({
+  events,
+  onPress,
+  noEventsMessage,
+  latestFirst = true,
+}: EventsListSimpleChipViewProps) => {
+  const sortedEvents = useSortedEvents(events, !latestFirst, 4);
+
+  const noEventsText = useNoEventsText(noEventsMessage);
+
+  const renderEventChip = useEventChipRenderer(onPress);
+
+  const eventChips = useMemo(() => {
+    return sortedEvents.map((event, index) =>
+      renderEventChip({ item: event, index, length: sortedEvents.length }),
+    );
+  }, [renderEventChip, sortedEvents]);
+
+  return eventChips.length > 0 ? eventChips : noEventsText;
 };

@@ -6,9 +6,10 @@ import { type VibefireEventT } from "@vibefire/models";
 export const useSortedEvents = (
   events: PartialDeep<VibefireEventT>[],
   sortAsc: boolean,
+  sliceCount = 0,
 ) => {
   return useMemo(() => {
-    return [...events].sort((a, b) => {
+    const sorted = [...events].sort((a, b) => {
       if (a.timeStartIsoNTZ && b.timeStartIsoNTZ) {
         if (sortAsc) {
           return (
@@ -28,5 +29,9 @@ export const useSortedEvents = (
       }
       return 0;
     });
-  }, [events, sortAsc]);
+    if (sliceCount > 0) {
+      return sorted.slice(0, sliceCount);
+    }
+    return sorted;
+  }, [events, sliceCount, sortAsc]);
 };

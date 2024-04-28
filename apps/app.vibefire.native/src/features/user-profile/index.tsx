@@ -64,7 +64,7 @@ const UserProfileUnauthenticatedView = () => {
   );
 };
 
-export const UserProfile = () => {
+export const UserProfileSheet = () => {
   const [user] = useAtom(userAtom);
 
   switch (user.state) {
