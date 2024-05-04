@@ -11,18 +11,18 @@ import {
 } from "@vibefire/models";
 import { vibefireEventShareURL } from "@vibefire/utils";
 
-import { EventCard } from "!/components/event/EventCard";
-import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
 import { trpc } from "!/api/trpc-client";
-import { userInfoAtom } from "!/atoms";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
-import { navEditEvent, navViewEvent } from "!/nav";
 
+import { EventCard } from "!/components/event/EventCard";
 import {
   FormTitleInput,
   LinearRedOrangeView,
   ScrollViewSheet,
-} from "../../../utils/sheet-utils";
+} from "!/components/misc/sheet-utils";
+import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
+import { userInfoAtom } from "!/atoms";
+import { navEditEvent, navViewEvent } from "!/nav";
 
 const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
   const { event } = props;

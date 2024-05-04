@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import _ from "lodash";
 
-import { type VibefireEventT } from "@vibefire/models";
-
 import { trpc } from "!/api/trpc-client";
 
-import { ErrorSheet, LoadingSheet } from "../../utils/sheet-utils";
+import { ErrorSheet, LoadingSheet } from "!/components/misc/sheet-utils";
+
 import { EditEventForm } from "./EditEventDetailsForm";
 
 const EditEventController = (props: { linkId: string; section?: string }) => {

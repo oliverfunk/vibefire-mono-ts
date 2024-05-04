@@ -5,8 +5,9 @@ import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
 
-import { EventsList } from "!/components/event/EventsList";
 import { trpc } from "!/api/trpc-client";
+
+import { EventsList } from "!/components/event/EventsList";
 import { navEditEvent } from "!/nav";
 
 import {
@@ -14,7 +15,7 @@ import {
   LoadingSheet,
   ScrollViewSheet,
   SectionHeader,
-} from "../../../utils/sheet-utils";
+} from "../../../misc/sheet-utils";
 
 const CreateEventFromPreviousView = (props: {
   events: PartialDeep<VibefireEventT>[];

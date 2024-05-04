@@ -13,8 +13,8 @@ import { SignOut } from "!/components/auth/SignOut";
 import {
   LinearRedOrangeView,
   ScrollViewSheet,
-} from "!/components/utils/sheet-utils";
-import { VibefireIconImage } from "!/components/utils/VibefireIconImage";
+} from "!/components/misc/sheet-utils";
+import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
 import { navCreateEvent, navOwnEventsByOrganiser } from "!/nav";
 
 const UserEventsChipListEmbed = () => {

@@ -7,7 +7,11 @@ import { isoNTZToUTCDateTime } from "@vibefire/utils";
 
 import { useSortedEvents } from "!/hooks/useSortedEvents";
 
-import { FlatListViewSheet, SectionListViewSheet } from "../utils/sheet-utils";
+import {
+  FlatListViewSheet,
+  SectionListViewSheet,
+} from "!/components/misc/sheet-utils";
+
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
 
@@ -221,6 +225,7 @@ type EventsListSimpleChipViewProps = {
   onPress: (eventLinkId: string) => void;
   noEventsMessage?: string;
   latestFirst?: boolean;
+  limit?: number;
 };
 
 export const EventsListSimpleChipView = ({
@@ -228,8 +233,9 @@ export const EventsListSimpleChipView = ({
   onPress,
   noEventsMessage,
   latestFirst = true,
+  limit = 4,
 }: EventsListSimpleChipViewProps) => {
-  const sortedEvents = useSortedEvents(events, !latestFirst, 4);
+  const sortedEvents = useSortedEvents(events, !latestFirst, limit);
 
   const noEventsText = useNoEventsText(noEventsMessage);
 

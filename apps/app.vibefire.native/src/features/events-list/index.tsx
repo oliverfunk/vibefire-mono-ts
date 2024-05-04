@@ -12,17 +12,9 @@ import {
   EventsListSimpleChipView,
   EventsListWithSections,
 } from "!/components/event/EventsList";
-import { GroupsListSimpleChipView } from "!/components/group/GroupsList";
+import { ErrorDisplay, LoadingDisplay } from "!/components/misc/errors-loading";
+import { withSuspenseErrorBoundary } from "!/components/misc/SuspenseWithError";
 import { SummaryCompStructure } from "!/components/structural/SummaryComponent";
-import {
-  ErrorDisplay,
-  LoadingDisplay,
-} from "!/components/utils/errors-loading";
-import {
-  ErrorSheetSuspense,
-  LoadingSheet,
-} from "!/components/utils/sheet-utils";
-import { withSuspenseErrorBoundary } from "!/components/utils/SuspenseWithError";
 import { navCreateEvent, navManageEvent, navViewEvent } from "!/nav";
 
 export const UsersEventsSummary = () => {
@@ -31,16 +23,23 @@ export const UsersEventsSummary = () => {
       const [eventsByUser] = trpc.events.eventsByUser.useSuspenseQuery({});
 
       return (
-        <EventsListSimpleChipView
-          events={eventsByUser}
-          onPress={navManageEvent}
-        />
+        <View className="px-2 py-4">
+          <EventsListSimpleChipView
+            events={eventsByUser}
+            onPress={navManageEvent}
+          />
+        </View>
       );
     },
     {
-      ErrorFallback: ({ error, resetErrorBoundary }) =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        ErrorDisplay({ error, resetErrorBoundary, textWhite: true }),
+      ErrorFallback: ({ error, resetErrorBoundary }) => (
+        <ErrorDisplay
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          error={error}
+          resetErrorBoundary={resetErrorBoundary}
+          textWhite={true}
+        />
+      ),
       LoadingFallback: LoadingDisplay({ loadingWhite: true }),
     },
   );
@@ -50,9 +49,7 @@ export const UsersEventsSummary = () => {
       headerTitle="Your Events"
       onHeaderButtonPress={navCreateEvent}
     >
-      <View className="bg-black px-2 py-4">
-        <EventsListSuspense />
-      </View>
+      <EventsListSuspense />
     </SummaryCompStructure>
   );
 };
@@ -62,14 +59,12 @@ export const EventsQueryListSheet = () => {
   const [mapPosDateEvents] = useAtom(mapPositionDateEventsQueryResultAtom);
 
   return (
-    <View className="flex-1">
-      <EventsListWithSections
-        events={mapPosDateEvents}
-        upcomingEvents={upcomingEvents}
-        onEventPress={(_eventId, event) => {
-          navViewEvent(event.linkId!);
-        }}
-      />
-    </View>
+    <EventsListWithSections
+      events={mapPosDateEvents}
+      upcomingEvents={upcomingEvents}
+      onEventPress={(_eventId, event) => {
+        navViewEvent(event.linkId!);
+      }}
+    />
   );
 };

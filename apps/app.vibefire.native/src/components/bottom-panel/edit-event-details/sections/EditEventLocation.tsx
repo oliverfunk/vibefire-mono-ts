@@ -5,8 +5,11 @@ import _ from "lodash";
 import { type CoordT } from "@vibefire/models";
 
 import { LocationSelectionMap } from "!/components/map/LocationSelectionMap";
+import {
+  FormTitleInput,
+  FormTitleTextInput,
+} from "!/components/misc/sheet-utils";
 
-import { FormTitleInput, FormTitleTextInput } from "../../../utils/sheet-utils";
 import { type FormSectionProps } from "./types";
 
 export const EditEventLocation = (props: FormSectionProps) => {

@@ -1,3 +1,4 @@
+import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
 import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
@@ -10,7 +11,6 @@ import {
   SEARCH_HANDLE_HEIGHT,
 } from "!/components/bottom-panel/BottomPanelHandle";
 import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
-import { EventsListAndProfile } from "!/components/bottom-panel/EventsListAndProfile";
 
 const Screen = () => {
   const { profileSelected, minimise } = useLocalSearchParams<{
@@ -46,7 +46,11 @@ const Screen = () => {
   // }
 
   const UserProfile = <UserProfileSheet />;
-  const EventsQueryList = <EventsQueryListSheet />;
+  const EventsQueryList = (
+    <View className="flex-1">
+      <EventsQueryListSheet />
+    </View>
+  );
 
   return (
     <BottomPanelModal

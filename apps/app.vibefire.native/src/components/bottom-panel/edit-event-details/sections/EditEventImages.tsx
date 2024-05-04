@@ -3,9 +3,9 @@ import { Dimensions, View } from "react-native";
 import _ from "lodash";
 
 import { ImageCarousel } from "!/components/image/ImageCarousel";
+import { FormTitleInput } from "!/components/misc/sheet-utils";
 import { UploadableEventImage } from "!/components/UploadableEventImage";
 
-import { FormTitleInput } from "../../../utils/sheet-utils";
 import { type FormSectionProps } from "./types";
 
 export const EditEventImages = (props: FormSectionProps) => {
