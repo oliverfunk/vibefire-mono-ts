@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { FormTextInput } from "./utils/sheet-utils";
+import { FormTextInput } from "./misc/sheet-utils";
 
 const _FeedbackCard = () => {
   const [_enableFeedback, setEnableFeedback] = useState(false);

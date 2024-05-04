@@ -17,3 +17,9 @@ export type PartialDeepExceptRequired<T, K extends keyof T> = PartialDeep<
   Omit<T, K>
 > &
   Required<Pick<T, K>>;
+
+export type Permutation<T, K = T> = [T] extends [never]
+  ? []
+  : K extends K
+    ? [K, ...Permutation<Exclude<T, K>>]
+    : never;

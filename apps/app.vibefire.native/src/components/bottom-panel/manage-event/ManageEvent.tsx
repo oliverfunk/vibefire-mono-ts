@@ -1,6 +1,7 @@
 import { trpc } from "!/api/trpc-client";
 
-import { ErrorSheet, LoadingSheet } from "../../utils/sheet-utils";
+import { ErrorSheet, LoadingSheet } from "!/components/misc/sheet-utils";
+
 import { ManagementView } from "./views/ManageEventView";
 
 const ManageEventController = (props: { linkId: string; section?: string }) => {

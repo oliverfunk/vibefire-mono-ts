@@ -1,7 +1,6 @@
-import React, { Suspense, useState, type ReactNode } from "react";
+import { Suspense, useState, type ComponentType, type ReactNode } from "react";
 import {
   ErrorBoundary,
-  withErrorBoundary,
   type ErrorBoundaryPropsWithComponent,
 } from "react-error-boundary";
 
@@ -33,7 +32,7 @@ export const SuspenseWithError = (props: {
 };
 
 export const withSuspenseErrorBoundary = <Props extends object>(
-  Component: React.ComponentType<Props>,
+  Component: ComponentType<Props>,
   f: {
     LoadingFallback: ReactNode;
     ErrorFallback: ErrorBoundaryPropsWithComponent["FallbackComponent"];

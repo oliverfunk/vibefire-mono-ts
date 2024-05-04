@@ -7,7 +7,7 @@ import { useSortedGroups } from "!/hooks/useSortedGroups";
 
 import { GroupCard } from "!/components/group/GroupCard";
 import { GroupChip } from "!/components/group/GroupChip";
-import { FlatListViewSheet } from "!/components/utils/sheet-utils";
+import { FlatListViewSheet } from "!/components/misc/sheet-utils";
 
 const useGroupChipRenderer = (
   onPress: (groupId: string, group: VibefireGroupT) => void,

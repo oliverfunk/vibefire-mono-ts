@@ -1,12 +1,9 @@
 import { trpc } from "!/api/trpc-client";
 
 import { GroupsListSimpleChipView } from "!/components/group/GroupsList";
+import { ErrorDisplay, LoadingDisplay } from "!/components/misc/errors-loading";
+import { withSuspenseErrorBoundary } from "!/components/misc/SuspenseWithError";
 import { SummaryCompStructure } from "!/components/structural/SummaryComponent";
-import {
-  ErrorDisplay,
-  LoadingDisplay,
-} from "!/components/utils/errors-loading";
-import { withSuspenseErrorBoundary } from "!/components/utils/SuspenseWithError";
 import { navCreateGroup } from "!/nav";
 
 export const UsersGroupsSummary = () => {

@@ -5,7 +5,7 @@ import {
   type BottomSheetHandleProps,
 } from "@gorhom/bottom-sheet";
 
-import { LinearRedOrangeView } from "../utils/sheet-utils";
+import { LinearRedOrangeView } from "!/components/misc/sheet-utils";
 
 export const HandleWithHeader = (
   props: { header: string } & BottomSheetHandleProps,

@@ -2,7 +2,8 @@ import { useLayoutEffect } from "react";
 import { View } from "react-native";
 import _ from "lodash";
 
-import { FormTitleTextInput } from "../../../utils/sheet-utils";
+import { FormTitleTextInput } from "!/components/misc/sheet-utils";
+
 import { type FormSectionProps } from "./types";
 
 export const EditEventDescription = (props: FormSectionProps) => {

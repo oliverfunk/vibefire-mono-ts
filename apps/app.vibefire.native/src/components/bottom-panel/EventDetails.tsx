@@ -33,25 +33,25 @@ import {
 } from "@vibefire/utils";
 
 import { defaultCameraForPosition } from "!/utils/constants";
+import { trpc } from "!/api/trpc-client";
+import { useShareEventLink } from "!/hooks/useShareEventLink";
+
 import { EventImage, StandardImage } from "!/components/event/EventImage";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import { EventTimeline } from "!/components/event/EventTimeline";
-import { trpc } from "!/api/trpc-client";
+import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
+import {
+  ErrorSheet,
+  LoadingSheet,
+  ScrollViewSheet,
+} from "!/components/misc/sheet-utils";
 import {
   eventMapMapRefAtom,
   userAuthStateAtom,
   userInfoAtom,
   userSessionRetryAtom,
 } from "!/atoms";
-import { useShareEventLink } from "!/hooks/useShareEventLink";
 import { navHomeWithMinimise, navManageEvent } from "!/nav";
-
-import { LocationDisplayMap } from "../map/LocationDisplayMap";
-import {
-  ErrorSheet,
-  LoadingSheet,
-  ScrollViewSheet,
-} from "../utils/sheet-utils";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
