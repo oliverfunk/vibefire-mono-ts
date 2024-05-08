@@ -9,7 +9,7 @@
     "paths": {
       "#/*": ["./assets/*"],
       "!/*": ["./src/*"],
-      "!/*": ["./src/*"],
+      "!/c/*": ["./src/components/*"],
       "!api/*": ["../../packages/api/src/*"]
     },
     "types": ["@types/jest", "nativewind/types", "webpack-env"]

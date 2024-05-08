@@ -94,6 +94,8 @@ export const pt = (v: TwSpacings): Pt => ({ s: "pt", v });
 export const pr = (v: TwSpacings): Pr => ({ s: "pr", v });
 export const pb = (v: TwSpacings): Pb => ({ s: "pb", v });
 export const pl = (v: TwSpacings): Pl => ({ s: "pl", v });
+export const prr = (v: TwSpacings): string => `pr-${v}`;
+export const pyy = (v: TwSpacings): string => `py-${v}`;
 
 export const m = (v: TwSpacings): M => ({ s: "m", v });
 export const mx = (v: TwSpacings): Mx => ({ s: "mx", v });

@@ -1,4 +1,3 @@
-// import { type R2Bucket } from "@cloudflare/workers-types";
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";

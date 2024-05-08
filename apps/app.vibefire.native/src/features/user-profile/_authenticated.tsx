@@ -15,36 +15,35 @@ import {
   ScrollViewSheet,
 } from "!/components/misc/sheet-utils";
 import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
-import { navCreateEvent, navOwnEventsByOrganiser } from "!/nav";
 
-const UserEventsChipListEmbed = () => {
-  return (
-    <LinearRedOrangeView className="flex-col p-2">
-      <Text className="text-center text-xl text-black">
-        View your previous events or create new ones from here
-      </Text>
-      <View className="flex-row items-center justify-around">
-        <TouchableOpacity
-          className="rounded-lg bg-black px-4 py-4"
-          onPress={() => {
-            navCreateEvent();
-          }}
-        >
-          <Text className="text-lg font-bold text-white">Create event</Text>
-        </TouchableOpacity>
+// const UserEventsChipListEmbed = () => {
+//   return (
+//     <LinearRedOrangeView className="mt-1 flex-col py-2">
+//       <Text className="text-center text-xl text-black">
+//         View your previous events or create new ones from here
+//       </Text>
+//       <View className="flex-row items-center justify-around">
+//         <TouchableOpacity
+//           className="rounded-lg bg-black px-4 py-4"
+//           onPress={() => {
+//             navCreateEvent();
+//           }}
+//         >
+//           <Text className="text-lg font-bold text-white">Create event</Text>
+//         </TouchableOpacity>
 
-        <TouchableOpacity
-          className="rounded-lg bg-black px-4 py-4"
-          onPress={() => {
-            navOwnEventsByOrganiser();
-          }}
-        >
-          <Text className="text-lg font-bold text-white">Your events</Text>
-        </TouchableOpacity>
-      </View>
-    </LinearRedOrangeView>
-  );
-};
+//         <TouchableOpacity
+//           className="rounded-lg bg-black px-4 py-4"
+//           onPress={() => {
+//             navOwnEventsByOrganiser();
+//           }}
+//         >
+//           <Text className="text-lg font-bold text-white">Your events</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </LinearRedOrangeView>
+//   );
+// };
 
 export const UserProfileAuthenticatedView = (props: {
   appUser: AppUserAuthenticated;
@@ -55,7 +54,7 @@ export const UserProfileAuthenticatedView = (props: {
 
   return (
     <ScrollViewSheet>
-      <View className="flex-col space-y-10 py-10">
+      <LinearRedOrangeView className="mt-1 flex-col space-y-5 py-10">
         {/* Name */}
         <View className="flex-col items-center justify-center space-y-2">
           <View className="rounded-lg bg-black p-4">
@@ -102,11 +101,10 @@ export const UserProfileAuthenticatedView = (props: {
         </View>
 
         <View>
-          <LinearRedOrangeView className="">
+          <View className="py-10">
             <UsersEventsSummary />
-
-            <UsersGroupsSummary />
-          </LinearRedOrangeView>
+          </View>
+          <UsersGroupsSummary />
         </View>
 
         {/* <View className="w-full px-2">
@@ -125,7 +123,7 @@ export const UserProfileAuthenticatedView = (props: {
           <SignOut />
           <DeleteAccount />
         </View>
-      </View>
+      </LinearRedOrangeView>
     </ScrollViewSheet>
   );
 };

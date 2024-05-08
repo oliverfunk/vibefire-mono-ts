@@ -3,8 +3,8 @@ import { Dimensions, View } from "react-native";
 import _ from "lodash";
 
 import { ImageCarousel } from "!/components/image/ImageCarousel";
+import { UploadableVibefireImage } from "!/components/image/UploadableVibefireImage";
 import { FormTitleInput } from "!/components/misc/sheet-utils";
-import { UploadableEventImage } from "!/components/UploadableEventImage";
 
 import { type FormSectionProps } from "./types";
 
@@ -40,7 +40,7 @@ export const EditEventImages = (props: FormSectionProps) => {
           underneathText="(Tap to change)"
           inputRequired={!eventData.images?.banner}
         >
-          <UploadableEventImage
+          <UploadableVibefireImage
             eventId={eventData.id!}
             imgIdKey={eventData.images?.banner}
             alt={`Banner image`}
@@ -69,7 +69,7 @@ export const EditEventImages = (props: FormSectionProps) => {
             imgIdKeys={selectedAdditionalImages}
             renderItem={({ index, item }) => {
               return (
-                <UploadableEventImage
+                <UploadableVibefireImage
                   eventId={eventData.id!}
                   imgIdKey={item}
                   alt={`Additional image ${index}`}

@@ -1,18 +1,46 @@
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 
 import { type VibefireGroupT } from "@vibefire/models";
+import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
 
-export const GroupChip = ({
-  group,
-}: {
-  group: VibefireGroupT;
-  onPress: (groupId: string, group: VibefireGroupT) => void;
-}) => {
+import { VibefireImage } from "!/components/image/VibefireImage";
+import { ChipComponent } from "!/components/structural/ChipComponent";
+
+type GroupChipProps = {
+  groupLinkId: string;
+  groupInfo: {
+    name: VibefireGroupT["name"];
+    bannerImgKey: VibefireGroupT["banner"];
+    dateUpdatedUTC: VibefireGroupT["dateUpdatedUTC"];
+    notifications: number;
+  };
+  onPress: (groupLinkId: string) => void;
+};
+
+export const GroupChip = (props: GroupChipProps) => {
+  const { groupLinkId, groupInfo, onPress } = props;
+
   return (
-    <View className="flex-row">
-      <Text className="text-white">{group.name}</Text>
-      <Text>{group.name}</Text>
-      <Text>{group.name}</Text>
-    </View>
+    <ChipComponent
+      leftComponent={<VibefireImage imgIdKey={groupInfo.bannerImgKey} />}
+      centerComponent={
+        <>
+          <Text
+            className="font-bold text-white"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {groupInfo.name}
+          </Text>
+          <Text className="text-neutral-400">
+            {toMonthDateTimeStr(isoNTZToUTCDateTime(groupInfo.dateUpdatedUTC))}
+          </Text>
+        </>
+      }
+      rightComponent={
+        <Text className="text-white">{groupInfo.notifications}</Text>
+      }
+      onPress={onPress ? () => onPress(groupLinkId) : undefined}
+    />
   );
 };

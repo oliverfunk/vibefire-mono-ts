@@ -39,35 +39,40 @@ export const navOwnEventsByOrganiser = () => {
   routerNav("/events-by-organiser");
 };
 
-export const navViewEvent = (linkId: string, p?: { preview?: boolean }) => {
-  routerNav("/event/" + linkId, p?.preview ? { preview: "true" } : {});
+export const navCreateEvent = () => {
+  routerNav("/event/create");
 };
-
-export const navCreateEvent = (p?: { fromPrevious?: boolean }) => {
-  routerNav("/event/create", p?.fromPrevious ? { fromPrevious: "true" } : {});
+export const navCreateEventFromPrevious = () => {
+  routerNav("/event/create", { fromPrevious: "true" });
 };
-
-export const navManageEvent = (linkId: string) => {
-  routerNav("/event/" + linkId + "/manage");
+export const navViewEvent = (eventLinkId: string) => {
+  routerNav("/event/" + eventLinkId);
 };
-export const navEditEvent = (linkId: string) => {
-  routerNav("/event/" + linkId + "/edit");
+export const navViewEventPreview = (eventLinkId: string) => {
+  routerNav("/event/" + eventLinkId, { preview: "true" });
+};
+export const navManageEvent = (eventLinkId: string) => {
+  routerNav("/event/" + eventLinkId + "/manage");
+};
+export const navEditEvent = (eventLinkId: string) => {
+  routerNav("/event/" + eventLinkId + "/edit");
 };
 export const navEditEventSetSection = (section: EditEventFormSectionT) => {
   router.setParams({ section });
 };
 
-export const navViewGroup = (linkId: string) => {
-  routerNav("/groups/" + linkId);
+export const navGroupUserManaged = () => {
+  routerNav("/group/manage");
 };
-
 export const navCreateGroup = () => {
-  routerNav("/groups/create");
+  routerNav("/group/create");
 };
-
-export const navManageGroup = (linkId: string) => {
-  routerNav("/groups/" + linkId + "/manage");
+export const navViewGroup = (groupLinkId: string) => {
+  routerNav("/group/" + groupLinkId);
 };
-export const navEditGroup = (groupsId: string) => {
-  routerNav("/groups/" + groupsId + "/edit");
+export const navManageGroup = (groupLinkId: string) => {
+  routerNav("/group/" + groupLinkId + "/manage");
+};
+export const navEditGroup = (groupLinkId: string) => {
+  routerNav("/group/" + groupLinkId + "/edit");
 };

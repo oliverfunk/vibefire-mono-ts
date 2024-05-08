@@ -3,28 +3,26 @@ import { Text, View, type ListRenderItemInfo } from "react-native";
 
 import { type VibefireGroupT } from "@vibefire/models";
 
-import { useSortedGroups } from "!/hooks/useSortedGroups";
+import { useSortedGroupsByUpdated } from "!/hooks/useSortedByTime";
 
-import { GroupCard } from "!/components/group/GroupCard";
-import { GroupChip } from "!/components/group/GroupChip";
-import { FlatListViewSheet } from "!/components/misc/sheet-utils";
+import { GroupCard } from "!/c/group/GroupCard";
+import { GroupChip } from "!/c/group/GroupChip";
+import { SimpleList } from "!/c/list/SimpleList";
+import { FlatListViewSheet } from "!/c/misc/sheet-utils";
 
-const useGroupChipRenderer = (
-  onPress: (groupId: string, group: VibefireGroupT) => void,
-) => {
+const useGroupChipRenderer = (onPress: (groupLinkId: string) => void) => {
   return useCallback(
-    ({
-      item: group,
-      index,
-    }: Omit<ListRenderItemInfo<VibefireGroupT>, "separators">) => (
-      <View key={index}>
-        <GroupChip
-          group={group}
-          onPress={() => {
-            onPress(group.id, group);
-          }}
-        />
-      </View>
+    (group: VibefireGroupT) => (
+      <GroupChip
+        groupLinkId={group.linkId}
+        groupInfo={{
+          name: group.name,
+          bannerImgKey: group.banner,
+          dateUpdatedUTC: group.dateUpdatedUTC,
+          notifications: 5,
+        }}
+        onPress={onPress}
+      />
     ),
     [onPress],
   );
@@ -79,7 +77,7 @@ export const GroupsList = ({
   noGroupsMessage,
   sortAsc = false,
 }: GroupsListProps) => {
-  const sortedGroups = useSortedGroups(groups, sortAsc);
+  const sortedGroups = useSortedGroupsByUpdated(groups, { sortAsc });
 
   const noGroupsText = useNoGroupsText(noGroupsMessage);
   const renderGroupCard = useGroupCardRenderer(onGroupPress);
@@ -92,10 +90,10 @@ export const GroupsList = ({
 
   return (
     <FlatListViewSheet
+      data={sortedGroups}
       ListEmptyComponent={noGroupsText}
       ListHeaderComponent={listTitle ? header : undefined}
       ItemSeparatorComponent={itemSep}
-      data={sortedGroups}
       contentContainerStyle={{ padding: 5 }}
       renderItem={renderGroupCard}
       keyExtractor={(item) => item.id}
@@ -103,27 +101,35 @@ export const GroupsList = ({
   );
 };
 
+type GroupsListSimpleChipProps = {
+  groups: VibefireGroupT[];
+  onPress: (groupLinkId: string) => void;
+  noGroupsMessage?: string;
+  latestFirst?: boolean;
+  limit?: number;
+};
+
 export const GroupsListSimpleChipView = ({
   groups,
-  onGroupPress,
-  listTitle,
+  onPress,
   noGroupsMessage,
-  sortAsc = false,
-}: GroupsListProps) => {
-  const sortedGroups = useSortedGroups(groups, sortAsc);
+  latestFirst = false,
+  limit = 4,
+}: GroupsListSimpleChipProps) => {
+  const sortedGroups = useSortedGroupsByUpdated(groups, {
+    sortAsc: !latestFirst,
+    sliceCount: limit,
+  });
 
   const noGroupsText = useNoGroupsText(noGroupsMessage);
-  const renderGroupChip = useGroupChipRenderer(onGroupPress);
+  const renderGroupChip = useGroupChipRenderer(onPress);
 
-  const header = useMemo(() => {
-    return <Text className="text-2xl font-bold text-black">{listTitle}</Text>;
-  }, [listTitle]);
-
-  const groupChips = useMemo(() => {
-    return sortedGroups.map((group, index) =>
-      renderGroupChip({ item: group, index }),
-    );
-  }, [sortedGroups, renderGroupChip]);
-
-  return groupChips;
+  return (
+    <SimpleList
+      items={sortedGroups}
+      renderItem={renderGroupChip}
+      noItemsComponent={noGroupsText}
+      options={{ separatorHeight: 4 }}
+    />
+  );
 };
