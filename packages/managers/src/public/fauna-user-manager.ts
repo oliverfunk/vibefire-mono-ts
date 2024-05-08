@@ -745,7 +745,6 @@ export class FaunaUserManager {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async groupsForUser(userAc: ClerkSignedInAuthContext) {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
     const res = [
       {
         id: "test",

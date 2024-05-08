@@ -8,7 +8,7 @@ import { organisationProfileImagePath } from "@vibefire/utils";
 
 import { IconButton } from "!/components/button/IconButton";
 
-import { EventImage, StandardImage } from "./EventImage";
+import { StandardImage, VibefireImage } from "../image/VibefireImage";
 
 type EventCardProps = {
   state?: VibefireEventT["state"];
@@ -38,7 +38,7 @@ export const EventCard = ({
 }: EventCardProps) => {
   return (
     <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
-      <EventImage
+      <VibefireImage
         imgIdKey={event.bannerImgKey}
         rounded={true}
         alt="Event Banner"

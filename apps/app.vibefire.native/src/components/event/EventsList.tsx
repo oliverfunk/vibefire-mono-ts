@@ -5,12 +5,11 @@ import { type PartialDeep } from "type-fest";
 import { type VibefireEventT } from "@vibefire/models";
 import { isoNTZToUTCDateTime } from "@vibefire/utils";
 
-import { useSortedEvents } from "!/hooks/useSortedEvents";
+import { useSortByTime, useSortedEvents } from "!/hooks/useSortedByTime";
 
-import {
-  FlatListViewSheet,
-  SectionListViewSheet,
-} from "!/components/misc/sheet-utils";
+import { SimpleList } from "!/c/list/SimpleList";
+import { useItemSeparator } from "!/c/misc/ItemSeparator";
+import { FlatListViewSheet, SectionListViewSheet } from "!/c/misc/sheet-utils";
 
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
@@ -71,13 +70,6 @@ const useNoEventsText = (noEventsMessage?: string) => {
   }, [noEventsMessage]);
 };
 
-const useItemSeparator = () => {
-  return useCallback(() => {
-    return <View className="h-4" />;
-    // return <View className="mx-10 my-2 h-[1px] bg-white" />;
-  }, []);
-};
-
 type EventsListProps = {
   events: PartialDeep<VibefireEventT>[];
   onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void;
@@ -100,7 +92,7 @@ export const EventsList = ({
   showStatusBanner = false,
   sortAsc = true,
 }: EventsListProps) => {
-  const sortedEvents = useSortedEvents(events, sortAsc);
+  const sortedEvents = useSortedEvents(events, { sortAsc });
 
   const renderItem = useEventCardRenderer(
     onEventPress,
@@ -137,8 +129,8 @@ export const EventsListWithSections = ({
   showStatusBanner = false,
   sortAsc = true,
 }: EventsListProps & { upcomingEvents: EventsListProps["events"] }) => {
-  const sortedEvents = useSortedEvents(events, sortAsc);
-  const sortedUpcomingEvents = useSortedEvents(upcomingEvents, sortAsc);
+  const sortedEvents = useSortedEvents(events, { sortAsc });
+  const sortedUpcomingEvents = useSortedEvents(upcomingEvents, { sortAsc });
 
   const sections = useMemo(() => {
     const r = [];
@@ -190,31 +182,18 @@ export const EventsListWithSections = ({
 };
 
 const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
-  const ItemSep = useItemSeparator()();
-
   return useCallback(
-    ({
-      item: event,
-      index,
-      length,
-    }: {
-      item: PartialDeep<VibefireEventT>;
-      index: number;
-      length: number;
-    }) => (
-      <View key={index} className="">
-        {index !== 0 && index < length && ItemSep}
-        <EventChip
-          eventLinkId={event.linkId!}
-          eventInfo={{
-            title: event.title!,
-            bannerImgKey: event?.images?.banner,
-            timeStartIsoNTZ: event.timeStartIsoNTZ,
-            state: event.state!,
-          }}
-          onPress={onPress}
-        />
-      </View>
+    (event: PartialDeep<VibefireEventT>) => (
+      <EventChip
+        eventLinkId={event.linkId!}
+        eventInfo={{
+          title: event.title!,
+          bannerImgKey: event?.images?.banner,
+          timeStartIsoNTZ: event.timeStartIsoNTZ,
+          state: event.state!,
+        }}
+        onPress={onPress}
+      />
     ),
     [onPress],
   );
@@ -235,17 +214,21 @@ export const EventsListSimpleChipView = ({
   latestFirst = true,
   limit = 4,
 }: EventsListSimpleChipViewProps) => {
-  const sortedEvents = useSortedEvents(events, !latestFirst, limit);
+  const sortedEvents = useSortedEvents(events, {
+    sortAsc: !latestFirst,
+    sliceCount: limit,
+  });
 
   const noEventsText = useNoEventsText(noEventsMessage);
 
   const renderEventChip = useEventChipRenderer(onPress);
 
-  const eventChips = useMemo(() => {
-    return sortedEvents.map((event, index) =>
-      renderEventChip({ item: event, index, length: sortedEvents.length }),
-    );
-  }, [renderEventChip, sortedEvents]);
-
-  return eventChips.length > 0 ? eventChips : noEventsText;
+  return (
+    <SimpleList
+      items={sortedEvents}
+      renderItem={renderEventChip}
+      noItemsComponent={noEventsText}
+      options={{ separatorHeight: 4 }}
+    />
+  );
 };

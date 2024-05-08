@@ -4,3 +4,5 @@ export type EditEventFormSectionT =
   | "times"
   | "images"
   | "timeline";
+
+export type OnPressVoid = () => void;

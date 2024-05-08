@@ -10,8 +10,9 @@ import { type ImageProps } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
 
-import { EventImage } from "!/components/event/EventImage";
 import { trpc } from "!/api/trpc-client";
+
+import { VibefireImage } from "!/components/image/VibefireImage";
 
 const selectImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -49,7 +50,7 @@ const uploadImage = async (
   });
 };
 
-type UploadableEventImageProps = {
+type UploadableVibefireImageProps = {
   eventId: string;
   alt: ImageProps["alt"];
   selectNewOnPressed?: boolean;
@@ -60,7 +61,9 @@ type UploadableEventImageProps = {
   onClosePress?: () => void;
 };
 
-export const UploadableEventImage = (props: UploadableEventImageProps) => {
+export const UploadableVibefireImage = (
+  props: UploadableVibefireImageProps,
+) => {
   const {
     eventId,
     alt,
@@ -187,7 +190,7 @@ export const UploadableEventImage = (props: UploadableEventImageProps) => {
             : undefined
         }
       >
-        <EventImage imgIdKey={imgIdKey} alt={alt} rounded={rounded} />
+        <VibefireImage imgIdKey={imgIdKey} alt={alt} rounded={rounded} />
       </Pressable>
       {onClosePress && (
         <TouchableOpacity

@@ -1,5 +1,5 @@
 import { ImageCarousel } from "../image/ImageCarousel";
-import { EventImage } from "./EventImage";
+import { VibefireImage } from "../image/VibefireImage";
 
 export const EventImageCarousel = (props: {
   imgIdKeys: string[];
@@ -13,7 +13,7 @@ export const EventImageCarousel = (props: {
       imgIdKeys={imgIdKeys}
       width={width}
       renderItem={({ index, item: imgIdKey }) => {
-        return <EventImage imgIdKey={imgIdKey} alt={`Image ${index}`} />;
+        return <VibefireImage imgIdKey={imgIdKey} alt={`Image ${index}`} />;
       }}
       offsetXToActive={offsetXToActive}
     />

@@ -22,7 +22,7 @@ import {
 } from "!/components/misc/sheet-utils";
 import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
 import { userInfoAtom } from "!/atoms";
-import { navEditEvent, navViewEvent } from "!/nav";
+import { navEditEvent, navViewEvent, navViewEventPreview } from "!/nav";
 
 const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
   const { event } = props;
@@ -218,9 +218,7 @@ export const ManagementView = (props: {
                   : undefined,
               }}
               onPress={() => {
-                navViewEvent(event.linkId, {
-                  preview: true,
-                });
+                navViewEventPreview(event.linkId);
               }}
             />
           </FormTitleInput>

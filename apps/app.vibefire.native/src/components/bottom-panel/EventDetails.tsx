@@ -36,9 +36,9 @@ import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
 
-import { EventImage, StandardImage } from "!/components/event/EventImage";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import { EventTimeline } from "!/components/event/EventTimeline";
+import { StandardImage, VibefireImage } from "!/components/image/VibefireImage";
 import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
 import {
   ErrorSheet,
@@ -380,7 +380,7 @@ const EventDetailsView = (props: { event: VibefireEventT }) => {
       <View className="relative">
         {/* Background image */}
         {imgs.length === 1 ? (
-          <EventImage imgIdKey={imgs[0]} alt="Event Banner" />
+          <VibefireImage imgIdKey={imgs[0]} alt="Event Banner" />
         ) : (
           <EventImageCarousel imgIdKeys={imgs} width={width} />
         )}
