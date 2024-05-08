@@ -11,11 +11,8 @@ import { type CoordT, type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
-import {
-  BackNextButtons,
-  ScrollViewSheetWithRef,
-} from "!/components/misc/sheet-utils";
-import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
+import { BackNextButtons, ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
+import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 import { navEditEventSetSection, navManageEvent } from "!/nav";
 import { type EditEventFormSectionT } from "!/types";
 

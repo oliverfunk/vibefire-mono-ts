@@ -4,7 +4,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import { type TwPadding } from "!/utils/tw-spacing";
 
-import { IconButton } from "!/components/button/IconButton";
+import { IconButton } from "!/c/button/IconButton";
 
 type SummaryHeaderProps = {
   headerTitle: string;

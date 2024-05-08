@@ -14,14 +14,14 @@ import { vibefireEventShareURL } from "@vibefire/utils";
 import { trpc } from "!/api/trpc-client";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
 
-import { EventCard } from "!/components/event/EventCard";
+import { userInfoAtom } from "!/atoms";
+import { EventCard } from "!/c/event/EventCard";
 import {
   FormTitleInput,
   LinearRedOrangeView,
   ScrollViewSheet,
-} from "!/components/misc/sheet-utils";
-import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
-import { userInfoAtom } from "!/atoms";
+} from "!/c/misc/sheet-utils";
+import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 import { navEditEvent, navViewEvent, navViewEventPreview } from "!/nav";
 
 const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {

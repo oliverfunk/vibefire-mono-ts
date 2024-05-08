@@ -2,11 +2,11 @@ import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useAtom, useSetAtom } from "jotai";
 
-import { ContinueWithApple } from "!/components/auth/ContinueWithApple";
-import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
-import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
-import { LoadingSheet, ScrollViewSheet } from "!/components/misc/sheet-utils";
 import { userAtom, userSessionRetryAtom } from "!/atoms";
+import { ContinueWithApple } from "!/c/auth/ContinueWithApple";
+import { ContinueWithFacebook } from "!/c/auth/ContinueWithFacebook";
+import { ContinueWithGoogle } from "!/c/auth/ContinueWithGoogle";
+import { LoadingSheet, ScrollViewSheet } from "!/c/misc/sheet-utils";
 
 import { UserProfileAuthenticatedView } from "./_authenticated";
 

@@ -8,13 +8,10 @@ import {
 
 import { UsersEventsSummary } from "!/features/events-list";
 import { UsersGroupsSummary } from "!/features/groups-list";
-import { DeleteAccount } from "!/components/auth/DeleteAccount";
-import { SignOut } from "!/components/auth/SignOut";
-import {
-  LinearRedOrangeView,
-  ScrollViewSheet,
-} from "!/components/misc/sheet-utils";
-import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
+import { DeleteAccount } from "!/c/auth/DeleteAccount";
+import { SignOut } from "!/c/auth/SignOut";
+import { LinearRedOrangeView, ScrollViewSheet } from "!/c/misc/sheet-utils";
+import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 
 // const UserEventsChipListEmbed = () => {
 //   return (

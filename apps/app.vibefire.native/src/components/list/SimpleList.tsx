@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 
-import { useItemSeparator } from "!/components/misc/ItemSeparator";
+import { useItemSeparator } from "!/c/misc/ItemSeparator";
 
 export type SimpleListProps<T extends object> = {
   items: T[];

@@ -8,8 +8,8 @@ import {
   FormTitleTextInput,
   ScrollViewSheet,
   SectionHeader,
-} from "!/components/misc/sheet-utils";
-import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
+} from "!/c/misc/sheet-utils";
+import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 import { navCreateEventFromPrevious, navEditEvent } from "!/nav";
 
 export const CreateEventForm = () => {

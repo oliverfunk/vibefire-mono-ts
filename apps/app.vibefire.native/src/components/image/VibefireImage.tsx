@@ -3,7 +3,7 @@ import { type ImageProps } from "expo-image";
 
 import { imgUrl } from "!/api/base-urls";
 
-import { StandardImage } from "!/components/image/StandardImage";
+import { StandardImage } from "!/c/image/StandardImage";
 
 export const VibefireImage = (props: {
   imgIdKey?: string;

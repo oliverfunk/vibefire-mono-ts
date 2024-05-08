@@ -22,8 +22,8 @@ import "!/global.css";
 
 import * as Notifications from "expo-notifications";
 
-import { EventMap } from "!/components/event/EventMap";
-import { NoTopContainer } from "!/components/misc/NoTopContainer";
+import { EventMap } from "!/c/event/EventMap";
+import { NoTopContainer } from "!/c/misc/NoTopContainer";
 
 Notifications.setNotificationHandler({
   // eslint-disable-next-line @typescript-eslint/require-await

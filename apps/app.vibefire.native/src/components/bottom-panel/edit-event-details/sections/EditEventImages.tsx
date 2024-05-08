@@ -2,9 +2,9 @@ import { useLayoutEffect, useMemo } from "react";
 import { Dimensions, View } from "react-native";
 import _ from "lodash";
 
-import { ImageCarousel } from "!/components/image/ImageCarousel";
-import { UploadableVibefireImage } from "!/components/image/UploadableVibefireImage";
-import { FormTitleInput } from "!/components/misc/sheet-utils";
+import { ImageCarousel } from "!/c/image/ImageCarousel";
+import { UploadableVibefireImage } from "!/c/image/UploadableVibefireImage";
+import { FormTitleInput } from "!/c/misc/sheet-utils";
 
 import { type FormSectionProps } from "./types";
 

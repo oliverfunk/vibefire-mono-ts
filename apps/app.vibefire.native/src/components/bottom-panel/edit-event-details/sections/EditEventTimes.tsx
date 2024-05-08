@@ -10,13 +10,13 @@ import {
   nowAsUTC,
 } from "@vibefire/utils";
 
-import { EventTimeline } from "!/components/event/EventTimeline";
-import { PlatformSelect } from "!/components/misc/PlatformSelect";
-import { FormTextInput, FormTitleInput } from "!/components/misc/sheet-utils";
+import { EventTimeline } from "!/c/event/EventTimeline";
+import { PlatformSelect } from "!/c/misc/PlatformSelect";
+import { FormTextInput, FormTitleInput } from "!/c/misc/sheet-utils";
 import {
   DateTimeSelectionAndDisplayAnd,
   DateTimeSelectionAndDisplayIos,
-} from "!/components/TimeSelection";
+} from "!/c/TimeSelection";
 
 import { type FormSectionProps } from "./types";
 

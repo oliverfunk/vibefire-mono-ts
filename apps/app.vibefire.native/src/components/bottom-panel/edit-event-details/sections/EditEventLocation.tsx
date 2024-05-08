@@ -4,11 +4,8 @@ import _ from "lodash";
 
 import { type CoordT } from "@vibefire/models";
 
-import { LocationSelectionMap } from "!/components/map/LocationSelectionMap";
-import {
-  FormTitleInput,
-  FormTitleTextInput,
-} from "!/components/misc/sheet-utils";
+import { LocationSelectionMap } from "!/c/map/LocationSelectionMap";
+import { FormTitleInput, FormTitleTextInput } from "!/c/misc/sheet-utils";
 
 import { type FormSectionProps } from "./types";
 

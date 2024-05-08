@@ -28,8 +28,8 @@ import { DateTime } from "luxon";
 
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 
-import { IconButton } from "!/components/button/IconButton";
-import { TimeOfDayPicker } from "!/components/TimeOfDayPicker";
+import { IconButton } from "!/c/button/IconButton";
+import { TimeOfDayPicker } from "!/c/TimeOfDayPicker";
 import { navHomeWithProfileSelected } from "!/nav";
 
 export const SEARCH_HANDLE_HEIGHT = 80;
