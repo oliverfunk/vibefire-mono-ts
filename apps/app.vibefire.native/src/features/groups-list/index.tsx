@@ -3,14 +3,14 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import { trpc } from "!/api/trpc-client";
 
-import { IconButton } from "!/components/button/IconButton";
-import { GroupsListSimpleChipView } from "!/components/group/GroupsList";
+import { IconButton } from "!/c/button/IconButton";
+import { GroupsListSimpleChipView } from "!/c/group/GroupsList";
 import {
   ErrorDisplay,
   LoadingDisplay,
   withSuspenseErrorBoundary,
-} from "!/components/misc/SuspenseWithError";
-import { SummaryComponent } from "!/components/structural/SummaryComponent";
+} from "!/c/misc/SuspenseWithError";
+import { SummaryComponent } from "!/c/structural/SummaryComponent";
 import { navCreateGroup, navGroupUserManaged } from "!/nav";
 
 export const UsersGroupsSummary = () => {

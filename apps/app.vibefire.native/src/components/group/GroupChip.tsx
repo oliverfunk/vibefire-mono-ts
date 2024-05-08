@@ -3,8 +3,8 @@ import { Text } from "react-native";
 import { type VibefireGroupT } from "@vibefire/models";
 import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
 
-import { VibefireImage } from "!/components/image/VibefireImage";
-import { ChipComponent } from "!/components/structural/ChipComponent";
+import { VibefireImage } from "!/c/image/VibefireImage";
+import { ChipComponent } from "!/c/structural/ChipComponent";
 
 type GroupChipProps = {
   groupLinkId: string;

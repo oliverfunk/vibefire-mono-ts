@@ -6,8 +6,8 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
-import { EventsList } from "!/components/event/EventsList";
-import { ErrorSheet, LoadingSheet } from "!/components/misc/sheet-utils";
+import { EventsList } from "!/c/event/EventsList";
+import { ErrorSheet, LoadingSheet } from "!/c/misc/sheet-utils";
 import { navEditEvent, navManageEvent } from "!/nav";
 
 const DeleteConfirmationModal = (props: {

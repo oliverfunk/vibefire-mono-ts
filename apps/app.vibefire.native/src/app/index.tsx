@@ -9,8 +9,8 @@ import { UserProfileSheet } from "!/features/user-profile";
 import {
   BottomPanelHandle,
   SEARCH_HANDLE_HEIGHT,
-} from "!/components/bottom-panel/BottomPanelHandle";
-import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
+} from "!/c/bottom-panel/BottomPanelHandle";
+import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
 
 const Screen = () => {
   const { profileSelected, minimise } = useLocalSearchParams<{

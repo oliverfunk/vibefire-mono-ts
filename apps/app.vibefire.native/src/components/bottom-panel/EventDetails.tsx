@@ -36,21 +36,21 @@ import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
 
-import { EventImageCarousel } from "!/components/event/EventImageCarousel";
-import { EventTimeline } from "!/components/event/EventTimeline";
-import { StandardImage, VibefireImage } from "!/components/image/VibefireImage";
-import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
-import {
-  ErrorSheet,
-  LoadingSheet,
-  ScrollViewSheet,
-} from "!/components/misc/sheet-utils";
 import {
   eventMapMapRefAtom,
   userAuthStateAtom,
   userInfoAtom,
   userSessionRetryAtom,
 } from "!/atoms";
+import { EventImageCarousel } from "!/c/event/EventImageCarousel";
+import { EventTimeline } from "!/c/event/EventTimeline";
+import { StandardImage, VibefireImage } from "!/c/image/VibefireImage";
+import { LocationDisplayMap } from "!/c/map/LocationDisplayMap";
+import {
+  ErrorSheet,
+  LoadingSheet,
+  ScrollViewSheet,
+} from "!/c/misc/sheet-utils";
 import { navHomeWithMinimise, navManageEvent } from "!/nav";
 
 const ThreeDotsMenuOption = (props: {

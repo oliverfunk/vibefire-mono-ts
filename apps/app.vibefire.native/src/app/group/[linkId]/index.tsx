@@ -1,8 +1,9 @@
 import { useLocalSearchParams } from "expo-router";
 
-import { BottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
-import { EventDetails } from "!/components/bottom-panel/EventDetails";
 import { useTsQueryParam } from "!/hooks/useTs";
+
+import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
+import { EventDetails } from "!/c/bottom-panel/EventDetails";
 
 const Screen = () => {
   const { linkId, preview } = useLocalSearchParams<{

@@ -9,17 +9,17 @@ import {
 
 import { trpc } from "!/api/trpc-client";
 
-import { IconButton } from "!/components/button/IconButton";
+import { IconButton } from "!/c/button/IconButton";
 import {
   EventsListSimpleChipView,
   EventsListWithSections,
-} from "!/components/event/EventsList";
+} from "!/c/event/EventsList";
 import {
   ErrorDisplay,
   LoadingDisplay,
   withSuspenseErrorBoundary,
-} from "!/components/misc/SuspenseWithError";
-import { SummaryComponent } from "!/components/structural/SummaryComponent";
+} from "!/c/misc/SuspenseWithError";
+import { SummaryComponent } from "!/c/structural/SummaryComponent";
 import {
   navCreateEvent,
   navManageEvent,

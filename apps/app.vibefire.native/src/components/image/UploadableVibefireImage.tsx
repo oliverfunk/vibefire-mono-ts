@@ -12,7 +12,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import { trpc } from "!/api/trpc-client";
 
-import { VibefireImage } from "!/components/image/VibefireImage";
+import { VibefireImage } from "!/c/image/VibefireImage";
 
 const selectImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({

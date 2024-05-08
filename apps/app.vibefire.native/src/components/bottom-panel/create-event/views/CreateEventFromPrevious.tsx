@@ -7,7 +7,7 @@ import { type VibefireEventT } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
-import { EventsList } from "!/components/event/EventsList";
+import { EventsList } from "!/c/event/EventsList";
 import { navEditEvent } from "!/nav";
 
 import {

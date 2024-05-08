@@ -7,8 +7,8 @@ import {
   ErrorSheet,
   LoadingSheet,
   ScrollViewSheetWithRef,
-} from "!/components/misc/sheet-utils";
-import { withSuspenseErrorBoundary } from "!/components/misc/SuspenseWithError";
+} from "!/c/misc/sheet-utils";
+import { withSuspenseErrorBoundary } from "!/c/misc/SuspenseWithError";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.

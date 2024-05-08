@@ -2,7 +2,7 @@ import { useLayoutEffect } from "react";
 import { View } from "react-native";
 import _ from "lodash";
 
-import { FormTitleTextInput } from "!/components/misc/sheet-utils";
+import { FormTitleTextInput } from "!/c/misc/sheet-utils";
 
 import { type FormSectionProps } from "./types";
 
