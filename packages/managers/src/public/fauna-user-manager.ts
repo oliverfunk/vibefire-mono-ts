@@ -751,7 +751,7 @@ export class FaunaUserManager {
         linkId: "test-group",
         name: "Test Group",
         description: "Test Group Description",
-        banner: "https://via.placeholder.com/150",
+        bannerImgKey: "https://via.placeholder.com/150",
         dateCreatedUTC: "2021-09-01T00:00:00.000Z",
         dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
         ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
@@ -764,7 +764,7 @@ export class FaunaUserManager {
         linkId: "test-group",
         name: "Test Group 2",
         description: "Test Group Description 2",
-        banner: "https://via.placeholder.com/150",
+        bannerImgKey: "https://via.placeholder.com/150",
         dateCreatedUTC: "2021-09-01T00:00:00.000Z",
         dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
         ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
@@ -773,6 +773,23 @@ export class FaunaUserManager {
         type: "public",
       },
     ] as VibefireGroupT[];
+    return res;
+  }
+
+  async groupByLinkID(userAc: ClerkAuthContext, linkID: string) {
+    const res = {
+      id: "test",
+      linkId: "test-group",
+      name: "Test Group",
+      description: "Test Group Description",
+      bannerImgKey: "https://via.placeholder.com/150",
+      dateCreatedUTC: "2021-09-01T00:00:00.000Z",
+      dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
+      ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
+      ownerType: "user",
+      managerIds: [],
+      type: "public",
+    } as VibefireGroupT;
     return res;
   }
 

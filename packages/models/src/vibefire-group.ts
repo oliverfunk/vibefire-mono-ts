@@ -1,4 +1,4 @@
-import { Static, Type as t } from "@sinclair/typebox";
+import { Type as t, type Static } from "@sinclair/typebox";
 
 import { VibefireIndexableLocationSchema } from "./general";
 
@@ -22,7 +22,7 @@ export const VibefireGroup = t.Object({
 
   name: t.String({ default: undefined }),
   description: t.String({ default: undefined }),
-  banner: t.String({ default: undefined }),
+  bannerImgKey: t.String({ default: undefined }),
 
   // location - used for discoverability of public groups
   location: t.Optional(VibefireIndexableLocationSchema),
@@ -33,9 +33,9 @@ export const VibefireGroup = t.Object({
   type: t.Union([
     // discoverable by anyone in an area
     t.Literal("public"),
-    // invite by members/link
+    // invite by members/link, not discoverable
     t.Literal("private-joinable"),
-    // invite by owner/manager only
+    // invite by owner/manager only, not discoverable
     t.Literal("private-invite-only"),
   ]),
 });

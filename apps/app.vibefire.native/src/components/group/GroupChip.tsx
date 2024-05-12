@@ -10,7 +10,7 @@ type GroupChipProps = {
   groupLinkId: string;
   groupInfo: {
     name: VibefireGroupT["name"];
-    bannerImgKey: VibefireGroupT["banner"];
+    bannerImgKey: VibefireGroupT["bannerImgKey"];
     dateUpdatedUTC: VibefireGroupT["dateUpdatedUTC"];
     notifications: number;
   };

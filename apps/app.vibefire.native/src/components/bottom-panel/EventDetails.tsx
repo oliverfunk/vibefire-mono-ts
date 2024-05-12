@@ -279,6 +279,7 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
             source={organisationProfileImagePath(event.organiserId)}
             alt="Event Organizer Profile Picture"
+            contentFit="cover"
           />
         ) : (
           <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-[#FF2400]">
