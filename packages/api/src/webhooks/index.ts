@@ -4,7 +4,8 @@ import { getClerkManager } from "@vibefire/managers/clerk";
 import { setManagersContext } from "@vibefire/managers/context";
 import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
 
-import { BASEPATH_WEBHOOKS } from "~/basepaths";
+import { BASEPATH_WEBHOOKS } from "!api/basepaths";
+
 import { validateToHttpExp } from "./utils";
 
 type Bindings = {
@@ -43,7 +44,6 @@ webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
         email_addresses,
         first_name,
         phone_numbers,
-        birthday,
       } = event.data;
 
       const contactEmail = email_addresses.find(

@@ -1,51 +1,37 @@
 import {
-  Clerk,
-  signedInAuthObject,
-  signedOutAuthObject,
-  verifyToken,
-  type SignedInAuthObject,
-  type SignedOutAuthObject,
+  createClerkClient,
+  type ClerkClient,
   type WebhookEvent,
 } from "@clerk/backend";
+import {
+  signedOutAuthObject,
+  type AuthObject,
+  type SignedInAuthObject,
+  type SignedOutAuthObject,
+} from "@clerk/backend/internal";
 import { Webhook } from "svix";
 
 const clerkApiUrl = "https://advanced-buffalo-6.clerk.accounts.dev";
 
-export type ClerkClientType = ReturnType<typeof Clerk>;
-
-export const getClerkClient = (clerkSecretKey: string): ClerkClientType =>
-  Clerk({
-    // apiUrl: clerkApiUrl,
+export const getClerkAPIClient = (clerkSecretKey: string): ClerkClient =>
+  createClerkClient({
+    publishableKey:
+      "***REMOVED***",
     secretKey: clerkSecretKey,
+    apiUrl: clerkApiUrl,
   });
 
-export type ClerkAuthContext =
-  | ClerkSignedInAuthContext
-  | ClerkSignedOutAuthContext;
+export type ClerkAuthContext = AuthObject;
 export type ClerkSignedInAuthContext = SignedInAuthObject;
 export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
 export const authRequestWithClerk = async (
-  clerkPemString: string,
+  clerkSecretKey: string,
   req: Request,
 ): Promise<ClerkAuthContext> => {
-  const reqJwtToken = req.headers.get("Authorization");
-  if (!reqJwtToken || reqJwtToken === "undefined" || reqJwtToken === "null") {
-    return signedOutAuthObject();
-  }
-
-  const jwtPayload = await verifyToken(reqJwtToken, {
-    issuer: clerkApiUrl,
-    jwtKey: clerkPemString,
-  });
-
-  return signedInAuthObject(jwtPayload, {
-    // idk why you need these atm,
-    // has something to do with loading the Clerk client
-    apiUrl: clerkApiUrl,
-    apiVersion: "2023-06-07",
-    token: reqJwtToken,
-  });
+  const reqAuth =
+    await getClerkAPIClient(clerkSecretKey).authenticateRequest(req);
+  return reqAuth.toAuth() ?? signedOutAuthObject();
 };
 
 export const validateClerkWebhook = (

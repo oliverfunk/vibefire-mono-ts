@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import Toast from "react-native-toast-message";
 
 import { type CoordT } from "@vibefire/models";
 

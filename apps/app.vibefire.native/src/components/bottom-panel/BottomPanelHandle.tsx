@@ -17,7 +17,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { toRad } from "react-native-redash";
-import { FontAwesome, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import {
   useBottomSheet,
   type BottomSheetHandleProps,
@@ -32,7 +32,7 @@ import { IconButton } from "!/c/button/IconButton";
 import { TimeOfDayPicker } from "!/c/TimeOfDayPicker";
 import { navHomeWithProfileSelected } from "!/nav";
 
-export const SEARCH_HANDLE_HEIGHT = 80;
+export const SEARCH_HANDLE_HEIGHT = 75;
 
 const DatePicker = () => {
   const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
@@ -64,7 +64,7 @@ const DatePicker = () => {
         maximumDate={new Date(2030, 1, 1)}
         minimumDate={new Date(2020, 1, 1)}
       />
-      <FontAwesome5 name="calendar-alt" size={20} color="black" />
+      <FontAwesome name="calendar" size={24} color="black" />
       <Text className="text-lg">{selectedDate.toFormat("d")}</Text>
     </TouchableOpacity>
   );
@@ -93,7 +93,7 @@ const SearchButton = () => {
                 right: width / 25,
               }}
             >
-              <FontAwesome5 name="search" size={20} color="black" />
+              <FontAwesome name="search" size={24} color="black" />
               <TextInput
                 className="rounded-lg py-4"
                 style={{ fontSize: 20 }}
@@ -114,7 +114,7 @@ const SearchButton = () => {
           }}
           cn="bg-black"
         >
-          <FontAwesome name="close" size={20} color="white" />
+          <FontAwesome name="close" size={24} color="white" />
         </IconButton>
       </>
     );
@@ -128,7 +128,7 @@ const SearchButton = () => {
       border={true}
       cn="bg-white"
     >
-      <FontAwesome5 name="search" size={20} color="black" />
+      <FontAwesome name="search" size={24} color="black" />
     </IconButton>
   );
 };
@@ -146,7 +146,7 @@ const ProfileButton = () => {
       }}
       cn="bg-black"
     >
-      <MaterialIcons name="view-list" size={24} color="white" />
+      <FontAwesome name="list" size={20} color="white" />
     </IconButton>
   ) : (
     <IconButton
@@ -158,7 +158,7 @@ const ProfileButton = () => {
       border={true}
       cn="bg-white"
     >
-      <FontAwesome5 name="user-alt" size={20} color="black" />
+      <FontAwesome name="user" size={24} color="black" />
     </IconButton>
   );
 };
@@ -256,28 +256,37 @@ export const BottomPanelHandle = ({
   const width = Dimensions.get("window").width;
 
   return (
-    <View className={`flex-row items-end justify-around pb-2 pt-2`}>
-      <SearchButton />
-
-      <View className="flex-col items-center justify-center space-y-5">
+    <View
+      className={`flex-col justify-center space-y-4 pt-2`}
+      style={{
+        height: SEARCH_HANDLE_HEIGHT,
+      }}
+    >
+      <View className="flex-row justify-center">
         <AnimatedArrow
           animatedIndex={animatedIndex}
           animatedPosition={animatedPosition}
         />
-        <View className="flex-row space-x-1">
-          <View className="items-center justify-center rounded-lg border px-2">
+      </View>
+
+      <View className={`flex-row items-center justify-around`}>
+        <SearchButton />
+
+        <View className="flex-row items-center space-x-1 py-1">
+          <View className="items-center justify-center rounded-lg border bg-white p-2">
             <DatePicker />
           </View>
-          <View className="rounded-lg border">
+
+          <View className="rounded-lg border bg-white">
             <TimeOfDayPicker
-              width={max([width / 2, 150])!}
+              width={max([width / 2.2, 150])!}
               height={SEARCH_HANDLE_HEIGHT / 2}
             />
           </View>
         </View>
-      </View>
 
-      <ProfileButton />
+        <ProfileButton />
+      </View>
     </View>
   );
 };

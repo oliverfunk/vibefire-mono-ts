@@ -32,6 +32,14 @@ const expoConfig = ({ config }) => ({
     infoPlist: {
       LSApplicationQueriesSchemes: ["uber"],
     },
+    privacyManifests: {
+      NSPrivacyAccessedAPITypes: [
+        {
+          NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategoryUserDefaults",
+          NSPrivacyAccessedAPITypeReasons: ["CA92.1"],
+        },
+      ],
+    },
   },
   android: {
     package: "app.vibefire.and",
@@ -60,9 +68,6 @@ const expoConfig = ({ config }) => ({
       },
     ],
   },
-  hooks: {
-    postPublish: [],
-  },
   extra: {
     eas: {
       projectId: "8ea03d1b-020b-4c3c-afd3-30f36bb961fe",
@@ -70,7 +75,8 @@ const expoConfig = ({ config }) => ({
   },
   plugins: [
     "expo-router",
-    "./expo-plugins/with-modify-gradle.js",
+    "expo-font",
+    // "./expo-plugins/with-modify-gradle.js",
     [
       "expo-image-picker",
       {

@@ -11,7 +11,7 @@ export const StandardImage = (props: {
   contentFit: ImageProps["contentFit"];
 }) => {
   const { cn, source, alt, contentFit = "cover" } = props;
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
 
   return (
     <Image

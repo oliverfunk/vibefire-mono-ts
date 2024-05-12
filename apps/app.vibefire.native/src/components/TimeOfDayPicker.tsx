@@ -30,10 +30,9 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
   });
 
   return (
-    <View className="relative flex-row items-center justify-center">
+    <View className="h-full justify-center">
       <Carousel
         width={width}
-        height={height}
         defaultIndex={todToIndexMapping[selectedTod]}
         loop={false}
         overscrollEnabled={false}
@@ -52,6 +51,7 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
           );
         }}
       />
+
       <Pressable
         className="absolute right-1"
         onPress={() => {
@@ -65,6 +65,7 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
       >
         <MaterialIcons name="navigate-next" size={20} color="black" />
       </Pressable>
+
       <Pressable
         className="absolute left-1"
         onPress={() => {
