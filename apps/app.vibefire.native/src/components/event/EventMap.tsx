@@ -5,7 +5,6 @@ import MapView, {
   type Region,
 } from "react-native-maps";
 import Toast from "react-native-toast-message";
-import { ErrorBoundary, type ErrorBoundaryProps } from "expo-router";
 import { useSetAtom } from "jotai";
 
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
@@ -15,44 +14,9 @@ import { useLocationOnce } from "!/hooks/useLocation";
 import { useDisplayEvents } from "!/hooks/useMapQuery";
 
 import { eventMapMapRefAtom } from "!/atoms";
+import { SEARCH_HANDLE_HEIGHT } from "!/c/bottom-panel/BottomPanelHandle";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
-
-import { SEARCH_HANDLE_HEIGHT } from "../bottom-panel/BottomPanelHandle";
-
-export class Try extends React.Component<
-  {
-    catch: React.ComponentType<ErrorBoundaryProps>;
-    children: React.ReactNode;
-  },
-  { error?: Error }
-> {
-  state = { error: undefined };
-
-  static getDerivedStateFromError(error: Error) {
-    // Force hide the splash screen if an error occurs.
-    // SplashScreen.hideAsync();
-
-    return { error };
-  }
-
-  retry = () => {
-    return new Promise<void>((resolve) => {
-      this.setState({ error: undefined }, () => {
-        resolve();
-      });
-    });
-  };
-
-  render() {
-    const { error } = this.state;
-    const { catch: ErrorBoundary, children } = this.props;
-    if (!error) {
-      return children;
-    }
-    return <ErrorBoundary error={error} retry={this.retry} />;
-  }
-}
 
 const EventMapComponent = () => {
   const mvRef = useRef<MapView>(null);
@@ -146,7 +110,7 @@ const EventMapComponent = () => {
         bottom: bottomPanelHeight,
         left: 0,
       }}
-      provider={PROVIDER_GOOGLE}
+      // provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
       showsMyLocationButton={false}
       pitchEnabled={false}
@@ -196,9 +160,5 @@ const EventMapComponent = () => {
 };
 
 export const EventMap = () => {
-  return (
-    <Try catch={ErrorBoundary}>
-      <EventMapComponent />
-    </Try>
-  );
+  return <EventMapComponent />;
 };

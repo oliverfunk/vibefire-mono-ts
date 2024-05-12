@@ -3,6 +3,7 @@ export type ManagersContext = Partial<{
   cfImagesApiKey: string;
   clerkPemString: string;
   clerkSecretKey: string;
+  clerkPublicKey: string;
   clerkWebhookEventSecret: string;
   googleMapsApiKey: string;
   faunaClientKey: string;
