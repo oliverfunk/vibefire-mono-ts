@@ -2,13 +2,12 @@ import { useLocalSearchParams } from "expo-router";
 
 import { useTsQueryParam } from "!/hooks/useTs";
 
+import { GroupSheet } from "!/features/group-view";
 import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
-import { EventDetails } from "!/c/bottom-panel/EventDetails";
 
 const Screen = () => {
-  const { linkId, preview } = useLocalSearchParams<{
+  const { linkId } = useLocalSearchParams<{
     linkId: string;
-    preview: string;
   }>();
 
   const ts = useTsQueryParam();
@@ -19,13 +18,13 @@ const Screen = () => {
 
   return (
     <BottomPanelModal
-      modalPath="event/[linkId]/index"
+      modalPath="group/[linkId]/index"
       ts={ts}
       snapPoints={["80%"]}
       backgroundColor="black"
       handleComponent={null}
     >
-      <EventDetails linkId={linkId} preview={!!preview} />
+      <GroupSheet groupLinkID={linkId} />
     </BottomPanelModal>
   );
 };

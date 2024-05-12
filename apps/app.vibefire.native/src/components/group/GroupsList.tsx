@@ -17,7 +17,7 @@ const useGroupChipRenderer = (onPress: (groupLinkId: string) => void) => {
         groupLinkId={group.linkId}
         groupInfo={{
           name: group.name,
-          bannerImgKey: group.banner,
+          bannerImgKey: group.bannerImgKey,
           dateUpdatedUTC: group.dateUpdatedUTC,
           notifications: 5,
         }}
