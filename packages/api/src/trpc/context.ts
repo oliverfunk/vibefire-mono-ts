@@ -19,9 +19,12 @@ type ContextProps = {
 
 export const createContext = async ({ req, env }: CreateContextOptions) => {
   setManagersContext(env);
-
   return {
-    auth: await authRequestWithClerk(env.clerkSecretKey!, req),
+    auth: await authRequestWithClerk(
+      env.clerkSecretKey!,
+      env.clerkPemString!,
+      req,
+    ),
     fauna: getFaunaUserManager(),
     googleMapsManager: getGoogleMapsManager(),
   } as ContextProps;

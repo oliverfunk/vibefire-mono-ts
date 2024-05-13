@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "jest",
-    "update": "pnpm update",
-    "update-latest": "pnpm update --latest"
+    "test": "jest"
   },
   "dependencies": {
     "@vibefire/models": "0.1.0",
