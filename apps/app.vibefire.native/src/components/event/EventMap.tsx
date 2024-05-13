@@ -6,10 +6,10 @@ import MapView, {
 } from "react-native-maps";
 import Toast from "react-native-toast-message";
 import { useSetAtom } from "jotai";
+import { debounce } from "lodash";
 
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
-import { debounce } from "!/utils/debounce";
 import { useLocationOnce } from "!/hooks/useLocation";
 import { useDisplayEvents } from "!/hooks/useMapQuery";
 

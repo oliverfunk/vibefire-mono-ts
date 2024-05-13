@@ -7,8 +7,8 @@ import { type VibefireEventT } from "@vibefire/models";
 import { organisationProfileImagePath } from "@vibefire/utils";
 
 import { IconButton } from "!/c/button/IconButton";
-
-import { StandardImage, VibefireImage } from "../image/VibefireImage";
+import { StandardImage } from "!/c/image/StandardImage";
+import { VibefireImage } from "!/c/image/VibefireImage";
 
 type EventCardProps = {
   state?: VibefireEventT["state"];
@@ -66,6 +66,7 @@ export const EventCard = ({
         {event.organiserType === "group" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
+            contentFit="cover"
             source={organisationProfileImagePath(event.organiserId)}
             alt="Event Organizer Profile Picture"
           />

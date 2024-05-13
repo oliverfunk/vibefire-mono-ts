@@ -18,11 +18,11 @@ import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
+import { debounce } from "lodash";
 import superjson from "superjson";
 
 import { type VibefireUserT } from "@vibefire/models";
 
-import { debounce } from "!/utils/debounce";
 import { tokenCache } from "!/utils/sec-store-cache";
 import { trpc, trpcUrl } from "!/api/trpc-client";
 

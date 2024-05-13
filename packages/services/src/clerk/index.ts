@@ -13,11 +13,15 @@ import { Webhook } from "svix";
 
 const clerkApiUrl = "https://advanced-buffalo-6.clerk.accounts.dev";
 
-export const getClerkAPIClient = (clerkSecretKey: string): ClerkClient =>
+export const getClerkAPIClient = (
+  clerkSecretKey: string,
+  clerkPemString: string,
+): ClerkClient =>
   createClerkClient({
     publishableKey:
       "pk_test_YWR2YW5jZWQtYnVmZmFsby02LmNsZXJrLmFjY291bnRzLmRldiQ",
     secretKey: clerkSecretKey,
+    jwtKey: clerkPemString,
     apiUrl: clerkApiUrl,
   });
 
@@ -27,10 +31,13 @@ export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
 export const authRequestWithClerk = async (
   clerkSecretKey: string,
+  clerkPemString: string,
   req: Request,
 ): Promise<ClerkAuthContext> => {
-  const reqAuth =
-    await getClerkAPIClient(clerkSecretKey).authenticateRequest(req);
+  const reqAuth = await getClerkAPIClient(
+    clerkSecretKey,
+    clerkPemString,
+  ).authenticateRequest(req);
   return reqAuth.toAuth() ?? signedOutAuthObject();
 };
 
