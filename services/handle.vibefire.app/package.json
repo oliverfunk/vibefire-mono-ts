@@ -13,6 +13,6 @@
     "@vibefire/utils": "0.1.0"
   },
   "devDependencies": {
-    "wrangler": "3.28.1"
+    "wrangler": "3.55.0"
   }
 }

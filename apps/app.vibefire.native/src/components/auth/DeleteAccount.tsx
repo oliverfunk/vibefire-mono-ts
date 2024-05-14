@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "@clerk/clerk-expo";
-import { A } from "@expo/html-elements";
 
 import { trpc } from "!/api/trpc-client";
 

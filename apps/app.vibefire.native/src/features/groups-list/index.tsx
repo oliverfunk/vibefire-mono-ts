@@ -11,7 +11,7 @@ import {
   withSuspenseErrorBoundary,
 } from "!/c/misc/SuspenseWithError";
 import { SummaryComponent } from "!/c/structural/SummaryComponent";
-import { navCreateGroup, navGroupUserManaged } from "!/nav";
+import { navCreateGroup, navGroupUserManaged, navViewGroup } from "!/nav";
 
 export const UsersGroupsSummary = () => {
   const GroupsList = withSuspenseErrorBoundary(
@@ -23,7 +23,10 @@ export const UsersGroupsSummary = () => {
         <View className="flex-col">
           <GroupsListSimpleChipView
             groups={allGroupsForUser}
-            onPress={() => {}}
+            // TODO: change this from onPress to onGroupPress
+            onPress={(linkId) => {
+              navViewGroup(linkId);
+            }}
           />
           <View className="items-start py-4">
             <IconButton

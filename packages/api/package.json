@@ -14,7 +14,7 @@
     "@vibefire/utils": "0.1.0",
     "@trpc/server": "next",
     "@sinclair/typebox": "0.32.30",
-    "hono": "4.0.1",
+    "hono": "4.3.4",
     "superjson": "^2.2.1",
     "type-fest": "^4.8.2"
   },
