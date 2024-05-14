@@ -46,7 +46,7 @@ export const UsersEventsSummary = () => {
             >
               <View className="flex-row items-center justify-center rounded-sm bg-white/10 px-4 py-2">
                 <FontAwesome name="eye" size={20} color="white" />
-                <Text className="text-lg text-white"> View all</Text>
+                <Text className="text-white"> View all</Text>
               </View>
             </IconButton>
           </View>

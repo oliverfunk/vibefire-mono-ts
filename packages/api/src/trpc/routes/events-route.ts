@@ -54,7 +54,6 @@ export const eventsRouter = router({
     )
     .output((value) => value as Partial<VibefireEventT>)
     .query(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       return await ctx.fauna.eventForEdit(
         ctx.auth,
         input.linkId,

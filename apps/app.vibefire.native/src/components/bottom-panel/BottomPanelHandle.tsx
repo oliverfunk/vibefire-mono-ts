@@ -32,7 +32,7 @@ import { IconButton } from "!/c/button/IconButton";
 import { TimeOfDayPicker } from "!/c/TimeOfDayPicker";
 import { navHomeWithProfileSelected } from "!/nav";
 
-export const SEARCH_HANDLE_HEIGHT = 75;
+export const SEARCH_HANDLE_HEIGHT = 80;
 
 const DatePicker = () => {
   const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
@@ -257,7 +257,7 @@ export const BottomPanelHandle = ({
 
   return (
     <View
-      className={`flex-col justify-center space-y-4 pt-2`}
+      className={`flex-col justify-between space-y-4 py-2`}
       style={{
         height: SEARCH_HANDLE_HEIGHT,
       }}
@@ -269,19 +269,16 @@ export const BottomPanelHandle = ({
         />
       </View>
 
-      <View className={`flex-row items-center justify-around`}>
+      <View className={`flex-row items-end justify-around`}>
         <SearchButton />
 
-        <View className="flex-row items-center space-x-1 py-1">
+        <View className="flex-row items-end space-x-1">
           <View className="items-center justify-center rounded-lg border bg-white p-2">
             <DatePicker />
           </View>
 
-          <View className="rounded-lg border bg-white">
-            <TimeOfDayPicker
-              width={max([width / 2.2, 150])!}
-              height={SEARCH_HANDLE_HEIGHT / 2}
-            />
+          <View className="h-12 rounded-lg border bg-white">
+            <TimeOfDayPicker width={max([width / 2.2, 150])!} height={10} />
           </View>
         </View>
 
