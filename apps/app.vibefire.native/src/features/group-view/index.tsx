@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { capitalize } from "lodash";
 
 import { trpc } from "!/api/trpc-client";
 
@@ -33,7 +32,7 @@ export const GroupSheet = (props: { groupLinkID: string }) => {
               locations={[0, 1]}
             >
               <Text className="text-center text-2xl text-white">
-                {capitalize(group.name)}
+                {group.name}
               </Text>
             </LinearGradient>
           </View>

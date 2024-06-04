@@ -31,6 +31,7 @@ import { dfq } from "../utils";
 //   `;
 //   return await dfq<VibefireEventT[]>(faunaClient, q);
 // };
+
 export const callEventsInBBoxDuringPeriodForUser = async (
   faunaClient: Client,
   userAidOrAnon: string,

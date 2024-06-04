@@ -5,34 +5,34 @@ import { useItemSeparator } from "!/c/misc/ItemSeparator";
 
 export type SimpleListProps<T extends object> = {
   items: T[];
-  renderItem: (item: T) => React.ReactNode;
+  itemRenderer: (item: T) => React.ReactNode;
   noItemsComponent?: React.ReactNode;
-  options: {
+  styleOpts: {
     separatorHeight: number | undefined;
   };
 };
 
 const useListItemRenderer = <T extends object>(
-  renderItem: SimpleListProps<T>["renderItem"],
-  separatorHeight: SimpleListProps<T>["options"]["separatorHeight"],
+  itemRenderer: SimpleListProps<T>["itemRenderer"],
+  separatorHeight: SimpleListProps<T>["styleOpts"]["separatorHeight"],
 ) => {
   const ItemSeparator = useItemSeparator(separatorHeight);
   return useCallback(
     ({ item, index, length }: { item: T; index: number; length: number }) => (
       <View key={index}>
         {index !== 0 && index < length && separatorHeight && <ItemSeparator />}
-        {renderItem(item)}
+        {itemRenderer(item)}
       </View>
     ),
-    [ItemSeparator, renderItem, separatorHeight],
+    [ItemSeparator, itemRenderer, separatorHeight],
   );
 };
 
 export const SimpleList = <T extends object>(props: SimpleListProps<T>) => {
-  const { items, renderItem, noItemsComponent, options } = props;
+  const { items, itemRenderer, noItemsComponent, styleOpts: options } = props;
 
   const listItemRenderer = useListItemRenderer(
-    renderItem,
+    itemRenderer,
     options.separatorHeight,
   );
 

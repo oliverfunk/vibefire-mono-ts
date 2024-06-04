@@ -748,7 +748,6 @@ export class FaunaUserManager {
     const res = [
       {
         id: "test",
-        linkId: "test-group",
         name: "Test Group",
         description: "Test Group Description",
         bannerImgKey: "https://via.placeholder.com/150",
@@ -758,10 +757,15 @@ export class FaunaUserManager {
         ownerType: "user",
         managerIds: [],
         type: "public",
+        socials: {
+          facebook: "oli.funk",
+          instagram: "olii_funk",
+          tiktok: "",
+          twitter: "",
+        },
       },
       {
         id: "test2",
-        linkId: "test-group",
         name: "Test Group 2",
         description: "Test Group Description 2",
         bannerImgKey: "https://via.placeholder.com/150",
@@ -776,7 +780,7 @@ export class FaunaUserManager {
     return res;
   }
 
-  async groupByLinkID(userAc: ClerkAuthContext, linkID: string) {
+  async groupByID(userAc: ClerkAuthContext, groupId: string) {
     const res = {
       id: "test",
       linkId: "test-group",

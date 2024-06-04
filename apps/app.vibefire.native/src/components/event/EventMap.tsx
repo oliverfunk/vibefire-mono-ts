@@ -18,6 +18,12 @@ import { SEARCH_HANDLE_HEIGHT } from "!/c/bottom-panel/BottomPanelHandle";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
 
+function altitudeToZoomLevel(altitude: number): number {
+  const earthCircumference = 40075000; // Earth's circumference in meters
+  const zoomLevel = Math.round(Math.log2(earthCircumference / altitude));
+  return Math.max(0, Math.min(zoomLevel, 21));
+}
+
 const EventMapComponent = () => {
   const mvRef = useRef<MapView>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -67,13 +73,21 @@ const EventMapComponent = () => {
   const onMapRegionChange = useCallback(
     async (region: Region) => {
       const _bbox = mvRef.current?.boundingBoxForRegion(region);
-      const _zoomLevel = (await mvRef.current?.getCamera())?.zoom;
       if (_bbox === undefined) {
         return;
       }
+
+      const cam = await mvRef.current?.getCamera();
+      let _zoomLevel = cam?.zoom;
       if (_zoomLevel === undefined) {
-        return;
+        _zoomLevel = cam?.altitude;
+        if (_zoomLevel === undefined) {
+          return;
+        }
+        _zoomLevel = altitudeToZoomLevel(_zoomLevel);
       }
+
+      console.log(JSON.stringify(_zoomLevel, null, 2));
 
       setMapQueryPositionAtomDbc({
         northEast: {

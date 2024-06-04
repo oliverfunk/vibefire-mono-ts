@@ -44,7 +44,8 @@ import {
 } from "!/atoms";
 import { EventImageCarousel } from "!/c/event/EventImageCarousel";
 import { EventTimeline } from "!/c/event/EventTimeline";
-import { StandardImage, VibefireImage } from "!/c/image/VibefireImage";
+import { StandardImage } from "!/c/image/StandardImage";
+import { VibefireImage } from "!/c/image/VibefireImage";
 import { LocationDisplayMap } from "!/c/map/LocationDisplayMap";
 import {
   ErrorSheet,
