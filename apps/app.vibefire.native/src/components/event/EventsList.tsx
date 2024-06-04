@@ -5,7 +5,7 @@ import { type PartialDeep } from "type-fest";
 import { type VibefireEventT } from "@vibefire/models";
 import { isoNTZToUTCDateTime } from "@vibefire/utils";
 
-import { useSortByTime, useSortedEvents } from "!/hooks/useSortedByTime";
+import { useSortedEvents } from "!/hooks/useSortedByTime";
 
 import { SimpleList } from "!/c/list/SimpleList";
 import { useItemSeparator } from "!/c/misc/ItemSeparator";
@@ -226,9 +226,9 @@ export const EventsListSimpleChipView = ({
   return (
     <SimpleList
       items={sortedEvents}
-      renderItem={renderEventChip}
+      itemRenderer={renderEventChip}
       noItemsComponent={noEventsText}
-      options={{ separatorHeight: 4 }}
+      styleOpts={{ separatorHeight: 4 }}
     />
   );
 };

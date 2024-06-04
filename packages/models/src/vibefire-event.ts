@@ -3,7 +3,8 @@ import { Type as t, type Static } from "@sinclair/typebox";
 import {
   CoordSchema,
   TimePeriodSchema,
-  VibefireIndexableLocationSchema,
+  VibefireLocationSchema,
+  type VibefireIndexableLocationSchema,
 } from "./general";
 import { clearable } from "./utils";
 
@@ -110,7 +111,7 @@ export const VibefireEventSchema = t.Object({
 
   // search related
   rank: t.Number({ default: 0 }),
-  location: VibefireIndexableLocationSchema,
+  location: VibefireLocationSchema,
   displayZoomGroup: t.Union(
     [
       t.Literal(0), // "local"

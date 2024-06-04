@@ -48,3 +48,11 @@ export const VibefireIndexableLocationSchema = t.Object(
   },
   { default: undefined },
 );
+
+export const VibefireLocationSchema = t.Object(
+  {
+    addressDescription: t.String(),
+    position: CoordSchema,
+  },
+  { default: undefined },
+);

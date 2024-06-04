@@ -10,24 +10,6 @@ import { GroupChip } from "!/c/group/GroupChip";
 import { SimpleList } from "!/c/list/SimpleList";
 import { FlatListViewSheet } from "!/c/misc/sheet-utils";
 
-const useGroupChipRenderer = (onPress: (groupLinkId: string) => void) => {
-  return useCallback(
-    (group: VibefireGroupT) => (
-      <GroupChip
-        groupLinkId={group.linkId}
-        groupInfo={{
-          name: group.name,
-          bannerImgKey: group.bannerImgKey,
-          dateUpdatedUTC: group.dateUpdatedUTC,
-          notifications: 5,
-        }}
-        onPress={onPress}
-      />
-    ),
-    [onPress],
-  );
-};
-
 const useGroupCardRenderer = (
   onPress: (groupId: string, group: VibefireGroupT) => void,
 ) => {
@@ -122,14 +104,28 @@ export const GroupsListSimpleChipView = ({
   });
 
   const noGroupsText = useNoGroupsText(noGroupsMessage);
-  const renderGroupChip = useGroupChipRenderer(onPress);
+  const groupChipRenderer = useCallback(
+    (group: VibefireGroupT) => (
+      <GroupChip
+        groupLinkId={group.linkId}
+        groupInfo={{
+          name: group.name,
+          bannerImgKey: group.bannerImgKey,
+          dateUpdatedUTC: group.dateUpdatedUTC,
+          notifications: 5,
+        }}
+        onPress={onPress}
+      />
+    ),
+    [onPress],
+  );
 
   return (
     <SimpleList
       items={sortedGroups}
-      renderItem={renderGroupChip}
+      itemRenderer={groupChipRenderer}
       noItemsComponent={noGroupsText}
-      options={{ separatorHeight: 4 }}
+      styleOpts={{ separatorHeight: 4 }}
     />
   );
 };

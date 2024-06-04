@@ -25,6 +25,6 @@ export const groupsRouter = router({
     )
     .output((value) => value as VibefireGroupT)
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.groupByLinkID(ctx.auth, input.linkId);
+      return await ctx.fauna.groupByID(ctx.auth, input.linkId);
     }),
 });
