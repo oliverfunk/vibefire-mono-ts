@@ -10,7 +10,7 @@
     "FAUNA_SECRET",
     "VF_NOTIF_SERVICE_ACCESS_TOKEN"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
