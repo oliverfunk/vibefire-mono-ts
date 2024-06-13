@@ -51,7 +51,7 @@ export const UserProfileAuthenticatedView = (props: {
 
   return (
     <ScrollViewSheet>
-      <LinearRedOrangeView className="mt-1 flex-col space-y-5 py-10">
+      <View className="mt-1 flex-col space-y-5 py-5">
         {/* Name */}
         <View className="flex-col items-center justify-center space-y-2">
           <View className="rounded-lg bg-black p-4">
@@ -120,7 +120,7 @@ export const UserProfileAuthenticatedView = (props: {
           <SignOut />
           <DeleteAccount />
         </View>
-      </LinearRedOrangeView>
+      </View>
     </ScrollViewSheet>
   );
 };
