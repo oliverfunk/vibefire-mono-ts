@@ -85,7 +85,7 @@ export const VibefireGroup = t.Object({
     { default: {} },
   ),
 
-  specific: t.Union([
+  group: t.Union([
     t.Object({
       type: t.Literal("public"),
       // location - used for discoverability
@@ -106,7 +106,7 @@ export const VibefireGroup = t.Object({
   ]),
 
   // meta
-  dateCreatedUTC: t.String({ default: undefined }),
-  dateUpdatedUTC: t.String({ default: undefined }),
+  dtsCreatedUTC: t.String({ default: undefined }),
+  dtsUpdatedUTC: t.String({ default: undefined }),
 });
 export type VibefireGroupT = Static<typeof VibefireGroup>;
