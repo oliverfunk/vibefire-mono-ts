@@ -846,12 +846,12 @@ export class FaunaUserManager {
     return res;
   }
 
-  async getUserInfo(userAc: ClerkSignedInAuthContext) {
+  async getUserInfo(userAc: ClerkSignedInAuthContext, retry = false) {
     const retries = 3;
     const retryTimeout = 2000;
 
     let res = await getUserByAid(this.faunaClient, userAc.userId);
-    if (!res) {
+    if (retry && !res) {
       for (let i = 0; i < retries; i++) {
         await new Promise((resolve) => setTimeout(resolve, retryTimeout));
         res = await getUserByAid(this.faunaClient, userAc.userId);
