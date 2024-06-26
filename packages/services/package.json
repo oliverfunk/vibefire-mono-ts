@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
@@ -15,7 +15,7 @@
     "@vibefire/models": "0.1.0",
     "@vibefire/utils": "0.1.0",
     "axios": "0.27.2",
-    "fauna": "^1.1.0",
+    "fauna": "^2.0.1",
     "svix": "^1.10.0",
     "type-fest": "^4.8.2"
   },
