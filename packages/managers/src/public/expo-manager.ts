@@ -3,7 +3,7 @@
 
 import { Expo } from "expo-server-sdk";
 
-import { managersContext } from "~/managers-context";
+import { managersContext } from "!managers/managers-context";
 
 let _ExpoManager: ExpoManager | undefined;
 export const getExpoManager = (): ExpoManager => {

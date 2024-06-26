@@ -57,18 +57,19 @@ const VibefireGroupImages = t.Object({
   banners: t.Array(t.String(), { default: [] }),
 });
 
-export const VibefireGroup = t.Object({
+export type TVibefireGroup = Static<typeof VibefireGroupModel>;
+export const VibefireGroupModel = t.Object({
   id: t.String({ default: undefined }),
 
   // used for qr codes/share links, randomly generated when the link is created
   // can be removed or reset by owner/managers
   linkId: t.Optional(t.String({ default: undefined })),
 
-  ownerId: t.String({ default: undefined }),
+  ownerAid: t.String({ default: undefined }),
   ownerType: t.Union([t.Literal("user"), t.Literal("org")], {
     default: undefined,
   }),
-  managerIds: t.Array(t.String(), { default: [] }),
+  managerAids: t.Array(t.String(), { default: [] }),
 
   name: t.String({ default: undefined }),
   description: t.String({ default: undefined }),
@@ -109,4 +110,3 @@ export const VibefireGroup = t.Object({
   dtsCreatedUTC: t.String({ default: undefined }),
   dtsUpdatedUTC: t.String({ default: undefined }),
 });
-export type VibefireGroupT = Static<typeof VibefireGroup>;

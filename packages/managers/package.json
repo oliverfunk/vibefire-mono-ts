@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "jest",
+    "test": "DOTENV_CONFIG_PATH=.env.test jest --detectOpenHandles --forceExit",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
@@ -21,6 +21,7 @@
   "exports": {
     "./context": "./src/managers-context.ts",
     "./fauna-user": "./src/public/fauna-user-manager.ts",
+    "./uf-events": "./src/userfacing/events-uf-manager.ts",
     "./fauna-external": "./src/public/fauna-external-manager.ts",
     "./expo": "./src/public/expo-manager.ts",
     "./google-maps": "./src/public/google-maps-manager.ts",

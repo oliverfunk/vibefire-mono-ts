@@ -1,11 +1,20 @@
+import "reflect-metadata";
+
 import { trpcServer } from "@hono/trpc-server";
+import { Client } from "fauna";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { timing } from "hono/timing";
+import { container } from "tsyringe";
 
 import { BASEPATH_REST, BASEPATH_TRPC } from "@vibefire/api/basepaths";
 import { restRouter } from "@vibefire/api/rest";
 import { createContext, trpcRouter } from "@vibefire/api/trpc";
+import { EventsUFManger } from "@vibefire/managers/events-uf";
+import {
+  FaunaEventsRepository,
+  FaunaUsersRepository,
+} from "@vibefire/services/fauna";
 
 type Bindings = {
   CF_ACCOUNT_ID: string;
@@ -19,7 +28,27 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-app.use("*", timing());
+app.use(timing());
+
+app.use(async (c, next) => {
+  console.log(`[${c.req.method}] ${c.req.url}!`);
+
+  const faunaClient = new Client({
+    secret: c.env.FAUNA_SECRET,
+  });
+  console.log("1");
+  container.register<FaunaEventsRepository>(FaunaEventsRepository, {
+    useValue: new FaunaEventsRepository(faunaClient),
+  });
+  console.log("2");
+  container.register<FaunaUsersRepository>(FaunaUsersRepository, {
+    useValue: new FaunaUsersRepository(faunaClient),
+  });
+  console.log("3");
+  const a = container.resolve(EventsUFManger);
+  console.log("4");
+  await next();
+});
 
 app.onError((err, c) => {
   console.error(JSON.stringify(err, null, 2));
@@ -27,7 +56,7 @@ app.onError((err, c) => {
     // Get the custom response
     return err.getResponse();
   }
-  return c.text("internal error", 500);
+  return c.text("internal error!", 500);
 });
 
 app.all(`${BASEPATH_TRPC}/*`, (c, next) => {

@@ -1,6 +1,6 @@
 import { deleteUser, validateClerkWebhook } from "@vibefire/services/clerk";
 
-import { managersContext } from "~/managers-context";
+import { managersContext } from "!managers/managers-context";
 
 let _ClerkManager: ClerkManager | undefined;
 export const getClerkManager = (): ClerkManager => {
@@ -16,7 +16,6 @@ export const getClerkManager = (): ClerkManager => {
 export class ClerkManager {
   private clerkWebhookEventSecret?: string;
   private clerkSecretKey?: string;
-  // private clerkClient?: ClerkClientType;
   constructor(clerkSecret?: string, clerkWebhookEventSecret?: string) {
     this.clerkWebhookEventSecret = clerkWebhookEventSecret;
     if (clerkSecret) {

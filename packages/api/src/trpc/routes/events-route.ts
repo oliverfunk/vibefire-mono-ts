@@ -3,10 +3,9 @@ import { type PartialDeep } from "type-fest";
 
 import {
   CoordSchema,
+  EventUpdateModel,
   MapQuerySchema,
-  VibefireEventSchema,
-  type VibefireEventManagementT,
-  type VibefireEventT,
+  type TVibefireEvent,
 } from "@vibefire/models";
 import { tbValidator } from "@vibefire/utils";
 
@@ -17,180 +16,306 @@ import {
 } from "!api/trpc/trpc-router";
 
 export const eventsRouter = router({
-  positionAddressInfo: authedProcedure
+  // positionAddressInfo: authedProcedure
+  //   .input(
+  //     tbValidator(
+  //       t.Object({
+  //         position: CoordSchema,
+  //       }),
+  //     ),
+  //   )
+  //   .output((value) => value as string)
+  //   .mutation(async ({ ctx, input }) => {
+  //     return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
+  //       input.position,
+  //     );
+  //   }),
+
+  // todo: listUserHighlightsToday
+  // starredOwnedEvents: publicProcedure
+  //   .input(
+  //     tbValidator(
+  //       t.Object({
+  //         onDateIsoNTZ: t.String(),
+  //         isUpcoming: t.Boolean(),
+  //       }),
+  //     ),
+  //   )
+  //   .output((value) => value as VibefireEventT[])
+  //   .query(async ({ ctx, input }) => {
+  //     if (!ctx.auth.userId) {
+  //       return [];
+  //     }
+  //     const res = await ctx.fauna.eventsFromStarredOwnedInPeriodForUser(
+  //       ctx.auth,
+  //       input.onDateIsoNTZ,
+  //       input.isUpcoming,
+  //     );
+  //     return res;
+  //   }),
+
+  listSelfAll: authedProcedure
+    .output((value) => value as PartialDeep<TVibefireEvent>[])
+    .query(async ({ ctx, input }) => {
+      return await ctx.eventsManager.byUser({ userAid: ctx.auth.userId });
+    }),
+
+  listGroupAll: authedProcedure
     .input(
       tbValidator(
         t.Object({
-          position: CoordSchema,
+          groupId: t.String(),
         }),
       ),
     )
-    .output((value) => value as string)
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
-        input.position,
-      );
+    .output((value) => value as PartialDeep<TVibefireEvent>[])
+    .query(async ({ ctx, input }) => {
+      return await ctx.eventsManager.byGroup({
+        userAid: ctx.auth.userId,
+        groupId: input.groupId,
+        scope: "all",
+      });
     }),
-  eventsByUser: authedProcedure
+
+  listGroupPublished: publicProcedure
     .input(
       tbValidator(
         t.Object({
-          organisationId: t.Optional(t.String()),
+          groupId: t.String(),
         }),
       ),
     )
     .output((value) => value as PartialDeep<VibefireEventT>[])
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventsByUser(ctx.auth, input.organisationId);
+      return await ctx.eventsManager.byGroup({
+        userAid: ctx.auth.userId ?? undefined,
+        groupId: input.groupId,
+        scope: "published",
+      });
     }),
-  eventForEdit: authedProcedure
+
+  listPartOfPlanPublished: publicProcedure // todo: needs work
     .input(
       tbValidator(
         t.Object({
-          linkId: t.String(),
-          organisationId: t.Optional(t.String()),
+          planId: t.String(),
         }),
       ),
     )
-    .output((value) => value as Partial<VibefireEventT>)
+    .output((value) => value as TVibefireEvent[])
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventForEdit(
-        ctx.auth,
-        input.linkId,
-        input.organisationId,
-      );
+      return await ctx.eventsManager.byPartOf({
+        userAid: ctx.auth.userId ?? undefined,
+        planId: input.planId,
+        scope: "published",
+      });
     }),
-  eventAllInfoForManagement: authedProcedure
+
+  listPartOfPlanAll: authedProcedure
     .input(
       tbValidator(
         t.Object({
-          linkId: t.String(),
-          organisationId: t.Optional(t.String()),
+          planId: t.String(),
         }),
       ),
     )
-    .output(
-      (value) =>
-        value as {
-          event: VibefireEventT;
-          eventManagement: VibefireEventManagementT;
-        },
-    )
+    .output((value) => value as PartialDeep<TVibefireEvent>[])
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventAllInfoForManagement(
-        ctx.auth,
-        input.linkId,
-        input.organisationId,
-      );
+      return await ctx.eventsManager.byPartOf({
+        userAid: ctx.auth.userId,
+        planId: input.planId,
+        scope: "all",
+      });
     }),
-  eventForExternalView: publicProcedure
+
+  viewPublished: publicProcedure
     .input(
       tbValidator(
         t.Object({
-          linkId: t.String(),
+          eventId: t.String(),
         }),
       ),
     )
-    .output((value) => value as VibefireEventT)
+    .output((value) => value as TVibefireEvent)
     .query(async ({ ctx, input }) => {
-      return await ctx.fauna.publishedEventForExternalView(
-        ctx.auth.userId ?? "anon",
-        input.linkId,
-      );
+      return await ctx.eventsManager.view({
+        userAid: ctx.auth.userId ?? undefined,
+        eventId: input.eventId,
+        scope: "published",
+      });
     }),
-  createEvent: authedProcedure
+
+  viewManage: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+        }),
+      ),
+    )
+    .output((value) => value as TVibefireEvent)
+    .query(async ({ ctx, input }) => {
+      return await ctx.eventsManager.view({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+        scope: "manage",
+      });
+    }),
+
+  createForSelf: authedProcedure
     .input(
       tbValidator(
         t.Object({
           title: t.String(),
-          organisationId: t.Optional(t.String()),
+          fromPreviousEventId: t.Optional(t.String()),
         }),
       ),
     )
-    .output((value) => value as { linkId: string })
+    .output((value) => value as PartialDeep<TVibefireEvent>)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventCreate(
-        ctx.auth,
-        input.title,
-        input.organisationId,
-      );
+      let eventId: string;
+      if (input.fromPreviousEventId) {
+        eventId = await ctx.eventsManager.createFromPrevious({
+          userAid: ctx.auth.userId,
+          previousEventId: input.fromPreviousEventId,
+        });
+      } else {
+        eventId = await ctx.eventsManager.create({
+          userAid: ctx.auth.userId,
+          title: input.title,
+        });
+      }
+      return await ctx.eventsManager.view({
+        userAid: ctx.auth.userId,
+        eventId,
+        scope: "manage",
+      });
     }),
-  createEventFromPrevious: authedProcedure
+
+  createForGroup: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          title: t.String(),
+          groupId: t.String(),
+          fromPreviousEventId: t.Optional(t.String()),
+        }),
+      ),
+    )
+    .output((value) => value as PartialDeep<TVibefireEvent>)
+    .mutation(async ({ ctx, input }) => {
+      let eventId: string;
+      if (input.fromPreviousEventId) {
+        eventId = await ctx.eventsManager.createFromPrevious({
+          userAid: ctx.auth.userId,
+          forGroupId: input.groupId,
+          previousEventId: input.fromPreviousEventId,
+        });
+      } else {
+        eventId = await ctx.eventsManager.create({
+          userAid: ctx.auth.userId,
+          forGroupId: input.groupId,
+          title: input.title,
+        });
+      }
+      return await ctx.eventsManager.view({
+        userAid: ctx.auth.userId,
+        eventId,
+        scope: "manage",
+      });
+    }),
+
+  update: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
-          organisationId: t.Optional(t.String()),
+          update: t.Partial(EventUpdateModel),
         }),
       ),
     )
-    .output((value) => value as { linkId: string })
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventCreateFromPrevious(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
+      return await ctx.eventsManager.update({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+        updated: input.update,
+      });
     }),
-  deleteEvent: authedProcedure
+
+  updateVisibility: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
-          organisationId: t.Optional(t.String()),
+          update: t.Union([t.Literal("hidden"), t.Literal("published")]),
         }),
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventDelete(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
+      return await ctx.eventsManager.updateVisibility({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+        update: input.update,
+      });
     }),
-  updateEvent: authedProcedure
+
+  updateLinkId: authedProcedure
     .input(
       tbValidator(
         t.Object({
           eventId: t.String(),
-          organisationId: t.Optional(t.String()),
-
-          title: t.Optional(t.String()),
-          description: t.Optional(t.String()),
-          tags: t.Optional(t.Array(t.String())),
-
-          position: t.Optional(CoordSchema),
-          addressDescription: t.Optional(t.String()),
-
-          timeStartIsoNTZ: t.Optional(t.String()),
-          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
-
-          bannerImageId: t.Optional(t.String()),
-          additionalImageIds: t.Optional(t.Array(t.String())),
-
-          timeline: t.Optional(
-            t.Array(
-              t.Object({
-                id: t.String(),
-                timeIsoNTZ: t.String(),
-                message: t.String(),
-              }),
-            ),
-          ),
+          update: t.Union([t.Literal("remove"), t.Literal("regenerate")]),
         }),
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.fauna.eventUpdate(
-        ctx.auth,
-        input.eventId,
-        {
-          ...input,
-        },
-        input.timeline,
-        input.organisationId,
-      );
+      return await ctx.eventsManager.updateLinkId({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+        update: input.update,
+      });
     }),
+
+  updatePartOf: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+          update: t.Union([
+            t.Object({ type: t.Literal("remove") }),
+            t.Object({ type: t.Literal("set"), planId: t.String() }),
+          ]),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      let planId = undefined;
+      if (input.update.type === "set") {
+        planId = input.update.planId;
+      }
+      return await ctx.eventsManager.updatePartOf({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+        update: input.update.type,
+        planId,
+      });
+    }),
+
+  delete: authedProcedure
+    .input(
+      tbValidator(
+        t.Object({
+          eventId: t.String(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.eventsManager.delete({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+      });
+    }),
+
   createImageUploadLink: authedProcedure
     .input(
       tbValidator(
@@ -214,71 +339,26 @@ export const eventsRouter = router({
         input.organisationId,
       );
     }),
-  setPublished: authedProcedure
+
+  queryGeoPeriods: publicProcedure
     .input(
       tbValidator(
         t.Object({
-          eventId: t.String(),
+          position: CoordSchema,
+          radius: t.Number(),
+          fromDate: t.String(),
+          toDate: t.String(),
         }),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetPublished(ctx.auth, input.eventId);
-    }),
-  setUnpublished: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
-    }),
-  setVisibility: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
-          visibility: VibefireEventSchema.properties.visibility,
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetVisibility(
-        ctx.auth,
-        input.eventId,
-        input.visibility,
-        input.organisationId,
-      );
-    }),
-  starredOwnedEvents: publicProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          onDateIsoNTZ: t.String(),
-          isUpcoming: t.Boolean(),
-        }),
-      ),
-    )
-    .output((value) => value as VibefireEventT[])
+    .output((value) => value as TVibefireEvent[])
     .query(async ({ ctx, input }) => {
-      if (!ctx.auth.userId) {
-        return [];
-      }
-      const res = await ctx.fauna.eventsFromStarredOwnedInPeriodForUser(
+      return await ctx.eventsManagerFromGeoPeriods(
         ctx.auth,
-        input.onDateIsoNTZ,
-        input.isUpcoming,
+        input.position,
+        input.radius,
+        input.fromDate,
+        input.toDate,
       );
-      return res;
-    }),
-  mapPositionDatePublicEvents: publicProcedure
-    .input(tbValidator(MapQuerySchema))
-    .output((value) => value as VibefireEventT[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventsFromMapQuery(ctx.auth, input);
     }),
 });

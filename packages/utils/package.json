@@ -6,9 +6,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@sinclair/typebox": "0.32.30",
     "@vibefire/models": "0.1.0",
     "h3-js": "^4.1.0",
-    "@sinclair/typebox": "0.32.30",
     "hono": "4.3.4",
     "luxon": "^3.4.4",
     "type-fest": "^4.8.2"
