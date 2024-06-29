@@ -5,6 +5,7 @@ import {
   TEventType,
   TEventUpdate,
   TVibefireEvent,
+  TVibefireGroup,
   VibefireEventModel,
 } from "@vibefire/models";
 import {
@@ -129,22 +130,32 @@ export class EventsUFManger {
   //   return res;
   // }
 
-  private async isUserGroupManager(
-    userAid: string,
+  private async getGroup(
     groupId?: string,
-  ): Promise<Result<boolean | null, Error>> {
+  ): Promise<Result<TVibefireGroup | null, Error>> {
     if (!groupId) {
       return Result.justOk();
     }
-    return (await this.groupsRepo.getGroup(groupId).result).chain((group) => {
+    const getGroupRes = await this.groupsRepo.getGroup(groupId).result;
+    return getGroupRes.chain((group) => {
       if (!group) {
         return Result.err(new Error("This group does not exist"));
       }
-      if (group.ownerAid === userAid || group.managerAids.includes(userAid)) {
-        return Result.ok(true);
-      }
-      return Result.err(new Error("You do not manage this group"));
+      return Result.ok(group);
     });
+  }
+
+  private isUserGroupManager(
+    group: TVibefireGroup | null,
+    userAid: string,
+  ): Result<boolean | null, Error> {
+    if (!group) {
+      return Result.justOk();
+    }
+    if (group.ownerAid === userAid || group.managerAids.includes(userAid)) {
+      return Result.ok(true);
+    }
+    return Result.err(new Error("You do not manage this group"));
   }
 
   private async hasReachedDraftLimit(userAid: string, groupId?: string) {
@@ -168,20 +179,39 @@ export class EventsUFManger {
     forGroupId?: string;
     title: string;
     type: TEventType["type"];
+    private: boolean;
   }) {
     return asyncResultReturn(
       Result.fromResult(() => {
         const eventTypes = EventTypeModel.anyOf.map(
           (e) => e.properties.type.const,
         );
-        if (eventTypes.includes(p.type)) {
-          return Result.ok(true);
+        if (!eventTypes.includes(p.type)) {
+          return Result.err(new Error("You cannot create this event type"));
         }
-        return Result.err(new Error("Invalid event type"));
+        // non-group event
+        if (p.forGroupId === undefined && !p.private) {
+          return Result.err(
+            new Error("You cannot create public events as an individual"),
+          );
+        }
+        return Result.ok(true);
       })
         .chainAsync((_) => {
-          return this.isUserGroupManager(p.userAid, p.forGroupId);
+          return this.getGroup(p.forGroupId);
         })
+        .then(
+          resultChain((group) => {
+            if (group?.group.type === "private" && !p.private) {
+              return Result.err(
+                new Error(
+                  "This group is private and cannot make public events",
+                ),
+              );
+            }
+            return this.isUserGroupManager(group, p.userAid);
+          }),
+        )
         // check if the user is spamming create events
         // max 5 in draft
         .then(
@@ -195,23 +225,25 @@ export class EventsUFManger {
           }),
         )
         .then(
-          resultChain((userProfile) =>
-            filterNoneResult(userProfile, "Your profile does not exist"),
-          ),
+          resultChain((userProfile) => {
+            return filterNoneResult(userProfile, "Your profile does not exist");
+          }),
         )
         .then(
-          resultChain((userProfile) =>
-            tbValidatorResult(VibefireEventModel.properties.title)(
+          resultChain((userProfile) => {
+            return tbValidatorResult(VibefireEventModel.properties.title)(
               trimAndCropText(p.title, 100),
-            ).map((title) => ({ title, userProfile })),
-          ),
+            ).map((title) => ({ title, userProfile }));
+          }),
         )
         .then(
           resultChainAsync(async ({ title, userProfile }) => {
             return this.eventsRepo.create(
-              p.userAid,
+              p.type,
+              p.private,
+              p.forGroupId ?? p.userAid,
               userProfile.name,
-              "user",
+              p.forGroupId ? "group" : "user",
               title,
               DateTime.utc().toMillis(),
             ).result;
