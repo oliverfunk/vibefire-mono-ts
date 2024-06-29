@@ -1,6 +1,10 @@
 import { Client, fql } from "fauna";
 
-import { newVibefireEventModel, TVibefireEvent } from "@vibefire/models";
+import {
+  newVibefireEventModel,
+  TEventType,
+  TVibefireEvent,
+} from "@vibefire/models";
 
 import { faunaQuery } from "!services/fauna/utils";
 
@@ -8,6 +12,8 @@ export class FaunaEventsRepository {
   constructor(private readonly faunaClient: Client) {}
 
   create(
+    type: TEventType["type"],
+    publicVis: TEventType["public"],
     ownerId: TVibefireEvent["ownerId"],
     ownerName: TVibefireEvent["ownerName"],
     ownerType: TVibefireEvent["ownerType"],
@@ -15,6 +21,8 @@ export class FaunaEventsRepository {
     createdEpoch: TVibefireEvent["timeCreatedEpoch"],
   ) {
     const d = newVibefireEventModel({
+      type,
+      public: publicVis,
       ownerId,
       ownerName,
       ownerType,

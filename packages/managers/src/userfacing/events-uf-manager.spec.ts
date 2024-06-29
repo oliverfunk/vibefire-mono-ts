@@ -16,12 +16,13 @@ describe("events uf manager", () => {
     testUserAid = process.env.TEST_USER_AID!;
   });
 
-  describe("creating new events", () => {
+  describe("creating new private events", () => {
     it("should create an event", async () => {
       const r = await eventsManager.newEvent({
         userAid: testUserAid,
         title: "test title",
-        type: "event-private",
+        type: "event",
+        private: true,
       });
       expect(r.ok).toBe(true);
     });
@@ -52,6 +53,7 @@ describe("events uf manager", () => {
         userAid: testUserAid,
         title: "test title",
         type: "not-a-type" as any,
+        private: true,
       });
       expect(r.ok).toBe(false);
     });

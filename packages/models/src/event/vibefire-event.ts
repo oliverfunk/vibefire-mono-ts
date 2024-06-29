@@ -4,7 +4,7 @@ import { Value } from "@sinclair/typebox/value";
 import { TimePeriodSchema, VibefireLocationSchema } from "!models/general";
 import { clearable } from "!models/utils";
 
-import { EventTypeModel } from "./types";
+import { EventTypeModel, newEventType, TEventType } from "./types";
 
 const ImagesModel = t.Object(
   {
@@ -26,8 +26,8 @@ const TimesModel = t.Object(
   { default: {} },
 );
 
-export { EventTypeModel };
-export type TEventType = Static<typeof EventTypeModel>;
+export { EventTypeModel, type TEventType };
+
 export const EventUpdateModel = t.Partial(EventTypeModel);
 export type TEventUpdate = Static<typeof EventUpdateModel>;
 
@@ -79,7 +79,10 @@ export const VibefireEventModel = t.Object({
   timeCreatedEpoch: t.Number({ default: undefined }),
   timeUpdateEpoch: t.Number({ default: undefined }),
 });
+
 export const newVibefireEventModel = (p: {
+  type: TEventType["type"];
+  public: TEventType["public"];
   ownerId: TVibefireEvent["ownerId"];
   ownerName: TVibefireEvent["ownerName"];
   ownerType: TVibefireEvent["ownerType"];
@@ -94,5 +97,6 @@ export const newVibefireEventModel = (p: {
   d.title = p.title;
   d.timeCreatedEpoch = p.timeCreatedEpoch;
   d.timeUpdateEpoch = p.timeUpdateEpoch;
+  d.event = newEventType(p.type, p.public);
   return d;
 };
