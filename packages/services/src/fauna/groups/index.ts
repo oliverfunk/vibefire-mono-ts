@@ -7,7 +7,7 @@ import { faunaQuery } from "!services/fauna/utils";
 export class FaunaGroupsRepository {
   constructor(private readonly faunaClient: Client) {}
 
-  getGroup(groupId: string) {
+  getById(groupId: string) {
     return faunaQuery<TVibefireGroup | null>(
       this.faunaClient,
       fql`
@@ -16,7 +16,7 @@ export class FaunaGroupsRepository {
     );
   }
 
-  getGroupsManagedByUserWithAid(userAid: string) {
+  allManagedByUser(userAid: string) {
     return faunaQuery<string[]>(
       this.faunaClient,
       fql`
