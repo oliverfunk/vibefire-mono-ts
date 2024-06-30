@@ -132,12 +132,9 @@ export class EventsUFManger {
   // }
 
   private async getGroup(
-    groupId?: string,
-  ): Promise<Result<TVibefireGroup | null, Error>> {
-    if (!groupId) {
-      return Result.justOk();
-    }
-    const getGroupRes = await this.groupsRepo.getGroup(groupId).result;
+    groupId: string,
+  ): Promise<Result<TVibefireGroup, Error>> {
+    const getGroupRes = await this.groupsRepo.getById(groupId).result;
     return getGroupRes.chain((group) => {
       if (!group) {
         return Result.err(new Error("This group does not exist"));
@@ -179,10 +176,16 @@ export class EventsUFManger {
     type: TEventType["type"];
     private: boolean;
   }) {
-    let userProfileInfo: VibefireUserInfoT | undefined;
-    let group: TVibefireGroup | undefined;
+    const _passThrough: {
+      userProfileInfo: VibefireUserInfoT | undefined;
+      group: TVibefireGroup | undefined;
+    } = {
+      userProfileInfo: undefined,
+      group: undefined,
+    };
+
     return asyncResultReturn(
-      Result.fromResult(() => {
+      Result.fromAsyncResult(async () => {
         const eventTypes = EventTypeModel.anyOf.map(
           (e) => e.properties.type.const,
         );
@@ -197,24 +200,28 @@ export class EventsUFManger {
         }
         return Result.ok(true);
       })
-        .chainAsync((_) => {
-          return this.getGroup(p.forGroupId);
-        })
         .then(
-          resultChain((groupV) => {
-            if (!groupV) {
+          resultChainAsync(async (_) => {
+            if (!p.forGroupId) {
               return Result.justOk();
             }
-            group = groupV;
-
-            if (groupV.group.type === "private" && !p.private) {
+            return this.getGroup(p.forGroupId);
+          }),
+        )
+        .then(
+          resultChain((group) => {
+            if (!group) {
+              return Result.justOk();
+            }
+            _passThrough["group"] = group;
+            if (group.group.type === "private" && !p.private) {
               return Result.err(
                 new Error(
                   "This group is private and cannot make public events",
                 ),
               );
             }
-            return this.isUserGroupManager(groupV, p.userAid);
+            return this.isUserGroupManager(group, p.userAid);
           }),
         )
         // check if the user is spamming create events
@@ -236,7 +243,7 @@ export class EventsUFManger {
         )
         .then(
           resultChain((userProfile) => {
-            userProfileInfo = userProfile;
+            _passThrough["userProfileInfo"] = userProfile;
             return tbValidatorResult(VibefireEventModel.properties.title)(
               trimAndCropText(p.title, 100),
             );
@@ -244,11 +251,14 @@ export class EventsUFManger {
         )
         .then(
           resultChainAsync(async (title) => {
+            const ownerName =
+              _passThrough["group"]?.name ??
+              _passThrough["userProfileInfo"]!.name;
             return this.eventsRepo.create(
               p.type,
               p.private,
               p.forGroupId ?? p.userAid,
-              group?.name ?? userProfileInfo!.name,
+              ownerName,
               p.forGroupId ? "group" : "user",
               title,
               DateTime.utc().toMillis(),
@@ -258,11 +268,15 @@ export class EventsUFManger {
     );
   }
 
-  // async createFromPrevious(p: {
+  // async newEventFromPrevious(p: {
   //   userAid: string;
   //   forGroupId?: string;
-  //   previousEventId?: string;
-  // }): Promise<string> {}
+  //   previousEventId: string;
+  // }) {
+  //   return asyncResultReturn(Result.fromAsyncResult(async () => {
+
+  //   }));
+  // }
 
   async eventsByUser(p: { userAid: string }) {}
   async eventsByGroup(p: {
@@ -281,7 +295,57 @@ export class EventsUFManger {
     userAid?: string;
     eventId: string;
     scope: "manage" | "published";
-  }) {}
+  }) {
+    const eventRes = Result.fromAsyncResult(async () => {
+      if (p.scope === "manage" && !p.userAid) {
+        return Result.err(new Error("You must be signed in to view this"));
+      }
+      return (await this.eventsRepo.getById(p.eventId).result).chain((v) =>
+        filterNoneResult(v, "This event does not exist"),
+      );
+    });
+
+    if (p.scope == "manage") {
+      return asyncResultReturn(
+        eventRes
+          .then(
+            resultChainAsync(async (e) => {
+              if (e.ownerType == "group") {
+                // determine if the user can manage events in this step
+                return (await this.getGroup(e.ownerId)).chain((g) => {
+                  return this.isUserGroupManager(g, p.userAid!);
+                });
+              }
+              if (e.ownerId === p.userAid!) {
+                return Result.ok(true);
+              } else {
+                return Result.err(new Error("You do cannot manage this event"));
+              }
+            }),
+          )
+          .then(),
+      );
+    } else {
+    }
+    // Result.fromAsyncResult(async () => {
+    //   if (p.scope === "manage" && !p.userAid) {
+    //     return Result.err(new Error("You must be signed in to view this"));
+    //   }
+
+    //   const event = await this.eventsRepo.getById(p.eventId).result;
+    //   if (!event) {
+    //     return Result.err(new Error("This event does not exist"));
+    //   }
+    //   if (p.scope === "manage") {
+    //     if (event.ownerAid !== p.userAid) {
+    //       return Result.err(new Error("You do not own this event"));
+    //     }
+    //   } else if (event.state !== "published") {
+    //     return Result.err(new Error("This event is not published"));
+    //   }
+    //   return Result.ok(event);
+    // }),
+  }
 
   async updateEvent(p: {
     userAid: string;

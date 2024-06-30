@@ -69,6 +69,8 @@ export const VibefireGroupModel = t.Object({
   ownerType: t.Union([t.Literal("user"), t.Literal("org")], {
     default: undefined,
   }),
+
+  // todo: possibly change to canManageEvents
   managerAids: t.Array(t.String(), { default: [] }),
 
   name: t.String({ default: undefined }),

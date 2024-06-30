@@ -40,6 +40,15 @@ export class FaunaEventsRepository {
     );
   }
 
+  getById(eventId: string) {
+    return faunaQuery<TVibefireEvent | null>(
+      this.faunaClient,
+      fql`
+        Events.byId(${eventId})
+      `,
+    );
+  }
+
   allByStateFor(
     userAid: string,
     state: TVibefireEvent["state"],
