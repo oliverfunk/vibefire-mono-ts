@@ -23,19 +23,6 @@ const ModelEventTypeEventPublic = t.Object({
     },
   ),
   pois: t.Array(PoiModel, { default: [] }),
-  scoring: t.Object({
-    vibe: t.Union(
-      [
-        t.Literal(-2), // "Very chilled"
-        t.Literal(-1), // "Cool"
-        t.Literal(0), // "Neutral"
-        t.Literal(1), // "Warm"
-        t.Literal(2), // "Fire"
-      ],
-      { default: 0 },
-    ),
-    rank: t.Number({ default: 0 }),
-  }),
 });
 
 const ModelEventTypeEventPrivate = t.Object({
@@ -60,8 +47,8 @@ const ModelEventTypeWhenWherePrivate = t.Object({
   canView: t.Array(t.String(), { default: [] }),
 });
 
-export type TEventType = Static<typeof EventTypeModel>;
-export const EventTypeModel = t.Union(
+export type TModelEventType = Static<typeof ModelEventType>;
+export const ModelEventType = t.Union(
   [
     ModelEventTypeEventPublic,
     ModelEventTypeEventPrivate,
@@ -74,9 +61,9 @@ export const EventTypeModel = t.Union(
 );
 
 export const newEventType = (
-  type: TEventType["type"],
-  publicVis: TEventType["public"],
-): TEventType => {
+  type: TModelEventType["type"],
+  publicVis: TModelEventType["public"],
+): TModelEventType => {
   switch (type) {
     case "event":
       return publicVis

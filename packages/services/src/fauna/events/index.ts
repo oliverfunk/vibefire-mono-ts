@@ -18,7 +18,7 @@ export class FaunaEventsRepository {
     ownerName: TVibefireEvent["ownerName"],
     ownerType: TVibefireEvent["ownerType"],
     title: TVibefireEvent["title"],
-    createdEpoch: TVibefireEvent["timeCreatedEpoch"],
+    epochCreated: TVibefireEvent["epochCreated"],
   ) {
     const d = newVibefireEventModel({
       type,
@@ -27,8 +27,8 @@ export class FaunaEventsRepository {
       ownerName,
       ownerType,
       title,
-      timeCreatedEpoch: createdEpoch,
-      timeUpdateEpoch: createdEpoch,
+      epochCreated,
+      epochLastUpdated: epochCreated,
     });
     return faunaQuery<string>(
       this.faunaClient,

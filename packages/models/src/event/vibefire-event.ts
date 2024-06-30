@@ -4,32 +4,52 @@ import { Value } from "@sinclair/typebox/value";
 import { TimePeriodSchema, VibefireLocationSchema } from "!models/general";
 import { clearable } from "!models/utils";
 
-import { EventTypeModel, newEventType, TEventType } from "./types";
+import { ModelEventType, newEventType, TModelEventType } from "./types";
 
-const ImagesModel = t.Object(
+const ModelEventImages = t.Object(
   {
     bannerImgKeys: t.Array(t.String(), {
       minItems: 1,
       maxItems: 5,
+      uniqueItems: true,
     }),
-    customIcon: t.Optional(t.String()),
   },
   { default: {} },
 );
 
-const TimesModel = t.Object(
+const ModelEventTimes = t.Object(
   {
-    startTS: t.String({ default: undefined }),
-    endTS: clearable(t.String()),
+    tsStart: t.String({ default: undefined }),
+    tsEnd: clearable(t.String()),
     datePeriods: t.Array(TimePeriodSchema, { default: [] }),
   },
   { default: {} },
 );
 
-export { EventTypeModel, type TEventType };
+const ModelEventCustomMapData = t.Object({
+  zoomGroup: t.Union(
+    [
+      t.Literal(0), // local
+      t.Literal(1), // regional
+      t.Literal(2), // national
+    ],
+    { default: 0 },
+  ),
+  vibe: t.Union(
+    [
+      t.Literal(-2), // "Very chilled"
+      t.Literal(-1), // "Cool"
+      t.Literal(0), // "Neutral"
+      t.Literal(1), // "Warm"
+      t.Literal(2), // "Fire"
+    ],
+    { default: 0 },
+  ),
+  rank: t.Number({ default: 0 }),
+  customIcon: t.Optional(t.String()),
+});
 
-export const EventUpdateModel = t.Partial(EventTypeModel);
-export type TEventUpdate = Static<typeof EventUpdateModel>;
+export { ModelEventType as EventTypeModel, type TModelEventType as TEventType };
 
 export type TVibefireEvent = Static<typeof VibefireEventModel>;
 export const VibefireEventModel = t.Object({
@@ -59,44 +79,57 @@ export const VibefireEventModel = t.Object({
     { default: -1 },
   ),
 
-  title: t.String({ default: undefined, minLength: 2 }),
-  images: ImagesModel,
-  times: TimesModel,
+  title: t.String({
+    default: undefined,
+    minLength: 2,
+    maxLength: 100,
+  }),
+  images: ModelEventImages,
+  times: ModelEventTimes,
   location: VibefireLocationSchema,
 
-  event: EventTypeModel,
+  event: ModelEventType,
 
-  zoomGroup: t.Union(
-    [
-      t.Literal(0), // local
-      t.Literal(1), // regional
-      t.Literal(2), // national
-    ],
-    { default: 0 },
-  ),
+  map: ModelEventCustomMapData,
 
   // meta
-  timeCreatedEpoch: t.Number({ default: undefined }),
-  timeUpdateEpoch: t.Number({ default: undefined }),
+  epochCreated: t.Number({ default: undefined }),
+  epochLastUpdated: t.Number({ default: undefined }),
 });
 
 export const newVibefireEventModel = (p: {
-  type: TEventType["type"];
-  public: TEventType["public"];
+  type: TModelEventType["type"];
+  public: TModelEventType["public"];
   ownerId: TVibefireEvent["ownerId"];
   ownerName: TVibefireEvent["ownerName"];
   ownerType: TVibefireEvent["ownerType"];
   title: TVibefireEvent["title"];
-  timeCreatedEpoch: TVibefireEvent["timeCreatedEpoch"];
-  timeUpdateEpoch: TVibefireEvent["timeUpdateEpoch"];
+  epochCreated: TVibefireEvent["epochCreated"];
+  epochLastUpdated: TVibefireEvent["epochLastUpdated"];
 }): TVibefireEvent => {
   const d = Value.Create(VibefireEventModel);
   d.ownerId = p.ownerId;
   d.ownerName = p.ownerName;
   d.ownerType = p.ownerType;
   d.title = p.title;
-  d.timeCreatedEpoch = p.timeCreatedEpoch;
-  d.timeUpdateEpoch = p.timeUpdateEpoch;
+  d.epochCreated = p.epochCreated;
+  d.epochLastUpdated = p.epochLastUpdated;
   d.event = newEventType(p.type, p.public);
   return d;
 };
+
+export const ModelEventUpdate = t.Partial(
+  t.Object({
+    title: VibefireEventModel.properties.title,
+    images: t.Partial(ModelEventImages),
+    times: t.Partial(
+      t.Object({
+        tsStart: ModelEventTimes.properties.tsStart,
+        tsEnd: ModelEventTimes.properties.tsEnd,
+      }),
+    ),
+    location: t.Partial(VibefireLocationSchema),
+    event: t.Partial(ModelEventType),
+  }),
+);
+export type ModelEventUpdateT = Static<typeof ModelEventUpdate>;

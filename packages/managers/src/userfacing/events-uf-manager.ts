@@ -2,8 +2,9 @@ import { DateTime } from "luxon";
 
 import {
   EventTypeModel,
+  ModelEventUpdate,
+  ModelEventUpdateT,
   TEventType,
-  TEventUpdate,
   TVibefireEvent,
   TVibefireGroup,
   VibefireEventModel,
@@ -14,16 +15,10 @@ import {
   TGroupsRepository,
   TUsersRepository,
 } from "@vibefire/services/fauna";
-import {
-  asyncResultReturn,
-  filterNoneResult,
-  Result,
-  resultChain,
-  resultChainAsync,
-  tbValidator,
-  tbValidatorResult,
-  trimAndCropText,
-} from "@vibefire/utils";
+import { tbValidatorResult, trimAndCropText } from "@vibefire/utils";
+
+import { ManagerRuleError } from "!managers/errors";
+import { asyncWrapReturn, unwrapNullablePromise } from "!managers/utils";
 
 export class EventsUFManger {
   constructor(
@@ -131,42 +126,51 @@ export class EventsUFManger {
   //   return res;
   // }
 
-  private async getGroup(
-    groupId: string,
-  ): Promise<Result<TVibefireGroup, Error>> {
-    const getGroupRes = await this.groupsRepo.getById(groupId).result;
-    return getGroupRes.chain((group) => {
-      if (!group) {
-        return Result.err(new Error("This group does not exist"));
-      }
-      return Result.ok(group);
-    });
+  private getGroup(groupId: string): Promise<TVibefireGroup> {
+    return unwrapNullablePromise(
+      this.groupsRepo.getById(groupId).result,
+      "This group does not exist",
+    );
   }
 
-  private isUserGroupManager(
-    group: TVibefireGroup,
-    userAid: string,
-  ): Result<true, Error> {
-    if (group.ownerAid === userAid || group.managerAids.includes(userAid)) {
-      return Result.ok(true);
+  private getUserProfile(userAid: string) {
+    return unwrapNullablePromise(
+      this.usersRepo.getUserProfile(userAid).result,
+      "Your profile does not exist",
+    );
+  }
+
+  private getEvent(eventId: string): Promise<TVibefireEvent> {
+    return unwrapNullablePromise(
+      this.eventsRepo.getById(eventId).result,
+      "This event does not exist",
+    );
+  }
+
+  private checkUserGroupManager(group: TVibefireGroup, userAid: string) {
+    if (group.ownerAid !== userAid && !group.managerAids.includes(userAid)) {
+      throw new ManagerRuleError("You do not manage this group");
     }
-    return Result.err(new Error("You do not manage this group"));
   }
 
-  private async hasReachedDraftLimit(userAid: string, groupId?: string) {
-    return (
-      groupId
-        ? // -1 is draft
-          await this.eventsRepo.allByStateFor(groupId, -1, "group").result
-        : await this.eventsRepo.allByStateFor(userAid, -1, "user").result
-    ).chain((drafts) => {
-      if (drafts.length >= 5) {
-        return groupId
-          ? Result.err(new Error("Your group has too many draft events"))
-          : Result.err(new Error("You have too many draft events"));
-      }
-      return Result.ok(false);
-    });
+  private checkUserEventOwner(event: TVibefireEvent, userAid: string) {
+    if (event.ownerId !== userAid) {
+      throw new ManagerRuleError("You do not manage this group");
+    }
+  }
+
+  private async checkHasReachedDraftLimit(userAid: string, groupId?: string) {
+    const drafts = groupId
+      ? // -1 is draft
+        await this.eventsRepo.allByStateFor(groupId, -1, "group").result
+      : await this.eventsRepo.allByStateFor(userAid, -1, "user").result;
+    if (drafts.length >= 5) {
+      throw new ManagerRuleError(
+        groupId
+          ? "Your group has too many draft events"
+          : "You have too many draft events",
+      );
+    }
   }
 
   newEvent(p: {
@@ -176,107 +180,114 @@ export class EventsUFManger {
     type: TEventType["type"];
     private: boolean;
   }) {
-    const _passThrough: {
-      userProfileInfo: VibefireUserInfoT | undefined;
-      group: TVibefireGroup | undefined;
-    } = {
-      userProfileInfo: undefined,
-      group: undefined,
-    };
+    return asyncWrapReturn(async () => {
+      const eventTypes = EventTypeModel.anyOf.map(
+        (e) => e.properties.type.const,
+      );
+      if (!eventTypes.includes(p.type)) {
+        throw new ManagerRuleError("You cannot create this event type");
+      }
 
-    return asyncResultReturn(
-      Result.fromAsyncResult(async () => {
-        const eventTypes = EventTypeModel.anyOf.map(
-          (e) => e.properties.type.const,
+      // non-group event
+      if (p.forGroupId === undefined && !p.private) {
+        throw new ManagerRuleError(
+          "You cannot create public events as an individual",
         );
-        if (!eventTypes.includes(p.type)) {
-          return Result.err(new Error("You cannot create this event type"));
-        }
-        // non-group event
-        if (p.forGroupId === undefined && !p.private) {
-          return Result.err(
-            new Error("You cannot create public events as an individual"),
+      }
+
+      const group = p.forGroupId ? await this.getGroup(p.forGroupId) : null;
+      if (group) {
+        if (group.group.type === "private" && !p.private) {
+          throw new ManagerRuleError(
+            "This group is private and cannot make public events",
           );
         }
-        return Result.ok(true);
-      })
-        .then(
-          resultChainAsync(async (_) => {
-            if (!p.forGroupId) {
-              return Result.justOk();
-            }
-            return this.getGroup(p.forGroupId);
-          }),
+        this.checkUserGroupManager(group, p.userAid);
+      }
+
+      this.checkHasReachedDraftLimit(p.userAid, p.forGroupId);
+
+      const title = tbValidatorResult(VibefireEventModel.properties.title)(
+        trimAndCropText(p.title, 100),
+      )
+        .map(
+          (value) => value,
+          (err) => new ManagerRuleError(err.message),
         )
-        .then(
-          resultChain((group) => {
-            if (!group) {
-              return Result.justOk();
-            }
-            _passThrough["group"] = group;
-            if (group.group.type === "private" && !p.private) {
-              return Result.err(
-                new Error(
-                  "This group is private and cannot make public events",
-                ),
-              );
-            }
-            return this.isUserGroupManager(group, p.userAid);
-          }),
-        )
-        // check if the user is spamming create events
-        // max 5 in draft
-        .then(
-          resultChainAsync((_) => {
-            return this.hasReachedDraftLimit(p.userAid, p.forGroupId);
-          }),
-        )
-        .then(
-          resultChainAsync((_) => {
-            return this.usersRepo.getUserProfile(p.userAid).result;
-          }),
-        )
-        .then(
-          resultChain((userProfile) => {
-            return filterNoneResult(userProfile, "Your profile does not exist");
-          }),
-        )
-        .then(
-          resultChain((userProfile) => {
-            _passThrough["userProfileInfo"] = userProfile;
-            return tbValidatorResult(VibefireEventModel.properties.title)(
-              trimAndCropText(p.title, 100),
-            );
-          }),
-        )
-        .then(
-          resultChainAsync(async (title) => {
-            const ownerName =
-              _passThrough["group"]?.name ??
-              _passThrough["userProfileInfo"]!.name;
-            return this.eventsRepo.create(
-              p.type,
-              p.private,
-              p.forGroupId ?? p.userAid,
-              ownerName,
-              p.forGroupId ? "group" : "user",
-              title,
-              DateTime.utc().toMillis(),
-            ).result;
-          }),
-        ),
-    );
+        .unwrap();
+
+      const userProfile = await this.getUserProfile(p.userAid);
+
+      const ownerName = group?.name ?? userProfile.name;
+
+      const eventId = await this.eventsRepo.create(
+        p.type,
+        p.private,
+        p.forGroupId ?? p.userAid,
+        ownerName,
+        p.forGroupId ? "group" : "user",
+        title,
+        DateTime.utc().toMillis(),
+      ).result;
+
+      return eventId;
+    });
   }
 
-  // async newEventFromPrevious(p: {
-  //   userAid: string;
-  //   forGroupId?: string;
-  //   previousEventId: string;
-  // }) {
-  //   return asyncResultReturn(Result.fromAsyncResult(async () => {
+  async newEventFromPrevious(p: {
+    userAid: string;
+    forGroupId?: string;
+    previousEventId: string;
+  }) {
+    return asyncWrapReturn(async () => {
+      const viewEventRes = await this.viewEvent({
+        userAid: p.userAid,
+        eventId: p.previousEventId,
+        scope: "manage",
+      });
+      if (!viewEventRes.ok) {
+        return viewEventRes;
+      }
+      this.checkHasReachedDraftLimit(p.userAid, p.forGroupId);
 
-  //   }));
-  // }
+      const e = viewEventRes.value;
+
+      // be pretty unlikey this happens
+      if (p.forGroupId && e.ownerId !== p.forGroupId) {
+        throw new ManagerRuleError("This event is not part of this group");
+      }
+
+      const eNewId = await this.eventsRepo.create(
+        e.event.type,
+        e.event.public,
+        e.ownerId,
+        e.ownerName,
+        e.ownerType,
+        e.title,
+        DateTime.utc().toMillis(),
+      ).result;
+
+      const eNew = await this.getEvent(eNewId);
+
+      // copy over the rest of the event
+      eNew.times = e.times;
+      eNew.location = e.location;
+      eNew.images = e.images;
+      eNew.event = e.event;
+
+      // update the new event
+      const updateEventRes = await this.updateEvent({
+        userAid: p.userAid,
+        eventId: eNewId,
+        update: eNew,
+      });
+      if (!updateEventRes.ok) {
+        return updateEventRes;
+      }
+
+      return eNew;
+    });
+  }
 
   async eventsByUser(p: { userAid: string }) {}
   async eventsByGroup(p: {
@@ -296,62 +307,55 @@ export class EventsUFManger {
     eventId: string;
     scope: "manage" | "published";
   }) {
-    const eventRes = Result.fromAsyncResult(async () => {
+    return asyncWrapReturn(async () => {
       if (p.scope === "manage" && !p.userAid) {
-        return Result.err(new Error("You must be signed in to view this"));
+        throw new ManagerRuleError("You must be signed in to view this");
       }
-      return (await this.eventsRepo.getById(p.eventId).result).chain((v) =>
-        filterNoneResult(v, "This event does not exist"),
-      );
+
+      const e = await this.getEvent(p.eventId);
+
+      if (p.scope == "manage") {
+        if (e.ownerType == "group") {
+          const g = await this.getGroup(e.ownerId);
+          this.checkUserGroupManager(g, p.userAid!);
+        } else {
+          this.checkUserEventOwner(e, p.userAid!);
+        }
+      } else if (p.scope == "published") {
+        if (e.state !== 1) {
+          throw new ManagerRuleError("This event is not published");
+        }
+        if (e.event.public === false && !e.event.canView.includes(p.userAid!)) {
+          throw new ManagerRuleError("This event is private");
+        }
+        // published and (public or private and can view)
+      } else {
+        throw new ManagerRuleError("Invalid scope");
+      }
+
+      return e as TVibefireEvent;
     });
-
-    if (p.scope == "manage") {
-      return asyncResultReturn(
-        eventRes
-          .then(
-            resultChainAsync(async (e) => {
-              if (e.ownerType == "group") {
-                // determine if the user can manage events in this step
-                return (await this.getGroup(e.ownerId)).chain((g) => {
-                  return this.isUserGroupManager(g, p.userAid!);
-                });
-              }
-              if (e.ownerId === p.userAid!) {
-                return Result.ok(true);
-              } else {
-                return Result.err(new Error("You do cannot manage this event"));
-              }
-            }),
-          )
-          .then(),
-      );
-    } else {
-    }
-    // Result.fromAsyncResult(async () => {
-    //   if (p.scope === "manage" && !p.userAid) {
-    //     return Result.err(new Error("You must be signed in to view this"));
-    //   }
-
-    //   const event = await this.eventsRepo.getById(p.eventId).result;
-    //   if (!event) {
-    //     return Result.err(new Error("This event does not exist"));
-    //   }
-    //   if (p.scope === "manage") {
-    //     if (event.ownerAid !== p.userAid) {
-    //       return Result.err(new Error("You do not own this event"));
-    //     }
-    //   } else if (event.state !== "published") {
-    //     return Result.err(new Error("This event is not published"));
-    //   }
-    //   return Result.ok(event);
-    // }),
   }
 
   async updateEvent(p: {
     userAid: string;
     eventId: string;
-    updated: Partial<TEventUpdate>;
-  }) {}
+    update: Partial<ModelEventUpdateT>;
+  }) {
+    return asyncWrapReturn(async () => {
+      const e = await this.getEvent(p.eventId);
+      this.checkUserEventOwner(e, p.userAid);
+
+      const update = tbValidatorResult(ModelEventUpdate)(p.update)
+        .map(
+          (value) => value,
+          (err) => new ManagerRuleError(err.message),
+        )
+        .unwrap();
+
+      await this.eventsRepo.update(p.eventId, update).result;
+    });
+  }
 
   async updateEventVisibility(p: {
     userAid: string;
