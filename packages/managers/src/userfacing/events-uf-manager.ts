@@ -7,6 +7,7 @@ import {
   TVibefireEvent,
   TVibefireGroup,
   VibefireEventModel,
+  VibefireUserInfoT,
 } from "@vibefire/models";
 import {
   TEventsRepository,
@@ -146,12 +147,9 @@ export class EventsUFManger {
   }
 
   private isUserGroupManager(
-    group: TVibefireGroup | null,
+    group: TVibefireGroup,
     userAid: string,
-  ): Result<boolean | null, Error> {
-    if (!group) {
-      return Result.justOk();
-    }
+  ): Result<true, Error> {
     if (group.ownerAid === userAid || group.managerAids.includes(userAid)) {
       return Result.ok(true);
     }
@@ -181,6 +179,8 @@ export class EventsUFManger {
     type: TEventType["type"];
     private: boolean;
   }) {
+    let userProfileInfo: VibefireUserInfoT | undefined;
+    let group: TVibefireGroup | undefined;
     return asyncResultReturn(
       Result.fromResult(() => {
         const eventTypes = EventTypeModel.anyOf.map(
@@ -201,15 +201,20 @@ export class EventsUFManger {
           return this.getGroup(p.forGroupId);
         })
         .then(
-          resultChain((group) => {
-            if (group?.group.type === "private" && !p.private) {
+          resultChain((groupV) => {
+            if (!groupV) {
+              return Result.justOk();
+            }
+            group = groupV;
+
+            if (groupV.group.type === "private" && !p.private) {
               return Result.err(
                 new Error(
                   "This group is private and cannot make public events",
                 ),
               );
             }
-            return this.isUserGroupManager(group, p.userAid);
+            return this.isUserGroupManager(groupV, p.userAid);
           }),
         )
         // check if the user is spamming create events
@@ -231,18 +236,19 @@ export class EventsUFManger {
         )
         .then(
           resultChain((userProfile) => {
+            userProfileInfo = userProfile;
             return tbValidatorResult(VibefireEventModel.properties.title)(
               trimAndCropText(p.title, 100),
-            ).map((title) => ({ title, userProfile }));
+            );
           }),
         )
         .then(
-          resultChainAsync(async ({ title, userProfile }) => {
+          resultChainAsync(async (title) => {
             return this.eventsRepo.create(
               p.type,
               p.private,
               p.forGroupId ?? p.userAid,
-              userProfile.name,
+              group?.name ?? userProfileInfo!.name,
               p.forGroupId ? "group" : "user",
               title,
               DateTime.utc().toMillis(),
