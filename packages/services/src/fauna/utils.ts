@@ -27,10 +27,10 @@ export const CreateCollectionIfDne = (collectionName: string) => {
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
-): Promise<Result<R, Error>> => {
+): Promise<R> => {
   try {
     const qr = await faunaClient.query<R>(query);
-    return Result.ok(qr.data);
+    return qr.data;
   } catch (e) {
     if (e instanceof QueryCheckError) {
       e.message = `\n\n-----------\n${e.name} [${e.code}]:\n${e.message}\n${e.queryInfo?.summary}\n-----------\n`;
@@ -46,7 +46,7 @@ export const faunaQuery = <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
 ): {
-  result: Promise<Result<R, Error>>;
+  result: Promise<R>;
   query: Query;
 } => ({
   result: runFaunaQuery<R>(faunaClient, query),

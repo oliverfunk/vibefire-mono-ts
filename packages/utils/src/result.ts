@@ -1,3 +1,4 @@
+import { ManagerRuleError } from "../../managers/src/errors";
 import { AsyncResult, Result } from "./_result";
 
 // Result.Ok.prototype.chain_async = function (a: string) {};
@@ -5,7 +6,7 @@ import { AsyncResult, Result } from "./_result";
 
 // re-export Result from @badrap/result
 // only need to use this utils package then
-export { Result };
+export { Result, type AsyncResult };
 
 export const resultChainAsync =
   <T, E extends Error, U>(fn: (value: T) => AsyncResult<U, E>) =>
@@ -27,6 +28,13 @@ export const filterNoneResult = <T>(
   filterNone(value)
     ? Result.ok(value)
     : Result.err(new Error(message ?? "Value is none"));
+
+export const fromNoneResult = <T>(
+  result: Result<T | undefined | null, Error>,
+  message?: string,
+) => {
+  return result.chain((value) => filterNoneResult(value, message));
+};
 
 type ResultReturnOk<T> = {
   ok: true;
