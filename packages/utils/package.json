@@ -6,7 +6,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sinclair/typebox": "0.32.30",
+    "@sinclair/typebox": "0.32.34",
     "@vibefire/models": "0.1.0",
     "h3-js": "^4.1.0",
     "hono": "4.3.4",

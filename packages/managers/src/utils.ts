@@ -1,6 +1,6 @@
-import { ResultReturn } from "@vibefire/utils";
+import { Result, type AsyncResult } from "@vibefire/utils";
 
-import { ManagerRuleError } from "./errors";
+import { ManagerRuleViolation } from "./errors";
 
 export const unwrapNullablePromise = async <T, E extends Error>(
   value: Promise<T | null | undefined>,
@@ -10,32 +10,21 @@ export const unwrapNullablePromise = async <T, E extends Error>(
   if (!!t) {
     return t;
   }
-  throw new ManagerRuleError(message);
+  throw new ManagerRuleViolation(message);
 };
 
-export const asyncWrapReturn = async <T>(
+export const managerResult = async <T>(
   fn: () => Promise<T>,
-): Promise<ResultReturn<T>> => {
+): AsyncResult<T, Error> => {
   try {
     const value = await fn();
-    return {
-      ok: true,
-      value,
-      ise: false,
-    };
+
+    return Result.ok(value);
   } catch (error) {
-    if (error instanceof ManagerRuleError) {
-      return {
-        ok: false,
-        message: error.message,
-        ise: false,
-      };
+    if (error instanceof ManagerRuleViolation) {
+      return Result.err(error);
     }
     console.error(error);
-    return {
-      ok: false,
-      message: "Something went wrong, we're looking into it. :(",
-      ise: true,
-    };
+    return Result.err(error as Error);
   }
 };

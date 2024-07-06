@@ -1,6 +1,6 @@
-export class ManagerRuleError extends Error {
+export class ManagerRuleViolation extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "RuleError";
+    this.name = "ManagerRuleViolation";
   }
 }

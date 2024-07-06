@@ -23,7 +23,7 @@ export const createContext = async ({ req, env }: CreateContextOptions) => {
       env.clerkPemString,
       req,
     ),
-    eventsManager: new EventsUFManger(fauna.events, fauna.users),
+    eventsManager: new EventsUFManger(fauna.Events, fauna.Users, fauna.Groups),
   } as ContextProps;
 };
 
@@ -33,5 +33,6 @@ export type CreateContextOptions = FetchCreateContextFnOptions & {
     clerkSecretKey: string;
     clerkPemString: string;
     faunaClientKey: string;
+    googleMapsApiKey: string;
   };
 };

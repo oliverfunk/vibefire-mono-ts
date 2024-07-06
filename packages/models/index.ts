@@ -4,3 +4,6 @@ export * from "!models/general";
 export * from "!models/state/app-user-state";
 export * from "!models/vibefire-group";
 export * from "!models/event/vibefire-event";
+export * from "!models/event/vibefire-plan";
+export * from "!models/state/result-return";
+export * from "!models/state/pageable";

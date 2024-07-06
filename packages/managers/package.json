@@ -20,6 +20,7 @@
   },
   "exports": {
     "./context": "./src/managers-context.ts",
+    "./errors": "./src/errors.ts",
     "./fauna-user": "./src/public/fauna-user-manager.ts",
     "./uf-events": "./src/userfacing/events-uf-manager.ts",
     "./fauna-external": "./src/public/fauna-external-manager.ts",
