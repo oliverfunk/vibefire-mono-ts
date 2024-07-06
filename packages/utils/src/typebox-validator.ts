@@ -146,3 +146,7 @@ export const tbValidatorWithCompile = <S extends TSchema>(schema: S) => {
     throw new SchemaValidationError(check.Errors(value), schema.title);
   };
 };
+
+export const tbClean = <S extends TSchema, T>(schema: S, value: T) => {
+  return Value.Clean(schema, value) as T;
+};

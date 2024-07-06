@@ -1,4 +1,4 @@
-import { Static, Type as t } from "@sinclair/typebox";
+import { Type as t, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
 import {

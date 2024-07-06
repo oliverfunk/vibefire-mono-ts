@@ -8,7 +8,7 @@
     "update-latest": "pnpm update --latest"
   },
   "dependencies": {
-    "@sinclair/typebox": "0.32.30",
+    "@sinclair/typebox": "0.32.34",
     "@trpc/server": "next",
     "@vibefire/managers": "0.1.0",
     "@vibefire/models": "0.1.0",

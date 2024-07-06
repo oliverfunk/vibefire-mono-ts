@@ -3,9 +3,8 @@ import { type PartialDeep } from "type-fest";
 
 import {
   CoordSchema,
-  EventUpdateModel,
-  MapQuerySchema,
-  type TVibefireEvent,
+  type Pageable,
+  type TModelVibefireEvent,
 } from "@vibefire/models";
 import { tbValidator } from "@vibefire/utils";
 
@@ -14,6 +13,7 @@ import {
   publicProcedure,
   router,
 } from "!api/trpc/trpc-router";
+import { wrapManagerReturn, type ApiReturn } from "!api/utils";
 
 export const eventsRouter = router({
   // positionAddressInfo: authedProcedure
@@ -54,28 +54,28 @@ export const eventsRouter = router({
   //     return res;
   //   }),
 
-  listSelfAll: authedProcedure
-    .output((value) => value as PartialDeep<TVibefireEvent>[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.byUser({ userAid: ctx.auth.userId });
-    }),
-
-  listGroupAll: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          groupId: t.String(),
-        }),
-      ),
-    )
-    .output((value) => value as PartialDeep<TVibefireEvent>[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.byGroup({
+  listSelfAll: authedProcedure.query(({ ctx }) =>
+    wrapManagerReturn(() => {
+      return ctx.eventsManager.eventsByUser({
         userAid: ctx.auth.userId,
-        groupId: input.groupId,
-        scope: "all",
       });
     }),
+  ),
+
+  listGroupAll: authedProcedure
+    .input(tbValidator(t.Object({ groupId: t.String() })))
+    // .output(
+    //   (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
+    // )
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        ctx.eventsManager.eventsByGroup({
+          userAid: ctx.auth.userId,
+          groupId: input.groupId,
+          scope: "all",
+        }),
+      ),
+    ),
 
   listGroupPublished: publicProcedure
     .input(
@@ -85,14 +85,18 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as PartialDeep<VibefireEventT>[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.byGroup({
-        userAid: ctx.auth.userId ?? undefined,
-        groupId: input.groupId,
-        scope: "published",
-      });
-    }),
+    .output(
+      (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
+    )
+    .query(async ({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        ctx.eventsManager.eventsByGroup({
+          userAid: ctx.auth.userId ?? undefined,
+          groupId: input.groupId,
+          scope: "published",
+        }),
+      ),
+    ),
 
   listPartOfPlanPublished: publicProcedure // todo: needs work
     .input(
@@ -102,14 +106,18 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TVibefireEvent[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.byPartOf({
-        userAid: ctx.auth.userId ?? undefined,
-        planId: input.planId,
-        scope: "published",
-      });
-    }),
+    // .output(
+    //   (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
+    // )
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        ctx.eventsManager.eventsPartOf({
+          userAid: ctx.auth.userId ?? undefined,
+          planId: input.planId,
+          scope: "published",
+        }),
+      ),
+    ),
 
   listPartOfPlanAll: authedProcedure
     .input(
@@ -119,7 +127,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as PartialDeep<TVibefireEvent>[])
+    .output((value) => value as PartialDeep<TModelVibefireEvent>[])
     .query(async ({ ctx, input }) => {
       return await ctx.eventsManager.byPartOf({
         userAid: ctx.auth.userId,
@@ -136,7 +144,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TVibefireEvent)
+    .output((value) => value as TModelVibefireEvent)
     .query(async ({ ctx, input }) => {
       return await ctx.eventsManager.view({
         userAid: ctx.auth.userId ?? undefined,
@@ -153,7 +161,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TVibefireEvent)
+    .output((value) => value as TModelVibefireEvent)
     .query(async ({ ctx, input }) => {
       return await ctx.eventsManager.view({
         userAid: ctx.auth.userId,
@@ -171,7 +179,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as PartialDeep<TVibefireEvent>)
+    .output((value) => value as PartialDeep<TModelVibefireEvent>)
     .mutation(async ({ ctx, input }) => {
       let eventId: string;
       if (input.fromPreviousEventId) {
@@ -202,7 +210,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as PartialDeep<TVibefireEvent>)
+    .output((value) => value as PartialDeep<TModelVibefireEvent>)
     .mutation(async ({ ctx, input }) => {
       let eventId: string;
       if (input.fromPreviousEventId) {
@@ -351,7 +359,7 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TVibefireEvent[])
+    .output((value) => value as TModelVibefireEvent[])
     .query(async ({ ctx, input }) => {
       return await ctx.eventsManagerFromGeoPeriods(
         ctx.auth,
