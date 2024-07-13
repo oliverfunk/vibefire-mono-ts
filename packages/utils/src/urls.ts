@@ -1,4 +1,4 @@
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 
 const encodeQueryParameters = (params: { [key: string]: string }) => {
   return Object.entries(params)
@@ -19,7 +19,7 @@ export const vibefireEventShareLocalURL = (linkId: string) => {
 
 export const uberClientRequestToEventLocationURL = (
   uberClientID: string,
-  event: VibefireEventT,
+  event: TModelVibefireEvent,
 ) => {
   const { lat, lng } = event.location.position;
   const { addressDescription } = event.location;
@@ -35,7 +35,7 @@ export const uberClientRequestToEventLocationURL = (
   return url;
 };
 
-export const googleMapsOpenEventLocationURL = (event: VibefireEventT) => {
+export const googleMapsOpenEventLocationURL = (event: TModelVibefireEvent) => {
   const { lat, lng } = event.location.position;
   const { addressDescription } = event.location;
   const queryParams = encodeQueryParameters({
@@ -46,7 +46,7 @@ export const googleMapsOpenEventLocationURL = (event: VibefireEventT) => {
   return url;
 };
 
-export const appleMapsOpenEventLocationURL = (event: VibefireEventT) => {
+export const appleMapsOpenEventLocationURL = (event: TModelVibefireEvent) => {
   const { lat, lng } = event.location.position;
   const { addressDescription } = event.location;
   const queryParams = encodeQueryParameters({

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "DOTENV_CONFIG_PATH=.env.test jest --detectOpenHandles",
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },

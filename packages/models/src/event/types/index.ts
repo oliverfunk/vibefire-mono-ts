@@ -4,47 +4,36 @@ import { Value } from "@sinclair/typebox/value";
 import {
   EventDetailDescModel,
   EventDetailOffersModel,
+  EventDetailPoiModel,
   EventDetailTimelineModel,
-  PoiModel,
 } from "./detail";
 
 const ModelEventTypeEventPublic = t.Object({
-  type: t.Literal("event"),
-  public: t.Literal(true),
-  tags: t.Array(t.String(), { default: [], uniqueItems: true }),
+  type: t.Literal("event-public"),
   details: t.Array(
     t.Union([
       EventDetailDescModel,
       EventDetailTimelineModel,
       EventDetailOffersModel,
+      EventDetailPoiModel,
     ]),
     {
       default: [],
     },
   ),
-  pois: t.Array(PoiModel, { default: [] }),
+  tags: t.Array(t.String(), { default: [], uniqueItems: true }),
 });
 
 const ModelEventTypeEventPrivate = t.Object({
-  type: t.Literal("event"),
-  public: t.Literal(false),
+  type: t.Literal("event-private"),
   details: t.Array(t.Union([EventDetailDescModel, EventDetailTimelineModel]), {
     default: [],
   }),
-  canView: t.Array(t.String(), { default: [] }),
 });
 
-const ModelEventTypeWhenWherePublic = t.Object({
+const ModelEventTypeWhenWhere = t.Object({
   type: t.Literal("whenwhere"),
-  public: t.Literal(true),
   description: t.Optional(t.String()),
-});
-
-const ModelEventTypeWhenWherePrivate = t.Object({
-  type: t.Literal("whenwhere"),
-  public: t.Literal(false),
-  description: t.Optional(t.String()),
-  canView: t.Array(t.String(), { default: [] }),
 });
 
 export type TModelEventType = Static<typeof ModelEventType>;
@@ -52,27 +41,22 @@ export const ModelEventType = t.Union(
   [
     ModelEventTypeEventPublic,
     ModelEventTypeEventPrivate,
-    ModelEventTypeWhenWherePublic,
-    ModelEventTypeWhenWherePrivate,
+    ModelEventTypeWhenWhere,
   ],
   {
     default: undefined,
   },
 );
-
 export const newEventType = (
   type: TModelEventType["type"],
-  publicVis: TModelEventType["public"],
 ): TModelEventType => {
   switch (type) {
-    case "event":
-      return publicVis
-        ? Value.Create(ModelEventTypeEventPublic)
-        : Value.Create(ModelEventTypeEventPrivate);
+    case "event-public":
+      return Value.Create(ModelEventTypeEventPublic);
+    case "event-private":
+      return Value.Create(ModelEventTypeEventPrivate);
     case "whenwhere":
-      return publicVis
-        ? Value.Create(ModelEventTypeWhenWherePublic)
-        : Value.Create(ModelEventTypeWhenWherePrivate);
+      return Value.Create(ModelEventTypeWhenWhere);
     default:
       throw new Error("Invalid event type");
   }
