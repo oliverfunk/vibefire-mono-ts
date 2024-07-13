@@ -1,6 +1,6 @@
 import { Client } from "fauna";
 
-import { serviceResolver } from "!services/resolver";
+import { serviceLocator } from "!services/locator";
 
 import { FaunaEventsRepository } from "./events";
 import { FaunaGroupsRepository } from "./groups";
@@ -12,7 +12,7 @@ export type TUsersRepository = FaunaUsersRepository;
 export type TGroupsRepository = FaunaGroupsRepository;
 export type TPlansRepository = FaunaPlansRepository;
 
-type FaunaService = {
+export type RepositoryService = {
   Events: FaunaEventsRepository;
   Users: FaunaUsersRepository;
   Groups: FaunaGroupsRepository;
@@ -20,8 +20,10 @@ type FaunaService = {
   close: () => void;
 };
 
-export const getFaunaService = (faunaClientRoleKey?: string): FaunaService =>
-  serviceResolver<FaunaService>().throughBind("fauna", () => {
+export const getFaunaService = (
+  faunaClientRoleKey?: string,
+): RepositoryService =>
+  serviceLocator<RepositoryService>().throughBind("fauna", () => {
     const faunaClient = new Client({
       secret: faunaClientRoleKey ?? process.env.FAUNA_ROLE_KEY_SECRETE!,
     });

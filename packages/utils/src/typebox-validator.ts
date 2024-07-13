@@ -10,7 +10,7 @@ import { TypeCompiler, type TypeCheck } from "@sinclair/typebox/compiler";
 import { type ValueErrorIterator } from "@sinclair/typebox/errors";
 import { Value } from "@sinclair/typebox/value";
 
-import { Result } from "./_result";
+import { wrapToResult, type Result } from "./result";
 
 export class SchemaValidationError extends Error {
   constructor(errors: ValueErrorIterator | string, schemaTitle?: string) {
@@ -99,45 +99,37 @@ const tbUnionSchemaFromValue = <S extends TSchema>(
 
 export const tbValidator = <S extends TSchema>(
   schema: S,
-  isUnion: boolean = false,
-  unionDiscriminantKey: string = "type",
+  p: {
+    isUnion?: boolean;
+    unionDiscriminantKey?: string;
+  } = {
+    isUnion: false,
+    unionDiscriminantKey: "type",
+  },
 ) => {
   return (value: unknown) => {
     let sch: TSchema = schema;
-    if (isUnion) {
-      sch = tbUnionSchemaFromValue(schema, value, unionDiscriminantKey);
+    if (p.isUnion) {
+      sch = tbUnionSchemaFromValue(schema, value, p.unionDiscriminantKey);
     }
     if (Value.Check(sch, value)) return value as Static<S>;
     throw new SchemaValidationError(Value.Errors(sch, value), sch.title);
   };
 };
 
-export const tbValidatorResult = <S extends TSchema>(
-  schema: S,
-  p: {
-    message?: string;
-    isUnion: boolean;
-    unionDiscriminantKey: string;
-  } = {
-    message: undefined,
-    isUnion: false,
-    unionDiscriminantKey: "type",
-  },
-): ((value: unknown) => Result<Static<S>, Error>) => {
-  const { message, isUnion, unionDiscriminantKey } = p;
-  return (value: unknown) => {
-    let sch: TSchema = schema;
-    if (isUnion) {
-      sch = tbUnionSchemaFromValue(schema, value, unionDiscriminantKey);
-    }
-    if (Value.Check(sch, value)) return Result.ok(value as Static<S>);
-    return Result.err(
-      message
-        ? new Error(message)
-        : new SchemaValidationError(Value.Errors(sch, value), sch.title),
-    );
-  };
-};
+export const tbValidatorResult =
+  <S extends TSchema>(
+    schema: S,
+    p: {
+      isUnion?: boolean;
+      unionDiscriminantKey?: string;
+    } = {
+      isUnion: false,
+      unionDiscriminantKey: "type",
+    },
+  ): ((value: unknown) => Result<Static<S>, Error>) =>
+  (value: unknown) =>
+    wrapToResult(() => tbValidator(schema, { ...p })(value));
 
 export const tbValidatorWithCompile = <S extends TSchema>(schema: S) => {
   const check = TypeCompiler.Compile(schema);

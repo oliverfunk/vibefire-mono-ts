@@ -19,11 +19,8 @@
     "@vibefire/config": "0.1.0"
   },
   "exports": {
-    "./context": "./src/managers-context.ts",
     "./errors": "./src/errors.ts",
-    "./fauna-user": "./src/public/fauna-user-manager.ts",
-    "./uf-events": "./src/userfacing/events-uf-manager.ts",
-    "./fauna-external": "./src/public/fauna-external-manager.ts",
+    "./userfacing": "./src/userfacing/index.ts",
     "./expo": "./src/public/expo-manager.ts",
     "./google-maps": "./src/public/google-maps-manager.ts",
     "./clerk": "./src/public/clerk-manager.ts",

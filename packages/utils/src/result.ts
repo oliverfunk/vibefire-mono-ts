@@ -1,27 +1,15 @@
-import { ManagerRuleViolation } from "../../managers/src/errors";
-import { AsyncResult, Result } from "./_result";
-
-// Result.Ok.prototype.chain_async = function (a: string) {};
-// Result.err.prototype.chain_async = function (a: string) {};
+import { Result } from "@badrap/result";
 
 // re-export Result from @badrap/result
 // only need to use this utils package then
-export { Result, type AsyncResult };
+export { Result };
 
-export const resultChainAsync =
-  <T, E extends Error, U>(fn: (value: T) => AsyncResult<U, E>) =>
-  (r: Result<T, E>) =>
-    r.chainAsync(fn);
-
-export const resultChain =
-  <T, E extends Error, U>(fn: (value: T) => Result<U, E>) =>
-  (r: Result<T, E>) =>
-    r.chain(fn);
+export type AsyncResult<T, E extends Error = Error> = Promise<Result<T, E>>;
 
 export const filterNone = <T>(value: T | undefined | null): value is T =>
   value !== undefined && value !== null;
 
-export const filterNoneResult = <T>(
+export const filterNoneToResult = <T>(
   value: T | undefined | null,
   message?: string,
 ): Result<T, Error> =>
@@ -33,5 +21,23 @@ export const fromNoneResult = <T>(
   result: Result<T | undefined | null, Error>,
   message?: string,
 ) => {
-  return result.chain((value) => filterNoneResult(value, message));
+  return result.chain((value) => filterNoneToResult(value, message));
+};
+
+export const wrapToResult = <T, E extends Error>(fn: () => T): Result<T, E> => {
+  try {
+    return Result.ok(fn());
+  } catch (e) {
+    return Result.err(e as E);
+  }
+};
+
+export const wrapToAsyncResult = async <T, E extends Error>(
+  fn: () => Promise<T>,
+): AsyncResult<T, E> => {
+  try {
+    return Result.ok(await fn());
+  } catch (e) {
+    return Result.err(e as E);
+  }
 };
