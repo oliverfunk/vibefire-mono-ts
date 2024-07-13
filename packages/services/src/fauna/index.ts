@@ -2,10 +2,11 @@ import { Client } from "fauna";
 
 import { serviceLocator } from "!services/locator";
 
-import { FaunaEventsRepository } from "./events";
-import { FaunaGroupsRepository } from "./groups";
-import { FaunaPlansRepository } from "./plans";
-import { FaunaUsersRepository } from "./users";
+import { FaunaEventsRepository } from "./collections/Event";
+import { FaunaGroupsRepository } from "./collections/Group";
+import { FaunaPlansRepository } from "./collections/Plan";
+import { FaunaUsersRepository } from "./collections/User";
+import { FaunaFunctions } from "./functions";
 
 export type TEventsRepository = FaunaEventsRepository;
 export type TUsersRepository = FaunaUsersRepository;
@@ -13,10 +14,10 @@ export type TGroupsRepository = FaunaGroupsRepository;
 export type TPlansRepository = FaunaPlansRepository;
 
 export type RepositoryService = {
-  Events: FaunaEventsRepository;
-  Users: FaunaUsersRepository;
-  Groups: FaunaGroupsRepository;
-  Plans: FaunaPlansRepository;
+  Event: FaunaEventsRepository;
+  User: FaunaUsersRepository;
+  Group: FaunaGroupsRepository;
+  Plan: FaunaPlansRepository;
   close: () => void;
 };
 
@@ -27,11 +28,12 @@ export const getFaunaService = (
     const faunaClient = new Client({
       secret: faunaClientRoleKey ?? process.env.FAUNA_ROLE_KEY_SECRETE!,
     });
+    const faunaFunctions = new FaunaFunctions(faunaClient);
     return {
-      Events: new FaunaEventsRepository(faunaClient),
-      Users: new FaunaUsersRepository(faunaClient),
-      Groups: new FaunaGroupsRepository(faunaClient),
-      Plans: new FaunaPlansRepository(faunaClient),
+      Event: new FaunaEventsRepository(faunaClient, faunaFunctions),
+      User: new FaunaUsersRepository(faunaClient),
+      Group: new FaunaGroupsRepository(faunaClient, faunaFunctions),
+      Plan: new FaunaPlansRepository(faunaClient, faunaFunctions),
       close: () => faunaClient.close(),
     };
   });

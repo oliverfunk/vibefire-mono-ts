@@ -1,4 +1,5 @@
 import { Type as t, type Static } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 
 export const TimeOfDaySchema = t.Union([
   t.Literal("D"),
@@ -56,3 +57,25 @@ export const VibefireLocationSchema = t.Object(
   },
   { default: undefined },
 );
+
+export type TModelVibefireEntityAccess = Static<
+  typeof ModelVibefireEntityAccess
+>;
+export type TModelVibefireEntityAccessParams = Omit<
+  TModelVibefireEntityAccess,
+  "id"
+>;
+
+export const ModelVibefireEntityAccess = t.Object({
+  id: t.String({ default: undefined }),
+  type: t.Union([t.Literal("public"), t.Literal("open"), t.Literal("invite")]),
+  inviteCode: t.Optional(t.String()),
+});
+export const newVibefireEntityAccess = (
+  p: TModelVibefireEntityAccessParams,
+): TModelVibefireEntityAccess => {
+  const d = Value.Create(ModelVibefireEntityAccess);
+  d.type = p.type;
+  d.inviteCode = p.inviteCode;
+  return d;
+};

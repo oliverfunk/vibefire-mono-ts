@@ -1,7 +1,13 @@
 import { Type as t, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
-import { TimePeriodSchema, VibefireLocationSchema } from "!models/general";
+import {
+  ModelVibefireEntityAccess,
+  newVibefireEntityAccess,
+  TimePeriodSchema,
+  VibefireLocationSchema,
+  type TModelVibefireEntityAccessParams,
+} from "!models/general";
 import { clearable } from "!models/utils";
 
 import { ModelEventType, newEventType, type TModelEventType } from "./types";
@@ -55,18 +61,15 @@ export type TModelVibefireEvent = Static<typeof ModelVibefireEvent>;
 export const ModelVibefireEvent = t.Object({
   id: t.String({ default: undefined }),
 
-  // form: 123-abc-edf -> easier to remember
-  linkId: clearable(t.String()),
+  accessRef: ModelVibefireEntityAccess,
+
+  ownerId: t.String({ default: undefined }),
+  ownerType: t.Union([t.Literal("user"), t.Literal("group")]),
+  linkId: t.String({ default: undefined }),
+  linkEnabled: t.Boolean({ default: true }),
 
   // links to a 'plan' type event
   partOf: clearable(t.String()),
-
-  ownerId: t.String({ default: undefined }),
-  ownerType: t.Union([t.Literal("user"), t.Literal("group")], {
-    default: undefined,
-  }),
-  // redundant, but prevents a join
-  ownerName: t.String({ default: undefined }),
 
   state: t.Union(
     [
@@ -79,7 +82,7 @@ export const ModelVibefireEvent = t.Object({
     { default: -1 },
   ),
 
-  title: t.String({
+  name: t.String({
     default: undefined,
     minLength: 2,
     maxLength: 100,
@@ -94,40 +97,43 @@ export const ModelVibefireEvent = t.Object({
 
   // meta
   epochCreated: t.Number({ default: undefined }),
-  epochLastUpdated: t.Number({ default: undefined }),
 });
-
-export const newVibefireEventModel = (p: {
-  type: TModelEventType["type"];
-  public: TModelEventType["public"];
-  ownerId: TModelVibefireEvent["ownerId"];
-  ownerName: TModelVibefireEvent["ownerName"];
-  ownerType: TModelVibefireEvent["ownerType"];
-  title: TModelVibefireEvent["title"];
-  epochCreated: TModelVibefireEvent["epochCreated"];
-  epochLastUpdated: TModelVibefireEvent["epochLastUpdated"];
-}): TModelVibefireEvent => {
+export const newVibefireEvent = (
+  p: TModelVibefireEntityAccessParams & {
+    ownerId: TModelVibefireEvent["ownerId"];
+    ownerType: TModelVibefireEvent["ownerType"];
+    linkId: TModelVibefireEvent["linkId"];
+    linkEnabled: TModelVibefireEvent["linkEnabled"];
+    name: TModelVibefireEvent["name"];
+    epochCreated: TModelVibefireEvent["epochCreated"];
+    eventType: TModelEventType["type"];
+  },
+): TModelVibefireEvent => {
   const d = Value.Create(ModelVibefireEvent);
+  d.accessRef = newVibefireEntityAccess({
+    type: p.type,
+    inviteCode: p.inviteCode,
+  });
   d.ownerId = p.ownerId;
-  d.ownerName = p.ownerName;
   d.ownerType = p.ownerType;
-  d.title = p.title;
+  d.linkId = p.linkId;
+  d.linkEnabled = p.linkEnabled;
+  d.name = p.name;
   d.epochCreated = p.epochCreated;
-  d.epochLastUpdated = p.epochLastUpdated;
-  d.event = newEventType(p.type, p.public);
+  d.event = newEventType(p.eventType);
   return d;
 };
 
+export type TModelEventUpdate = Static<typeof ModelEventUpdate>;
 export const ModelEventUpdate = t.Partial(
   t.Object({
-    title: ModelVibefireEvent.properties.title,
+    name: ModelVibefireEvent.properties.name,
     images: t.Partial(ModelEventImages),
     times: t.Partial(t.Omit(ModelEventTimes, ["datePeriods"])),
     location: t.Partial(VibefireLocationSchema),
     event: t.Partial(ModelEventType),
   }),
 );
-export type TModelEventUpdate = Static<typeof ModelEventUpdate>;
 
 // todo: this may not be correct, better to create a custom model
 // instead of using ModelEventUpdate

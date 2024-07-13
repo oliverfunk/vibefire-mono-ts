@@ -2,18 +2,27 @@ import { DateTime } from "luxon";
 import { type PartialDeep } from "type-fest";
 
 import {
-  newVibefireEventModel,
+  newVibefireEvent,
   type Pageable,
   type TModelEventType,
   type TModelEventUpdate,
   type TModelVibefireEvent,
 } from "@vibefire/models";
 import { type RepositoryService } from "@vibefire/services/fauna";
-import { trimAndCropText, type AsyncResult } from "@vibefire/utils";
+import {
+  isValidUuidV4,
+  trimAndCropText,
+  type AsyncResult,
+} from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { ReposManager } from "!managers/repos-manager";
-import { managerReturn, nullablePromiseToRes } from "!managers/utils";
+import { managerReturn } from "!managers/utils";
+
+// todo: model incomeplete events and fix the api
+// todo: groups!
+// map query geoPeriods!
+// clean results from fauna servies
 
 export class UFEventsManger {
   constructor(private readonly repos: ReposManager) {}
@@ -25,58 +34,49 @@ export class UFEventsManger {
   newEvent(p: {
     userAid: string;
     forGroupId?: string;
-    title: string;
-    type: TModelEventType["type"];
-    private: boolean;
+    name: string;
+    eventType: TModelEventType["type"];
   }) {
     return managerReturn(async () => {
+      const eventIsPublicType = p.eventType === "event-public";
+
       // non-group event
-      if (p.forGroupId === undefined && !p.private) {
+      if (p.forGroupId === undefined && eventIsPublicType) {
         throw new ManagerRuleViolation(
-          "You cannot create public events as an individual",
+          "Public events can only be made through public groups",
         );
       }
 
-      const group = p.forGroupId
-        ? (await this.repos.getGroup(p.forGroupId)).unwrap()
-        : null;
-
-      if (group) {
-        if (group.group.type === "private" && !p.private) {
+      if (p.forGroupId) {
+        const g = (
+          await this.repos.group.withIdIfUserCanManage(p.forGroupId, p.userAid)
+            .result
+        ).unwrap();
+        if (g.accessRef.type !== "public" && eventIsPublicType) {
           throw new ManagerRuleViolation(
             "This group is private and cannot make public events",
           );
         }
-
-        this.repos
-          .checkUserGroupManager(
-            group,
-            p.userAid,
-            "you cannot make events for it",
-          )
-          .unwrap();
       }
 
       (
         await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
       ).unwrap();
 
-      const title = trimAndCropText(p.title, 100);
-      const userProfile = (await this.repos.getUserProfile(p.userAid)).unwrap();
-      const ownerName = group?.name ?? userProfile.name;
+      const name = trimAndCropText(p.name, 100);
       const epochCreated = DateTime.utc().toMillis();
 
-      const newEvent = newVibefireEventModel({
-        type: p.type,
-        public: !p.private,
+      const newEvent = newVibefireEvent({
+        type: eventIsPublicType ? "public" : "open",
+        eventType: p.eventType,
+        linkEnabled: true,
+        linkId: crypto.randomUUID(),
         ownerId: p.forGroupId ?? p.userAid,
-        ownerName,
         ownerType: p.forGroupId ? "group" : "user",
-        title,
+        name,
         epochCreated,
-        epochLastUpdated: epochCreated,
       });
-      const { id: eventId } = await this.repos.events.create(newEvent).result;
+      const { id: eventId } = await this.repos.event.create(newEvent).result;
 
       return eventId;
     });
@@ -106,18 +106,17 @@ export class UFEventsManger {
 
       const epochCreated = DateTime.utc().toMillis();
 
-      const newEvent = newVibefireEventModel({
-        type: event.event.type,
-        public: event.event.public,
+      const newEvent = newVibefireEvent({
+        type: event.accessRef.type,
         ownerId: event.ownerId,
-        ownerName: event.ownerName,
         ownerType: event.ownerType,
-        title: event.title,
+        linkEnabled: true,
+        linkId: crypto.randomUUID(),
+        name: event.name,
+        eventType: event.event.type,
         epochCreated,
-        epochLastUpdated: epochCreated,
       });
-      const { id: newEventId } =
-        await this.repos.events.create(newEvent).result;
+      const { id: newEventId } = await this.repos.event.create(newEvent).result;
 
       const eNew = (await this.repos.getEvent(newEventId)).unwrap();
 
@@ -135,7 +134,7 @@ export class UFEventsManger {
       });
       updateEventRes.unwrap();
 
-      return eNew;
+      return eNew.id;
     });
   }
 
@@ -143,7 +142,7 @@ export class UFEventsManger {
     userAid: string;
   }): AsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
-      const { data, after: afterKey } = await this.repos.events.byOwner(
+      const { data, after: afterKey } = await this.repos.event.allByOwner(
         p.userAid,
         10,
       ).result;
@@ -176,23 +175,18 @@ export class UFEventsManger {
           throw new ManagerRuleViolation("You must be signed to view this");
         }
 
-        const g = (await this.repos.getGroup(p.groupId)).unwrap();
-
         if (p.scope === "all") {
-          this.repos
-            .checkUserGroupManager(
-              g,
-              p.userAid!,
-              "you cannot view all its events",
-            )
-            .unwrap();
+          (
+            await this.repos.group.withIdIfUserCanManage(p.groupId, p.userAid!)
+              .result
+          ).unwrap();
         }
 
         const limit = 10;
         const { data, after: afterKey } =
           p.scope === "all"
-            ? await this.repos.events.byOwner(p.groupId, limit).result
-            : await this.repos.events.byOwnerByState(
+            ? await this.repos.event.allByOwner(p.groupId, limit).result
+            : await this.repos.event.allByOwnerByState(
                 p.groupId,
                 1, // published
                 limit,
@@ -207,61 +201,39 @@ export class UFEventsManger {
     );
   }
 
-  // todo: model incomeplete events and fix the api
-  // then the updates, which now will be easy then ur close!
-
   async viewEvent(p: {
     userAid?: string;
-    eventId: string;
-    scope: "manage" | "published";
+    eventId: string; // taken to be the linkId when scope is "link"
+    scope: "manage" | "published" | "link";
   }) {
     return managerReturn(async () => {
-      if (p.scope === "manage" && !p.userAid) {
-        throw new ManagerRuleViolation("You must be signed in to view this");
+      switch (p.scope) {
+        case "manage":
+          if (!p.userAid) {
+            throw new ManagerRuleViolation(
+              "You must be signed in to view this",
+            );
+          }
+          return (
+            await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
+              .result
+          ).unwrap();
+        case "published":
+          return (
+            await this.repos.event.withIdIfUserCanView(p.eventId, p.userAid)
+              .result
+          ).unwrap();
+        case "link":
+          if (!isValidUuidV4(p.eventId)) {
+            throw new ManagerRuleViolation("Invalid event link id");
+          }
+          return (
+            await this.repos.event.withLinkIdIfUserCanView(p.eventId, p.userAid)
+              .result
+          ).unwrap();
+        default:
+          throw new ManagerRuleViolation("Invalid scope");
       }
-
-      const e = (await this.repos.getEvent(p.eventId)).unwrap();
-
-      if (p.scope == "manage") {
-        (await this.repos.checkUserCanManageEvent(e, p.userAid!)).unwrap();
-      } else if (p.scope == "published") {
-        this.repos.checkUserCanViewEvent(e, p.userAid).unwrap();
-      } else {
-        throw new ManagerRuleViolation("Invalid scope");
-      }
-
-      return e;
-    });
-  }
-
-  async viewEventFromLink(p: { userAid?: string; linkId: string }) {
-    return managerReturn(async () => {
-      const e = (
-        await nullablePromiseToRes(
-          this.repos.events.withLinkId(p.linkId).result,
-          "This link has expired or does not exist",
-        )
-      ).unwrap();
-
-      if (e.state !== 1) {
-        throw new ManagerRuleViolation("This event is not published");
-      }
-
-      // if the event is private, add the user to the canView list,
-      // if they are signed in
-      if (!e.event.public) {
-        if (!p.userAid) {
-          throw new ManagerRuleViolation("You must sign in to view this event");
-        }
-
-        const canView = e.event.canView;
-        if (!canView.includes(p.userAid)) {
-          canView.push(p.userAid);
-          await this.repos.events.update(e.id, { event: { canView } }).result;
-        }
-      }
-
-      return e;
     });
   }
 
@@ -273,11 +245,26 @@ export class UFEventsManger {
     return managerReturn(async () => {
       const e = (await this.repos.getEvent(p.eventId)).unwrap();
 
-      (await this.repos.checkUserCanManageEvent(e, p.userAid)).unwrap();
+      (
+        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
+          .result
+      ).unwrap();
+
+      // todo! : this is wildly insufficient
+      // changing times means you need to udate peroids
+
+      // what about changing postion
+      // might not effect periods becuase start time is now string with
+      // tz info, they only get one period (one day)
+
+      // changes images, you could perpahs add outdated image to a dlete q
+      // but only the keys are proviede here,
+      // the actual upload must be hanlded by the client or elsewhere
+      // could check the image exististststs to
 
       // we blindly trust the update here, as we assume
       // all inputs have been validated and sanitized
-      await this.repos.events.update(p.eventId, p.update).result;
+      await this.repos.event.update(p.eventId, p.update).result;
     });
   }
 
@@ -287,53 +274,52 @@ export class UFEventsManger {
     update: "hidden" | "published";
   }) {
     return managerReturn(async () => {
-      const e = (await this.repos.getEvent(p.eventId)).unwrap();
-
-      (await this.repos.checkUserCanManageEvent(e, p.userAid)).unwrap();
+      (
+        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
+          .result
+      ).unwrap();
 
       const update: Partial<TModelVibefireEvent> = {
         state: p.update === "published" ? 1 : 0,
       };
 
-      await this.repos.events.update(p.eventId, update).result;
+      await this.repos.event.update(p.eventId, update).result;
     });
   }
 
-  async updateEventLinkId(p: {
-    userAid: string;
-    eventId: string;
-    update: "remove" | "regenerate";
-  }) {
+  async updateEventToggleLinkEnabled(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
-      const e = (await this.repos.getEvent(p.eventId)).unwrap();
+      const e = (
+        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
+          .result
+      ).unwrap();
 
-      (await this.repos.checkUserCanManageEvent(e, p.userAid)).unwrap();
-
-      const update: Partial<TModelVibefireEvent> = {
-        linkId: p.update === "remove" ? null : crypto.randomUUID(),
+      const update: PartialDeep<TModelVibefireEvent> = {
+        linkEnabled: !e.linkEnabled,
       };
 
-      await this.repos.events.update(p.eventId, update).result;
+      await this.repos.event.update(p.eventId, update).result;
     });
   }
 
   async deleteEvent(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
-      const e = (await this.repos.getEvent(p.eventId)).unwrap();
-
-      (await this.repos.checkUserCanManageEvent(e, p.userAid)).unwrap();
+      (
+        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
+          .result
+      ).unwrap();
 
       const update: Partial<TModelVibefireEvent> = {
         state: 3, // deleted
       };
 
-      await this.repos.events.update(p.eventId, update).result;
+      await this.repos.event.update(p.eventId, update).result;
     });
   }
 
   async pageEvents(p: { pageHash: string }) {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
-      const { data, after: afterKey } = await this.repos.events.page(p.pageHash)
+      const { data, after: afterKey } = await this.repos.event.page(p.pageHash)
         .result;
       return {
         data,

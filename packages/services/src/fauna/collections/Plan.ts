@@ -1,58 +1,59 @@
 import { fql, type Client, type Page } from "fauna";
 import { type PartialDeep } from "type-fest";
 
-import {
-  ModelVibefirePlan,
-  type TModelVibefireEvent,
-  type TModelVibefirePlan,
-} from "@vibefire/models";
+import { ModelVibefirePlan, type TModelVibefirePlan } from "@vibefire/models";
 import { tbClean } from "@vibefire/utils";
 
+import { type FaunaFunctions } from "!services/fauna/functions";
 import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
 
 export class FaunaPlansRepository {
-  constructor(private readonly faunaClient: Client) {}
+  constructor(
+    private readonly faunaClient: Client,
+    private readonly funcs: FaunaFunctions,
+  ) {}
 
   create(plan: TModelVibefirePlan) {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        Plans.create(${plan}) {
+        Plan.create(${plan}) {
           id
         }
       `,
     );
   }
 
-  getById(planId: string) {
+  withId(planId: string) {
     return faunaNullableQuery<TModelVibefirePlan>(
       this.faunaClient,
       fql`
-        Plans.byId(${planId})
+        Plan.byId(${planId})
       `,
     );
   }
 
-  getPlanEvents(planId: string, limit = 10) {
-    return faunaNullableQuery<TModelVibefireEvent[]>(
-      this.faunaClient,
-      fql`
-        let p = ${this.getById(planId).query}
-        let r = p?.eventIds?.toSet().map((planEventId) => Events.byId(planEventId))
-        if (${limit} != 0) {
-          r.take(${limit})
-        } else {
-          r
-        }
-      `,
-    );
+  withIdIfUserCanManage(planId: string, userAid: string) {
+    return this.funcs.planIfUserCanManage(planId, userAid);
+  }
+
+  withIdIfUserCanView(planId: string, userAid?: string) {
+    return this.funcs.planIfUserCanView(planId, userAid);
+  }
+
+  allEventsUserCanManage(planId: string, userAid: string) {
+    return this.funcs.planEventsUserCanManage(planId, userAid);
+  }
+
+  allEventsUserCanView(planId: string, userAid?: string) {
+    return this.funcs.planEventsUserCanView(planId, userAid);
   }
 
   allByOwner(ownerId: string, limit = 0) {
     return faunaQuery<Page<TModelVibefirePlan>>(
       this.faunaClient,
       fql`
-        let r = Plans.byOwnerId(${ownerId})
+        let r = Plan.byOwnerId(${ownerId})
         if (${limit} != 0) {
           r.pageSize(${limit})
         } else {
@@ -67,7 +68,7 @@ export class FaunaPlansRepository {
       this.faunaClient,
       fql`
         let data = ${data}
-        let plan = ${this.getById(eventId).query}
+        let plan = ${this.withId(eventId).query}
         plan?.update(data)
       `,
     );
@@ -77,7 +78,7 @@ export class FaunaPlansRepository {
     return faunaQuery<boolean>(
       this.faunaClient,
       fql`
-        let plan = ${this.getById(planId).query}
+        let plan = ${this.withId(planId).query}
         plan?.update({
           eventIds: plan?.eventIds.append(${eventId}).distinct()
         })
@@ -89,7 +90,7 @@ export class FaunaPlansRepository {
     return faunaQuery<boolean>(
       this.faunaClient,
       fql`
-        let plan = ${this.getById(planId).query}
+        let plan = ${this.withId(planId).query}
         plan?.update({
           eventIds: plan?.eventIds.filter((id) => id != ${eventId})
         })
@@ -101,7 +102,7 @@ export class FaunaPlansRepository {
     return faunaQuery<boolean>(
       this.faunaClient,
       fql`
-        let plan = ${this.getById(planId).query}
+        let plan = ${this.withId(planId).query}
         plan?.delete()
       `,
     );
