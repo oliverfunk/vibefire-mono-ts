@@ -26,24 +26,12 @@ export const CreateCollectionIfDne = (collectionName: string) => {
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
-  collectionName?: string,
   logQuery = false,
   postProcess?: (d: R) => R,
 ): Promise<R> => {
   try {
     const qr = await faunaClient.query<R>(query);
-    if (collectionName) {
-      if (!qr.static_type) {
-        throw new Error(
-          `Query did not return a static type, but expected a static type for collection ${collectionName}`,
-        );
-      }
-      if (!qr.static_type.includes(collectionName)) {
-        throw new Error(
-          `Query returned a static type that does not include (match) collection ${collectionName}`,
-        );
-      }
-    }
+
     if (logQuery) console.log(qr);
 
     if (postProcess) {
@@ -64,16 +52,10 @@ const runFaunaQuery = async <R extends QueryValue>(
 const runFaunaNullableQuery = async <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
-  collectionName?: string,
   logQuery?: boolean,
   postProcess?: (d: R | null) => R,
 ): Promise<R | null> => {
-  const d = await runFaunaQuery<R | NullDocument>(
-    faunaClient,
-    query,
-    collectionName,
-    logQuery,
-  );
+  const d = await runFaunaQuery<R | NullDocument>(faunaClient, query, logQuery);
   const r: R | null = d instanceof NullDocument ? null : d;
   if (postProcess) {
     return postProcess(r);
@@ -85,7 +67,6 @@ export const faunaQuery = <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
   p?: {
-    collectionName?: string;
     logQuery?: boolean;
     postProcess?: (d: R) => R;
   },
@@ -93,13 +74,7 @@ export const faunaQuery = <R extends QueryValue>(
   result: Promise<R>;
   query: Query;
 } => ({
-  result: runFaunaQuery<R>(
-    faunaClient,
-    query,
-    p?.collectionName,
-    p?.logQuery,
-    p?.postProcess,
-  ),
+  result: runFaunaQuery<R>(faunaClient, query, p?.logQuery, p?.postProcess),
   query,
 });
 
@@ -107,7 +82,6 @@ export const faunaNullableQuery = <R extends QueryValue>(
   faunaClient: Client,
   query: Query,
   p?: {
-    collectionName?: string;
     logQuery?: boolean;
     postProcess?: (d: R | null) => R;
   },
@@ -118,7 +92,6 @@ export const faunaNullableQuery = <R extends QueryValue>(
   result: runFaunaNullableQuery<R>(
     faunaClient,
     query,
-    p?.collectionName,
     p?.logQuery,
     p?.postProcess,
   ),

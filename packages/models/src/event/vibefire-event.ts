@@ -46,7 +46,7 @@ const ModelEventCustomMapData = t.Object({
     { default: 0 },
   ),
   rank: t.Number({ default: 0 }),
-  customIcon: t.Optional(t.String()),
+  customIcon: clearable(t.String()),
 });
 
 export { ModelEventType, type TModelEventType };
@@ -59,7 +59,7 @@ export const ModelVibefireEvent = t.Object({
   linkId: clearable(t.String()),
 
   // links to a 'plan' type event
-  partOf: t.Optional(t.String()),
+  partOf: clearable(t.String()),
 
   ownerId: t.String({ default: undefined }),
   ownerType: t.Union([t.Literal("user"), t.Literal("group")], {

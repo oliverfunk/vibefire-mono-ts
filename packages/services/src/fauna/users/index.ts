@@ -1,6 +1,6 @@
 import { fql, type Client } from "fauna";
 
-import { type VibefireUserInfoT } from "@vibefire/models";
+import { type TModelVibefireUser } from "@vibefire/models";
 
 import { faunaNullableQuery } from "!services/fauna/utils";
 
@@ -8,7 +8,7 @@ export class FaunaUsersRepository {
   constructor(private readonly faunaClient: Client) {}
 
   getUserProfile(userAid: string) {
-    return faunaNullableQuery<VibefireUserInfoT>(
+    return faunaNullableQuery<TModelVibefireUser>(
       this.faunaClient,
       fql`
         Users.withAid(${userAid}).first()

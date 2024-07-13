@@ -1,6 +1,6 @@
 import { Type as t, type Static } from "@sinclair/typebox";
 
-export const VibefireUserSchema = t.Object({
+export const ModelVibefireUser = t.Object({
   id: t.String({ default: undefined }),
   aid: t.String({ default: undefined }),
   pushToken: t.Optional(t.String()),
@@ -20,9 +20,9 @@ export const VibefireUserSchema = t.Object({
   dtsLastSession: t.String(),
 });
 
-export type VibefireUserT = Static<typeof VibefireUserSchema>;
+export type TModelVibefireUser = Static<typeof ModelVibefireUser>;
 export type VibefireUserInfoT = Pick<
-  VibefireUserT,
+  TModelVibefireUser,
   "name" | "phoneNumber" | "contactEmail" | "dateOfBirth"
 >;
-export type VibefireUserNoIdT = Omit<VibefireUserT, "id">;
+export type VibefireUserNoIdT = Omit<TModelVibefireUser, "id">;

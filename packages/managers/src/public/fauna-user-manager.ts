@@ -4,10 +4,10 @@ import { DateTime } from "luxon";
 import type { PartialDeep } from "type-fest";
 
 import {
+  ModelVibefireUser,
   VibefireEventManagementSchema,
   VibefireEventSchema,
   VibefireEventTimelineElementSchema,
-  VibefireUserSchema,
   type MapQueryT,
   type VibefireEventImagesT,
   type VibefireEventLocationT,
@@ -818,12 +818,12 @@ export class FaunaUserManager {
     firstName = trimAndCropText(firstName, 100);
 
     if (primaryEmail) {
-      primaryEmail = tbValidator(VibefireUserSchema.properties.contactEmail)(
+      primaryEmail = tbValidator(ModelVibefireUser.properties.contactEmail)(
         trimAndCropText(primaryEmail, 500),
       );
     }
     if (primaryPhone) {
-      primaryPhone = tbValidator(VibefireUserSchema.properties.phoneNumber)(
+      primaryPhone = tbValidator(ModelVibefireUser.properties.phoneNumber)(
         trimAndCropText(primaryPhone, 100),
       );
     }
@@ -832,7 +832,7 @@ export class FaunaUserManager {
       ? DateTime.fromISO(birthdayISO).toISODate() ?? undefined
       : undefined;
 
-    const u = Value.Create(VibefireUserSchema);
+    const u = Value.Create(ModelVibefireUser);
 
     u.aid = aid;
     u.name = firstName;
@@ -862,7 +862,7 @@ export class FaunaUserManager {
       throw new Error("User not found");
     }
 
-    res = tbValidator(VibefireUserSchema)(res);
+    res = tbValidator(ModelVibefireUser)(res);
     return res;
   }
 

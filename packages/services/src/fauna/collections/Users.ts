@@ -1,9 +1,9 @@
 import { DateStub, fql, type Client } from "fauna";
 
 import {
+  type TModelVibefireUser,
   type VibefireUserInfoT,
   type VibefireUserNoIdT,
-  type VibefireUserT,
 } from "@vibefire/models";
 
 import { CreateCollectionIfDne, dfq } from "../utils";
@@ -13,7 +13,7 @@ export const defineUsersCollection = async (faunaClient: Client) => {
 };
 
 export const defineUsersUniqueConstraints = async (faunaClient: Client) => {
-  const aidField: keyof VibefireUserT = "aid";
+  const aidField: keyof TModelVibefireUser = "aid";
   const q = fql`
     Users.definition.update({
       constraints: [
@@ -25,7 +25,7 @@ export const defineUsersUniqueConstraints = async (faunaClient: Client) => {
 };
 
 export const defineWithAidIndex = async (faunaClient: Client) => {
-  const aidField: keyof VibefireUserT = "aid";
+  const aidField: keyof TModelVibefireUser = "aid";
   const q = fql`
     Users.definition.update({
       indexes: {
@@ -61,7 +61,7 @@ export const getUserByAid = async (faunaClient: Client, aid: string) => {
   const q = fql`
     Users.withAid(${aid}).first()
   `;
-  return await dfq<VibefireUserT | null>(faunaClient, q);
+  return await dfq<TModelVibefireUser | null>(faunaClient, q);
 };
 
 export const updateUserInfo = async (
@@ -98,7 +98,7 @@ export const starEvent = async (
   aid: string,
   eventId: string,
 ) => {
-  const _followedEventsField: keyof VibefireUserT = "followedEvents";
+  const _followedEventsField: keyof TModelVibefireUser = "followedEvents";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     let updatedFollowedEvents = u?.followedEvents.append(${eventId}).distinct()
@@ -111,7 +111,7 @@ export const unstarEvent = async (
   aid: string,
   eventId: string,
 ) => {
-  const _followedEventsField: keyof VibefireUserT = "followedEvents";
+  const _followedEventsField: keyof TModelVibefireUser = "followedEvents";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     let updatedFollowedEvents = u?.followedEvents.filter((eventId) => eventId != ${eventId}).distinct()
@@ -127,7 +127,7 @@ export const hideEvent = async (
   aid: string,
   eventId: string,
 ) => {
-  const _hiddenEventsField: keyof VibefireUserT = "hiddenEvents";
+  const _hiddenEventsField: keyof TModelVibefireUser = "hiddenEvents";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     let updatedHiddenEvents = u?.hiddenEvents.append(${eventId}).distinct()
@@ -143,7 +143,7 @@ export const blockOrganiser = async (
   aid: string,
   organiserId: string,
 ) => {
-  const _blockedOrganisersField: keyof VibefireUserT = "blockedOrganisers";
+  const _blockedOrganisersField: keyof TModelVibefireUser = "blockedOrganisers";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     let updatedBlockedOrganisers = u?.blockedOrganisers.append(${organiserId}).distinct()
@@ -157,7 +157,7 @@ export const setUserPushToken = async (
   aid: string,
   token: string,
 ) => {
-  const _pushTokenField: keyof VibefireUserT = "pushToken";
+  const _pushTokenField: keyof TModelVibefireUser = "pushToken";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     u?.update({ pushToken: ${token} })
@@ -166,7 +166,7 @@ export const setUserPushToken = async (
 };
 
 export const clearUserPushToken = async (faunaClient: Client, aid: string) => {
-  const _pushTokenField: keyof VibefireUserT = "pushToken";
+  const _pushTokenField: keyof TModelVibefireUser = "pushToken";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     u?.update({ pushToken: null })
@@ -175,7 +175,7 @@ export const clearUserPushToken = async (faunaClient: Client, aid: string) => {
 };
 
 export const getUserPushToken = async (faunaClient: Client, aid: string) => {
-  const _pushTokenField: keyof VibefireUserT = "pushToken";
+  const _pushTokenField: keyof TModelVibefireUser = "pushToken";
   const q = fql`
     let u = Users.withAid(${aid}).first()
     u?.pushToken

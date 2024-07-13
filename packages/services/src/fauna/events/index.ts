@@ -14,36 +14,18 @@ import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
 export class FaunaEventsRepository {
   constructor(private readonly faunaClient: Client) {}
 
-  create(
-    type: TModelEventType["type"],
-    publicVis: TModelEventType["public"],
-    ownerId: TModelVibefireEvent["ownerId"],
-    ownerName: TModelVibefireEvent["ownerName"],
-    ownerType: TModelVibefireEvent["ownerType"],
-    title: TModelVibefireEvent["title"],
-    epochCreated: TModelVibefireEvent["epochCreated"],
-  ) {
-    const d = newVibefireEventModel({
-      type,
-      public: publicVis,
-      ownerId,
-      ownerName,
-      ownerType,
-      title,
-      epochCreated,
-      epochLastUpdated: epochCreated,
-    });
-    return faunaQuery<string>(
+  create(event: TModelVibefireEvent) {
+    return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        Events.create(${d}) {
+        Events.create(${event}) {
           id
         }
       `,
     );
   }
 
-  getById(eventId: string) {
+  withId(eventId: string) {
     return faunaNullableQuery<TModelVibefireEvent>(
       this.faunaClient,
       fql`
@@ -52,34 +34,42 @@ export class FaunaEventsRepository {
     );
   }
 
-  allByOwner(ownerId: string, limit = 0) {
+  withLinkId(eventId: string) {
+    return faunaNullableQuery<TModelVibefireEvent>(
+      this.faunaClient,
+      fql`
+        Events.withLinkId(${eventId})
+      `,
+    );
+  }
+
+  byOwner(ownerId: string, limit = 0) {
     return faunaQuery<Page<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        let r = Events.byOwnerId(${ownerId})
+        let q = Events.byOwnerId(${ownerId})
         if (${limit} != 0) {
-          r.pageSize(${limit})
+          q.pageSize(${limit})
         } else {
-          r
+          q
         }
       `,
     );
   }
 
-  allByOwnerByState(
+  byOwnerByState(
     ownerId: string,
     state: TModelVibefireEvent["state"],
     limit = 0,
   ) {
-    return faunaQuery<TModelVibefireEvent[]>(
+    return faunaQuery<Page<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        let r = ${this.allByOwner(ownerId).query}
-          .where(.state == ${state})
+        ${this.byOwner(ownerId).query}.where(.state == ${state})
         if (${limit} != 0) {
-          r.pageSize(${limit})
+          q.pageSize(${limit})
         } else {
-          r
+          q
         }
       `,
     );
@@ -94,42 +84,65 @@ export class FaunaEventsRepository {
       this.faunaClient,
       fql`
         let states = ${states}.toSet()
-        let r = states.flatMap((state) => {
-          ${this.allByOwner(ownerId).query}.where(.state == state)
+        let q = states.flatMap((state) => {
+          ${this.byOwner(ownerId).query}.where(.state == state)
         })
         if (${limit} != 0) {
-          r.pageSize(${limit})
+          q.pageSize(${limit})
         } else {
-          r
-        }
-      `,
-    );
-  }
-
-  allByPlanByState(
-    planId: string,
-    state: TModelVibefireEvent["state"],
-    limit = 0,
-  ) {
-    return faunaQuery<TModelVibefireEvent[]>(
-      this.faunaClient,
-      fql`
-        let r = Events.byPlanId(${planId})
-          .where(.state == ${state})
-        if (${limit} != 0) {
-          r.pageSize(${limit})
+          q
         }
       `,
     );
   }
 
   update(eventId: string, data: PartialDeep<TModelVibefireEvent>) {
-    return faunaQuery<boolean>(
+    return faunaQuery<PartialDeep<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
         let data = ${data}
-        let event = ${this.getById(eventId).query}
+        let event = ${this.withId(eventId).query}
         event?.update(data)
+      `,
+    );
+  }
+
+  linkPartOf(eventId: string, partOf: string) {
+    return faunaQuery<null>(
+      this.faunaClient,
+      fql`
+        let event = ${this.withId(eventId).query}
+        event?.update({
+          partOf: ${partOf}
+        })
+      `,
+    );
+  }
+
+  unlinkPartOfIfMatches(eventId: string, planId: string) {
+    return faunaQuery<null>(
+      this.faunaClient,
+      fql`
+        let event = ${this.withId(eventId).query}
+        if (event.partOf == ${planId}) {
+          event?.update({
+            partOf: null
+          })
+        }
+      `,
+    );
+  }
+
+  unlinkAllPartOf(planId: string) {
+    return faunaQuery<null>(
+      this.faunaClient,
+      fql`
+        let events = Events.byPartOf(${planId})
+        events.map((event) => {
+          event.update({
+            partOf: null
+          })
+        })
       `,
     );
   }
@@ -145,7 +158,6 @@ export class FaunaEventsRepository {
         Set.paginate(${hash})
       `,
       {
-        collectionName: "Events",
         postProcess: (d) => {
           const data = tbClean(ModelVibefireEvent, d.data);
           return { ...d, data };
@@ -153,28 +165,4 @@ export class FaunaEventsRepository {
       },
     );
   }
-
-  // getEventsByUserBetween(userAid: string, start: string, end: string) {
-  //   return faunaQuery<TVibefireEvent[]>(
-  //     this.faunaClient,
-  //     fql`
-  //       Events.byOwnerId(${userAid})
-
-  //     `,
-  //   );
-  // }
-
-  // export const getEventsByOrganiser = async (
-  //   faunaClient: Client,
-  //   organiserId: string,
-  // ) => {
-  //   const _organiserField: keyof VibefireEventT = "organiserId";
-  //   const q = fql`
-  //     Events.byOrganiserID(${organiserId})
-  //       .where(.state == "ready" || .state == "draft")
-  //       .paginate(30)
-  //   `;
-  //   return (await dfq<{ data: PartialDeep<VibefireEventT>[] }>(faunaClient, q))
-  //     .data;
-  // };
 }

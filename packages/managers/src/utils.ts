@@ -1,30 +1,27 @@
-import { Result, type AsyncResult } from "@vibefire/utils";
+import { Result, wrapToAsyncResult, type AsyncResult } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "./errors";
 
-export const unwrapNullablePromise = async <T, E extends Error>(
+export type MResult<T> = Result<T, ManagerRuleViolation>;
+export type MAResult<T> = AsyncResult<T, ManagerRuleViolation>;
+
+export const nullablePromiseToRes = async <T>(
   value: Promise<T | null | undefined>,
   message: string,
-) => {
+): MAResult<T> => {
   const t = await value;
   if (!!t) {
-    return t;
+    return Result.ok(t);
   }
-  throw new ManagerRuleViolation(message);
+  return Result.err(new ManagerRuleViolation(message));
 };
 
-export const managerResult = async <T>(
+export const managerReturn = async <T>(
   fn: () => Promise<T>,
 ): AsyncResult<T, Error> => {
-  try {
-    const value = await fn();
-
-    return Result.ok(value);
-  } catch (error) {
-    if (error instanceof ManagerRuleViolation) {
-      return Result.err(error);
-    }
-    console.error(error);
-    return Result.err(error as Error);
+  const r = await wrapToAsyncResult(fn);
+  if (r.isErr && !(r.error instanceof ManagerRuleViolation)) {
+    console.error(r.error);
   }
+  return r;
 };
