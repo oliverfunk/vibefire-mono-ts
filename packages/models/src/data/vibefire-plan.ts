@@ -63,7 +63,7 @@ export const newVibefirePlan = (
     organiserName: TModelVibefirePlan["organiserName"];
     name: TModelVibefirePlan["name"];
     description: TModelVibefirePlan["description"];
-    epochCreatedAt: TModelVibefirePlan["epochCreated"];
+    epochCreated: TModelVibefirePlan["epochCreated"];
   },
 ): TModelVibefirePlan => {
   const d = Value.Create(ModelVibefirePlan);
@@ -79,6 +79,6 @@ export const newVibefirePlan = (
   d.organiserName = p.organiserName;
   d.name = p.name;
   d.description = p.description;
-  d.epochCreated = p.epochCreatedAt;
+  d.epochCreated = p.epochCreated;
   return d;
 };

@@ -65,7 +65,6 @@ export type TModelVibefireEntityAccessParams = Omit<
   TModelVibefireEntityAccess,
   "id"
 >;
-
 export const ModelVibefireEntityAccess = t.Object({
   id: t.String({ default: undefined }),
   type: t.Union([t.Literal("public"), t.Literal("open"), t.Literal("invite")]),

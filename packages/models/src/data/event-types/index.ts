@@ -6,7 +6,7 @@ import {
   EventDetailOffersModel,
   EventDetailPoiModel,
   EventDetailTimelineModel,
-} from "./detail";
+} from "./event-details";
 
 const ModelEventTypeEventPublic = t.Object({
   type: t.Literal("event-public"),
