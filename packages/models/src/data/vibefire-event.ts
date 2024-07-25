@@ -2,6 +2,11 @@ import { Type as t, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
 import {
+  ModelEventType,
+  newEventType,
+  type TModelEventType,
+} from "!models/data/event-types";
+import {
   ModelVibefireEntityAccess,
   newVibefireEntityAccess,
   TimePeriodSchema,
@@ -9,8 +14,6 @@ import {
   type TModelVibefireEntityAccessParams,
 } from "!models/general";
 import { clearable } from "!models/utils";
-
-import { ModelEventType, newEventType, type TModelEventType } from "./types";
 
 const ModelEventImages = t.Object(
   {

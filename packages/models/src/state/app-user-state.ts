@@ -1,4 +1,4 @@
-import { type TModelVibefireUser } from "!models/vibefire-user";
+import { type TModelVibefireUser } from "!models/data/vibefire-user";
 
 export type AppUserLoading = {
   state: "loading";

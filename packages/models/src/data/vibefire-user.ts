@@ -9,15 +9,14 @@ export const ModelVibefireUser = t.Object({
   contactEmail: t.Optional(t.String()),
   phoneNumber: t.Optional(t.String()),
   dateOfBirth: t.Optional(t.String({ format: "date-time" })),
-  followedEvents: t.Array(t.String(), { default: [] }),
   hiddenEvents: t.Array(t.String(), { default: [] }),
   blockedOrganisers: t.Array(t.String(), { default: [] }),
   kycStatus: t.Optional(t.Union([t.Literal("pending"), t.Literal("approved")])),
   state: t.Optional(
     t.Union([t.Literal("active"), t.Literal("blocked"), t.Literal("deleting")]),
   ),
-  dtsCreated: t.String(),
-  dtsLastSession: t.String(),
+  epochCreated: t.String(),
+  epochLastSession: t.String(),
 });
 
 export type TModelVibefireUser = Static<typeof ModelVibefireUser>;

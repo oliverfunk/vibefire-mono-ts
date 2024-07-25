@@ -6,8 +6,7 @@ import {
   newVibefireEntityAccess,
   VibefireLocationSchema,
   type TModelVibefireEntityAccessParams,
-} from "./general";
-import { clearable } from "./utils";
+} from "!models//general";
 
 // export const VibefireGroupPlanEntry = t.Object({
 //   entry: t.Union([
@@ -96,24 +95,7 @@ export const ModelVibefireGroup = t.Object({
     { default: {} },
   ),
 
-  group: t.Union([
-    t.Object({
-      type: t.Literal("public"),
-      // location - used for discoverability
-      // possibly an array
-      location: t.Optional(VibefireLocationSchema),
-    }),
-    t.Object({
-      // invite by owner/managers only, link requests require approval
-      type: t.Literal("invite"),
-      // group code - used instead of requesting
-      inviteCode: clearable(t.String({ maxLength: 6 })),
-    }),
-    t.Object({
-      // all members can invite, link requests require no approval
-      type: t.Literal("open"),
-    }),
-  ]),
+  location: t.Optional(VibefireLocationSchema),
 
   // meta
   epochCreated: t.String({ default: undefined }),
