@@ -11,11 +11,11 @@ import { type RepositoryService } from "@vibefire/services/fauna";
 import {
   isValidUuidV4,
   trimAndCropText,
-  type AsyncResult,
   type PartialDeep,
 } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
+import { type ManagerAsyncResult } from "!managers/manager-result";
 import { ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
@@ -140,7 +140,7 @@ export class UFEventsManger {
 
   async eventsByUser(p: {
     userAid: string;
-  }): AsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
+  }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
       const { data, after: afterKey } = await this.repos.event.allByOwner(
         p.userAid,
@@ -158,12 +158,12 @@ export class UFEventsManger {
     userAid: string;
     groupId: string;
     scope: "all";
-  }): AsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>>;
+  }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>>;
   async eventsByGroup(p: {
     userAid?: string;
     groupId: string;
     scope: "published";
-  }): AsyncResult<Pageable<TModelVibefireEvent>>;
+  }): ManagerAsyncResult<Pageable<TModelVibefireEvent>>;
   async eventsByGroup(p: {
     userAid?: string;
     groupId: string;

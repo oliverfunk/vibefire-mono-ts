@@ -6,7 +6,10 @@ import { FaunaEventsRepository } from "./collections/Event";
 import { FaunaGroupsRepository } from "./collections/Group";
 import { FaunaPlansRepository } from "./collections/Plan";
 import { FaunaUsersRepository } from "./collections/User";
+import { FaunaCallAborted } from "./errors";
 import { FaunaFunctions } from "./functions";
+
+export { FaunaCallAborted };
 
 export type TEventsRepository = FaunaEventsRepository;
 export type TUsersRepository = FaunaUsersRepository;

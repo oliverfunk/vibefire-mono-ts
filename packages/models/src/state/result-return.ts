@@ -1,19 +1,11 @@
+import { type TModelVibefireError } from "!models/data/vibefire-error";
+
 type ResultReturnOk<T> = {
   ok: true;
   value: T;
-  ise: false;
 };
 type ResultReturnErr = {
   ok: false;
-  message: string;
-  ise: false;
+  error: TModelVibefireError;
 };
-type ResultReturnErrIse = {
-  ok: false;
-  message: string;
-  ise: true;
-};
-export type ResultReturn<T> =
-  | ResultReturnOk<T>
-  | ResultReturnErr
-  | ResultReturnErrIse;
+export type ResultReturn<T> = ResultReturnOk<T> | ResultReturnErr;

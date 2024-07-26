@@ -1,18 +1,16 @@
-import { ManagerRuleViolation } from "@vibefire/managers/errors";
+import { type ManagerAsyncResult } from "@vibefire/managers/result";
 import { type ResultReturn } from "@vibefire/models";
-import { type AsyncResult } from "@vibefire/utils";
 
-export type ApiReturn<T> = ResultReturn<T>;
+export type ApiResponse<T> = ResultReturn<T>;
 
 export const wrapApiReturn = async <T>(
   fn: () => Promise<T>,
-): Promise<ApiReturn<T>> => {
+): Promise<ApiResponse<T>> => {
   try {
     const value = await fn();
     return {
       ok: true,
       value,
-      ise: false,
     };
   } catch (error) {
     // although logging should primarily be done in the managers,
@@ -21,15 +19,17 @@ export const wrapApiReturn = async <T>(
     console.error(error);
     return {
       ok: false,
-      message: "Something went wrong, we're looking into it. :(",
-      ise: true,
+      error: {
+        code: "ise",
+        message: "Something went wrong, we're looking into it. :(",
+      },
     };
   }
 };
 
 export const wrapManagerReturn = async <T>(
-  fn: () => AsyncResult<T>,
-): Promise<ApiReturn<T>> => {
+  fn: () => ManagerAsyncResult<T>,
+): Promise<ApiResponse<T>> => {
   try {
     const res = await fn();
 
@@ -37,29 +37,22 @@ export const wrapManagerReturn = async <T>(
       return {
         ok: true,
         value: res.value,
-        ise: false,
       };
     }
-
-    if (res.error instanceof ManagerRuleViolation) {
+    if (res.isErr) {
       return {
         ok: false,
-        message: res.error.message,
-        ise: false,
-      };
-    } else {
-      return {
-        ok: false,
-        message: "Something went wrong, we're looking into it. :(",
-        ise: true,
+        error: res.error.value,
       };
     }
   } catch (error) {
     console.error(error);
-    return {
-      ok: false,
-      message: "Something went wrong, we're looking into it. :(",
-      ise: true,
-    };
   }
+  return {
+    ok: false,
+    error: {
+      code: "ise",
+      message: "Something went wrong, we're looking into it. :(",
+    },
+  };
 };

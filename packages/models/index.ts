@@ -1,3 +1,4 @@
+export * from "!models/data/vibefire-error";
 export * from "!models/data/vibefire-event";
 export * from "!models/data/vibefire-user";
 export * from "!models/data/vibefire-group";
