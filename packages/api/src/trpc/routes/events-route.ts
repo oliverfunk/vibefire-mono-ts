@@ -10,7 +10,7 @@ import {
   publicProcedure,
   router,
 } from "!api/trpc/trpc-router";
-import { wrapManagerReturn, type ApiReturn } from "!api/utils";
+import { wrapManagerReturn, type ApiResponse } from "!api/utils";
 
 export const eventsRouter = router({
   // positionAddressInfo: authedProcedure
@@ -83,7 +83,8 @@ export const eventsRouter = router({
       ),
     )
     .output(
-      (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
+      (value) =>
+        value as ApiResponse<Pageable<PartialDeep<TModelVibefireEvent>>>,
     )
     .query(async ({ ctx, input }) =>
       wrapManagerReturn(() =>

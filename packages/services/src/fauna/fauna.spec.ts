@@ -17,7 +17,7 @@ describe("events uf manager", () => {
       "401880614717882575",
       testUserAid,
     ).result;
-    console.log(r.isOk && r.value);
+    console.log(r);
   });
 
   it("run 2", async () => {

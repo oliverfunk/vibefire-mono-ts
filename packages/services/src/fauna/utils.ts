@@ -1,6 +1,5 @@
 import {
   AbortError,
-  fql,
   NullDocument,
   QueryCheckError,
   QueryRuntimeError,
@@ -9,16 +8,12 @@ import {
   type QueryValue,
 } from "fauna";
 
-import {
-  Result,
-  tbValidator,
-  tbValidatorResult,
-  type AsyncResult,
-} from "@vibefire/utils";
+import { ModelVibefireError } from "@vibefire/models";
+import { Result, tbValidatorResult, type AsyncResult } from "@vibefire/utils";
 
-import { FaunaAbortedCall, ModelFaunaAbortCallValue } from "./abort-errors";
+import { FaunaCallAborted } from "./errors";
 
-export type FaunaAsyncResult<R> = AsyncResult<R, FaunaAbortedCall>;
+export type FaunaAsyncResult<R> = AsyncResult<R, FaunaCallAborted>;
 
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,
@@ -74,9 +69,9 @@ const runFaunaAbortableQuery = async <R extends QueryValue>(
     );
   } catch (e) {
     if (e instanceof AbortError) {
-      const ab = e.abort;
-      if (tbValidatorResult(ModelFaunaAbortCallValue)(ab).isOk) {
-        return Result.err(new FaunaAbortedCall(ab));
+      const abtRes = tbValidatorResult(ModelVibefireError)(e.abort);
+      if (abtRes.isOk) {
+        return Result.err(new FaunaCallAborted(abtRes.value));
       }
     }
     throw e;
