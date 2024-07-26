@@ -1,5 +1,4 @@
-import { Type as t, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { clearable, tb, Value, type Static } from "@vibefire/utils";
 
 import {
   ModelEventType,
@@ -13,11 +12,10 @@ import {
   VibefireLocationSchema,
   type TModelVibefireEntityAccessParams,
 } from "!models/general";
-import { clearable } from "!models/utils";
 
-const ModelEventImages = t.Object(
+const ModelEventImages = tb.Object(
   {
-    bannerImgKeys: t.Array(t.String(), {
+    bannerImgKeys: tb.Array(tb.String(), {
       minItems: 1,
       maxItems: 5,
       uniqueItems: true,
@@ -26,66 +24,66 @@ const ModelEventImages = t.Object(
   { default: {} },
 );
 
-const ModelEventTimes = t.Object(
+const ModelEventTimes = tb.Object(
   {
-    tsStart: t.String({ default: undefined }),
-    tsEnd: clearable(t.String()),
-    datePeriods: t.Array(TimePeriodSchema, { default: [] }),
+    tsStart: tb.String({ default: undefined }),
+    tsEnd: clearable(tb.String()),
+    datePeriods: tb.Array(TimePeriodSchema, { default: [] }),
   },
   { default: {} },
 );
 
-const ModelEventCustomMapData = t.Object({
-  zoomGroup: t.Union(
+const ModelEventCustomMapData = tb.Object({
+  zoomGroup: tb.Union(
     [
-      t.Literal(0), // local
-      t.Literal(1), // regional
-      t.Literal(2), // national
+      tb.Literal(0), // local
+      tb.Literal(1), // regional
+      tb.Literal(2), // national
     ],
     { default: 0 },
   ),
-  vibe: t.Union(
+  vibe: tb.Union(
     [
-      t.Literal(-2), // "Very chilled"
-      t.Literal(-1), // "Cool"
-      t.Literal(0), // "Neutral"
-      t.Literal(1), // "Warm"
-      t.Literal(2), // "Fire"
+      tb.Literal(-2), // "Very chilled"
+      tb.Literal(-1), // "Cool"
+      tb.Literal(0), // "Neutral"
+      tb.Literal(1), // "Warm"
+      tb.Literal(2), // "Fire"
     ],
     { default: 0 },
   ),
-  rank: t.Number({ default: 0 }),
-  customIcon: clearable(t.String()),
+  rank: tb.Number({ default: 0 }),
+  customIcon: clearable(tb.String()),
 });
 
 export { ModelEventType, type TModelEventType };
 
 export type TModelVibefireEvent = Static<typeof ModelVibefireEvent>;
-export const ModelVibefireEvent = t.Object({
-  id: t.String({ default: undefined }),
+export const ModelVibefireEvent = tb.Object({
+  id: tb.String({ default: undefined }),
 
   accessRef: ModelVibefireEntityAccess,
 
-  ownerId: t.String({ default: undefined }),
-  ownerType: t.Union([t.Literal("user"), t.Literal("group")]),
-  linkId: t.String({ default: undefined }),
-  linkEnabled: t.Boolean({ default: true }),
+  ownerId: tb.String({ default: undefined }),
+  ownerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
+  linkId: tb.String({ default: undefined }),
+  linkEnabled: tb.Boolean({ default: true }),
 
   // links to a 'plan' type event
-  partOf: clearable(t.String()),
+  partOf: clearable(tb.String()),
 
-  state: t.Union(
+  state: tb.Union(
     [
-      t.Literal(-1), // draft
-      t.Literal(0), // hidden
-      t.Literal(1), // published
-      t.Literal(2), // archived
-      t.Literal(3), // deleted
+      tb.Literal(-1), // draft
+      tb.Literal(0), // hidden
+      tb.Literal(1), // published
+      tb.Literal(2), // archived
+      tb.Literal(3), // deleted
     ],
     { default: -1 },
   ),
 
-  name: t.String({
+  name: tb.String({
     default: undefined,
     minLength: 2,
     maxLength: 100,
@@ -99,7 +97,7 @@ export const ModelVibefireEvent = t.Object({
   map: ModelEventCustomMapData,
 
   // meta
-  epochCreated: t.Number({ default: undefined }),
+  epochCreated: tb.Number({ default: undefined }),
 });
 export const newVibefireEvent = (
   p: TModelVibefireEntityAccessParams & {
@@ -128,19 +126,19 @@ export const newVibefireEvent = (
 };
 
 export type TModelEventUpdate = Static<typeof ModelEventUpdate>;
-export const ModelEventUpdate = t.Partial(
-  t.Object({
+export const ModelEventUpdate = tb.Partial(
+  tb.Object({
     name: ModelVibefireEvent.properties.name,
-    images: t.Partial(ModelEventImages),
-    times: t.Partial(t.Omit(ModelEventTimes, ["datePeriods"])),
-    location: t.Partial(VibefireLocationSchema),
-    event: t.Partial(ModelEventType),
+    images: tb.Partial(ModelEventImages),
+    times: tb.Partial(tb.Omit(ModelEventTimes, ["datePeriods"])),
+    location: tb.Partial(VibefireLocationSchema),
+    event: tb.Partial(ModelEventType),
   }),
 );
 
 // todo: this may not be correct, better to create a custom model
 // instead of using ModelEventUpdate
-export const ModelIncompleteVibefireEvent = t.Object({
+export const ModelIncompleteVibefireEvent = tb.Object({
   ...ModelVibefireEvent.properties,
   ...ModelEventUpdate.properties,
 });

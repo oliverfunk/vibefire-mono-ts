@@ -16,8 +16,7 @@
     "@vibefire/utils": "0.1.0",
     "axios": "0.27.2",
     "fauna": "^2.0.1",
-    "svix": "^1.10.0",
-    "type-fest": "^4.8.2"
+    "svix": "^1.10.0"
   },
   "devDependencies": {
     "@vibefire/config": "0.1.0"

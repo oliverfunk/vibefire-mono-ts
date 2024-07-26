@@ -1,7 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { Client } from "fauna";
 import { DateTime } from "luxon";
-import type { PartialDeep } from "type-fest";
 
 import {
   ModelVibefireUser,
@@ -42,6 +41,7 @@ import {
   updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
+import type { PartialDeep } from "@vibefire/utils";
 import {
   displayPeriodsBetween,
   displayPeriodsFor,
@@ -829,7 +829,7 @@ export class FaunaUserManager {
     }
 
     const dateOfBirth = birthdayISO
-      ? DateTime.fromISO(birthdayISO).toISODate() ?? undefined
+      ? (DateTime.fromISO(birthdayISO).toISODate() ?? undefined)
       : undefined;
 
     const u = Value.Create(ModelVibefireUser);

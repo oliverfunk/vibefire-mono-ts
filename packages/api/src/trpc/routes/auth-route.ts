@@ -15,7 +15,7 @@ export const authRouter = router({
         anonId: "anon",
       };
     } else {
-      const userInfo = await ctx.fauna.getUserInfo(ctx.auth, true);
+      const userInfo = await ctx.eventsManager.getUserInfo(ctx.auth, true);
       session = {
         state: "authenticated",
         userId: ctx.auth.userId,

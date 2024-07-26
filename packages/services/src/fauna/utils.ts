@@ -9,16 +9,16 @@ import {
   type QueryValue,
 } from "fauna";
 
-import { Result, type AsyncResult } from "@vibefire/utils";
+import {
+  Result,
+  tbValidator,
+  tbValidatorResult,
+  type AsyncResult,
+} from "@vibefire/utils";
 
-export class FaunaAbortedResult extends Error {
-  constructor(readonly value: unknown) {
-    super();
-    this.name = "FaunaAbortedResult";
-  }
-}
+import { FaunaAbortedCall, ModelFaunaAbortCallValue } from "./abort-errors";
 
-export type FaunaAsyncResult<R> = AsyncResult<R, FaunaAbortedResult>;
+export type FaunaAsyncResult<R> = AsyncResult<R, FaunaAbortedCall>;
 
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,
@@ -75,8 +75,8 @@ const runFaunaAbortableQuery = async <R extends QueryValue>(
   } catch (e) {
     if (e instanceof AbortError) {
       const ab = e.abort;
-      if (ab == null || typeof ab === "string" || typeof ab === "number") {
-        return Result.err(new FaunaAbortedResult(ab));
+      if (tbValidatorResult(ModelFaunaAbortCallValue)(ab).isOk) {
+        return Result.err(new FaunaAbortedCall(ab));
       }
     }
     throw e;

@@ -1,6 +1,5 @@
-import { type PartialDeep } from "type-fest";
-
 import { type VibefireEventT } from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
 export type FormSectionProps = {
   currentEventData: PartialDeep<VibefireEventT>;

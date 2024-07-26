@@ -1,7 +1,5 @@
-import { Type as t } from "@sinclair/typebox";
-
 import { type VibefireGroupT } from "@vibefire/models";
-import { tbValidator } from "@vibefire/utils";
+import { tb, tbValidator } from "@vibefire/utils";
 
 import {
   authedProcedure,
@@ -18,8 +16,8 @@ export const groupsRouter = router({
   byLinkID: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          linkId: t.String(),
+        tb.Object({
+          linkId: tb.String(),
         }),
       ),
     )

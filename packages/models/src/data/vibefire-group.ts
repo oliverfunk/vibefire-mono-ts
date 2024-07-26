@@ -1,5 +1,4 @@
-import { Type as t, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { tb, Value, type Static } from "@vibefire/utils";
 
 import {
   ModelVibefireEntityAccess,
@@ -54,51 +53,51 @@ import {
 export type TModelVibefireGroupMembership = Static<
   typeof ModelVibefireGroupMembership
 >;
-export const ModelVibefireGroupMembership = t.Object({
-  id: t.String({ default: undefined }),
-  userId: t.String({ default: undefined }),
-  groupId: t.String({ default: undefined }),
-  epochCreated: t.Number({ default: undefined }),
-  epochExpires: t.Optional(t.Number()),
-  role: t.Union([t.Literal("member"), t.Literal("manager")], {
+export const ModelVibefireGroupMembership = tb.Object({
+  id: tb.String({ default: undefined }),
+  userId: tb.String({ default: undefined }),
+  groupId: tb.String({ default: undefined }),
+  epochCreated: tb.Number({ default: undefined }),
+  epochExpires: tb.Optional(tb.Number()),
+  role: tb.Union([tb.Literal("member"), tb.Literal("manager")], {
     default: undefined,
   }),
 });
 
-const ModelGroupImages = t.Object({
-  banners: t.Array(t.String(), { default: [] }),
+const ModelGroupImages = tb.Object({
+  banners: tb.Array(tb.String(), { default: [] }),
 });
 
 export type TModelVibefireGroup = Static<typeof ModelVibefireGroup>;
-export const ModelVibefireGroup = t.Object({
-  id: t.String({ default: undefined }),
+export const ModelVibefireGroup = tb.Object({
+  id: tb.String({ default: undefined }),
 
   accessRef: ModelVibefireEntityAccess,
 
-  ownerId: t.String({ default: undefined }),
-  ownerType: t.Union([t.Literal("user"), t.Literal("org")]),
-  linkId: t.String({ default: undefined }),
-  linkEnabled: t.Boolean({ default: true }),
+  ownerId: tb.String({ default: undefined }),
+  ownerType: tb.Union([tb.Literal("user"), tb.Literal("org")]),
+  linkId: tb.String({ default: undefined }),
+  linkEnabled: tb.Boolean({ default: true }),
 
-  name: t.String({ default: undefined }),
-  description: t.String({ default: undefined }),
+  name: tb.String({ default: undefined }),
+  description: tb.String({ default: undefined }),
   images: ModelGroupImages,
 
-  socials: t.Object(
+  socials: tb.Object(
     {
-      x: t.Optional(t.String({ default: undefined })),
-      facebook: t.Optional(t.String({ default: undefined })),
-      instagram: t.Optional(t.String({ default: undefined })),
-      tiktok: t.Optional(t.String({ default: undefined })),
-      website: t.Optional(t.String({ default: undefined })),
+      x: tb.Optional(tb.String({ default: undefined })),
+      facebook: tb.Optional(tb.String({ default: undefined })),
+      instagram: tb.Optional(tb.String({ default: undefined })),
+      tiktok: tb.Optional(tb.String({ default: undefined })),
+      website: tb.Optional(tb.String({ default: undefined })),
     },
     { default: {} },
   ),
 
-  location: t.Optional(VibefireLocationSchema),
+  location: tb.Optional(VibefireLocationSchema),
 
   // meta
-  epochCreated: t.String({ default: undefined }),
+  epochCreated: tb.String({ default: undefined }),
 });
 
 export const newVibefireGroup = (

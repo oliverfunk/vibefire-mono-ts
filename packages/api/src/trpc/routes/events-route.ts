@@ -1,12 +1,9 @@
-import { Type as t } from "@sinclair/typebox";
-import { type PartialDeep } from "type-fest";
-
 import {
   CoordSchema,
   type Pageable,
   type TModelVibefireEvent,
 } from "@vibefire/models";
-import { tbValidator } from "@vibefire/utils";
+import { tb, tbValidator, type PartialDeep } from "@vibefire/utils";
 
 import {
   authedProcedure,
@@ -63,7 +60,7 @@ export const eventsRouter = router({
   ),
 
   listGroupAll: authedProcedure
-    .input(tbValidator(t.Object({ groupId: t.String() })))
+    .input(tbValidator(tb.Object({ groupId: tb.String() })))
     // .output(
     //   (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
     // )
@@ -80,8 +77,8 @@ export const eventsRouter = router({
   listGroupPublished: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          groupId: t.String(),
+        tb.Object({
+          groupId: tb.String(),
         }),
       ),
     )
@@ -101,8 +98,8 @@ export const eventsRouter = router({
   listPartOfPlanPublished: publicProcedure // todo: needs work
     .input(
       tbValidator(
-        t.Object({
-          planId: t.String(),
+        tb.Object({
+          planId: tb.String(),
         }),
       ),
     )
@@ -122,8 +119,8 @@ export const eventsRouter = router({
   listPartOfPlanAll: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          planId: t.String(),
+        tb.Object({
+          planId: tb.String(),
         }),
       ),
     )
@@ -139,8 +136,8 @@ export const eventsRouter = router({
   viewPublished: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
+        tb.Object({
+          eventId: tb.String(),
         }),
       ),
     )
@@ -156,8 +153,8 @@ export const eventsRouter = router({
   viewManage: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
+        tb.Object({
+          eventId: tb.String(),
         }),
       ),
     )
@@ -173,9 +170,9 @@ export const eventsRouter = router({
   createForSelf: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          title: t.String(),
-          fromPreviousEventId: t.Optional(t.String()),
+        tb.Object({
+          title: tb.String(),
+          fromPreviousEventId: tb.Optional(tb.String()),
         }),
       ),
     )
@@ -203,10 +200,10 @@ export const eventsRouter = router({
   createForGroup: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          title: t.String(),
-          groupId: t.String(),
-          fromPreviousEventId: t.Optional(t.String()),
+        tb.Object({
+          title: tb.String(),
+          groupId: tb.String(),
+          fromPreviousEventId: tb.Optional(tb.String()),
         }),
       ),
     )
@@ -236,9 +233,9 @@ export const eventsRouter = router({
   update: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          update: t.Partial(EventUpdateModel),
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Partial(EventUpdateModel),
         }),
       ),
     )
@@ -253,9 +250,9 @@ export const eventsRouter = router({
   updateVisibility: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          update: t.Union([t.Literal("hidden"), t.Literal("published")]),
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Union([tb.Literal("hidden"), tb.Literal("published")]),
         }),
       ),
     )
@@ -270,9 +267,9 @@ export const eventsRouter = router({
   updateLinkId: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          update: t.Union([t.Literal("remove"), t.Literal("regenerate")]),
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Union([tb.Literal("remove"), tb.Literal("regenerate")]),
         }),
       ),
     )
@@ -287,11 +284,11 @@ export const eventsRouter = router({
   updatePartOf: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          update: t.Union([
-            t.Object({ type: t.Literal("remove") }),
-            t.Object({ type: t.Literal("set"), planId: t.String() }),
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Union([
+            tb.Object({ type: tb.Literal("remove") }),
+            tb.Object({ type: tb.Literal("set"), planId: tb.String() }),
           ]),
         }),
       ),
@@ -312,8 +309,8 @@ export const eventsRouter = router({
   delete: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
+        tb.Object({
+          eventId: tb.String(),
         }),
       ),
     )
@@ -327,9 +324,9 @@ export const eventsRouter = router({
   createImageUploadLink: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
+        tb.Object({
+          eventId: tb.String(),
+          organisationId: tb.Optional(tb.String()),
         }),
       ),
     )
@@ -351,11 +348,11 @@ export const eventsRouter = router({
   queryGeoPeriods: publicProcedure
     .input(
       tbValidator(
-        t.Object({
+        tb.Object({
           position: CoordSchema,
-          radius: t.Number(),
-          fromDate: t.String(),
-          toDate: t.String(),
+          radius: tb.Number(),
+          fromDate: tb.String(),
+          toDate: tb.String(),
         }),
       ),
     )

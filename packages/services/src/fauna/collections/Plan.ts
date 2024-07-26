@@ -1,8 +1,7 @@
 import { fql, type Client, type Page } from "fauna";
-import { type PartialDeep } from "type-fest";
 
 import { ModelVibefirePlan, type TModelVibefirePlan } from "@vibefire/models";
-import { tbClean } from "@vibefire/utils";
+import { tbClean, type PartialDeep } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna/functions";
 import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
@@ -42,11 +41,11 @@ export class FaunaPlansRepository {
   }
 
   allEventsUserCanManage(planId: string, userAid: string) {
-    return this.funcs.planEventsUserCanManage(planId, userAid);
+    return this.funcs.planItemsUserCanManage(planId, userAid);
   }
 
   allEventsUserCanView(planId: string, userAid?: string) {
-    return this.funcs.planEventsUserCanView(planId, userAid);
+    return this.funcs.planItemsUserCanView(planId, userAid);
   }
 
   allByOwner(ownerId: string, limit = 0) {

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
-import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 

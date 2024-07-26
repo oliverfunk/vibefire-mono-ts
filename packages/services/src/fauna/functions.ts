@@ -57,6 +57,15 @@ export class FaunaFunctions {
     );
   }
 
+  groupIfUserCanViewViaLink(groupLinkId: string, userAid?: string) {
+    return faunaAbortableQuery<TModelVibefireGroup>(
+      this.faunaClient,
+      fql`
+        GroupIfUserCanViewViaLink(${groupLinkId}, ${userAid ?? null})
+      `,
+    );
+  }
+
   eventIfUserCanManage(eventId: string, userAid: string) {
     return faunaAbortableQuery<TModelVibefireEvent>(
       this.faunaClient,
@@ -102,16 +111,25 @@ export class FaunaFunctions {
     );
   }
 
-  planEventsUserCanManage(planId: string, userAid: string) {
-    return faunaAbortableQuery<TModelVibefireEvent[]>(
+  planIfUserCanViewViaLink(planLinkId: string, userAid?: string) {
+    return faunaAbortableQuery<TModelVibefirePlan>(
       this.faunaClient,
       fql`
-        PlanEventsUserCanManage(${planId}, ${userAid})
+        PlanIfUserCanViewViaLink(${planLinkId}, ${userAid ?? null})
       `,
     );
   }
 
-  planEventsUserCanView(planId: string, userAid?: string) {
+  planItemsUserCanManage(planId: string, userAid: string) {
+    return faunaAbortableQuery<TModelVibefireEvent[]>(
+      this.faunaClient,
+      fql`
+        PlanItemsUserCanManage(${planId}, ${userAid})
+      `,
+    );
+  }
+
+  planItemsUserCanView(planId: string, userAid?: string) {
     return faunaAbortableQuery<TModelVibefireEvent[]>(
       this.faunaClient,
       fql`

@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { type PartialDeep } from "type-fest";
 
 import {
   newVibefireEvent,
@@ -13,6 +12,7 @@ import {
   isValidUuidV4,
   trimAndCropText,
   type AsyncResult,
+  type PartialDeep,
 } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";

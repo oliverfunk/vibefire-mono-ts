@@ -1,9 +1,8 @@
 import { useCallback, useMemo } from "react";
 import { Text, View, type ListRenderItemInfo } from "react-native";
-import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT } from "@vibefire/models";
-import { isoNTZToUTCDateTime } from "@vibefire/utils";
+import { isoNTZToUTCDateTime, type PartialDeep } from "@vibefire/utils";
 
 import { useSortedEvents } from "!/hooks/useSortedByTime";
 

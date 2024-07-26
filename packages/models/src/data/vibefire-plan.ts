@@ -1,5 +1,4 @@
-import { Type as t, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { tb, Value, type Static } from "@vibefire/utils";
 
 import {
   ModelVibefireEntityAccess,
@@ -8,10 +7,10 @@ import {
 } from "!models/general";
 
 export type TModelPlanItem = Static<typeof ModelPlanItem>;
-export const ModelPlanItem = t.Object({
-  tsWhen: t.Optional(t.String({ format: "date-time" })),
-  caption: t.Optional(t.String()),
-  eventId: t.String({ default: undefined }),
+export const ModelPlanItem = tb.Object({
+  tsWhen: tb.Optional(tb.String({ format: "date-time" })),
+  caption: tb.Optional(tb.String()),
+  eventId: tb.String({ default: undefined }),
 });
 export const newPlanItem = (p: TModelPlanItem): TModelPlanItem => {
   const d = Value.Create(ModelPlanItem);
@@ -22,35 +21,35 @@ export const newPlanItem = (p: TModelPlanItem): TModelPlanItem => {
 };
 
 export type TModelVibefirePlan = Static<typeof ModelVibefirePlan>;
-export const ModelVibefirePlan = t.Object({
-  id: t.String({ default: undefined }),
+export const ModelVibefirePlan = tb.Object({
+  id: tb.String({ default: undefined }),
 
   accessRef: ModelVibefireEntityAccess,
 
-  ownerId: t.String({ default: undefined }),
-  ownerType: t.Union([t.Literal("user"), t.Literal("group")]),
-  linkId: t.String({ default: undefined }),
-  linkEnabled: t.Boolean({ default: true }),
+  ownerId: tb.String({ default: undefined }),
+  ownerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
+  linkId: tb.String({ default: undefined }),
+  linkEnabled: tb.Boolean({ default: true }),
 
   // could be different from ownerId if the plan is for a group
-  organiserId: t.String({ default: undefined }),
+  organiserId: tb.String({ default: undefined }),
   // if group, the person that made the plan
   // if the group is public, this is can be hidden
-  organiserName: t.String({ default: undefined }),
+  organiserName: tb.String({ default: undefined }),
 
-  name: t.String(),
-  description: t.String({ default: "" }),
+  name: tb.String(),
+  description: tb.String({ default: "" }),
 
-  items: t.Array(
-    t.Object({
-      tsWhen: t.Optional(t.String({ format: "date-time" })),
-      caption: t.Optional(t.String()),
-      eventId: t.String({ default: undefined }),
+  items: tb.Array(
+    tb.Object({
+      tsWhen: tb.Optional(tb.String({ format: "date-time" })),
+      caption: tb.Optional(tb.String()),
+      eventId: tb.String({ default: undefined }),
     }),
     { default: [], maxLength: 10 },
   ),
 
-  epochCreated: t.Number({ default: undefined }),
+  epochCreated: tb.Number({ default: undefined }),
 });
 
 export const newVibefirePlan = (
