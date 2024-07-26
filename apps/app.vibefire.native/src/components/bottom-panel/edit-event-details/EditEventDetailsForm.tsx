@@ -5,9 +5,9 @@ import {
   type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
 import _ from "lodash";
-import { type PartialDeep } from "type-fest";
 
 import { type CoordT, type VibefireEventT } from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 

@@ -1,4 +1,6 @@
-import type { PartialDeep } from "type-fest";
+import { type PartialDeep } from "type-fest";
+
+export { PartialDeep };
 
 export type ImageVariant = "public";
 

@@ -1,63 +1,62 @@
-import { Type as t } from "@sinclair/typebox";
+import { clearable, tb } from "@vibefire/utils";
 
 import { CoordSchema } from "!models/general";
-import { clearable } from "!models/utils";
 
-const PoiModel = t.Object({
-  poiLetter: t.String(),
+const PoiModel = tb.Object({
+  poiLetter: tb.String(),
   position: CoordSchema,
-  label: t.String({ default: undefined, maxLength: 100, minLength: 1 }),
+  label: tb.String({ default: undefined, maxLength: 100, minLength: 1 }),
 });
 
-export const EventDetailPoiModel = t.Object({
-  v: t.Literal(1),
-  nOrder: t.Number(),
-  type: t.Literal("poi"),
-  blockTitle: t.String({ default: "Points of Interest" }),
-  pois: t.Array(PoiModel, { default: [] }),
+export const EventDetailPoiModel = tb.Object({
+  v: tb.Literal(1),
+  nOrder: tb.Number(),
+  type: tb.Literal("poi"),
+  blockTitle: tb.String({ default: "Points of Interest" }),
+  pois: tb.Array(PoiModel, { default: [] }),
 });
 
-export const EventDetailDescModel = t.Object({
-  v: t.Literal(1),
-  nOrder: t.Number(),
-  type: t.Literal("description"),
-  blockTitle: t.String({ default: "Details" }),
-  description: t.String(),
+export const EventDetailDescModel = tb.Object({
+  v: tb.Literal(1),
+  nOrder: tb.Number(),
+  type: tb.Literal("description"),
+  blockTitle: tb.String({ default: "Details" }),
+  description: tb.String(),
 });
 
-const TimelineElementModel = t.Object({
-  elementId: t.String(),
-  message: t.String({ default: undefined }),
-  tsWhen: t.String({ default: undefined }),
-  isNotification: t.Boolean({ default: false }),
-  hasNotified: t.Boolean({ default: false }),
+const TimelineElementModel = tb.Object({
+  elementId: tb.String(),
+  message: tb.String({ default: undefined }),
+  tsWhen: tb.String({ default: undefined }),
+  isNotification: tb.Boolean({ default: false }),
+  hasNotified: tb.Boolean({ default: false }),
 });
 
-export const EventDetailTimelineModel = t.Object({
-  v: t.Literal(1),
-  nOrder: t.Number(),
-  type: t.Literal("timeline"),
-  blockTitle: t.String({ default: "Timeline" }),
-  timeline: t.Array(TimelineElementModel, { default: [] }),
-  linkedPoi: t.Optional(t.String()),
+export const EventDetailTimelineModel = tb.Object({
+  v: tb.Literal(1),
+  nOrder: tb.Number(),
+  type: tb.Literal("timeline"),
+  blockTitle: tb.String({ default: "Timeline" }),
+  timeline: tb.Array(TimelineElementModel, { default: [] }),
+  linkedPoi: tb.Optional(tb.String()),
 });
 
-const OfferModel = t.Object({
-  offerId: t.String(),
-  description: t.String(),
-  live: t.Boolean(),
-  claimsTotal: t.Number({ minimum: 1 }),
-  claimsPerUser: t.Number({ minimum: 1 }),
-  claimableByGroups: t.Optional(t.Array(t.String())),
-  tsStart: clearable(t.String({ format: "date-time" })),
-  tsEnd: clearable(t.String({ format: "date-time" })),
+const OfferModel = tb.Object({
+  offerId: tb.String(),
+  description: tb.String(),
+  live: tb.Boolean(),
+  claimsTotal: tb.Number({ minimum: 1 }),
+  claimsPerUser: tb.Number({ minimum: 1 }),
+  claimableByGroups: tb.Optional(tb.Array(tb.String())),
+  tsStart: clearable(tb.String({ format: "date-time" })),
+  tsEnd: clearable(tb.String({ format: "date-time" })),
 });
 
-export const EventDetailOffersModel = t.Object({
-  v: t.Literal(1),
-  nOrder: t.Number(),
-  type: t.Literal("offer"),
-  blockTitle: t.String({ default: "Offers" }),
-  offers: t.Array(OfferModel, { default: [] }),
-  linkedPoi: t.Optional(t.String()),
+export const EventDetailOffersModel = tb.Object({
+  v: tb.Literal(1),
+  nOrder: tb.Number(),
+  type: tb.Literal("offer"),
+  blockTitle: tb.String({ default: "Offers" }),
+  offers: tb.Array(OfferModel, { default: [] }),
+  linkedPoi: tb.Optional(tb.String()),
 });

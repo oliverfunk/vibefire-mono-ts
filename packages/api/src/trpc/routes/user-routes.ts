@@ -1,6 +1,4 @@
-import { Type as t } from "@sinclair/typebox";
-
-import { tbValidator } from "@vibefire/utils";
+import { tb, tbValidator } from "@vibefire/utils";
 
 import {
   authedProcedure,
@@ -15,9 +13,9 @@ export const userRouter = router({
   starEvent: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          starIt: t.Boolean(),
+        tb.Object({
+          eventId: tb.String(),
+          starIt: tb.Boolean(),
         }),
       ),
     )
@@ -34,9 +32,9 @@ export const userRouter = router({
   hideEvent: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          report: t.Boolean(),
+        tb.Object({
+          eventId: tb.String(),
+          report: tb.Boolean(),
         }),
       ),
     )
@@ -49,8 +47,8 @@ export const userRouter = router({
   blockOrganiser: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          organiserId: t.String(),
+        tb.Object({
+          organiserId: tb.String(),
         }),
       ),
     )
@@ -63,8 +61,8 @@ export const userRouter = router({
   registerToken: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          token: t.String(),
+        tb.Object({
+          token: tb.String(),
         }),
       ),
     )

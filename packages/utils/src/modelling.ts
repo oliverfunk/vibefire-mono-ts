@@ -1,5 +1,6 @@
 import {
   Kind,
+  Type as tb,
   type Static,
   type TLiteral,
   type TObject,
@@ -11,6 +12,11 @@ import { type ValueErrorIterator } from "@sinclair/typebox/errors";
 import { Value } from "@sinclair/typebox/value";
 
 import { wrapToResult, type Result } from "./result";
+
+export { tb, Static, Value };
+
+export const clearable = <S extends TSchema>(setSchema: S) =>
+  tb.Optional(tb.Union([setSchema, tb.Null()]));
 
 export class SchemaValidationError extends Error {
   constructor(errors: ValueErrorIterator | string, schemaTitle?: string) {

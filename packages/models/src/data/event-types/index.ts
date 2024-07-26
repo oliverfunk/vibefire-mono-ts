@@ -1,5 +1,4 @@
-import { Type as t, type Static } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
+import { tb, Value, type Static } from "@vibefire/utils";
 
 import {
   EventDetailDescModel,
@@ -8,10 +7,10 @@ import {
   EventDetailTimelineModel,
 } from "./event-details";
 
-const ModelEventTypeEventPublic = t.Object({
-  type: t.Literal("event-public"),
-  details: t.Array(
-    t.Union([
+const ModelEventTypeEventPublic = tb.Object({
+  type: tb.Literal("event-public"),
+  details: tb.Array(
+    tb.Union([
       EventDetailDescModel,
       EventDetailTimelineModel,
       EventDetailOffersModel,
@@ -21,23 +20,26 @@ const ModelEventTypeEventPublic = t.Object({
       default: [],
     },
   ),
-  tags: t.Array(t.String(), { default: [], uniqueItems: true }),
+  tags: tb.Array(tb.String(), { default: [], uniqueItems: true }),
 });
 
-const ModelEventTypeEventPrivate = t.Object({
-  type: t.Literal("event-private"),
-  details: t.Array(t.Union([EventDetailDescModel, EventDetailTimelineModel]), {
-    default: [],
-  }),
+const ModelEventTypeEventPrivate = tb.Object({
+  type: tb.Literal("event-private"),
+  details: tb.Array(
+    tb.Union([EventDetailDescModel, EventDetailTimelineModel]),
+    {
+      default: [],
+    },
+  ),
 });
 
-const ModelEventTypeWhenWhere = t.Object({
-  type: t.Literal("whenwhere"),
-  description: t.Optional(t.String()),
+const ModelEventTypeWhenWhere = tb.Object({
+  type: tb.Literal("whenwhere"),
+  description: tb.Optional(tb.String()),
 });
 
 export type TModelEventType = Static<typeof ModelEventType>;
-export const ModelEventType = t.Union(
+export const ModelEventType = tb.Union(
   [
     ModelEventTypeEventPublic,
     ModelEventTypeEventPrivate,

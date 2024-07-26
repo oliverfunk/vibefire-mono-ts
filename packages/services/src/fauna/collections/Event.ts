@@ -1,8 +1,7 @@
 import { fql, type Client, type Page } from "fauna";
-import { type PartialDeep } from "type-fest";
 
 import { ModelVibefireEvent, type TModelVibefireEvent } from "@vibefire/models";
-import { tbClean } from "@vibefire/utils";
+import { tbClean, type PartialDeep } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna/functions";
 import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";

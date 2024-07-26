@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { type PartialDeep } from "type-fest";
 
 import { type VibefireEventT, type VibefireGroupT } from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
 export const useSortByTime = <T extends object>(
   data: T[],
