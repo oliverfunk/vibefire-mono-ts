@@ -73,7 +73,11 @@ export class FaunaPlansRepository {
     );
   }
 
-  linkEvent(planId: string, eventId: string) {
+  linkEvent(
+    planId: string,
+    eventId: string,
+    p: { linkPlanToEventPartOf: boolean } = { linkPlanToEventPartOf: false },
+  ) {
     return faunaQuery<boolean>(
       this.faunaClient,
       fql`
@@ -81,6 +85,12 @@ export class FaunaPlansRepository {
         plan?.update({
           eventIds: plan?.eventIds.append(${eventId}).distinct()
         })
+        if (${p.linkPlanToEventPartOf}) {
+          let event = ${this.withId(eventId).query}
+          event?.update({
+            partOf: ${planId}
+          })
+        }
       `,
     );
   }
@@ -93,6 +103,12 @@ export class FaunaPlansRepository {
         plan?.update({
           eventIds: plan?.eventIds.filter((id) => id != ${eventId})
         })
+        let event = ${this.withId(eventId).query}
+        if (event.partOf == ${planId}) {
+          event?.update({
+            partOf: null
+          })
+        }
       `,
     );
   }
@@ -103,6 +119,12 @@ export class FaunaPlansRepository {
       fql`
         let plan = ${this.withId(planId).query}
         plan?.delete()
+        let events = Event.byPartOf(${planId})
+        events.map((event) => {
+          event.update({
+            partOf: null
+          })
+        })
       `,
     );
   }

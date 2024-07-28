@@ -52,7 +52,6 @@ export class UFPlansManager {
         throw new ManagerRuleViolation("A plan name is required");
       }
 
-      const userProfile = (await this.repos.getUserProfile(p.userAid)).unwrap();
       const epochCreated = DateTime.utc().toMillis();
 
       const newPlan = newVibefirePlan({
@@ -60,12 +59,10 @@ export class UFPlansManager {
         ownerId: p.groupId ?? p.userAid,
         ownerType: p.groupId ? "group" : "user",
         organiserId: p.userAid,
-        organiserName: userProfile.name,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
-        name: name,
         description,
-        epochCreatedAt: epochCreated,
+        epochCreated,
       });
       const { id: planId } = await this.repos.plan.create(newPlan).result;
 
@@ -157,7 +154,7 @@ export class UFPlansManager {
 
       if (!p.groupId && plan.ownerType === "group") {
         throw new ManagerRuleViolation(
-          "This plan is owned by a group, no group given.",
+          "This plan is owned by a group, you are not using a group context.",
         );
       }
 
@@ -195,16 +192,15 @@ export class UFPlansManager {
         // and the user can manage the group, or
         // the event and plan are owned by the user
 
-        // todo: make this into one call
-        await this.repos.event.linkPartOf(p.eventId, p.planId).result;
-        await this.repos.plan.linkEvent(p.planId, p.eventId).result;
+        // todo: update the plan's access to the plan's
+
+        await this.repos.plan.linkEvent(p.planId, p.eventId, {
+          linkPlanToEventPartOf: true,
+        }).result;
         return;
       }
 
-      const event = (
-        await this.repos.event.withIdIfUserCanView(p.eventId).result
-      ).unwrap();
-
+      const event = (await this.repos.getEvent(p.eventId)).unwrap();
       if (event.state === 1 && event.accessRef.type === "public") {
         // otherwise, the event is published and public
         // so link it to the plan, without making the event "partOf" the plan
@@ -227,7 +223,6 @@ export class UFPlansManager {
         await this.repos.plan.withIdIfUserCanManage(p.planId, p.userAid).result
       ).unwrap();
 
-      await this.repos.event.unlinkPartOfIfMatches(p.eventId, p.planId).result;
       await this.repos.plan.unlinkEvent(p.planId, p.eventId).result;
     });
   }
@@ -238,7 +233,8 @@ export class UFPlansManager {
         await this.repos.plan.withIdIfUserCanManage(p.planId, p.userAid).result
       ).unwrap();
 
-      await this.repos.event.unlinkAllPartOf(p.planId).result;
+      // create new access for each event, clone of plan's and update each membership
+
       await this.repos.plan.delete(p.planId).result;
     });
   }

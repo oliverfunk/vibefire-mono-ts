@@ -1,20 +1,14 @@
 import {
-  type TModelVibefireEvent,
-  type TModelVibefireGroup,
-  type TModelVibefirePlan,
-  type TModelVibefireUser,
-} from "@vibefire/models";
-import {
   type RepositoryService,
   type TEventsRepository,
   type TGroupsRepository,
   type TPlansRepository,
   type TUsersRepository,
 } from "@vibefire/services/fauna";
-import { Result } from "@vibefire/utils";
+import { Result, type AsyncResult } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "./errors";
-import { nullablePromiseToRes, type MAResult } from "./utils";
+import { nullablePromiseToRes } from "./utils";
 
 // todo: impl locator in utils and use here
 export const getReposManager = (service: RepositoryService) => {};
@@ -36,28 +30,28 @@ export class ReposManager {
     );
   }
 
-  getEvent(eventId: string): MAResult<TModelVibefireEvent> {
+  getEvent(eventId: string) {
     return nullablePromiseToRes(
       this.event.withId(eventId).result,
       "This event does not exist",
     );
   }
 
-  getGroup(groupId: string): MAResult<TModelVibefireGroup> {
+  getGroup(groupId: string) {
     return nullablePromiseToRes(
       this.group.withId(groupId).result,
       "This group does not exist",
     );
   }
 
-  getUserProfile(userAid: string): MAResult<TModelVibefireUser> {
+  getUserProfile(userAid: string) {
     return nullablePromiseToRes(
       this.user.getUserProfile(userAid).result,
       "Your profile does not exist",
     );
   }
 
-  getPlan(planId: string): MAResult<TModelVibefirePlan> {
+  getPlan(planId: string) {
     return nullablePromiseToRes(
       this.plan.withId(planId).result,
       "This plan does not exist",
@@ -67,7 +61,7 @@ export class ReposManager {
   async checkHasReachedDraftLimit(
     userAid: string,
     groupId?: string,
-  ): MAResult<true> {
+  ): AsyncResult<true> {
     const { data: drafts } = await this.event.allByOwnerByState(
       groupId ?? userAid,
       -1, // is draft

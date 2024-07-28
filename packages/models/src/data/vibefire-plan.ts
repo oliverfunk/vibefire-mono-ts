@@ -33,9 +33,6 @@ export const ModelVibefirePlan = tb.Object({
 
   // could be different from ownerId if the plan is for a group
   organiserId: tb.String({ default: undefined }),
-  // if group, the person that made the plan
-  // if the group is public, this is can be hidden
-  organiserName: tb.String({ default: undefined }),
 
   name: tb.String(),
   description: tb.String({ default: "" }),
@@ -59,8 +56,6 @@ export const newVibefirePlan = (
     linkId: TModelVibefirePlan["linkId"];
     linkEnabled: TModelVibefirePlan["linkEnabled"];
     organiserId: TModelVibefirePlan["organiserId"];
-    organiserName: TModelVibefirePlan["organiserName"];
-    name: TModelVibefirePlan["name"];
     description: TModelVibefirePlan["description"];
     epochCreated: TModelVibefirePlan["epochCreated"];
   },
@@ -75,8 +70,6 @@ export const newVibefirePlan = (
   d.linkId = p.linkId;
   d.linkEnabled = p.linkEnabled;
   d.organiserId = p.organiserId;
-  d.organiserName = p.organiserName;
-  d.name = p.name;
   d.description = p.description;
   d.epochCreated = p.epochCreated;
   return d;

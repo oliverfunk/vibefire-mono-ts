@@ -108,46 +108,6 @@ export class FaunaEventsRepository {
     );
   }
 
-  linkPartOf(eventId: string, partOf: string) {
-    return faunaQuery<null>(
-      this.faunaClient,
-      fql`
-        let event = ${this.withId(eventId).query}
-        event?.update({
-          partOf: ${partOf}
-        })
-      `,
-    );
-  }
-
-  unlinkPartOfIfMatches(eventId: string, planId: string) {
-    return faunaQuery<null>(
-      this.faunaClient,
-      fql`
-        let event = ${this.withId(eventId).query}
-        if (event.partOf == ${planId}) {
-          event?.update({
-            partOf: null
-          })
-        }
-      `,
-    );
-  }
-
-  unlinkAllPartOf(planId: string) {
-    return faunaQuery<null>(
-      this.faunaClient,
-      fql`
-        let events = Event.byPartOf(${planId})
-        events.map((event) => {
-          event.update({
-            partOf: null
-          })
-        })
-      `,
-    );
-  }
-
   page(hash: string) {
     // This doesn't fit into the model of separating each collection
     // into its own repository.

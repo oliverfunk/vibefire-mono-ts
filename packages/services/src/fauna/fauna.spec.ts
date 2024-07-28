@@ -18,6 +18,7 @@ describe("events uf manager", () => {
       testUserAid,
     ).result;
     console.log(r);
+    expect(r.isOk && r.value).toBeDefined();
   });
 
   it("run 2", async () => {
@@ -25,7 +26,7 @@ describe("events uf manager", () => {
       "401880614717882575",
       testUserAid,
     ).result;
-    console.log(r.isOk && r.value);
+    console.log(r);
   });
 
   it("run 3", async () => {
@@ -33,7 +34,7 @@ describe("events uf manager", () => {
       "401880614717882575",
       testUserAid,
     ).result;
-    console.log(r.isOk && r.value == null);
+    console.log(r);
   });
 
   afterAll(() => {
