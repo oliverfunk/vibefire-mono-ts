@@ -1,5 +1,5 @@
 import { FaunaCallAborted } from "@vibefire/services/fauna";
-import { Result, wrapToAsyncResult, type AsyncResult } from "@vibefire/utils";
+import { Result, wrapToAsyncResult } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "./errors";
 import {
@@ -7,18 +7,20 @@ import {
   type ManagerAsyncResult,
 } from "./manager-result";
 
-export type MResult<T> = Result<T, ManagerRuleViolation>;
-export type MAResult<T> = AsyncResult<T, ManagerRuleViolation>;
-
 export const nullablePromiseToRes = async <T>(
   value: Promise<T | null | undefined>,
   message: string,
-): MAResult<T> => {
+): ManagerAsyncResult<T> => {
   const t = await value;
   if (!!t) {
     return Result.ok(t);
   }
-  return Result.err(new ManagerRuleViolation(message));
+  return Result.err(
+    new ManagerErrorResponse({
+      code: "does_not_exist",
+      message,
+    }),
+  );
 };
 
 export const managerReturn = async <T>(
@@ -27,6 +29,9 @@ export const managerReturn = async <T>(
   return (await wrapToAsyncResult(fn)).map(
     (v) => v,
     (e) => {
+      if (e instanceof ManagerErrorResponse) {
+        return e;
+      }
       if (e instanceof ManagerRuleViolation) {
         return new ManagerErrorResponse({
           code: "rule_violation",

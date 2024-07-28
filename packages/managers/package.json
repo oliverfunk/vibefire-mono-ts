@@ -18,7 +18,6 @@
     "@vibefire/config": "0.1.0"
   },
   "exports": {
-    "./errors": "./src/errors.ts",
     "./result": "./src/manager-result.ts",
     "./userfacing": "./src/userfacing/index.ts",
     "./expo": "./src/public/expo-manager.ts",
