@@ -1,7 +1,10 @@
 import { DateTime } from "luxon";
 
 import {
+  newVibefireEntityAccess,
   newVibefirePlan,
+  type AccessAction,
+  type TModelPlanItem,
   type TModelVibefireEntityAccess,
 } from "@vibefire/models";
 import { type RepositoryService } from "@vibefire/services/fauna";
@@ -22,14 +25,16 @@ export class UFPlansManager {
     userAid: string;
     name: string;
     description: string;
-    eventId: string;
     accessType: TModelVibefireEntityAccess["type"];
     groupId?: string;
   }) {
     return managerReturn(async () => {
-      if (p.groupId) {
+      const forGroup = !!p.groupId;
+      let accAct: AccessAction | undefined = undefined;
+
+      if (forGroup) {
         const g = (
-          await this.repos.group.withIdIfUserCanManage(p.groupId, p.userAid)
+          await this.repos.group.withIdIfUserCanManage(p.groupId!, p.userAid)
             .result
         ).unwrap();
         if (g.accessRef.type !== "public" && p.accessType === "public") {
@@ -37,6 +42,7 @@ export class UFPlansManager {
             "You cannot create a public plan in a private group",
           );
         }
+        accAct = { action: "link", accessId: g.accessRef.id };
       } else {
         if (p.accessType === "public") {
           throw new ManagerRuleViolation(
@@ -45,38 +51,28 @@ export class UFPlansManager {
         }
       }
 
+      if (!accAct) {
+        accAct = {
+          action: "create",
+          access: newVibefireEntityAccess({ type: p.accessType }),
+        };
+      }
+
       const name = trimAndCropText(p.name, 100);
       const description = trimAndCropText(p.description, 1000);
 
-      if (!name) {
-        throw new ManagerRuleViolation("A plan name is required");
-      }
-
-      const epochCreated = DateTime.utc().toMillis();
-
       const newPlan = newVibefirePlan({
-        type: p.accessType,
         ownerId: p.groupId ?? p.userAid,
         ownerType: p.groupId ? "group" : "user",
         organiserId: p.userAid,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
+        name,
         description,
-        epochCreated,
+        epochCreated: DateTime.utc().toMillis(),
       });
-      const { id: planId } = await this.repos.plan.create(newPlan).result;
-
-      const linkEventRes = await this.linkEventToPlan({
-        userAid: p.userAid,
-        planId,
-        eventId: p.eventId,
-        groupId: p.groupId,
-      });
-
-      if (linkEventRes.isErr) {
-        await this.repos.plan.delete(planId).result;
-        linkEventRes.unwrap();
-      }
+      const { id: planId } = await this.repos.plan.create(newPlan, accAct)
+        .result;
 
       return planId;
     });
@@ -137,10 +133,11 @@ export class UFPlansManager {
       return events;
     });
   }
+
   async linkEventToPlan(p: {
     userAid: string;
     planId: string;
-    eventId: string;
+    planItem: TModelPlanItem;
     groupId?: string;
   }) {
     return managerReturn(async () => {
@@ -154,12 +151,18 @@ export class UFPlansManager {
 
       if (!p.groupId && plan.ownerType === "group") {
         throw new ManagerRuleViolation(
-          "This plan is owned by a group, you are not using a group context.",
+          "This plan is owned by a group, you are not in a group context.",
+        );
+      }
+
+      if (plan.items.length >= 10) {
+        throw new ManagerRuleViolation(
+          "A plan can only have a maximum of 10 events",
         );
       }
 
       const eventManageRes = await this.repos.event.withIdIfUserCanManage(
-        p.eventId,
+        p.planItem.eventId,
         p.userAid,
       ).result;
 
@@ -192,19 +195,19 @@ export class UFPlansManager {
         // and the user can manage the group, or
         // the event and plan are owned by the user
 
-        // todo: update the plan's access to the plan's
-
-        await this.repos.plan.linkEvent(p.planId, p.eventId, {
-          linkPlanToEventPartOf: true,
+        await this.repos.plan.linkEvent(p.planId, p.planItem, {
+          // this implies merging the event's access with the plan's
+          // if needed
+          linkPlanToEventPartOfAndMergeAccess: true,
         }).result;
         return;
       }
 
-      const event = (await this.repos.getEvent(p.eventId)).unwrap();
+      const event = (await this.repos.getEvent(p.planItem.eventId)).unwrap();
       if (event.state === 1 && event.accessRef.type === "public") {
         // otherwise, the event is published and public
         // so link it to the plan, without making the event "partOf" the plan
-        await this.repos.plan.linkEvent(p.planId, p.eventId).result;
+        await this.repos.plan.linkEvent(p.planId, p.planItem).result;
       } else {
         throw new ManagerRuleViolation(
           "You either do not manage this event or it is not published and public",

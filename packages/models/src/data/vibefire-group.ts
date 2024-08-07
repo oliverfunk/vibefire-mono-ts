@@ -1,11 +1,8 @@
 import { tb, Value, type Static } from "@vibefire/utils";
 
-import {
-  ModelVibefireEntityAccess,
-  newVibefireEntityAccess,
-  VibefireLocationSchema,
-  type TModelVibefireEntityAccessParams,
-} from "!models//general";
+import { VibefireLocationSchema } from "!models//general";
+
+import { ModelVibefireEntityAccess } from "./vibefire-access";
 
 // export const VibefireGroupPlanEntry = t.Object({
 //   entry: t.Union([
@@ -100,22 +97,16 @@ export const ModelVibefireGroup = tb.Object({
   epochCreated: tb.String({ default: undefined }),
 });
 
-export const newVibefireGroup = (
-  p: TModelVibefireEntityAccessParams & {
-    ownerId: TModelVibefireGroup["ownerId"];
-    ownerType: TModelVibefireGroup["ownerType"];
-    linkId: TModelVibefireGroup["linkId"];
-    linkEnabled: TModelVibefireGroup["linkEnabled"];
-    name: TModelVibefireGroup["name"];
-    description: TModelVibefireGroup["description"];
-    epochCreated: TModelVibefireGroup["epochCreated"];
-  },
-): TModelVibefireGroup => {
+export const newVibefireGroup = (p: {
+  ownerId: TModelVibefireGroup["ownerId"];
+  ownerType: TModelVibefireGroup["ownerType"];
+  linkId: TModelVibefireGroup["linkId"];
+  linkEnabled: TModelVibefireGroup["linkEnabled"];
+  name: TModelVibefireGroup["name"];
+  description: TModelVibefireGroup["description"];
+  epochCreated: TModelVibefireGroup["epochCreated"];
+}): TModelVibefireGroup => {
   const d = Value.Create(ModelVibefireGroup);
-  d.accessRef = newVibefireEntityAccess({
-    type: p.type,
-    inviteCode: p.inviteCode,
-  });
   d.name = p.name;
   d.description = p.description;
   d.epochCreated = p.epochCreated;
