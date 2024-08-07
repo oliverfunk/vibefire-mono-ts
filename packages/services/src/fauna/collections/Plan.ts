@@ -1,10 +1,19 @@
 import { fql, type Client, type Page } from "fauna";
 
-import { ModelVibefirePlan, type TModelVibefirePlan } from "@vibefire/models";
+import {
+  ModelVibefirePlan,
+  type AccessAction,
+  type TModelPlanItem,
+  type TModelVibefirePlan,
+} from "@vibefire/models";
 import { tbClean, type PartialDeep } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna/functions";
-import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
+import {
+  accessActionQuery,
+  faunaNullableQuery,
+  faunaQuery,
+} from "!services/fauna/utils";
 
 export class FaunaPlansRepository {
   constructor(
@@ -12,11 +21,14 @@ export class FaunaPlansRepository {
     private readonly funcs: FaunaFunctions,
   ) {}
 
-  create(plan: TModelVibefirePlan) {
+  create(plan: TModelVibefirePlan, accAct: AccessAction) {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        Plan.create(${plan}) {
+        let acc = ${accessActionQuery(accAct)}
+        let d = ${plan}
+        d["accessRef"] = acc
+        Plan.create(d) {
           id
         }
       `,
@@ -75,20 +87,25 @@ export class FaunaPlansRepository {
 
   linkEvent(
     planId: string,
-    eventId: string,
-    p: { linkPlanToEventPartOf: boolean } = { linkPlanToEventPartOf: false },
+    planItem: TModelPlanItem,
+    p: { linkPlanToEventPartOfAndMergeAccess: boolean } = {
+      linkPlanToEventPartOfAndMergeAccess: false,
+    },
   ) {
     return faunaQuery<boolean>(
       this.faunaClient,
       fql`
         let plan = ${this.withId(planId).query}
         plan?.update({
-          eventIds: plan?.eventIds.append(${eventId}).distinct()
+          items: plan?.items.append(${planItem}).distinct()
         })
-        if (${p.linkPlanToEventPartOf}) {
-          let event = ${this.withId(eventId).query}
+        if (${p.linkPlanToEventPartOfAndMergeAccess}) {
+          let event = ${this.withId(planItem.eventId).query}
+          // works if the acc's are the same
+          let newAcc = MergeAccess(event.accessRef, plan.accessRef)
           event?.update({
-            partOf: ${planId}
+            partOf: ${planId},
+            accessRef: newAcc
           })
         }
       `,
@@ -101,7 +118,7 @@ export class FaunaPlansRepository {
       fql`
         let plan = ${this.withId(planId).query}
         plan?.update({
-          eventIds: plan?.eventIds.filter((id) => id != ${eventId})
+          items: plan?.items.filter((itm) => itm.eventId != ${eventId})
         })
         let event = ${this.withId(eventId).query}
         if (event.partOf == ${planId}) {

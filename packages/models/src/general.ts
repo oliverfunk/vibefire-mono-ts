@@ -1,4 +1,4 @@
-import { tb, Value, type Static } from "@vibefire/utils";
+import { tb, type Static } from "@vibefire/utils";
 
 export const TimeOfDaySchema = tb.Union([
   tb.Literal("D"),
@@ -56,28 +56,3 @@ export const VibefireLocationSchema = tb.Object(
   },
   { default: undefined },
 );
-
-export type TModelVibefireEntityAccess = Static<
-  typeof ModelVibefireEntityAccess
->;
-export type TModelVibefireEntityAccessParams = Omit<
-  TModelVibefireEntityAccess,
-  "id"
->;
-export const ModelVibefireEntityAccess = tb.Object({
-  id: tb.String({ default: undefined }),
-  type: tb.Union([
-    tb.Literal("public"),
-    tb.Literal("open"),
-    tb.Literal("invite"),
-  ]),
-  inviteCode: tb.Optional(tb.String()),
-});
-export const newVibefireEntityAccess = (
-  p: TModelVibefireEntityAccessParams,
-): TModelVibefireEntityAccess => {
-  const d = Value.Create(ModelVibefireEntityAccess);
-  d.type = p.type;
-  d.inviteCode = p.inviteCode;
-  return d;
-};

@@ -1,10 +1,6 @@
 import { tb, Value, type Static } from "@vibefire/utils";
 
-import {
-  ModelVibefireEntityAccess,
-  newVibefireEntityAccess,
-  type TModelVibefireEntityAccessParams,
-} from "!models/general";
+import { ModelVibefireEntityAccess } from "./vibefire-access";
 
 export type TModelPlanItem = Static<typeof ModelPlanItem>;
 export const ModelPlanItem = tb.Object({
@@ -34,42 +30,30 @@ export const ModelVibefirePlan = tb.Object({
   // could be different from ownerId if the plan is for a group
   organiserId: tb.String({ default: undefined }),
 
-  name: tb.String(),
+  name: tb.String({ default: "" }),
   description: tb.String({ default: "" }),
 
-  items: tb.Array(
-    tb.Object({
-      tsWhen: tb.Optional(tb.String({ format: "date-time" })),
-      caption: tb.Optional(tb.String()),
-      eventId: tb.String({ default: undefined }),
-    }),
-    { default: [], maxLength: 10 },
-  ),
+  items: tb.Array(ModelPlanItem, { default: [], maxLength: 10 }),
 
   epochCreated: tb.Number({ default: undefined }),
 });
 
-export const newVibefirePlan = (
-  p: TModelVibefireEntityAccessParams & {
-    ownerId: TModelVibefirePlan["ownerId"];
-    ownerType: TModelVibefirePlan["ownerType"];
-    linkId: TModelVibefirePlan["linkId"];
-    linkEnabled: TModelVibefirePlan["linkEnabled"];
-    organiserId: TModelVibefirePlan["organiserId"];
-    description: TModelVibefirePlan["description"];
-    epochCreated: TModelVibefirePlan["epochCreated"];
-  },
-): TModelVibefirePlan => {
+export const newVibefirePlan = (p: {
+  ownerId: TModelVibefirePlan["ownerId"];
+  ownerType: TModelVibefirePlan["ownerType"];
+  linkId: TModelVibefirePlan["linkId"];
+  linkEnabled: TModelVibefirePlan["linkEnabled"];
+  organiserId: TModelVibefirePlan["organiserId"];
+  name: TModelVibefirePlan["name"];
+  description: TModelVibefirePlan["description"];
+  epochCreated: TModelVibefirePlan["epochCreated"];
+}): TModelVibefirePlan => {
   const d = Value.Create(ModelVibefirePlan);
-  d.accessRef = newVibefireEntityAccess({
-    type: p.type,
-    inviteCode: p.inviteCode,
-  });
-  d.ownerId = p.ownerId;
   d.ownerType = p.ownerType;
   d.linkId = p.linkId;
   d.linkEnabled = p.linkEnabled;
   d.organiserId = p.organiserId;
+  d.name = p.name;
   d.description = p.description;
   d.epochCreated = p.epochCreated;
   return d;

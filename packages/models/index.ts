@@ -3,6 +3,7 @@ export * from "!models/data/vibefire-event";
 export * from "!models/data/vibefire-user";
 export * from "!models/data/vibefire-group";
 export * from "!models/data/vibefire-event";
+export * from "!models/data/vibefire-access";
 export * from "!models/general";
 export * from "!models/state/app-user-state";
 export * from "!models/data/vibefire-plan";

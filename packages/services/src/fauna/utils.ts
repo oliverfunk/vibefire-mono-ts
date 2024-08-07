@@ -1,5 +1,6 @@
 import {
   AbortError,
+  fql,
   NullDocument,
   QueryCheckError,
   QueryRuntimeError,
@@ -8,12 +9,17 @@ import {
   type QueryValue,
 } from "fauna";
 
-import { ModelVibefireError } from "@vibefire/models";
+import { ModelVibefireError, type AccessAction } from "@vibefire/models";
 import { Result, tbValidatorResult, type AsyncResult } from "@vibefire/utils";
 
 import { FaunaCallAborted } from "./errors";
 
 export type FaunaAsyncResult<R> = AsyncResult<R, FaunaCallAborted>;
+
+export const accessActionQuery = (accAct: AccessAction) =>
+  accAct.action === "link"
+    ? fql`Plan.byId(${accAct.accessId})`
+    : fql`Plan.create(${accAct.access})`;
 
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,

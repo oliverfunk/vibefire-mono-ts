@@ -5,13 +5,9 @@ import {
   newEventType,
   type TModelEventType,
 } from "!models/data/event-types";
-import {
-  ModelVibefireEntityAccess,
-  newVibefireEntityAccess,
-  TimePeriodSchema,
-  VibefireLocationSchema,
-  type TModelVibefireEntityAccessParams,
-} from "!models/general";
+import { TimePeriodSchema, VibefireLocationSchema } from "!models/general";
+
+import { ModelVibefireEntityAccess } from "./vibefire-access";
 
 const ModelEventImages = tb.Object(
   {
@@ -59,6 +55,7 @@ const ModelEventCustomMapData = tb.Object({
 export { ModelEventType, type TModelEventType };
 
 export type TModelVibefireEvent = Static<typeof ModelVibefireEvent>;
+export type TModelVibefireEventNoId = Omit<TModelVibefireEvent, "id">;
 export const ModelVibefireEvent = tb.Object({
   id: tb.String({ default: undefined }),
 
@@ -99,22 +96,16 @@ export const ModelVibefireEvent = tb.Object({
   // meta
   epochCreated: tb.Number({ default: undefined }),
 });
-export const newVibefireEvent = (
-  p: TModelVibefireEntityAccessParams & {
-    ownerId: TModelVibefireEvent["ownerId"];
-    ownerType: TModelVibefireEvent["ownerType"];
-    linkId: TModelVibefireEvent["linkId"];
-    linkEnabled: TModelVibefireEvent["linkEnabled"];
-    name: TModelVibefireEvent["name"];
-    epochCreated: TModelVibefireEvent["epochCreated"];
-    eventType: TModelEventType["type"];
-  },
-): TModelVibefireEvent => {
+export const newVibefireEvent = (p: {
+  ownerId: TModelVibefireEvent["ownerId"];
+  ownerType: TModelVibefireEvent["ownerType"];
+  linkId: TModelVibefireEvent["linkId"];
+  linkEnabled: TModelVibefireEvent["linkEnabled"];
+  name: TModelVibefireEvent["name"];
+  epochCreated: TModelVibefireEvent["epochCreated"];
+  eventType: TModelEventType["type"];
+}): TModelVibefireEventNoId => {
   const d = Value.Create(ModelVibefireEvent);
-  d.accessRef = newVibefireEntityAccess({
-    type: p.type,
-    inviteCode: p.inviteCode,
-  });
   d.ownerId = p.ownerId;
   d.ownerType = p.ownerType;
   d.linkId = p.linkId;
@@ -122,7 +113,8 @@ export const newVibefireEvent = (
   d.name = p.name;
   d.epochCreated = p.epochCreated;
   d.event = newEventType(p.eventType);
-  return d;
+  const { id, ...dWithoutId } = d;
+  return dWithoutId;
 };
 
 export type TModelEventUpdate = Static<typeof ModelEventUpdate>;
