@@ -121,9 +121,13 @@ export class FaunaPlansRepository {
           items: plan?.items.filter((itm) => itm.eventId != ${eventId})
         })
         let event = ${this.withId(eventId).query}
+        let eventAcc = event.accessRef
         if (event.partOf == ${planId}) {
           event?.update({
             partOf: null
+            accessRef: Access.create({
+              type: eventAcc.type,
+            })
           })
         }
       `,

@@ -1,10 +1,19 @@
 import { fql, type Client, type Page } from "fauna";
 
-import { ModelVibefireEvent, type TModelVibefireEvent } from "@vibefire/models";
+import {
+  ModelVibefireEvent,
+  type AccessAction,
+  type TModelVibefireEvent,
+  type TModelVibefireEventNoId,
+} from "@vibefire/models";
 import { tbClean, type PartialDeep } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna/functions";
-import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
+import {
+  accessActionQuery,
+  faunaNullableQuery,
+  faunaQuery,
+} from "!services/fauna/utils";
 
 export class FaunaEventsRepository {
   constructor(
@@ -12,11 +21,14 @@ export class FaunaEventsRepository {
     private readonly funcs: FaunaFunctions,
   ) {}
 
-  create(event: TModelVibefireEvent) {
+  create(event: TModelVibefireEventNoId, accAct: AccessAction) {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        Event.create(${event}) {
+        let acc = ${accessActionQuery(accAct)}
+        let d = ${event}
+        d["accessRef"] = acc
+        Event.create(d) {
           id
         }
       `,

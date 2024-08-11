@@ -1,7 +1,9 @@
 import { DateTime } from "luxon";
 
 import {
+  newVibefireEntityAccess,
   newVibefireEvent,
+  type AccessAction,
   type Pageable,
   type TModelEventType,
   type TModelEventUpdate,
@@ -10,6 +12,7 @@ import {
 import { type RepositoryService } from "@vibefire/services/fauna";
 import {
   isValidUuidV4,
+  randomDigits,
   trimAndCropText,
   type PartialDeep,
 } from "@vibefire/utils";
@@ -39,6 +42,7 @@ export class UFEventsManger {
   }) {
     return managerReturn(async () => {
       const eventIsPublicType = p.eventType === "event-public";
+      let accAct: AccessAction | undefined = undefined;
 
       // non-group event
       if (p.forGroupId === undefined && eventIsPublicType) {
@@ -57,6 +61,14 @@ export class UFEventsManger {
             "This group is private and cannot make public events",
           );
         }
+        accAct = { action: "link", accessId: g.accessRef.id };
+      }
+
+      if (!accAct) {
+        accAct = {
+          action: "create",
+          access: newVibefireEntityAccess({ type: "invite" }), // default
+        };
       }
 
       (
@@ -64,19 +76,18 @@ export class UFEventsManger {
       ).unwrap();
 
       const name = trimAndCropText(p.name, 100);
-      const epochCreated = DateTime.utc().toMillis();
 
       const newEvent = newVibefireEvent({
-        type: eventIsPublicType ? "public" : "open",
+        ownerId: p.forGroupId ?? p.userAid,
+        ownerType: p.forGroupId ? "group" : "user",
         eventType: p.eventType,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
-        ownerId: p.forGroupId ?? p.userAid,
-        ownerType: p.forGroupId ? "group" : "user",
         name,
-        epochCreated,
+        epochCreated: DateTime.utc().toMillis(),
       });
-      const { id: eventId } = await this.repos.event.create(newEvent).result;
+      const { id: eventId } = await this.repos.event.create(newEvent, accAct)
+        .result;
 
       return eventId;
     });
@@ -88,6 +99,8 @@ export class UFEventsManger {
     previousEventId: string;
   }) {
     return managerReturn(async () => {
+      let accAct: AccessAction | undefined = undefined;
+
       const viewEventRes = await this.viewEvent({
         userAid: p.userAid,
         eventId: p.previousEventId,
@@ -104,19 +117,37 @@ export class UFEventsManger {
         throw new ManagerRuleViolation("This event is not part of this group");
       }
 
-      const epochCreated = DateTime.utc().toMillis();
+      if (p.forGroupId) {
+        const g = (
+          await this.repos.group.withIdIfUserCanManage(p.forGroupId, p.userAid)
+            .result
+        ).unwrap();
+        accAct = { action: "link", accessId: g.accessRef.id };
+      }
+
+      if (!accAct) {
+        accAct = {
+          action: "create",
+          access: newVibefireEntityAccess({
+            type: event.accessRef.type,
+            inviteCode: event.accessRef.inviteCode
+              ? randomDigits(6)
+              : undefined,
+          }),
+        };
+      }
 
       const newEvent = newVibefireEvent({
-        type: event.accessRef.type,
         ownerId: event.ownerId,
         ownerType: event.ownerType,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
         name: event.name,
         eventType: event.event.type,
-        epochCreated,
+        epochCreated: DateTime.utc().toMillis(),
       });
-      const { id: newEventId } = await this.repos.event.create(newEvent).result;
+      const { id: newEventId } = await this.repos.event.create(newEvent, accAct)
+        .result;
 
       const eNew = (await this.repos.getEvent(newEventId)).unwrap();
 
