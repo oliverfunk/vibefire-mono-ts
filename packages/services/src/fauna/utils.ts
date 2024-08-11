@@ -18,8 +18,8 @@ export type FaunaAsyncResult<R> = AsyncResult<R, FaunaCallAborted>;
 
 export const accessActionQuery = (accAct: AccessAction) =>
   accAct.action === "link"
-    ? fql`Plan.byId(${accAct.accessId})`
-    : fql`Plan.create(${accAct.access})`;
+    ? fql`Access.byId(${accAct.accessId})`
+    : fql`Access.create(${accAct.access})`;
 
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,
