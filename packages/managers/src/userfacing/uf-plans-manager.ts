@@ -4,13 +4,16 @@ import {
   newVibefireEntityAccess,
   newVibefirePlan,
   type AccessAction,
+  type Pageable,
   type TModelPlanItem,
   type TModelVibefireEntityAccess,
+  type TModelVibefirePlan,
 } from "@vibefire/models";
 import { type RepositoryService } from "@vibefire/services/fauna";
-import { trimAndCropText } from "@vibefire/utils";
+import { trimAndCropText, type PartialDeep } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
+import { type ManagerAsyncResult } from "!managers/manager-result";
 import { ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
@@ -21,7 +24,7 @@ export class UFPlansManager {
     return new UFPlansManager(ReposManager.fromService(repoService));
   }
 
-  async newPlan(p: {
+  async createNewPlan(p: {
     userAid: string;
     name: string;
     description: string;
@@ -49,12 +52,10 @@ export class UFPlansManager {
             "Public plans can only be made through public groups",
           );
         }
-      }
-
-      if (!accAct) {
         accAct = {
           action: "create",
           access: newVibefireEntityAccess({ type: p.accessType }),
+          userId: p.userAid,
         };
       }
 
@@ -75,6 +76,22 @@ export class UFPlansManager {
         .result;
 
       return planId;
+    });
+  }
+
+  async plansUserIsPart(p: {
+    userAid: string;
+  }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefirePlan>>> {
+    return managerReturn<Pageable<TModelVibefirePlan>>(async () => {
+      const { data, after: afterKey } = await this.repos.plan.allUserIsPart(
+        p.userAid,
+        10,
+      ).result;
+      return {
+        data,
+        afterKey,
+        limit: 10,
+      };
     });
   }
 
@@ -106,7 +123,7 @@ export class UFPlansManager {
     });
   }
 
-  async viewPlanEvents(p: {
+  async viewPlanItems(p: {
     userAid?: string;
     planId: string;
     scope: "manage" | "published";
@@ -119,12 +136,12 @@ export class UFPlansManager {
       let events;
       if (p.scope === "manage") {
         events = (
-          await this.repos.plan.allEventsUserCanManage(p.planId, p.userAid!)
+          await this.repos.plan.allItemsUserCanManage(p.planId, p.userAid!)
             .result
         ).unwrap();
       } else if (p.scope === "published") {
         events = (
-          await this.repos.plan.allEventsUserCanView(p.planId, p.userAid).result
+          await this.repos.plan.allItemsUserCanView(p.planId, p.userAid).result
         ).unwrap();
       } else {
         throw new ManagerRuleViolation("Invalid scope");
@@ -172,6 +189,8 @@ export class UFPlansManager {
         // could happen if the user is trying to link
         // an event that the user owns,
         // to a plan owned by a group that user manages
+
+        // this actually might be quite nice
         if (p.groupId && event.ownerId !== p.groupId) {
           throw new ManagerRuleViolation(
             "This event is not owned by this group",
@@ -199,6 +218,7 @@ export class UFPlansManager {
           // this implies merging the event's access with the plan's
           // if needed
           linkPlanToEventPartOfAndMergeAccess: true,
+          userId: p.userAid,
         }).result;
         return;
       }

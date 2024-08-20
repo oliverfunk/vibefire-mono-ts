@@ -39,7 +39,7 @@ describe("events uf manager", () => {
   });
 
   it("should create an event", async () => {
-    const r = await eventsManager.newEvent({
+    const r = await eventsManager.createNewEvent({
       userAid: testUserAid,
       name: "test title",
       eventType: "event-private",
@@ -48,7 +48,7 @@ describe("events uf manager", () => {
   });
 
   it("should create an event, with a trimmed title", async () => {
-    const newEventRes = await eventsManager.newEvent({
+    const newEventRes = await eventsManager.createNewEvent({
       userAid: testUserAid,
       name: "this is an extremely long title that should not be allowed to be created because it is too long and should be trimmed",
       eventType: "event-private",
@@ -113,7 +113,7 @@ describe("events uf manager", () => {
 
   describe("viewing private events", () => {
     it("should return the events owned by the user, in the future it should also return those managed by the user, and the plans", async () => {
-      const res = await eventsManager.eventsByUser({
+      const res = await eventsManager.eventsUserIsApart({
         userAid: testUserAid,
       });
       expectResToBeOk(res);

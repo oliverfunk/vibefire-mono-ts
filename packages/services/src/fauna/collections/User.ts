@@ -4,7 +4,7 @@ import { type TModelVibefireUser } from "@vibefire/models";
 
 import { faunaNullableQuery } from "!services/fauna/utils";
 
-export class FaunaUsersRepository {
+export class FaunaUserRepository {
   constructor(private readonly faunaClient: Client) {}
 
   getUserProfile(userAid: string) {

@@ -13,13 +13,17 @@ import { ModelVibefireError, type AccessAction } from "@vibefire/models";
 import { Result, tbValidatorResult, type AsyncResult } from "@vibefire/utils";
 
 import { FaunaCallAborted } from "./errors";
+import { type FaunaFunctions } from "./functions";
 
 export type FaunaAsyncResult<R> = AsyncResult<R, FaunaCallAborted>;
 
-export const accessActionQuery = (accAct: AccessAction) =>
+export const accessActionQuery = (
+  funcs: FaunaFunctions,
+  accAct: AccessAction,
+) =>
   accAct.action === "link"
     ? fql`Access.byId(${accAct.accessId})`
-    : fql`Access.create(${accAct.access})`;
+    : funcs.createNewAccess(accAct.access.type, accAct.userId).query;
 
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,

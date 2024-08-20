@@ -1,9 +1,10 @@
 import { fql, type Client } from "fauna";
 
 import {
+  type TModelPlanItem,
+  type TModelVibefireEntityAccess,
   type TModelVibefireEvent,
   type TModelVibefireGroup,
-  type TModelVibefireGroupMembership,
   type TModelVibefirePlan,
 } from "@vibefire/models";
 
@@ -12,29 +13,11 @@ import { faunaAbortableQuery } from "./utils";
 export class FaunaFunctions {
   constructor(private readonly faunaClient: Client) {}
 
-  userGroupMembership(groupId: string, userAid: string) {
-    return faunaAbortableQuery<TModelVibefireGroupMembership | null>(
+  groupsUserIsPart(userAid: string) {
+    return faunaAbortableQuery<TModelVibefireGroup[]>(
       this.faunaClient,
       fql`
-        UserGroupMembership(${groupId}, ${userAid})
-      `,
-    );
-  }
-
-  userMemberships(userAid: string) {
-    return faunaAbortableQuery<TModelVibefireGroupMembership[]>(
-      this.faunaClient,
-      fql`
-        UserMemberships(${userAid})
-      `,
-    );
-  }
-
-  groupMemberships(groupId: string) {
-    return faunaAbortableQuery<TModelVibefireGroupMembership[]>(
-      this.faunaClient,
-      fql`
-        GroupMemberships(${groupId})
+        GroupsUserIsPart(${userAid})
       `,
     );
   }
@@ -66,6 +49,15 @@ export class FaunaFunctions {
     );
   }
 
+  eventsUserIsPart(userAid: string) {
+    return faunaAbortableQuery<TModelVibefireEvent[]>(
+      this.faunaClient,
+      fql`
+        EventsUserIsPart(${userAid})
+      `,
+    );
+  }
+
   eventIfUserCanManage(eventId: string, userAid: string) {
     return faunaAbortableQuery<TModelVibefireEvent>(
       this.faunaClient,
@@ -89,6 +81,15 @@ export class FaunaFunctions {
       this.faunaClient,
       fql`
         EventIfUserCanViewViaLink(${eventLinkId}, ${userAid ?? null})
+      `,
+    );
+  }
+
+  plansUserIsPart(userAid: string) {
+    return faunaAbortableQuery<TModelVibefirePlan[]>(
+      this.faunaClient,
+      fql`
+        PlansUserIsPart(${userAid})
       `,
     );
   }
@@ -121,7 +122,7 @@ export class FaunaFunctions {
   }
 
   planItemsUserCanManage(planId: string, userAid: string) {
-    return faunaAbortableQuery<TModelVibefireEvent[]>(
+    return faunaAbortableQuery<TModelPlanItem[]>(
       this.faunaClient,
       fql`
         PlanItemsUserCanManage(${planId}, ${userAid})
@@ -130,10 +131,22 @@ export class FaunaFunctions {
   }
 
   planItemsUserCanView(planId: string, userAid?: string) {
-    return faunaAbortableQuery<TModelVibefireEvent[]>(
+    return faunaAbortableQuery<TModelPlanItem[]>(
       this.faunaClient,
       fql`
         PlanEventsUserCanView(${planId}, ${userAid ?? null})
+      `,
+    );
+  }
+
+  createNewAccess(
+    accessType: TModelVibefireEntityAccess["type"],
+    userAid: string,
+  ) {
+    return faunaAbortableQuery<string>(
+      this.faunaClient,
+      fql`
+        CreateNewAccess(${accessType}, ${userAid})
       `,
     );
   }
