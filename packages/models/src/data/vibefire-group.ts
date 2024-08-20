@@ -47,20 +47,6 @@ import { ModelVibefireEntityAccess } from "./vibefire-access";
 //   yesses: t.Array(t.String(), { default: [] }),
 // });
 
-export type TModelVibefireGroupMembership = Static<
-  typeof ModelVibefireGroupMembership
->;
-export const ModelVibefireGroupMembership = tb.Object({
-  id: tb.String({ default: undefined }),
-  userId: tb.String({ default: undefined }),
-  groupId: tb.String({ default: undefined }),
-  epochCreated: tb.Number({ default: undefined }),
-  epochExpires: tb.Optional(tb.Number()),
-  role: tb.Union([tb.Literal("member"), tb.Literal("manager")], {
-    default: undefined,
-  }),
-});
-
 const ModelGroupImages = tb.Object({
   banners: tb.Array(tb.String(), { default: [] }),
 });
@@ -94,7 +80,7 @@ export const ModelVibefireGroup = tb.Object({
   location: tb.Optional(VibefireLocationSchema),
 
   // meta
-  epochCreated: tb.String({ default: undefined }),
+  epochCreated: tb.Number({ default: undefined }),
 });
 
 export const newVibefireGroup = (p: {
@@ -107,22 +93,12 @@ export const newVibefireGroup = (p: {
   epochCreated: TModelVibefireGroup["epochCreated"];
 }): TModelVibefireGroup => {
   const d = Value.Create(ModelVibefireGroup);
+  d.ownerId = p.ownerId;
+  d.ownerType = p.ownerType;
+  d.linkId = p.linkId;
+  d.linkEnabled = p.linkEnabled;
   d.name = p.name;
   d.description = p.description;
   d.epochCreated = p.epochCreated;
-  return d;
-};
-
-export const newVibefireGroupMembership = (p: {
-  userId: string;
-  groupId: string;
-  epochCreated: number;
-  epochExpires?: number;
-}): TModelVibefireGroupMembership => {
-  const d = Value.Create(ModelVibefireGroupMembership);
-  d.userId = p.userId;
-  d.groupId = p.groupId;
-  d.epochCreated = p.epochCreated;
-  d.epochExpires = p.epochExpires;
   return d;
 };

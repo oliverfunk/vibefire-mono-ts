@@ -2,25 +2,25 @@ import { Client } from "fauna";
 
 import { serviceLocator } from "!services/locator";
 
-import { FaunaEventsRepository } from "./collections/Event";
-import { FaunaGroupsRepository } from "./collections/Group";
-import { FaunaPlansRepository } from "./collections/Plan";
-import { FaunaUsersRepository } from "./collections/User";
+import { FaunaEventRepository } from "./collections/Event";
+import { FaunaGroupRepository } from "./collections/Group";
+import { FaunaPlanRepository } from "./collections/Plan";
+import { FaunaUserRepository } from "./collections/User";
 import { FaunaCallAborted } from "./errors";
 import { FaunaFunctions } from "./functions";
 
 export { FaunaCallAborted };
 
-export type TEventsRepository = FaunaEventsRepository;
-export type TUsersRepository = FaunaUsersRepository;
-export type TGroupsRepository = FaunaGroupsRepository;
-export type TPlansRepository = FaunaPlansRepository;
+export type TEventRepository = FaunaEventRepository;
+export type TUserRepository = FaunaUserRepository;
+export type TGroupRepository = FaunaGroupRepository;
+export type TPlanRepository = FaunaPlanRepository;
 
 export type RepositoryService = {
-  Event: FaunaEventsRepository;
-  User: FaunaUsersRepository;
-  Group: FaunaGroupsRepository;
-  Plan: FaunaPlansRepository;
+  Event: FaunaEventRepository;
+  User: FaunaUserRepository;
+  Group: FaunaGroupRepository;
+  Plan: FaunaPlanRepository;
   close: () => void;
 };
 
@@ -33,10 +33,10 @@ export const getFaunaService = (
     });
     const faunaFunctions = new FaunaFunctions(faunaClient);
     return {
-      Event: new FaunaEventsRepository(faunaClient, faunaFunctions),
-      User: new FaunaUsersRepository(faunaClient),
-      Group: new FaunaGroupsRepository(faunaClient, faunaFunctions),
-      Plan: new FaunaPlansRepository(faunaClient, faunaFunctions),
+      Event: new FaunaEventRepository(faunaClient, faunaFunctions),
+      User: new FaunaUserRepository(faunaClient),
+      Group: new FaunaGroupRepository(faunaClient, faunaFunctions),
+      Plan: new FaunaPlanRepository(faunaClient, faunaFunctions),
       close: () => faunaClient.close(),
     };
   });

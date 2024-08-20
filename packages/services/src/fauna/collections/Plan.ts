@@ -15,7 +15,7 @@ import {
   faunaQuery,
 } from "!services/fauna/utils";
 
-export class FaunaPlansRepository {
+export class FaunaPlanRepository {
   constructor(
     private readonly faunaClient: Client,
     private readonly funcs: FaunaFunctions,
@@ -25,7 +25,7 @@ export class FaunaPlansRepository {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        let acc = ${accessActionQuery(accAct)}
+        let acc = ${accessActionQuery(this.funcs, accAct)}
         let d = ${plan}
         d["accessRef"] = acc
         Plan.create(d) {
@@ -52,11 +52,25 @@ export class FaunaPlansRepository {
     return this.funcs.planIfUserCanView(planId, userAid);
   }
 
-  allEventsUserCanManage(planId: string, userAid: string) {
+  allUserIsPart(userAid: string, limit = 0) {
+    return faunaQuery<Page<TModelVibefirePlan>>(
+      this.faunaClient,
+      fql`
+        let q = ${this.funcs.plansUserIsPart(userAid).query}
+        if (${limit} != 0) {
+          q.pageSize(${limit})
+        } else {
+          q
+        }
+      `,
+    );
+  }
+
+  allItemsUserCanManage(planId: string, userAid: string) {
     return this.funcs.planItemsUserCanManage(planId, userAid);
   }
 
-  allEventsUserCanView(planId: string, userAid?: string) {
+  allItemsUserCanView(planId: string, userAid?: string) {
     return this.funcs.planItemsUserCanView(planId, userAid);
   }
 
@@ -88,8 +102,9 @@ export class FaunaPlansRepository {
   linkEvent(
     planId: string,
     planItem: TModelPlanItem,
-    p: { linkPlanToEventPartOfAndMergeAccess: boolean } = {
+    p: { linkPlanToEventPartOfAndMergeAccess: boolean; userId: string } = {
       linkPlanToEventPartOfAndMergeAccess: false,
+      userId: "",
     },
   ) {
     return faunaQuery<boolean>(
@@ -101,8 +116,8 @@ export class FaunaPlansRepository {
         })
         if (${p.linkPlanToEventPartOfAndMergeAccess}) {
           let event = ${this.withId(planItem.eventId).query}
-          // works if the acc's are the same
-          let newAcc = MergeAccess(event.accessRef, plan.accessRef)
+          // nop if acc's are same
+          let newAcc = MergeAccess(event.accessRef, plan.accessRef, ${p.userId})
           event?.update({
             partOf: ${planId},
             accessRef: newAcc

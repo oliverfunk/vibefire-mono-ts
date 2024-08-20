@@ -1,9 +1,9 @@
 import {
   type RepositoryService,
-  type TEventsRepository,
-  type TGroupsRepository,
-  type TPlansRepository,
-  type TUsersRepository,
+  type TEventRepository,
+  type TGroupRepository,
+  type TPlanRepository,
+  type TUserRepository,
 } from "@vibefire/services/fauna";
 import { Result, type AsyncResult } from "@vibefire/utils";
 
@@ -15,10 +15,10 @@ export const getReposManager = (service: RepositoryService) => {};
 
 export class ReposManager {
   constructor(
-    readonly event: TEventsRepository,
-    readonly user: TUsersRepository,
-    readonly group: TGroupsRepository,
-    readonly plan: TPlansRepository,
+    readonly event: TEventRepository,
+    readonly user: TUserRepository,
+    readonly group: TGroupRepository,
+    readonly plan: TPlanRepository,
   ) {}
 
   static fromService(locator: RepositoryService) {

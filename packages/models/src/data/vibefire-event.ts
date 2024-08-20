@@ -113,6 +113,7 @@ export const newVibefireEvent = (p: {
   d.name = p.name;
   d.epochCreated = p.epochCreated;
   d.event = newEventType(p.eventType);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...dWithoutId } = d;
   return dWithoutId;
 };

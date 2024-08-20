@@ -15,7 +15,7 @@ import {
   faunaQuery,
 } from "!services/fauna/utils";
 
-export class FaunaEventsRepository {
+export class FaunaEventRepository {
   constructor(
     private readonly faunaClient: Client,
     private readonly funcs: FaunaFunctions,
@@ -25,7 +25,7 @@ export class FaunaEventsRepository {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        let acc = ${accessActionQuery(accAct)}
+        let acc = ${accessActionQuery(this.funcs, accAct)}
         let d = ${event}
         d["accessRef"] = acc
         Event.create(d) {
@@ -54,6 +54,20 @@ export class FaunaEventsRepository {
 
   withLinkIdIfUserCanView(linkId: string, userAid?: string) {
     return this.funcs.eventIfUserCanViewViaLink(linkId, userAid);
+  }
+
+  allUserIsPart(userAid: string, limit = 0) {
+    return faunaQuery<Page<TModelVibefireEvent>>(
+      this.faunaClient,
+      fql`
+        let q = ${this.funcs.eventsUserIsPart(userAid).query}
+        if (${limit} != 0) {
+          q.pageSize(${limit})
+        } else {
+          q
+        }
+      `,
+    );
   }
 
   allByOwner(ownerId: string, limit = 0) {

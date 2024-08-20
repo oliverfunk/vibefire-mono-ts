@@ -1,15 +1,5 @@
 import { tb, Value, type Static } from "@vibefire/utils";
 
-export type AccessAction =
-  | {
-      action: "link";
-      accessId: string;
-    }
-  | {
-      action: "create";
-      access: TModelVibefireEntityAccessNoId;
-    };
-
 export type TModelVibefireEntityAccess = Static<
   typeof ModelVibefireEntityAccess
 >;
@@ -35,3 +25,14 @@ export const newVibefireEntityAccess = (
 
   return d;
 };
+
+export type AccessAction =
+  | {
+      action: "link";
+      accessId: string;
+    }
+  | {
+      action: "create";
+      access: TModelVibefireEntityAccessNoId;
+      userId: string;
+    };

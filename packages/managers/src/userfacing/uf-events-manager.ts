@@ -34,7 +34,7 @@ export class UFEventsManger {
     return new UFEventsManger(ReposManager.fromService(repoService));
   }
 
-  newEvent(p: {
+  createNewEvent(p: {
     userAid: string;
     forGroupId?: string;
     name: string;
@@ -62,12 +62,11 @@ export class UFEventsManger {
           );
         }
         accAct = { action: "link", accessId: g.accessRef.id };
-      }
-
-      if (!accAct) {
+      } else {
         accAct = {
           action: "create",
           access: newVibefireEntityAccess({ type: "invite" }), // default
+          userId: p.userAid,
         };
       }
 
@@ -93,7 +92,7 @@ export class UFEventsManger {
     });
   }
 
-  async newEventFromPrevious(p: {
+  async createEventFromPrevious(p: {
     userAid: string;
     forGroupId?: string;
     previousEventId: string;
@@ -123,17 +122,13 @@ export class UFEventsManger {
             .result
         ).unwrap();
         accAct = { action: "link", accessId: g.accessRef.id };
-      }
-
-      if (!accAct) {
+      } else {
         accAct = {
           action: "create",
           access: newVibefireEntityAccess({
             type: event.accessRef.type,
-            inviteCode: event.accessRef.inviteCode
-              ? randomDigits(6)
-              : undefined,
           }),
+          userId: p.userAid,
         };
       }
 
@@ -169,11 +164,11 @@ export class UFEventsManger {
     });
   }
 
-  async eventsByUser(p: {
+  async eventsUserIsPart(p: {
     userAid: string;
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
-      const { data, after: afterKey } = await this.repos.event.allByOwner(
+      const { data, after: afterKey } = await this.repos.event.allUserIsPart(
         p.userAid,
         10,
       ).result;
@@ -185,17 +180,17 @@ export class UFEventsManger {
     });
   }
 
-  async eventsByGroup(p: {
+  async eventsOwnedByGroup(p: {
     userAid: string;
     groupId: string;
     scope: "all";
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>>;
-  async eventsByGroup(p: {
+  async eventsOwnedByGroup(p: {
     userAid?: string;
     groupId: string;
     scope: "published";
   }): ManagerAsyncResult<Pageable<TModelVibefireEvent>>;
-  async eventsByGroup(p: {
+  async eventsOwnedByGroup(p: {
     userAid?: string;
     groupId: string;
     scope: "all" | "published";
