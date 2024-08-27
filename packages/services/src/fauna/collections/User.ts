@@ -7,11 +7,20 @@ import { faunaNullableQuery } from "!services/fauna/utils";
 export class FaunaUserRepository {
   constructor(private readonly faunaClient: Client) {}
 
-  getUserProfile(userAid: string) {
+  withAid(userAid: string) {
     return faunaNullableQuery<TModelVibefireUser>(
       this.faunaClient,
       fql`
         User.withAid(${userAid}).first()
+      `,
+    );
+  }
+
+  withEmail(email: string) {
+    return faunaNullableQuery<TModelVibefireUser>(
+      this.faunaClient,
+      fql`
+        User.withEmail(${email}).first()
       `,
     );
   }

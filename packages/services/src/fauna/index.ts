@@ -2,6 +2,7 @@ import { Client } from "fauna";
 
 import { serviceLocator } from "!services/locator";
 
+import { FaunaAccessRepository } from "./collections/Access";
 import { FaunaEventRepository } from "./collections/Event";
 import { FaunaGroupRepository } from "./collections/Group";
 import { FaunaPlanRepository } from "./collections/Plan";
@@ -15,12 +16,14 @@ export type TEventRepository = FaunaEventRepository;
 export type TUserRepository = FaunaUserRepository;
 export type TGroupRepository = FaunaGroupRepository;
 export type TPlanRepository = FaunaPlanRepository;
+export type TAccessRepository = FaunaAccessRepository;
 
 export type RepositoryService = {
   Event: FaunaEventRepository;
   User: FaunaUserRepository;
   Group: FaunaGroupRepository;
   Plan: FaunaPlanRepository;
+  Access: FaunaAccessRepository;
   close: () => void;
 };
 
@@ -37,6 +40,7 @@ export const getFaunaService = (
       User: new FaunaUserRepository(faunaClient),
       Group: new FaunaGroupRepository(faunaClient, faunaFunctions),
       Plan: new FaunaPlanRepository(faunaClient, faunaFunctions),
+      Access: new FaunaAccessRepository(faunaClient, faunaFunctions),
       close: () => faunaClient.close(),
     };
   });

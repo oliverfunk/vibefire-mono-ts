@@ -11,7 +11,6 @@ export const ModelVibefireMembership = tb.Object({
   accessRef: ModelVibefireEntityAccess,
 
   role: tb.Union([
-    tb.Literal("owner"),
     tb.Literal("manger"),
     tb.Literal("member"),
     tb.Literal("pending"),

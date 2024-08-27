@@ -18,6 +18,7 @@ export const nullablePromiseToRes = async <T>(
   return Result.err(
     new ManagerErrorResponse({
       code: "does_not_exist",
+      action: "",
       message,
     }),
   );
@@ -35,6 +36,7 @@ export const managerReturn = async <T>(
       if (e instanceof ManagerRuleViolation) {
         return new ManagerErrorResponse({
           code: "rule_violation",
+          action: "",
           message: e.message,
         });
       }
@@ -44,6 +46,7 @@ export const managerReturn = async <T>(
       console.error(e);
       return new ManagerErrorResponse({
         code: "ise",
+        action: "",
         message: "Something went wrong, we're looking into it. :(",
       });
     },

@@ -8,11 +8,11 @@ import {
   type TModelEventType,
   type TModelEventUpdate,
   type TModelVibefireEvent,
+  type TModelVibefireGroup,
 } from "@vibefire/models";
 import { type RepositoryService } from "@vibefire/services/fauna";
 import {
   isValidUuidV4,
-  randomDigits,
   trimAndCropText,
   type PartialDeep,
 } from "@vibefire/utils";
@@ -26,6 +26,11 @@ import { managerReturn } from "!managers/utils";
 // todo: groups!
 // map query geoPeriods!
 // clean results from fauna servies
+
+// todo: last 2 for now, add access manager - add member, manager etc.
+// then geoPeriods query.
+// maybe think about updates (look at events, plans, groups etc.)
+// groups should maybe follow the same array widget structure as events
 
 export class UFEventsManger {
   constructor(private readonly repos: ReposManager) {}
@@ -92,7 +97,7 @@ export class UFEventsManger {
     });
   }
 
-  async createEventFromPrevious(p: {
+  createEventFromPrevious(p: {
     userAid: string;
     forGroupId?: string;
     previousEventId: string;
@@ -117,10 +122,10 @@ export class UFEventsManger {
       }
 
       if (p.forGroupId) {
-        const g = (
-          await this.repos.group.withIdIfUserCanManage(p.forGroupId, p.userAid)
-            .result
-        ).unwrap();
+        const g: TModelVibefireGroup = await this.repos.groupIfManager(
+          p.forGroupId,
+          p.userAid,
+        );
         accAct = { action: "link", accessId: g.accessRef.id };
       } else {
         accAct = {
@@ -144,7 +149,7 @@ export class UFEventsManger {
       const { id: newEventId } = await this.repos.event.create(newEvent, accAct)
         .result;
 
-      const eNew = (await this.repos.getEvent(newEventId)).unwrap();
+      const eNew = await this.repos.eventIfManager(newEventId, p.userAid);
 
       // copy over the rest of the event
       eNew.times = event.times;
@@ -164,7 +169,7 @@ export class UFEventsManger {
     });
   }
 
-  async eventsUserIsPart(p: {
+  eventsUserIsPart(p: {
     userAid: string;
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
@@ -180,17 +185,17 @@ export class UFEventsManger {
     });
   }
 
-  async eventsOwnedByGroup(p: {
+  eventsOwnedByGroup(p: {
     userAid: string;
     groupId: string;
     scope: "all";
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>>;
-  async eventsOwnedByGroup(p: {
+  eventsOwnedByGroup(p: {
     userAid?: string;
     groupId: string;
     scope: "published";
   }): ManagerAsyncResult<Pageable<TModelVibefireEvent>>;
-  async eventsOwnedByGroup(p: {
+  eventsOwnedByGroup(p: {
     userAid?: string;
     groupId: string;
     scope: "all" | "published";
@@ -227,7 +232,7 @@ export class UFEventsManger {
     );
   }
 
-  async viewEvent(p: {
+  viewEvent(p: {
     userAid?: string;
     eventId: string; // taken to be the linkId when scope is "link"
     scope: "manage" | "published" | "link";
@@ -263,18 +268,13 @@ export class UFEventsManger {
     });
   }
 
-  async updateEvent(p: {
+  updateEvent(p: {
     userAid: string;
     eventId: string;
     update: Partial<TModelEventUpdate>;
   }) {
     return managerReturn(async () => {
-      const e = (await this.repos.getEvent(p.eventId)).unwrap();
-
-      (
-        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
-          .result
-      ).unwrap();
+      const _e = await this.repos.eventIfManager(p.eventId, p.userAid);
 
       // todo! : this is wildly insufficient
       // changing times means you need to udate peroids
@@ -294,7 +294,7 @@ export class UFEventsManger {
     });
   }
 
-  async updateEventVisibility(p: {
+  updateEventVisibility(p: {
     userAid: string;
     eventId: string;
     update: "hidden" | "published";
@@ -313,7 +313,7 @@ export class UFEventsManger {
     });
   }
 
-  async updateEventToggleLinkEnabled(p: { userAid: string; eventId: string }) {
+  updateEventToggleLinkEnabled(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
       const e = (
         await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
@@ -328,7 +328,7 @@ export class UFEventsManger {
     });
   }
 
-  async deleteEvent(p: { userAid: string; eventId: string }) {
+  deleteEvent(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
       (
         await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
@@ -343,7 +343,7 @@ export class UFEventsManger {
     });
   }
 
-  async pageEvents(p: { pageHash: string }) {
+  pageEvents(p: { pageHash: string }) {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
       const { data, after: afterKey } = await this.repos.event.page(p.pageHash)
         .result;

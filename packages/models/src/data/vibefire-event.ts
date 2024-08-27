@@ -9,16 +9,13 @@ import { TimePeriodSchema, VibefireLocationSchema } from "!models/general";
 
 import { ModelVibefireEntityAccess } from "./vibefire-access";
 
-const ModelEventImages = tb.Object(
-  {
-    bannerImgKeys: tb.Array(tb.String(), {
-      minItems: 1,
-      maxItems: 5,
-      uniqueItems: true,
-    }),
-  },
-  { default: {} },
-);
+const ModelEventImages = tb.Object({
+  bannerImgKeys: tb.Array(tb.String(), {
+    default: [],
+    maxItems: 5,
+    uniqueItems: true,
+  }),
+});
 
 const ModelEventTimes = tb.Object(
   {

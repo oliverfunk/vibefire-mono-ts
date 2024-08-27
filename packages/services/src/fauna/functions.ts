@@ -5,6 +5,7 @@ import {
   type TModelVibefireEntityAccess,
   type TModelVibefireEvent,
   type TModelVibefireGroup,
+  type TModelVibefireMembership,
   type TModelVibefirePlan,
 } from "@vibefire/models";
 
@@ -148,6 +149,60 @@ export class FaunaFunctions {
       fql`
         CreateNewAccess(${accessType}, ${userAid})
       `,
+    );
+  }
+
+  setManagerForAccess(accessId: string, userAid: string, toSetUserAid: string) {
+    return faunaAbortableQuery<TModelVibefireMembership>(
+      this.faunaClient,
+      fql`
+        SetManagerForAccess(${accessId}, ${userAid}, ${toSetUserAid})
+      `,
+    );
+  }
+
+  setMemberForAccess(
+    accessId: string,
+    toSetUserAid: string,
+    epochExpires: number | null,
+  ) {
+    return faunaAbortableQuery<TModelVibefireMembership>(
+      this.faunaClient,
+      fql`
+        SetMemberForAccess(${accessId}, ${toSetUserAid}, ${epochExpires})
+      `,
+    );
+  }
+
+  createPendingRequestForAccess(accessId: string, toSetUserAid: string) {
+    return faunaAbortableQuery<TModelVibefireMembership>(
+      this.faunaClient,
+      fql`
+        CreatePendingRequestForAccess(${accessId}, ${toSetUserAid})
+      `,
+    );
+  }
+
+  createPendingInviteForAccess(accessId: string, toSetUserAid: string) {
+    return faunaAbortableQuery<TModelVibefireMembership>(
+      this.faunaClient,
+      fql`
+        CreatePendingInviteForAccess(${accessId}, ${toSetUserAid})
+      `,
+    );
+  }
+
+  acceptOrDenyPendingForMembership(
+    membershipId: string,
+    userAid: string,
+    deny: boolean,
+    epochExpires: number | null,
+  ) {
+    return faunaAbortableQuery<TModelVibefireMembership>(
+      this.faunaClient,
+      fql`
+        AcceptOrDenyPendingForMembership(${membershipId}, ${userAid}, ${deny}, ${epochExpires})
+    `,
     );
   }
 }

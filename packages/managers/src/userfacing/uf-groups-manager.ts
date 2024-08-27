@@ -25,7 +25,7 @@ export class UFGroupsManger {
     return new UFGroupsManger(ReposManager.fromService(repoService));
   }
 
-  async createNewGroup(p: {
+  createNewGroup(p: {
     userAid: string;
     name: string;
     description: string;
@@ -80,7 +80,7 @@ export class UFGroupsManger {
     });
   }
 
-  async groupsUserIsPart(p: {
+  groupsUserIsPart(p: {
     userAid: string;
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireGroup>>> {
     return managerReturn<Pageable<TModelVibefireGroup>>(async () => {

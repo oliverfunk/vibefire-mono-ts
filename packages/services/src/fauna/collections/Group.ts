@@ -46,6 +46,10 @@ export class FaunaGroupRepository {
     return this.funcs.groupIfUserCanManage(groupId, userAid);
   }
 
+  withIdIfUserCanView(groupId: string, userAid: string) {
+    return this.funcs.groupIfUserCanView(groupId, userAid);
+  }
+
   // todo: not sure about pageing here
 
   allUserOwned(userAid: string) {
