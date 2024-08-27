@@ -24,7 +24,7 @@ export class UFPlansManager {
     return new UFPlansManager(ReposManager.fromService(repoService));
   }
 
-  async createNewPlan(p: {
+  createNewPlan(p: {
     userAid: string;
     name: string;
     description: string;
@@ -79,7 +79,7 @@ export class UFPlansManager {
     });
   }
 
-  async plansUserIsPart(p: {
+  plansUserIsPart(p: {
     userAid: string;
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefirePlan>>> {
     return managerReturn<Pageable<TModelVibefirePlan>>(async () => {
@@ -95,7 +95,7 @@ export class UFPlansManager {
     });
   }
 
-  async viewPlan(p: {
+  viewPlan(p: {
     userAid?: string;
     planId: string;
     scope: "manage" | "published";
@@ -123,7 +123,7 @@ export class UFPlansManager {
     });
   }
 
-  async viewPlanItems(p: {
+  viewPlanItems(p: {
     userAid?: string;
     planId: string;
     scope: "manage" | "published";
@@ -151,7 +151,7 @@ export class UFPlansManager {
     });
   }
 
-  async linkEventToPlan(p: {
+  linkEventToPlan(p: {
     userAid: string;
     planId: string;
     planItem: TModelPlanItem;
@@ -223,24 +223,17 @@ export class UFPlansManager {
         return;
       }
 
-      const event = (await this.repos.getEvent(p.planItem.eventId)).unwrap();
-      if (event.state === 1 && event.accessRef.type === "public") {
-        // otherwise, the event is published and public
-        // so link it to the plan, without making the event "partOf" the plan
-        await this.repos.plan.linkEvent(p.planId, p.planItem).result;
-      } else {
-        throw new ManagerRuleViolation(
-          "You either do not manage this event or it is not published and public",
-        );
-      }
+      const _event = await this.repos.eventIfViewer(
+        p.planItem.eventId,
+        p.userAid,
+      );
+      // otherwise, the event is published and public
+      // so link it to the plan, without making the event "partOf" the plan
+      await this.repos.plan.linkEvent(p.planId, p.planItem).result;
     });
   }
 
-  async unlinkEventFromPlan(p: {
-    userAid: string;
-    planId: string;
-    eventId: string;
-  }) {
+  unlinkEventFromPlan(p: { userAid: string; planId: string; eventId: string }) {
     return managerReturn(async () => {
       (
         await this.repos.plan.withIdIfUserCanManage(p.planId, p.userAid).result
@@ -250,7 +243,7 @@ export class UFPlansManager {
     });
   }
 
-  async deletePlan(p: { userAid: string; planId: string }) {
+  deletePlan(p: { userAid: string; planId: string }) {
     return managerReturn(async () => {
       (
         await this.repos.plan.withIdIfUserCanManage(p.planId, p.userAid).result

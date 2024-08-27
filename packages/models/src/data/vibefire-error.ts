@@ -7,10 +7,12 @@ export const ModelVibefireError = tb.Union([
       tb.Literal("ise"),
       tb.Literal("rule_violation"),
       tb.Literal("does_not_exist"),
+      tb.Literal("already_exists"),
       tb.Literal("link_not_found"),
       tb.Literal("not_published"),
       tb.Literal("requested_membership"),
     ]),
+    action: tb.String(),
     message: tb.String(),
   }),
   tb.Object({
