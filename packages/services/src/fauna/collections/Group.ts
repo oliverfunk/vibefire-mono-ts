@@ -46,7 +46,7 @@ export class FaunaGroupRepository {
     return this.funcs.groupIfUserCanManage(groupId, userAid);
   }
 
-  withIdIfUserCanView(groupId: string, userAid: string) {
+  withIdIfUserCanView(groupId: string, userAid?: string) {
     return this.funcs.groupIfUserCanView(groupId, userAid);
   }
 

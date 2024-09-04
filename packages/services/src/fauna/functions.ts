@@ -205,4 +205,20 @@ export class FaunaFunctions {
     `,
     );
   }
+
+  eventsGeoPeriodQuery(
+    userAid: string | null,
+    minLat: number,
+    minLon: number,
+    maxLat: number,
+    maxLon: number,
+    datePeriod: number,
+  ) {
+    return faunaAbortableQuery<TModelVibefireEvent[]>(
+      this.faunaClient,
+      fql`
+        EventsGeoPeriodQuery(${userAid ?? null}, ${minLat}, ${minLon}, ${maxLat}, ${maxLon}, ${datePeriod})
+      `,
+    );
+  }
 }

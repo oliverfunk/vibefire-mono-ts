@@ -46,7 +46,7 @@ export class ReposManager {
     ).unwrap();
   }
 
-  async eventIfViewer(eventId: string, userAid: string) {
+  async eventIfViewer(eventId: string, userAid?: string) {
     return (
       await this.event.withIdIfUserCanView(eventId, userAid).result
     ).unwrap();
@@ -65,7 +65,7 @@ export class ReposManager {
     ).unwrap();
   }
 
-  async groupIfViewer(groupId: string, userAid: string) {
+  async groupIfViewer(groupId: string, userAid?: string) {
     return (
       await this.group.withIdIfUserCanView(groupId, userAid).result
     ).unwrap();

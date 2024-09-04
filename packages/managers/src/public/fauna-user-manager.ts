@@ -661,7 +661,7 @@ export class FaunaUserManager {
   }
 
   async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {
-    const { northEast, southWest, timePeriod, zoomLevel } = query;
+    const { northEast, southWest, datePeriod: timePeriod, zoomLevel } = query;
 
     // console.log();
     // console.log("timePeriod", timePeriod);

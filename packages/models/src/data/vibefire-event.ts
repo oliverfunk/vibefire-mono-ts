@@ -5,7 +5,7 @@ import {
   newEventType,
   type TModelEventType,
 } from "!models/data/event-types";
-import { TimePeriodSchema, VibefireLocationSchema } from "!models/general";
+import { DatePeriodSchema, VibefireLocationSchema } from "!models/general";
 
 import { ModelVibefireEntityAccess } from "./vibefire-access";
 
@@ -21,7 +21,7 @@ const ModelEventTimes = tb.Object(
   {
     tsStart: tb.String({ default: undefined }),
     tsEnd: clearable(tb.String()),
-    datePeriods: tb.Array(TimePeriodSchema, { default: [] }),
+    datePeriods: tb.Array(DatePeriodSchema, { default: [] }),
   },
   { default: {} },
 );

@@ -9,11 +9,13 @@ export const TimeOfDaySchema = tb.Union([
 ]);
 export type TimeOfDayT = Static<typeof TimeOfDaySchema>;
 
-export const TimePeriodSchema = tb.String({
-  pattern: String.raw`^(20\d{2})(\d{2})(\d{2})$`,
+export const DatePeriodSchema = tb.Number({
+  minimum: 20000101,
+  maximum: 20991231,
+  // pattern: String.raw`^(20\d{2})(\d{2})(\d{2})$`,
 });
 
-export type TimePeriodT = Static<typeof TimePeriodSchema>;
+export type DatePeriodT = Static<typeof DatePeriodSchema>;
 
 export const CoordSchema = tb.Object({ lat: tb.Number(), lng: tb.Number() });
 export type CoordT = Static<typeof CoordSchema>;
@@ -32,7 +34,7 @@ export const MapDisplayEventsInfoSchema = tb.Object({
 export type MapDisplayEventsInfoT = Static<typeof MapDisplayEventsInfoSchema>;
 
 export const MapQuerySchema = tb.Object({
-  timePeriod: TimePeriodSchema,
+  datePeriod: DatePeriodSchema,
   northEast: CoordSchema,
   southWest: CoordSchema,
   zoomLevel: tb.Number({ minimum: 0, maximum: 24 }),
