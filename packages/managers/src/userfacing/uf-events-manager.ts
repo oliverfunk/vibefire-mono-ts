@@ -4,6 +4,7 @@ import {
   newVibefireEntityAccess,
   newVibefireEvent,
   type AccessAction,
+  type MapQueryT,
   type Pageable,
   type TModelEventType,
   type TModelEventUpdate,
@@ -24,11 +25,10 @@ import { managerReturn } from "!managers/utils";
 
 // todo: model incomeplete events and fix the api
 // todo: groups!
-// map query geoPeriods!
 // clean results from fauna servies
 
-// todo: last 2 for now, add access manager - add member, manager etc.
-// then geoPeriods query.
+// todo: last 1 for now
+// geoPeriods query.
 // maybe think about updates (look at events, plans, groups etc.)
 // groups should maybe follow the same array widget structure as events
 
@@ -245,15 +245,9 @@ export class UFEventsManger {
               "You must be signed in to view this",
             );
           }
-          return (
-            await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
-              .result
-          ).unwrap();
+          return await this.repos.eventIfManager(p.eventId, p.userAid);
         case "published":
-          return (
-            await this.repos.event.withIdIfUserCanView(p.eventId, p.userAid)
-              .result
-          ).unwrap();
+          return await this.repos.eventIfViewer(p.eventId, p.userAid);
         case "link":
           if (!isValidUuidV4(p.eventId)) {
             throw new ManagerRuleViolation("Invalid event link id");
@@ -300,10 +294,7 @@ export class UFEventsManger {
     update: "hidden" | "published";
   }) {
     return managerReturn(async () => {
-      (
-        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
-          .result
-      ).unwrap();
+      await this.repos.eventIfManager(p.eventId, p.userAid);
 
       const update: Partial<TModelVibefireEvent> = {
         state: p.update === "published" ? 1 : 0,
@@ -315,10 +306,7 @@ export class UFEventsManger {
 
   updateEventToggleLinkEnabled(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
-      const e = (
-        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
-          .result
-      ).unwrap();
+      const e = await this.repos.eventIfManager(p.eventId, p.userAid);
 
       const update: PartialDeep<TModelVibefireEvent> = {
         linkEnabled: !e.linkEnabled,
@@ -330,16 +318,36 @@ export class UFEventsManger {
 
   deleteEvent(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
-      (
-        await this.repos.event.withIdIfUserCanManage(p.eventId, p.userAid)
-          .result
-      ).unwrap();
+      await this.repos.eventIfManager(p.eventId, p.userAid);
 
       const update: Partial<TModelVibefireEvent> = {
         state: 3, // deleted
       };
 
       await this.repos.event.update(p.eventId, update).result;
+    });
+  }
+
+  queryEventsInGeoPeriods(p: { userAid?: string; query: MapQueryT }) {
+    return managerReturn(async () => {
+      const neLatGe = p.query.northEast.lat > p.query.southWest.lat;
+      const neLngGe = p.query.northEast.lng > p.query.southWest.lng;
+
+      const minLat = neLatGe ? p.query.southWest.lat : p.query.northEast.lat;
+      const minLng = neLngGe ? p.query.southWest.lng : p.query.northEast.lng;
+      const maxLat = neLatGe ? p.query.northEast.lat : p.query.southWest.lat;
+      const maxLng = neLngGe ? p.query.northEast.lng : p.query.southWest.lng;
+
+      return (
+        await this.repos.event.geoPeriodQueryForUser(
+          minLat,
+          minLng,
+          maxLat,
+          maxLng,
+          p.query.datePeriod,
+          p.userAid,
+        ).result
+      ).unwrap();
     });
   }
 

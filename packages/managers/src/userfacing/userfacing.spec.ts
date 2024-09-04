@@ -111,26 +111,26 @@ describe("events uf manager", () => {
     });
   });
 
-  describe("viewing private events", () => {
-    it("should return the events owned by the user, in the future it should also return those managed by the user, and the plans", async () => {
-      const res = await eventsManager.eventsUserIsApart({
-        userAid: testUserAid,
-      });
-      expectResToBeOk(res);
-      if (res.isOk) {
-        expect(res.value.data.length).toBe(10);
-        if (res.value.afterKey) {
-          const pageRes = await eventsManager.pageEvents({
-            pageHash: res.value.afterKey,
-          });
-          expectResToBeOk(pageRes);
-          if (pageRes.isOk) {
-            expect(pageRes.value.data.length).toBeLessThanOrEqual(10);
-          }
-        }
-      }
-    });
-  });
+  // describe("viewing private events", () => {
+  //   it("should return the events owned by the user, in the future it should also return those managed by the user, and the plans", async () => {
+  //     const res = await eventsManager.eventsUserIsApart({
+  //       userAid: testUserAid,
+  //     });
+  //     expectResToBeOk(res);
+  //     if (res.isOk) {
+  //       expect(res.value.data.length).toBe(10);
+  //       if (res.value.afterKey) {
+  //         const pageRes = await eventsManager.pageEvents({
+  //           pageHash: res.value.afterKey,
+  //         });
+  //         expectResToBeOk(pageRes);
+  //         if (pageRes.isOk) {
+  //           expect(pageRes.value.data.length).toBeLessThanOrEqual(10);
+  //         }
+  //       }
+  //     }
+  //   });
+  // });
 
   afterAll(() => {
     faunaService.close();

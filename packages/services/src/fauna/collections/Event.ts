@@ -1,4 +1,4 @@
-import { fql, type Client, type Page } from "fauna";
+import { fql, type Client, type DocumentT, type Page } from "fauna";
 
 import {
   ModelVibefireEvent,
@@ -131,6 +131,24 @@ export class FaunaEventRepository {
         let event = ${this.withId(eventId).query}
         event?.update(data)
       `,
+    );
+  }
+
+  geoPeriodQueryForUser(
+    minLat: number,
+    minLon: number,
+    maxLat: number,
+    maxLon: number,
+    datePeriod: number,
+    userAid?: string,
+  ) {
+    return this.funcs.eventsGeoPeriodQuery(
+      userAid ?? null,
+      minLat,
+      minLon,
+      maxLat,
+      maxLon,
+      datePeriod,
     );
   }
 
