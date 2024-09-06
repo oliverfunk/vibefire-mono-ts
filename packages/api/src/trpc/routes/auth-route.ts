@@ -8,14 +8,18 @@ import {
 
 export const authRouter = router({
   getSession: publicProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.auth.userId;
     let session: AppUserState;
-    if (!ctx.auth.userId) {
+    if (!userId) {
       session = {
         state: "unauthenticated",
-        anonId: "anon",
+        anonId: "anon", // this will change in the future to an identifier
       };
     } else {
-      const userInfo = await ctx.eventsManager.getUserInfo(ctx.auth, true);
+      const userInfo = await ctx.usersManager.getUserProfileWithRetry(
+        userId,
+        3,
+      );
       session = {
         state: "authenticated",
         userId: ctx.auth.userId,
@@ -25,6 +29,6 @@ export const authRouter = router({
     return session;
   }),
   deleteAccount: authedProcedure.mutation(async ({ ctx }) => {
-    await ctx.fauna.deleteUserAccount(ctx.auth);
+    await ctx.usersManager.deleteUserAccount(ctx.auth.userId);
   }),
 });

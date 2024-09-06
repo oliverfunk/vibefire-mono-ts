@@ -1,12 +1,16 @@
+import { ClerkService } from "@vibefire/services/clerk";
 import { type RepositoryService } from "@vibefire/services/fauna";
 
 import { ReposManager } from "!managers/repos-manager";
 
 export class UFUsersManager {
-  constructor(private readonly repos: ReposManager) {}
+  constructor(
+    private readonly repos: ReposManager,
+    private readonly clerk: ClerkService,
+  ) {}
 
-  static fromService(repoService: RepositoryService) {
-    return new UFUsersManager(ReposManager.fromService(repoService));
+  static fromService(repoService: RepositoryService, clerk: ClerkService) {
+    return new UFUsersManager(ReposManager.fromService(repoService), clerk);
   }
 
   //   async userCreate(
@@ -54,25 +58,20 @@ export class UFUsersManager {
   //     return res;
   //   }
 
-  //   async getUserInfo(userAc: ClerkSignedInAuthContext, retry = false) {
-  //     const retries = 3;
-  //     const retryTimeout = 2000;
-
-  //     let res = await getUserByAid(this.faunaClient, userAc.userId);
-  //     if (retry && !res) {
-  //       for (let i = 0; i < retries; i++) {
-  //         await new Promise((resolve) => setTimeout(resolve, retryTimeout));
-  //         res = await getUserByAid(this.faunaClient, userAc.userId);
-  //       }
-  //     }
-
-  //     if (!res) {
-  //       throw new Error("User not found");
-  //     }
-
-  //     res = tbValidator(ModelVibefireUser)(res);
-  //     return res;
-  //   }
+  async getUserProfileWithRetry(
+    userAid: string,
+    retries = 1,
+    retryTimeout = 2000,
+  ) {
+    for (let i = 0; i < retries; i++) {
+      const res = await this.repos.getUserProfile(userAid);
+      if (res.isOk) {
+        return res.unwrap();
+      }
+      await new Promise((resolve) => setTimeout(resolve, retryTimeout));
+    }
+    throw new Error("User not found");
+  }
 
   //   async updateUserInfo(
   //     userAc: ClerkSignedInAuthContext,
@@ -82,25 +81,24 @@ export class UFUsersManager {
   //     return res;
   //   }
 
-  //   async deleteUserAccount(userAc: ClerkSignedInAuthContext) {
-  //     const userAid = userAc.userId;
-  //     // todo: will take too long, need another way
+  async deleteUserAccount(userAid: string) {
+    // todo: will take too long, need another way
 
-  //     // todo: This is a potential security issue, as it allows users to
-  //     // delete their accounts, and then create new ones, and then
-  //     // delete them again, etc.! Need to add a cooldown period
-  //     // before a user's account will actually be deleted.
+    // todo: This is a potential security issue, as it allows users to
+    // delete their accounts, and then create new ones, and then
+    // delete them again, etc.! Need to add a cooldown period
+    // before a user's account will actually be deleted.
 
-  //     // const userEvents = await this.eventsByUser(userAc);
-  //     // if (userEvents.length > 0) {
-  //     //   for (const event of userEvents) {
-  //     //     await this.eventDelete(userAc, event.id!);
-  //     //   }
-  //     // }
-  //     console.log("deleting user", JSON.stringify(userAid, null, 2));
-  //     await getClerkManager().userDeleteProfile(userAid);
-  //     await deleteUser(this.faunaClient, userAc.userId);
-  //   }
+    // const userEvents = await this.eventsByUser(userAc);
+    // if (userEvents.length > 0) {
+    //   for (const event of userEvents) {
+    //     await this.eventDelete(userAc, event.id!);
+    //   }
+    // }
+    console.log("deleting user", JSON.stringify(userAid, null, 2));
+    await this.clerk.deleteUser(userAid);
+    await this.repos.user.delete(userAid);
+  }
 
   //   async setStarEventForUser(
   //     userAc: ClerkSignedInAuthContext,

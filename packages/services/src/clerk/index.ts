@@ -9,66 +9,58 @@ import {
   type SignedInAuthObject,
   type SignedOutAuthObject,
 } from "@clerk/backend/internal";
-import { Webhook } from "svix";
 
-const clerkApiUrl = "https://advanced-buffalo-6.clerk.accounts.dev";
-
-export const getClerkAPIClient = (
-  clerkSecretKey: string,
-  clerkPemString: string,
-): ClerkClient =>
-  createClerkClient({
-    publishableKey:
-      "***REMOVED***",
-    secretKey: clerkSecretKey,
-    jwtKey: clerkPemString,
-    apiUrl: clerkApiUrl,
-  });
+import { serviceLocator } from "!services/locator";
 
 export type ClerkAuthContext = AuthObject;
 export type ClerkSignedInAuthContext = SignedInAuthObject;
 export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
-export const authRequestWithClerk = async (
+export type ClerkService = ClerkServiceImpl;
+
+export const getClerkService = (
   clerkSecretKey: string,
   clerkPemString: string,
-  req: Request,
-): Promise<ClerkAuthContext> => {
-  const reqAuth = await getClerkAPIClient(
-    clerkSecretKey,
-    clerkPemString,
-  ).authenticateRequest(req);
-  return reqAuth.toAuth() ?? signedOutAuthObject();
-};
-
-export const validateClerkWebhook = (
-  reqHeaders: Record<string, string>,
-  reqPayload: string,
-  webhookSecret: string,
-): WebhookEvent | undefined => {
-  const wh = new Webhook(webhookSecret);
-  try {
-    return wh.verify(reqPayload, reqHeaders) as WebhookEvent;
-  } catch (err) {
-    console.error(err);
-    return undefined;
-  }
-};
-
-export const deleteUser = async (clerkSecretKey: string, userAid: string) => {
-  const res = await fetch(`https://api.clerk.com/v1/users/${userAid}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${clerkSecretKey}`,
-    },
+  clerkApiUrl = "https://advanced-buffalo-6.clerk.accounts.dev",
+  clerkPublishableKey = "***REMOVED***",
+): ClerkService =>
+  serviceLocator<ClerkService>().throughBind("clerk", () => {
+    const clerkClient = createClerkClient({
+      publishableKey: clerkPublishableKey,
+      secretKey: clerkSecretKey,
+      jwtKey: clerkPemString,
+      apiUrl: clerkApiUrl,
+    });
+    return new ClerkServiceImpl(clerkClient);
   });
-  if (!res.ok) {
-    throw new Error(
-      `Failed to delete user ${userAid}\n${JSON.stringify(
-        await res.json(),
-        null,
-        2,
-      )}`,
-    );
+
+class ClerkServiceImpl {
+  constructor(private readonly client: ClerkClient) {}
+
+  async authRequest(req: Request) {
+    const reqAuth = await this.client.authenticateRequest(req);
+    return reqAuth.toAuth() ?? signedOutAuthObject();
   }
-};
+
+  async deleteUser(userAid: string) {
+    return await this.client.users.deleteUser(userAid);
+  }
+}
+
+// export const deleteUser = async (clerkSecretKey: string, userAid: string) => {
+//   const res = await fetch(`https://api.clerk.com/v1/users/${userAid}`, {
+//     method: "DELETE",
+//     headers: {
+//       Authorization: `Bearer ${clerkSecretKey}`,
+//     },
+//   });
+//   if (!res.ok) {
+//     throw new Error(
+//       `Failed to delete user ${userAid}\n${JSON.stringify(
+//         await res.json(),
+//         null,
+//         2,
+//       )}`,
+//     );
+//   }
+// };
