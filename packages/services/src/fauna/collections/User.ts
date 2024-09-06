@@ -24,6 +24,15 @@ export class FaunaUserRepository {
       `,
     );
   }
+
+  delete(userAid: string) {
+    return faunaNullableQuery<TModelVibefireUser>(
+      this.faunaClient,
+      fql`
+        User.withAid(${userAid}).first()?.delete()
+      `,
+    );
+  }
 }
 
 // import { DateStub, fql, type Client } from "fauna";
