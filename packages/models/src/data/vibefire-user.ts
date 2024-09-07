@@ -7,7 +7,7 @@ export const ModelVibefireUser = tb.Object({
   aid: tb.String({ default: undefined }),
   pushToken: tb.Optional(tb.String()),
   onboardingComplete: tb.Boolean({ default: false }),
-  name: tb.String({ default: undefined }),
+  name: tb.Optional(tb.String()),
   email: tb.Optional(tb.String()),
   phoneNumber: tb.Optional(tb.String()),
   dateOfBirth: tb.Optional(tb.String({ format: "date" })),
@@ -33,12 +33,15 @@ export const newVibefireUser = (p: {
   aid: TModelVibefireUser["aid"];
   name: TModelVibefireUser["name"];
   email: TModelVibefireUser["email"];
+  phoneNumber: TModelVibefireUser["phoneNumber"];
+  dateOfBirth: TModelVibefireUser["dateOfBirth"];
   epochCreated: TModelVibefireUser["epochCreated"];
 }): TModelVibefireUserNoId => {
   const d = Value.Create(ModelVibefireUser);
   d.aid = p.aid;
   d.name = p.name;
   d.email = p.email;
+  d.dateOfBirth = p.dateOfBirth;
   d.epochCreated = p.epochCreated;
   return d;
 };

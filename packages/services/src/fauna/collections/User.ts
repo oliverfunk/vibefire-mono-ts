@@ -1,8 +1,11 @@
 import { fql, type Client } from "fauna";
 
-import { type TModelVibefireUser } from "@vibefire/models";
+import {
+  TModelVibefireUserNoId,
+  type TModelVibefireUser,
+} from "@vibefire/models";
 
-import { faunaNullableQuery } from "!services/fauna/utils";
+import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
 
 export class FaunaUserRepository {
   constructor(private readonly faunaClient: Client) {}
@@ -21,6 +24,18 @@ export class FaunaUserRepository {
       this.faunaClient,
       fql`
         User.withEmail(${email}).first()
+      `,
+    );
+  }
+
+  create(user: TModelVibefireUserNoId) {
+    return faunaQuery<{ id: string }>(
+      this.faunaClient,
+      fql`
+        let d = ${user}
+        User.create(d) {
+          id
+        }
       `,
     );
   }
