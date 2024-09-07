@@ -1,5 +1,14 @@
+import { DateTime } from "luxon";
+
+import { ModelVibefireUser, newVibefireUser } from "@vibefire/models";
 import { ClerkService } from "@vibefire/services/clerk";
 import { type RepositoryService } from "@vibefire/services/fauna";
+import {
+  removeUndef,
+  tbValidator,
+  trimAndCropText,
+  Value,
+} from "@vibefire/utils";
 
 import { ReposManager } from "!managers/repos-manager";
 
@@ -13,50 +22,48 @@ export class UFUsersManager {
     return new UFUsersManager(ReposManager.fromService(repoService), clerk);
   }
 
-  //   async userCreate(
-  //     aid: string,
-  //     firstName: string,
-  //     primaryEmail: string | undefined,
-  //     primaryPhone: string | undefined,
-  //     birthdayISO: string | undefined,
-  //   ) {
-  //     if (!aid) {
-  //       throw new Error("aid is required");
-  //     }
-  //     if (firstName.length < 2) {
-  //       throw new Error("firstName must be at least 2 characters long");
-  //     }
+  async createNewUser(
+    aid: string,
+    firstName: string | undefined,
+    primaryEmail: string | undefined,
+    primaryPhone: string | undefined,
+    birthdayISO: string | undefined,
+  ) {
+    if (!aid) {
+      throw new Error("aid is required");
+    }
 
-  //     firstName = trimAndCropText(firstName, 100);
+    if (firstName && firstName.length < 2) {
+      firstName = trimAndCropText(firstName, 100);
+      throw new Error("firstName must be at least 2 characters long");
+    }
 
-  //     if (primaryEmail) {
-  //       primaryEmail = tbValidator(ModelVibefireUser.properties.contactEmail)(
-  //         trimAndCropText(primaryEmail, 500),
-  //       );
-  //     }
-  //     if (primaryPhone) {
-  //       primaryPhone = tbValidator(ModelVibefireUser.properties.phoneNumber)(
-  //         trimAndCropText(primaryPhone, 100),
-  //       );
-  //     }
+    if (primaryEmail) {
+      primaryEmail = tbValidator(ModelVibefireUser.properties.email)(
+        trimAndCropText(primaryEmail, 500),
+      );
+    }
+    if (primaryPhone) {
+      primaryPhone = tbValidator(ModelVibefireUser.properties.phoneNumber)(
+        trimAndCropText(primaryPhone, 100),
+      );
+    }
 
-  //     const dateOfBirth = birthdayISO
-  //       ? (DateTime.fromISO(birthdayISO).toISODate() ?? undefined)
-  //       : undefined;
+    const dateOfBirth = birthdayISO
+      ? (DateTime.fromISO(birthdayISO).toISODate() ?? undefined)
+      : undefined;
 
-  //     const u = Value.Create(ModelVibefireUser);
+    const u = newVibefireUser({
+      aid,
+      name: firstName,
+      email: primaryEmail,
+      phoneNumber: primaryPhone,
+      dateOfBirth,
+      epochCreated: DateTime.utc().toMillis(),
+    });
 
-  //     u.aid = aid;
-  //     u.name = firstName;
-  //     u.contactEmail = primaryEmail;
-  //     u.phoneNumber = primaryPhone;
-  //     u.dateOfBirth = dateOfBirth;
-
-  //     removeUndef(u);
-
-  //     const res = await createUser(this.faunaClient, u);
-  //     return res;
-  //   }
+    return await this.repos.user.create(u);
+  }
 
   async getUserProfileWithRetry(
     userAid: string,

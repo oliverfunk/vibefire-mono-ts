@@ -25,6 +25,7 @@
     "./fauna": "./src/fauna/index.ts",
     "./vibefire-notifications": "./src/vibefire-notifications/index.ts",
     "./clerk": "./src/clerk/index.ts",
+    "./svix": "./src/svix/index.ts",
     "./cf-images": "./src/cloudflare-images/index.ts",
     "./g-maps": "./src/google-maps/index.ts"
   }

@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 
-import { getClerkManager } from "@vibefire/managers/clerk";
-import { setManagersContext } from "@vibefire/managers/context";
-import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
+import { UFUsersManager } from "@vibefire/managers/userfacing";
+import { getClerkService } from "@vibefire/services/clerk";
+import { getFaunaService } from "@vibefire/services/fauna";
+import { validateClerkWebhook } from "@vibefire/services/svix";
 
 import { BASEPATH_WEBHOOKS } from "!api/basepaths";
 
@@ -15,25 +16,23 @@ type Bindings = {
 
 const webhooksRouter = new Hono<{ Bindings: Bindings }>();
 
-webhooksRouter.use("*", async (c, next) => {
-  setManagersContext({
-    faunaClientKey: c.env.FAUNA_SECRET,
-    clerkWebhookEventSecret: c.env.CLERK_WEBHOOK_EVENT_SECRET,
-  });
-  await next();
-});
+// webhooksRouter.use("*", async (c, next) => {
+//   await next();
+// });
 
 webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 
 webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
-  const fauna = getFaunaUserManager();
-  const clerkManager = getClerkManager();
+  const usersManager = UFUsersManager.fromService(
+    getFaunaService(c.env.FAUNA_SECRET),
+    getClerkService("", ""),
+  );
 
   const headers = c.req.header();
   const payload = await c.req.text();
 
   const event = validateToHttpExp(() =>
-    clerkManager.validateWebhookEvent(headers, payload),
+    validateClerkWebhook(headers, payload, c.env.CLERK_WEBHOOK_EVENT_SECRET),
   );
   switch (event.type) {
     case "user.created": {
@@ -54,12 +53,12 @@ webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
         (p) => p.id == primary_phone_number_id,
       )?.phone_number;
 
-      const _userID = await fauna.userCreate(
+      const _userID = await usersManager.createNewUser(
         aid,
-        first_name,
+        first_name ?? undefined,
         contactEmail,
         phoneNumber,
-        birthday,
+        undefined,
       );
     }
     case "user.updated": {
