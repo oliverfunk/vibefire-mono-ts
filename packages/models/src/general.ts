@@ -14,6 +14,9 @@ export const DatePeriodSchema = tb.Number({
   maximum: 20991231,
   // pattern: String.raw`^(20\d{2})(\d{2})(\d{2})$`,
 });
+export const ModelDatePeriodString = tb.String({
+  pattern: String.raw`^(20\d{2})(\d{2})(\d{2})$`,
+});
 
 export type DatePeriodT = Static<typeof DatePeriodSchema>;
 

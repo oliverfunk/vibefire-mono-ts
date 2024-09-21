@@ -9,20 +9,25 @@ import {
   type TModelVibefireEntityAccess,
   type TModelVibefirePlan,
 } from "@vibefire/models";
-import { type RepositoryService } from "@vibefire/services/fauna";
-import { trimAndCropText, type PartialDeep } from "@vibefire/utils";
+import {
+  resourceLocator,
+  trimAndCropText,
+  type PartialDeep,
+} from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { type ManagerAsyncResult } from "!managers/manager-result";
-import { ReposManager } from "!managers/repos-manager";
+import { getReposManager, ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
+
+export const ufPlansManagerSymbol = Symbol("ufPlansManagerSymbol");
+export const getUFPlansManager = () =>
+  resourceLocator().bindResource(ufPlansManagerSymbol, () => {
+    return new UFPlansManager(getReposManager());
+  });
 
 export class UFPlansManager {
   constructor(private readonly repos: ReposManager) {}
-
-  static fromService(repoService: RepositoryService) {
-    return new UFPlansManager(ReposManager.fromService(repoService));
-  }
 
   createNewPlan(p: {
     userAid: string;

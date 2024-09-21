@@ -1,26 +1,22 @@
 import { DateTime } from "luxon";
 
 import { ModelVibefireUser, newVibefireUser } from "@vibefire/models";
-import { ClerkService } from "@vibefire/services/clerk";
-import { type RepositoryService } from "@vibefire/services/fauna";
-import {
-  removeUndef,
-  tbValidator,
-  trimAndCropText,
-  Value,
-} from "@vibefire/utils";
+import { ClerkService, getClerkService } from "@vibefire/services/clerk";
+import { resourceLocator, tbValidator, trimAndCropText } from "@vibefire/utils";
 
-import { ReposManager } from "!managers/repos-manager";
+import { getReposManager, ReposManager } from "!managers/repos-manager";
+
+export const ufUsersManagerSymbol = Symbol("ufUsersManagerSymbol");
+export const getUFUsersManager = () =>
+  resourceLocator().bindResource(ufUsersManagerSymbol, () => {
+    return new UFUsersManager(getReposManager(), getClerkService());
+  });
 
 export class UFUsersManager {
   constructor(
     private readonly repos: ReposManager,
     private readonly clerk: ClerkService,
   ) {}
-
-  static fromService(repoService: RepositoryService, clerk: ClerkService) {
-    return new UFUsersManager(ReposManager.fromService(repoService), clerk);
-  }
 
   async createNewUser(
     aid: string,

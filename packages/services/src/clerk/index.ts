@@ -1,7 +1,7 @@
 import {
+  ClerkOptions,
   createClerkClient,
   type ClerkClient,
-  type WebhookEvent,
 } from "@clerk/backend";
 import {
   signedOutAuthObject,
@@ -10,7 +10,7 @@ import {
   type SignedOutAuthObject,
 } from "@clerk/backend/internal";
 
-import { serviceLocator } from "!services/locator";
+import { resourceLocator } from "@vibefire/utils";
 
 export type ClerkAuthContext = AuthObject;
 export type ClerkSignedInAuthContext = SignedInAuthObject;
@@ -18,18 +18,20 @@ export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
 export type ClerkService = ClerkServiceImpl;
 
-export const getClerkService = (
-  clerkSecretKey: string,
-  clerkPemString: string,
-  clerkApiUrl = "https://advanced-buffalo-6.clerk.accounts.dev",
-  clerkPublishableKey = "pk_test_YWR2YW5jZWQtYnVmZmFsby02LmNsZXJrLmFjY291bnRzLmRldiQ",
-): ClerkService =>
-  serviceLocator<ClerkService>().throughBind("clerk", () => {
+export const clerkServiceSymbol = Symbol("clerkServiceSymbol");
+
+export const getClerkService = (options?: ClerkOptions): ClerkService =>
+  resourceLocator().bindResource<ClerkService>(clerkServiceSymbol, (ctx) => {
+    const { clerk } = ctx;
+    if (!clerk) {
+      throw new Error("Clerk configuration is missing");
+    }
     const clerkClient = createClerkClient({
-      publishableKey: clerkPublishableKey,
-      secretKey: clerkSecretKey,
-      jwtKey: clerkPemString,
-      apiUrl: clerkApiUrl,
+      secretKey: clerk.secretKey,
+      jwtKey: clerk.pemString,
+      apiUrl: clerk.apiUrl ?? "https://advanced-buffalo-6.clerk.accounts.dev",
+      publishableKey: clerk.publishableKey,
+      ...options,
     });
     return new ClerkServiceImpl(clerkClient);
   });

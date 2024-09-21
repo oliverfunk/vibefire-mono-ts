@@ -8,22 +8,25 @@ import {
   type TModelVibefireEntityAccess,
   type TModelVibefireGroup,
 } from "@vibefire/models";
-import { type RepositoryService } from "@vibefire/services/fauna";
-import { trimAndCropText, type PartialDeep } from "@vibefire/utils";
+import {
+  resourceLocator,
+  trimAndCropText,
+  type PartialDeep,
+} from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { type ManagerAsyncResult } from "!managers/manager-result";
-import { ReposManager } from "!managers/repos-manager";
+import { getReposManager, ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
-// add Manager to access
+export const ufGroupsManagerSymbol = Symbol("ufGroupsManagerSymbol");
+export const getUFGroupsManager = () =>
+  resourceLocator().bindResource(ufGroupsManagerSymbol, () => {
+    return new UFGroupsManger(getReposManager());
+  });
 
 export class UFGroupsManger {
   constructor(private readonly repos: ReposManager) {}
-
-  static fromService(repoService: RepositoryService) {
-    return new UFGroupsManger(ReposManager.fromService(repoService));
-  }
 
   createNewGroup(p: {
     userAid: string;

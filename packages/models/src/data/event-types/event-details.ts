@@ -2,6 +2,8 @@ import { clearable, tb } from "@vibefire/utils";
 
 import { CoordSchema } from "!models/general";
 
+const ModelNOrder = tb.Number({ minimum: 0, maximum: 10 });
+
 const PoiModel = tb.Object({
   poiLetter: tb.String(),
   position: CoordSchema,
@@ -9,16 +11,14 @@ const PoiModel = tb.Object({
 });
 
 export const EventDetailPoiModel = tb.Object({
-  v: tb.Literal(1),
-  nOrder: tb.Number(),
+  nOrder: ModelNOrder,
   type: tb.Literal("poi"),
   blockTitle: tb.String({ default: "Points of Interest" }),
   pois: tb.Array(PoiModel, { default: [] }),
 });
 
 export const EventDetailDescModel = tb.Object({
-  v: tb.Literal(1),
-  nOrder: tb.Number(),
+  nOrder: ModelNOrder,
   type: tb.Literal("description"),
   blockTitle: tb.String({ default: "Details" }),
   description: tb.String(),
@@ -33,8 +33,7 @@ const TimelineElementModel = tb.Object({
 });
 
 export const EventDetailTimelineModel = tb.Object({
-  v: tb.Literal(1),
-  nOrder: tb.Number(),
+  nOrder: ModelNOrder,
   type: tb.Literal("timeline"),
   blockTitle: tb.String({ default: "Timeline" }),
   timeline: tb.Array(TimelineElementModel, { default: [] }),
@@ -53,8 +52,7 @@ const OfferModel = tb.Object({
 });
 
 export const EventDetailOffersModel = tb.Object({
-  v: tb.Literal(1),
-  nOrder: tb.Number(),
+  nOrder: ModelNOrder,
   type: tb.Literal("offer"),
   blockTitle: tb.String({ default: "Offers" }),
   offers: tb.Array(OfferModel, { default: [] }),

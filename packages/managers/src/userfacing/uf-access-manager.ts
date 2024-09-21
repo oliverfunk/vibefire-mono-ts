@@ -1,17 +1,19 @@
 import { type DateTime } from "luxon";
 
-import { type RepositoryService } from "@vibefire/services/fauna";
+import { resourceLocator } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
-import { ReposManager } from "!managers/repos-manager";
+import { getReposManager, ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
+
+export const accessManagerSymbol = Symbol("accessManagerSymbol");
+export const getAccessManager = () =>
+  resourceLocator().bindResource(accessManagerSymbol, () => {
+    return new UFAccessManager(getReposManager());
+  });
 
 export class UFAccessManager {
   constructor(private readonly repos: ReposManager) {}
-
-  static fromService(repoService: RepositoryService) {
-    return new UFAccessManager(ReposManager.fromService(repoService));
-  }
 
   addManagerToEntity(p: {
     userAid: string;
