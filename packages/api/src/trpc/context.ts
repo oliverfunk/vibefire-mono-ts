@@ -1,56 +1,42 @@
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 import {
-  UFAccessManager,
-  UFEventsManger,
-  UFGroupsManger,
-  UFPlansManager,
-  UFUsersManager,
-} from "@vibefire/managers/userfacing";
-import {
   getClerkService,
   type ClerkAuthContext,
 } from "@vibefire/services/clerk";
-import { getFaunaService } from "@vibefire/services/fauna";
+import { resourceLocator } from "@vibefire/utils";
 
 type ContextProps = {
   auth: ClerkAuthContext;
-  accessManager: UFAccessManager;
-  usersManager: UFUsersManager;
-  eventsManager: UFEventsManger;
-  plansManager: UFPlansManager;
-  groupsManager: UFGroupsManger;
 };
 
 export const createContext = async ({ req, env }: CreateContextOptions) => {
-  const clerk = getClerkService(env.clerkSecretKey, env.clerkPemString);
+  // all implicitly used in this API
+  resourceLocator().setCtx({
+    fauna: {
+      roleKey: env.FAUNA_ROLE_KEY,
+    },
+    clerk: {
+      secretKey: env.CLERK_SECRET_KEY,
+      pemString: env.CLERK_PEM_STRING,
+      publishableKey: env.CLERK_PUBLISHABLE_KEY,
+    },
+    gooleMaps: {
+      apiKey: env.GOOGLE_MAP_API_KEY,
+    },
+  });
   return {
-    auth: await clerk.authRequest(req),
-    accessManager: UFAccessManager.fromService(
-      getFaunaService(env.faunaClientKey),
-    ),
-    usersManager: UFUsersManager.fromService(
-      getFaunaService(env.faunaClientKey),
-      clerk,
-    ),
-    eventsManager: UFEventsManger.fromService(
-      getFaunaService(env.faunaClientKey),
-    ),
-    plansManager: UFPlansManager.fromService(
-      getFaunaService(env.faunaClientKey),
-    ),
-    groupsManager: UFGroupsManger.fromService(
-      getFaunaService(env.faunaClientKey),
-    ),
+    auth: await getClerkService().authRequest(req),
   } as ContextProps;
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
 export type CreateContextOptions = FetchCreateContextFnOptions & {
   env: {
-    clerkSecretKey: string;
-    clerkPemString: string;
-    faunaClientKey: string;
-    googleMapsApiKey: string;
+    FAUNA_ROLE_KEY: string;
+    CLERK_SECRET_KEY: string;
+    CLERK_PEM_STRING: string;
+    CLERK_PUBLISHABLE_KEY: string;
+    GOOGLE_MAP_API_KEY: string;
   };
 };

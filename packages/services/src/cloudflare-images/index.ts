@@ -1,5 +1,16 @@
-import { type VibefireEventT } from "@vibefire/models";
+class CloudFlareImagesClient {
+  private readonly baseApiUrl: string;
+  constructor(
+    private readonly accountId: string,
+    private readonly apiKey: string,
+  ) {
+    this.baseApiUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/`;
+  }
+}
 
+class CloudFlareImagesService {
+  constructor(private readonly accountId: string) {}
+}
 const getUploadUrl = async (
   accountId: string,
   apiKey: string,

@@ -1,5 +1,8 @@
 import {
   CoordSchema,
+  ModelDatePeriodString,
+  ModelEventType,
+  ModelEventUpdate,
   type Pageable,
   type TModelVibefireEvent,
 } from "@vibefire/models";
@@ -11,6 +14,8 @@ import {
   router,
 } from "!api/trpc/trpc-router";
 import { wrapManagerReturn, type ApiResponse } from "!api/utils";
+
+import { getUFEventsManager } from "../../../../managers/src/userfacing/uf-events-manager";
 
 export const eventsRouter = router({
   // positionAddressInfo: authedProcedure
@@ -53,7 +58,7 @@ export const eventsRouter = router({
 
   listSelfAll: authedProcedure.query(({ ctx }) =>
     wrapManagerReturn(() => {
-      return ctx.eventsManager.eventsByUser({
+      return getUFEventsManager().eventsUserIsPart({
         userAid: ctx.auth.userId,
       });
     }),
@@ -66,7 +71,7 @@ export const eventsRouter = router({
     // )
     .query(({ ctx, input }) =>
       wrapManagerReturn(() =>
-        ctx.eventsManager.eventsByGroup({
+        getUFEventsManager().eventsOwnedByGroup({
           userAid: ctx.auth.userId,
           groupId: input.groupId,
           scope: "all",
@@ -88,51 +93,13 @@ export const eventsRouter = router({
     )
     .query(async ({ ctx, input }) =>
       wrapManagerReturn(() =>
-        ctx.eventsManager.eventsByGroup({
+        getUFEventsManager().eventsOwnedByGroup({
           userAid: ctx.auth.userId ?? undefined,
           groupId: input.groupId,
           scope: "published",
         }),
       ),
     ),
-
-  listPartOfPlanPublished: publicProcedure // todo: needs work
-    .input(
-      tbValidator(
-        tb.Object({
-          planId: tb.String(),
-        }),
-      ),
-    )
-    // .output(
-    //   (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
-    // )
-    .query(({ ctx, input }) =>
-      wrapManagerReturn(() =>
-        ctx.eventsManager.eventsPartOf({
-          userAid: ctx.auth.userId ?? undefined,
-          planId: input.planId,
-          scope: "published",
-        }),
-      ),
-    ),
-
-  listPartOfPlanAll: authedProcedure
-    .input(
-      tbValidator(
-        tb.Object({
-          planId: tb.String(),
-        }),
-      ),
-    )
-    .output((value) => value as PartialDeep<TModelVibefireEvent>[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.byPartOf({
-        userAid: ctx.auth.userId,
-        planId: input.planId,
-        scope: "all",
-      });
-    }),
 
   viewPublished: publicProcedure
     .input(
@@ -144,7 +111,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as TModelVibefireEvent)
     .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.view({
+      return await getUFEventsManager().viewEvent({
         userAid: ctx.auth.userId ?? undefined,
         eventId: input.eventId,
         scope: "published",
@@ -161,7 +128,7 @@ export const eventsRouter = router({
     )
     .output((value) => value as TModelVibefireEvent)
     .query(async ({ ctx, input }) => {
-      return await ctx.eventsManager.view({
+      return await getUFEventsManager().viewEvent({
         userAid: ctx.auth.userId,
         eventId: input.eventId,
         scope: "manage",
@@ -172,8 +139,11 @@ export const eventsRouter = router({
     .input(
       tbValidator(
         tb.Object({
-          title: tb.String(),
+          name: tb.String(),
           fromPreviousEventId: tb.Optional(tb.String()),
+          eventType: tb.Union(
+            ModelEventType.anyOf.map((e) => e.properties.type),
+          ),
         }),
       ),
     )
@@ -181,17 +151,18 @@ export const eventsRouter = router({
     .mutation(async ({ ctx, input }) => {
       let eventId: string;
       if (input.fromPreviousEventId) {
-        eventId = await ctx.eventsManager.createFromPrevious({
+        eventId = await getUFEventsManager().createEventFromPrevious({
           userAid: ctx.auth.userId,
           previousEventId: input.fromPreviousEventId,
         });
       } else {
-        eventId = await ctx.eventsManager.create({
+        eventId = await getUFEventsManager().createNewEvent({
           userAid: ctx.auth.userId,
-          title: input.title,
+          name: input.name,
+          eventType: input.eventType,
         });
       }
-      return await ctx.eventsManager.view({
+      return await getUFEventsManager().viewEvent({
         userAid: ctx.auth.userId,
         eventId,
         scope: "manage",
@@ -202,8 +173,11 @@ export const eventsRouter = router({
     .input(
       tbValidator(
         tb.Object({
-          title: tb.String(),
+          name: tb.String(),
           groupId: tb.String(),
+          eventType: tb.Union(
+            ModelEventType.anyOf.map((e) => e.properties.type),
+          ),
           fromPreviousEventId: tb.Optional(tb.String()),
         }),
       ),
@@ -212,19 +186,20 @@ export const eventsRouter = router({
     .mutation(async ({ ctx, input }) => {
       let eventId: string;
       if (input.fromPreviousEventId) {
-        eventId = await ctx.eventsManager.createFromPrevious({
+        eventId = await getUFEventsManager().createEventFromPrevious({
           userAid: ctx.auth.userId,
           forGroupId: input.groupId,
           previousEventId: input.fromPreviousEventId,
         });
       } else {
-        eventId = await ctx.eventsManager.create({
+        eventId = await getUFEventsManager().createNewEvent({
           userAid: ctx.auth.userId,
           forGroupId: input.groupId,
-          title: input.title,
+          name: input.name,
+          eventType: input.eventType,
         });
       }
-      return await ctx.eventsManager.view({
+      return await getUFEventsManager().viewEvent({
         userAid: ctx.auth.userId,
         eventId,
         scope: "manage",
@@ -236,15 +211,15 @@ export const eventsRouter = router({
       tbValidator(
         tb.Object({
           eventId: tb.String(),
-          update: tb.Partial(EventUpdateModel),
+          update: tb.Partial(ModelEventUpdate),
         }),
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.eventsManager.update({
+      return await getUFEventsManager().updateEvent({
         userAid: ctx.auth.userId,
         eventId: input.eventId,
-        updated: input.update,
+        update: input.update,
       });
     }),
 
@@ -258,54 +233,29 @@ export const eventsRouter = router({
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.eventsManager.updateVisibility({
+      return await getUFEventsManager().updateEventVisibility({
         userAid: ctx.auth.userId,
         eventId: input.eventId,
         update: input.update,
       });
     }),
 
-  updateLinkId: authedProcedure
-    .input(
-      tbValidator(
-        tb.Object({
-          eventId: tb.String(),
-          update: tb.Union([tb.Literal("remove"), tb.Literal("regenerate")]),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.eventsManager.updateLinkId({
-        userAid: ctx.auth.userId,
-        eventId: input.eventId,
-        update: input.update,
-      });
-    }),
-
-  updatePartOf: authedProcedure
-    .input(
-      tbValidator(
-        tb.Object({
-          eventId: tb.String(),
-          update: tb.Union([
-            tb.Object({ type: tb.Literal("remove") }),
-            tb.Object({ type: tb.Literal("set"), planId: tb.String() }),
-          ]),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      let planId = undefined;
-      if (input.update.type === "set") {
-        planId = input.update.planId;
-      }
-      return await ctx.eventsManager.updatePartOf({
-        userAid: ctx.auth.userId,
-        eventId: input.eventId,
-        update: input.update.type,
-        planId,
-      });
-    }),
+  // updateLinkId: authedProcedure
+  //   .input(
+  //     tbValidator(
+  //       tb.Object({
+  //         eventId: tb.String(),
+  //         update: tb.Union([tb.Literal("remove"), tb.Literal("regenerate")]),
+  //       }),
+  //     ),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     return await ctx.eventsManager.up({
+  //       userAid: ctx.auth.userId,
+  //       eventId: input.eventId,
+  //       update: input.update,
+  //     });
+  //   }),
 
   delete: authedProcedure
     .input(
@@ -316,7 +266,7 @@ export const eventsRouter = router({
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.eventsManager.delete({
+      return await getUFEventsManager().deleteEvent({
         userAid: ctx.auth.userId,
         eventId: input.eventId,
       });
@@ -339,7 +289,7 @@ export const eventsRouter = router({
         },
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.generateEventImageUploadLink(
+      return await getImagesManger().generateEventImageUploadLink(
         ctx.auth,
         input.eventId,
         input.organisationId,
@@ -350,21 +300,23 @@ export const eventsRouter = router({
     .input(
       tbValidator(
         tb.Object({
-          position: CoordSchema,
-          radius: tb.Number(),
-          fromDate: tb.String(),
-          toDate: tb.String(),
+          northEast: CoordSchema,
+          southWest: CoordSchema,
+          fromDate: ModelDatePeriodString,
+          toDate: tb.Optional(ModelDatePeriodString),
         }),
       ),
     )
     .output((value) => value as TModelVibefireEvent[])
     .query(async ({ ctx, input }) => {
-      return await ctx.eventsManagerFromGeoPeriods(
-        ctx.auth,
-        input.position,
-        input.radius,
-        input.fromDate,
-        input.toDate,
-      );
+      return await getUFEventsManager().queryEventsInGeoPeriods({
+        userAid: ctx.auth.userId ?? undefined,
+        query: {
+          northEast: input.northEast,
+          southWest: input.southWest,
+          zoomLevel: 0,
+          datePeriod: parseInt(input.fromDate),
+        },
+      });
     }),
 });

@@ -1,4 +1,5 @@
 import {
+  getFaunaService,
   type RepositoryService,
   type TAccessRepository,
   type TEventRepository,
@@ -6,13 +7,24 @@ import {
   type TPlanRepository,
   type TUserRepository,
 } from "@vibefire/services/fauna";
-import { Result, type AsyncResult } from "@vibefire/utils";
+import { resourceLocator, Result, type AsyncResult } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "./errors";
 import { nullablePromiseToRes } from "./utils";
 
-// todo: impl locator in utils and use here
-export const getReposManager = (service: RepositoryService) => {};
+export const repoManagerSymbol = Symbol("repoManagerSymbol");
+
+export const getReposManager = () =>
+  resourceLocator<ReposManager>().bindResource(repoManagerSymbol, () => {
+    const faunaService = getFaunaService();
+    return new ReposManager(
+      faunaService.Event,
+      faunaService.User,
+      faunaService.Group,
+      faunaService.Plan,
+      faunaService.Access,
+    );
+  });
 
 export class ReposManager {
   constructor(
@@ -22,16 +34,6 @@ export class ReposManager {
     readonly plan: TPlanRepository,
     readonly access: TAccessRepository,
   ) {}
-
-  static fromService(locator: RepositoryService) {
-    return new ReposManager(
-      locator.Event,
-      locator.User,
-      locator.Group,
-      locator.Plan,
-      locator.Access,
-    );
-  }
 
   getEvent(eventId: string) {
     return nullablePromiseToRes(

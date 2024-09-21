@@ -11,33 +11,33 @@ import {
   type TModelVibefireEvent,
   type TModelVibefireGroup,
 } from "@vibefire/models";
-import { type RepositoryService } from "@vibefire/services/fauna";
 import {
   isValidUuidV4,
+  resourceLocator,
   trimAndCropText,
   type PartialDeep,
 } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { type ManagerAsyncResult } from "!managers/manager-result";
-import { ReposManager } from "!managers/repos-manager";
+import { getReposManager, ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
 // todo: model incomeplete events and fix the api
 // todo: groups!
 // clean results from fauna servies
 
-// todo: last 1 for now
-// geoPeriods query.
 // maybe think about updates (look at events, plans, groups etc.)
 // groups should maybe follow the same array widget structure as events
 
+export const ufEventsManagerSymbol = Symbol("ufEventsManagerSymbol");
+export const getUFEventsManager = () =>
+  resourceLocator().bindResource(ufEventsManagerSymbol, () => {
+    return new UFEventsManger(getReposManager());
+  });
+
 export class UFEventsManger {
   constructor(private readonly repos: ReposManager) {}
-
-  static fromService(repoService: RepositoryService) {
-    return new UFEventsManger(ReposManager.fromService(repoService));
-  }
 
   createNewEvent(p: {
     userAid: string;

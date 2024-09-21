@@ -1,6 +1,6 @@
-import { Client } from "fauna";
+import { Client, ClientConfiguration, HTTPClient } from "fauna";
 
-import { serviceLocator } from "!services/locator";
+import { resourceLocator } from "@vibefire/utils";
 
 import { FaunaAccessRepository } from "./collections/Access";
 import { FaunaEventRepository } from "./collections/Event";
@@ -27,20 +27,30 @@ export type RepositoryService = {
   close: () => void;
 };
 
+export const faunaServiceSymbol = Symbol("faunaServiceSymbol");
+
 export const getFaunaService = (
-  faunaClientRoleKey?: string,
+  options?: ClientConfiguration,
+  httpClient?: HTTPClient,
 ): RepositoryService =>
-  serviceLocator<RepositoryService>().throughBind("fauna", () => {
-    const faunaClient = new Client({
-      secret: faunaClientRoleKey ?? process.env.FAUNA_ROLE_KEY_SECRETE!,
-    });
-    const faunaFunctions = new FaunaFunctions(faunaClient);
-    return {
-      Event: new FaunaEventRepository(faunaClient, faunaFunctions),
-      User: new FaunaUserRepository(faunaClient),
-      Group: new FaunaGroupRepository(faunaClient, faunaFunctions),
-      Plan: new FaunaPlanRepository(faunaClient, faunaFunctions),
-      Access: new FaunaAccessRepository(faunaClient, faunaFunctions),
-      close: () => faunaClient.close(),
-    };
-  });
+  resourceLocator().bindResource<RepositoryService>(
+    faunaServiceSymbol,
+    (ctx) => {
+      const faunaClient = new Client(
+        {
+          secret: ctx.fauna!.roleKey,
+          ...options,
+        },
+        httpClient,
+      );
+      const faunaFunctions = new FaunaFunctions(faunaClient);
+      return {
+        Event: new FaunaEventRepository(faunaClient, faunaFunctions),
+        User: new FaunaUserRepository(faunaClient),
+        Group: new FaunaGroupRepository(faunaClient, faunaFunctions),
+        Plan: new FaunaPlanRepository(faunaClient, faunaFunctions),
+        Access: new FaunaAccessRepository(faunaClient, faunaFunctions),
+        close: () => faunaClient.close(),
+      };
+    },
+  );

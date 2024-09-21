@@ -10,3 +10,4 @@ export * from "!models/state/app-user-state";
 export * from "!models/data/vibefire-plan";
 export * from "!models/state/result-return";
 export * from "!models/state/pageable";
+export * from "!models/state/locator-ctx";
