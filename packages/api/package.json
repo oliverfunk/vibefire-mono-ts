@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "update": "pnpm update",
-    "update-latest": "pnpm update --latest"
+    "update-latest": "pnpm update --latest",
+    "test": "DOTENV_CONFIG_PATH=.env.test jest --detectOpenHandles"
   },
   "dependencies": {
     "@trpc/server": "next",
@@ -17,7 +18,8 @@
     "superjson": "^2.2.1"
   },
   "devDependencies": {
-    "@vibefire/config": "0.1.0"
+    "@vibefire/config": "0.1.0",
+    "@trpc/client": "next"
   },
   "exports": {
     "./trpc": "./src/trpc/index.ts",

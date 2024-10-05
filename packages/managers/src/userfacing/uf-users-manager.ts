@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 
 import { ModelVibefireUser, newVibefireUser } from "@vibefire/models";
-import { ClerkService, getClerkService } from "@vibefire/services/clerk";
+import { getClerkService, type ClerkService } from "@vibefire/services/clerk";
 import { resourceLocator, tbValidator, trimAndCropText } from "@vibefire/utils";
 
-import { getReposManager, ReposManager } from "!managers/repos-manager";
+import { getReposManager, type ReposManager } from "!managers/repos-manager";
 
 export const ufUsersManagerSymbol = Symbol("ufUsersManagerSymbol");
 export const getUFUsersManager = () =>
@@ -58,7 +58,7 @@ export class UFUsersManager {
       epochCreated: DateTime.utc().toMillis(),
     });
 
-    return await this.repos.user.create(u);
+    return await this.repos.user.create(u).result;
   }
 
   async getUserProfileWithRetry(
@@ -100,7 +100,7 @@ export class UFUsersManager {
     // }
     console.log("deleting user", JSON.stringify(userAid, null, 2));
     await this.clerk.deleteUser(userAid);
-    await this.repos.user.delete(userAid);
+    await this.repos.user.delete(userAid).result;
   }
 
   //   async setStarEventForUser(

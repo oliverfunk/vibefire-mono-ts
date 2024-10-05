@@ -1,7 +1,7 @@
 import {
-  ClerkOptions,
   createClerkClient,
   type ClerkClient,
+  type ClerkOptions,
 } from "@clerk/backend";
 import {
   signedOutAuthObject,
@@ -39,7 +39,7 @@ export const getClerkService = (options?: ClerkOptions): ClerkService =>
 class ClerkServiceImpl {
   constructor(private readonly client: ClerkClient) {}
 
-  async authRequest(req: Request) {
+  async authenticateRequest(req: Request) {
     const reqAuth = await this.client.authenticateRequest(req);
     return reqAuth.toAuth() ?? signedOutAuthObject();
   }

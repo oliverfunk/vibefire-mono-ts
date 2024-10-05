@@ -46,7 +46,7 @@ export const managerReturn = async <T>(
       console.error(e);
       return new ManagerErrorResponse({
         code: "ise",
-        action: "",
+        action: "managerr",
         message: "Something went wrong, we're looking into it. :(",
       });
     },

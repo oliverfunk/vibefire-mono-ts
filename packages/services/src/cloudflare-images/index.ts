@@ -1,79 +1,41 @@
-class CloudFlareImagesClient {
-  private readonly baseApiUrl: string;
-  constructor(
-    private readonly accountId: string,
-    private readonly apiKey: string,
-  ) {
-    this.baseApiUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/`;
+import { resourceLocator } from "@vibefire/utils";
+
+import { CloudFlareImagesClient } from "./client";
+
+export const cloudFlareImagesServiceSymbol = Symbol(
+  "cloudFlareImagesServiceSymbol",
+);
+
+export const getCloudFlareImagesService = (): CloudFlareImagesService =>
+  resourceLocator().bindResource<CloudFlareImagesService>(
+    cloudFlareImagesServiceSymbol,
+    (ctx) => {
+      const { cloudFlare } = ctx;
+      if (!cloudFlare) {
+        throw new Error("cloudFlare configuration is missing");
+      }
+      return new CloudFlareImagesService(
+        new CloudFlareImagesClient(
+          cloudFlare.accountId,
+          cloudFlare.imagesApiKey,
+        ),
+      );
+    },
+  );
+
+export class CloudFlareImagesService {
+  constructor(private readonly client: CloudFlareImagesClient) {}
+
+  async getUploadUrl(p: {
+    expiry?: string;
+    metadata?: Record<string, string>;
+  }) {
+    const { metadata, expiry } = p;
+    // todo: extract relveant data from response
+    return await this.client.directUpload({ expiry, metadata });
+  }
+
+  async deleteImage(imageId: string) {
+    await this.client.deleteImage(imageId);
   }
 }
-
-class CloudFlareImagesService {
-  constructor(private readonly accountId: string) {}
-}
-const getUploadUrl = async (
-  accountId: string,
-  apiKey: string,
-  imageId?: string,
-  metadata?: Record<string, string>,
-) => {
-  const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v2/direct_upload`;
-
-  const formData = new FormData();
-
-  if (imageId) {
-    formData.append("id", imageId);
-  }
-  if (metadata) {
-    formData.append("metadata", JSON.stringify(metadata, null, 0));
-  }
-
-  const res = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: formData,
-  });
-
-  if (!res.ok) {
-    throw new Error(
-      `Failed to get image upload url: ${res.status} ${res.statusText}`,
-    );
-  }
-
-  return (await res.json()) as Record<string, unknown>;
-};
-
-export const getUploadUrlForEventImage = async (
-  accountId: string,
-  apiKey: string,
-  eventId: VibefireEventT["id"],
-  organiserId: VibefireEventT["organiserId"],
-) => {
-  const metadata = {
-    eventId,
-    owner: organiserId,
-  };
-
-  return await getUploadUrl(accountId, apiKey, undefined, metadata);
-};
-
-export const deleteImage = async (
-  accountId: string,
-  apiKey: string,
-  imageId: string,
-) => {
-  const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1/${imageId}`;
-
-  const res = await fetch(apiUrl, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to delete image: ${res.status} ${res.statusText}`);
-  }
-};

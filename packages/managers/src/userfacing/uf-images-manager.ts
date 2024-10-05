@@ -1,44 +1,41 @@
-import { getUploadUrlForEventImage } from "@vibefire/services/cf-images";
-import { resourceLocator } from "@vibefire/utils";
+// import {
+//   CloudFlareImagesService,
+//   getCloudFlareImagesService,
+// } from "@vibefire/services/cloudflare-images";
+// import { resourceLocator } from "@vibefire/utils";
 
-export const imagesManagerSymbol = Symbol("imagesManagerSymbol");
-export const getImagesManager = (): ImagesManager => {
-  return resourceLocator().bindResource<ImagesManager>(
-    imagesManagerSymbol,
-    (ctx) => {
-      const { cloudFlare } = ctx;
-      if (!cloudFlare) {
-        throw new Error("CloudFlare configuration is missing");
-      }
-      return new ImagesManager(cloudFlare.accountId, cloudFlare.imagesApiKey);
-    },
-  );
-};
+// export const imagesManagerSymbol = Symbol("imagesManagerSymbol");
+// export const getImagesManager = (): ImagesManager => {
+//   return resourceLocator().bindResource<ImagesManager>(
+//     imagesManagerSymbol,
+//     (ctx) => {
+//       const { cloudFlare } = ctx;
+//       if (!cloudFlare) {
+//         throw new Error("CloudFlare configuration is missing");
+//       }
+//       return new ImagesManager(cloudFlare.accountId, cloudFlare.imagesApiKey);
+//     },
+//   );
+// };
 
-export class ImagesManager {
-  private cfAccountId: string;
-  private cfImagesApiKey: string;
+// export class ImagesManager {
+//   constructor(private readonly cfImages: CloudFlareImagesService) {}
 
-  constructor(cfAccountId: string, cfImagesApiKey: string) {
-    this.cfAccountId = cfAccountId;
-    this.cfImagesApiKey = cfImagesApiKey;
-  }
+//   async eventUploadUrl(eventId: string, organiserId: string) {
+//     const res = await getCloudFlareImagesService(
+//       this.cfAccountId,
+//       this.cfImagesApiKey,
+//       eventId,
+//       organiserId,
+//     );
+//     const uploadData = res["result"] as {
+//       id: string;
+//       uploadURL: string;
+//     };
+//     return uploadData;
+//   }
 
-  async eventUploadUrl(eventId: string, organiserId: string) {
-    const res = await getUploadUrlForEventImage(
-      this.cfAccountId,
-      this.cfImagesApiKey,
-      eventId,
-      organiserId,
-    );
-    const uploadData = res["result"] as {
-      id: string;
-      uploadURL: string;
-    };
-    return uploadData;
-  }
-
-  async eventImageRemove(imageKey: string) {
-    // TODO
-  }
-}
+//   async eventImageRemove(imageKey: string) {
+//     // TODO
+//   }
+// }

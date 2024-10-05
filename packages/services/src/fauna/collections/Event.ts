@@ -1,4 +1,4 @@
-import { fql, type Client, type DocumentT, type Page } from "fauna";
+import { fql, type Client, type Page } from "fauna";
 
 import {
   ModelVibefireEvent,
