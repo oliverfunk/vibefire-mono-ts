@@ -1,3 +1,4 @@
+import { json } from "stream/consumers";
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 import {
@@ -22,11 +23,15 @@ export const createContext = async ({ req, env }: CreateContextOptions) => {
       publishableKey: env.CLERK_PUBLISHABLE_KEY,
     },
     gooleMaps: {
-      apiKey: env.GOOGLE_MAP_API_KEY,
+      apiKey: env.GOOGLE_MAPS_API_KEY,
+    },
+    cloudFlare: {
+      accountId: env.CF_ACCOUNT_ID,
+      imagesApiKey: env.CF_IMAGES_API_KEY,
     },
   });
   return {
-    auth: await getClerkService().authRequest(req),
+    auth: await getClerkService().authenticateRequest(req),
   } as ContextProps;
 };
 
@@ -37,6 +42,8 @@ export type CreateContextOptions = FetchCreateContextFnOptions & {
     CLERK_SECRET_KEY: string;
     CLERK_PEM_STRING: string;
     CLERK_PUBLISHABLE_KEY: string;
-    GOOGLE_MAP_API_KEY: string;
+    GOOGLE_MAPS_API_KEY: string;
+    CF_ACCOUNT_ID: string;
+    CF_IMAGES_API_KEY: string;
   };
 };

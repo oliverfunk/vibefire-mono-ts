@@ -1,5 +1,5 @@
-export { UFAccessManager } from "./uf-access-manager";
-export { UFEventsManger } from "./uf-events-manager";
-export { UFPlansManager } from "./uf-plans-manager";
-export { UFUsersManager } from "./uf-users-manager";
-export { UFGroupsManger } from "./uf-groups-manager";
+export { UFAccessManager, getAccessManager } from "./uf-access-manager";
+export { UFEventsManger, getUFEventsManager } from "./uf-events-manager";
+export { UFPlansManager, getUFPlansManager } from "./uf-plans-manager";
+export { UFUsersManager, getUFUsersManager } from "./uf-users-manager";
+export { UFGroupsManger, getUFGroupsManager } from "./uf-groups-manager";

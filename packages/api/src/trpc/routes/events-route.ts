@@ -1,3 +1,4 @@
+import { getUFEventsManager } from "@vibefire/managers/userfacing";
 import {
   CoordSchema,
   ModelDatePeriodString,
@@ -14,8 +15,6 @@ import {
   router,
 } from "!api/trpc/trpc-router";
 import { wrapManagerReturn, type ApiResponse } from "!api/utils";
-
-import { getUFEventsManager } from "../../../../managers/src/userfacing/uf-events-manager";
 
 export const eventsRouter = router({
   // positionAddressInfo: authedProcedure
@@ -91,7 +90,7 @@ export const eventsRouter = router({
       (value) =>
         value as ApiResponse<Pageable<PartialDeep<TModelVibefireEvent>>>,
     )
-    .query(async ({ ctx, input }) =>
+    .query(({ ctx, input }) =>
       wrapManagerReturn(() =>
         getUFEventsManager().eventsOwnedByGroup({
           userAid: ctx.auth.userId ?? undefined,
@@ -109,14 +108,15 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TModelVibefireEvent)
-    .query(async ({ ctx, input }) => {
-      return await getUFEventsManager().viewEvent({
-        userAid: ctx.auth.userId ?? undefined,
-        eventId: input.eventId,
-        scope: "published",
-      });
-    }),
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId ?? undefined,
+          eventId: input.eventId,
+          scope: "published",
+        }),
+      ),
+    ),
 
   viewManage: authedProcedure
     .input(
@@ -126,14 +126,15 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TModelVibefireEvent)
-    .query(async ({ ctx, input }) => {
-      return await getUFEventsManager().viewEvent({
-        userAid: ctx.auth.userId,
-        eventId: input.eventId,
-        scope: "manage",
-      });
-    }),
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          scope: "manage",
+        }),
+      ),
+    ),
 
   createForSelf: authedProcedure
     .input(
@@ -147,27 +148,32 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as PartialDeep<TModelVibefireEvent>)
-    .mutation(async ({ ctx, input }) => {
-      let eventId: string;
-      if (input.fromPreviousEventId) {
-        eventId = await getUFEventsManager().createEventFromPrevious({
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(async () => {
+        let eventId: string;
+        if (input.fromPreviousEventId) {
+          eventId = (
+            await getUFEventsManager().createEventFromPrevious({
+              userAid: ctx.auth.userId,
+              previousEventId: input.fromPreviousEventId,
+            })
+          ).unwrap();
+        } else {
+          eventId = (
+            await getUFEventsManager().createNewEvent({
+              userAid: ctx.auth.userId,
+              name: input.name,
+              eventType: input.eventType,
+            })
+          ).unwrap();
+        }
+        return await getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,
-          previousEventId: input.fromPreviousEventId,
+          eventId,
+          scope: "manage",
         });
-      } else {
-        eventId = await getUFEventsManager().createNewEvent({
-          userAid: ctx.auth.userId,
-          name: input.name,
-          eventType: input.eventType,
-        });
-      }
-      return await getUFEventsManager().viewEvent({
-        userAid: ctx.auth.userId,
-        eventId,
-        scope: "manage",
-      });
-    }),
+      }),
+    ),
 
   createForGroup: authedProcedure
     .input(
@@ -182,29 +188,35 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as PartialDeep<TModelVibefireEvent>)
-    .mutation(async ({ ctx, input }) => {
-      let eventId: string;
-      if (input.fromPreviousEventId) {
-        eventId = await getUFEventsManager().createEventFromPrevious({
+    // .output((value) => value as ApiResponse<TModelVibefireEvent>)
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(async () => {
+        let eventId: string;
+        if (input.fromPreviousEventId) {
+          eventId = (
+            await getUFEventsManager().createEventFromPrevious({
+              userAid: ctx.auth.userId,
+              forGroupId: input.groupId,
+              previousEventId: input.fromPreviousEventId,
+            })
+          ).unwrap();
+        } else {
+          eventId = (
+            await getUFEventsManager().createNewEvent({
+              userAid: ctx.auth.userId,
+              forGroupId: input.groupId,
+              name: input.name,
+              eventType: input.eventType,
+            })
+          ).unwrap();
+        }
+        return await getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,
-          forGroupId: input.groupId,
-          previousEventId: input.fromPreviousEventId,
+          eventId,
+          scope: "manage",
         });
-      } else {
-        eventId = await getUFEventsManager().createNewEvent({
-          userAid: ctx.auth.userId,
-          forGroupId: input.groupId,
-          name: input.name,
-          eventType: input.eventType,
-        });
-      }
-      return await getUFEventsManager().viewEvent({
-        userAid: ctx.auth.userId,
-        eventId,
-        scope: "manage",
-      });
-    }),
+      }),
+    ),
 
   update: authedProcedure
     .input(
@@ -215,13 +227,15 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
-      return await getUFEventsManager().updateEvent({
-        userAid: ctx.auth.userId,
-        eventId: input.eventId,
-        update: input.update,
-      });
-    }),
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().updateEvent({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          update: input.update,
+        }),
+      ),
+    ),
 
   updateVisibility: authedProcedure
     .input(
@@ -232,13 +246,15 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
-      return await getUFEventsManager().updateEventVisibility({
-        userAid: ctx.auth.userId,
-        eventId: input.eventId,
-        update: input.update,
-      });
-    }),
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().updateEventVisibility({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          update: input.update,
+        }),
+      ),
+    ),
 
   // updateLinkId: authedProcedure
   //   .input(
@@ -277,24 +293,24 @@ export const eventsRouter = router({
       tbValidator(
         tb.Object({
           eventId: tb.String(),
-          organisationId: tb.Optional(tb.String()),
         }),
       ),
     )
-    .output(
-      (value) =>
-        value as {
-          id: string;
-          uploadURL: string;
-        },
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await getImagesManger().generateEventImageUploadLink(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
-    }),
+    // .output(
+    //   (value) =>
+    //     value as {
+    //       id: string;
+    //       uploadURL: string;
+    //     },
+    // )
+    .mutation(async ({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().generateEventImageLink({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+        }),
+      ),
+    ),
 
   queryGeoPeriods: publicProcedure
     .input(
@@ -307,16 +323,17 @@ export const eventsRouter = router({
         }),
       ),
     )
-    .output((value) => value as TModelVibefireEvent[])
-    .query(async ({ ctx, input }) => {
-      return await getUFEventsManager().queryEventsInGeoPeriods({
-        userAid: ctx.auth.userId ?? undefined,
-        query: {
-          northEast: input.northEast,
-          southWest: input.southWest,
-          zoomLevel: 0,
-          datePeriod: parseInt(input.fromDate),
-        },
-      });
-    }),
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().queryEventsInGeoPeriods({
+          userAid: ctx.auth.userId ?? undefined,
+          query: {
+            northEast: input.northEast,
+            southWest: input.southWest,
+            zoomLevel: 0,
+            datePeriod: parseInt(input.fromDate),
+          },
+        }),
+      ),
+    ),
 });

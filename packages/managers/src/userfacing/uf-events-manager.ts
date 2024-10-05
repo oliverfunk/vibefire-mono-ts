@@ -12,6 +12,10 @@ import {
   type TModelVibefireGroup,
 } from "@vibefire/models";
 import {
+  getCloudFlareImagesService,
+  type CloudFlareImagesService,
+} from "@vibefire/services/cloudflare-images";
+import {
   isValidUuidV4,
   resourceLocator,
   trimAndCropText,
@@ -20,7 +24,7 @@ import {
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { type ManagerAsyncResult } from "!managers/manager-result";
-import { getReposManager, ReposManager } from "!managers/repos-manager";
+import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
 // todo: model incomeplete events and fix the api
@@ -33,18 +37,21 @@ import { managerReturn } from "!managers/utils";
 export const ufEventsManagerSymbol = Symbol("ufEventsManagerSymbol");
 export const getUFEventsManager = () =>
   resourceLocator().bindResource(ufEventsManagerSymbol, () => {
-    return new UFEventsManger(getReposManager());
+    return new UFEventsManger(getReposManager(), getCloudFlareImagesService());
   });
 
 export class UFEventsManger {
-  constructor(private readonly repos: ReposManager) {}
+  constructor(
+    private readonly repos: ReposManager,
+    private readonly cfImages: CloudFlareImagesService,
+  ) {}
 
   createNewEvent(p: {
     userAid: string;
     forGroupId?: string;
     name: string;
     eventType: TModelEventType["type"];
-  }) {
+  }): ManagerAsyncResult<string> {
     return managerReturn(async () => {
       const eventIsPublicType = p.eventType === "event-public";
       let accAct: AccessAction | undefined = undefined;
@@ -234,9 +241,9 @@ export class UFEventsManger {
 
   viewEvent(p: {
     userAid?: string;
-    eventId: string; // taken to be the linkId when scope is "link"
-    scope: "manage" | "published" | "link";
-  }) {
+    eventId: string; // taken to be the linkId when scope is "viaLink"
+    scope: "manage" | "published" | "viaLink";
+  }): ManagerAsyncResult<TModelVibefireEvent> {
     return managerReturn(async () => {
       switch (p.scope) {
         case "manage":
@@ -248,7 +255,7 @@ export class UFEventsManger {
           return await this.repos.eventIfManager(p.eventId, p.userAid);
         case "published":
           return await this.repos.eventIfViewer(p.eventId, p.userAid);
-        case "link":
+        case "viaLink":
           if (!isValidUuidV4(p.eventId)) {
             throw new ManagerRuleViolation("Invalid event link id");
           }
@@ -313,6 +320,20 @@ export class UFEventsManger {
       };
 
       await this.repos.event.update(p.eventId, update).result;
+    });
+  }
+
+  generateEventImageLink(p: { userAid: string; eventId: string }) {
+    return managerReturn(async () => {
+      const e = await this.repos.eventIfManager(p.eventId, p.userAid);
+
+      return await this.cfImages.getUploadUrl({
+        metadata: {
+          eventId: p.eventId,
+          ownerId: e.ownerId,
+          uploaderUserAid: p.userAid,
+        },
+      });
     });
   }
 

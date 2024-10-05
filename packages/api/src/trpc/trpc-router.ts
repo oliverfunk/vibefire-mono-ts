@@ -51,3 +51,9 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedures
  */
 export const authedProcedure = t.procedure.use(isAuthed);
+
+/**
+ * Create a server-side caller, for testing
+ * @see https://trpc.io/docs/v11/server/server-side-calls
+ */
+export const createCallerFactory = t.createCallerFactory;
