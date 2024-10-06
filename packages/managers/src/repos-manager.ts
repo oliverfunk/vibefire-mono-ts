@@ -15,7 +15,7 @@ import { nullablePromiseToRes } from "./utils";
 export const repoManagerSymbol = Symbol("repoManagerSymbol");
 
 export const getReposManager = () =>
-  resourceLocator<ReposManager>().bindResource(repoManagerSymbol, () => {
+  resourceLocator().bindResource(repoManagerSymbol, () => {
     const faunaService = getFaunaService();
     return new ReposManager(
       faunaService.Event,

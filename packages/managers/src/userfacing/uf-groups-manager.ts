@@ -16,7 +16,7 @@ import {
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { type ManagerAsyncResult } from "!managers/manager-result";
-import { getReposManager, ReposManager } from "!managers/repos-manager";
+import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
 export const ufGroupsManagerSymbol = Symbol("ufGroupsManagerSymbol");
@@ -60,7 +60,7 @@ export class UFGroupsManger {
         }
         accAct = {
           action: "create",
-          access: newVibefireEntityAccess({ type: "invite" }), // default
+          access: newVibefireEntityAccess({ type: "invite" }), // default, settable by user
           userId: p.userAid,
         };
       }
