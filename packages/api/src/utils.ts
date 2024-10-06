@@ -40,6 +40,7 @@ export const wrapManagerReturn = async <T>(
         value: res.value,
       };
     }
+
     if (res.isErr) {
       return {
         ok: false,
@@ -49,6 +50,7 @@ export const wrapManagerReturn = async <T>(
   } catch (error) {
     console.error(error);
   }
+
   return {
     ok: false,
     error: {

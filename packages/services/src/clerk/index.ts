@@ -16,8 +16,6 @@ export type ClerkAuthContext = AuthObject;
 export type ClerkSignedInAuthContext = SignedInAuthObject;
 export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
-export type ClerkService = ClerkServiceImpl;
-
 export const clerkServiceSymbol = Symbol("clerkServiceSymbol");
 
 export const getClerkService = (options?: ClerkOptions): ClerkService =>
@@ -33,10 +31,10 @@ export const getClerkService = (options?: ClerkOptions): ClerkService =>
       publishableKey: clerk.publishableKey,
       ...options,
     });
-    return new ClerkServiceImpl(clerkClient);
+    return new ClerkService(clerkClient);
   });
 
-class ClerkServiceImpl {
+export class ClerkService {
   constructor(private readonly client: ClerkClient) {}
 
   async authenticateRequest(req: Request) {
