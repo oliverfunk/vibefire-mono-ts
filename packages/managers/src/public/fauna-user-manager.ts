@@ -4,15 +4,15 @@ import { DateTime } from "luxon";
 
 import {
   ModelVibefireUser,
+  TModelVibefireEventimelineElementSchema,
   VibefireEventManagementSchema,
   VibefireEventSchema,
-  VibefireEventTimelineElementSchema,
   type MapQueryT,
+  type TModelVibefireEvent,
+  type TModelVibefireEventimelineElementT,
+  type TModelVibefireGroup,
   type VibefireEventImagesT,
   type VibefireEventLocationT,
-  type VibefireEventT,
-  type VibefireEventTimelineElementT,
-  type VibefireGroupT,
   type VibefireUserInfoT,
 } from "@vibefire/models";
 import {
@@ -167,7 +167,7 @@ export class FaunaUserManager {
 
   async eventCreate(
     userAc: ClerkSignedInAuthContext,
-    title: VibefireEventT["title"],
+    title: TModelVibefireEvent["title"],
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
@@ -237,7 +237,7 @@ export class FaunaUserManager {
 
     const newEvent = Value.Create(
       VibefireEventSchema,
-    ) as PartialDeep<VibefireEventT>;
+    ) as PartialDeep<TModelVibefireEvent>;
 
     newEvent.state = "draft";
     newEvent.published = false;
@@ -281,9 +281,9 @@ export class FaunaUserManager {
     userAc: ClerkSignedInAuthContext,
     eventId: string,
     update: {
-      title?: VibefireEventT["title"];
-      description?: VibefireEventT["description"];
-      tags?: VibefireEventT["tags"];
+      title?: TModelVibefireEvent["title"];
+      description?: TModelVibefireEvent["description"];
+      tags?: TModelVibefireEvent["tags"];
       timeStartIsoNTZ?: string;
       timeEndIsoNTZ?: string | null;
       position?: VibefireEventLocationT["position"];
@@ -306,7 +306,7 @@ export class FaunaUserManager {
       "Event not found",
     );
 
-    const updateData: PartialDeep<VibefireEventT> = {
+    const updateData: PartialDeep<TModelVibefireEvent> = {
       timeZone: dbEvent.timeZone,
       timeStartIsoNTZ: dbEvent.timeStartIsoNTZ,
       timeEndIsoNTZ: dbEvent.timeEndIsoNTZ,
@@ -466,13 +466,13 @@ export class FaunaUserManager {
 
     // timeline
     if (setTimeline.length > 0) {
-      const updateTimeline: VibefireEventTimelineElementT[] = [];
+      const updateTimeline: TModelVibefireEventimelineElementT[] = [];
       for (const el of setTimeline) {
-        let tle = Value.Create(VibefireEventTimelineElementSchema);
+        let tle = Value.Create(TModelVibefireEventimelineElementSchema);
         tle.id = el.id;
         tle.timeIsoNTZ = el.timeIsoNTZ;
         tle.message = trimAndCropText(el.message, 500);
-        tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
+        tle = tbValidator(TModelVibefireEventimelineElementSchema)(tle);
         updateTimeline.push(tle);
       }
       updateData.timeline = updateTimeline;
@@ -500,7 +500,7 @@ export class FaunaUserManager {
 
   async _setEventReadyIfPossible(
     organiserId: string,
-    e: PartialDeep<VibefireEventT>,
+    e: PartialDeep<TModelVibefireEvent>,
     publish = false,
   ) {
     let event;
@@ -529,7 +529,7 @@ export class FaunaUserManager {
 
     await createEventManagement(this.faunaClient, em);
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       state: "ready",
     };
     if (publish) {
@@ -584,7 +584,7 @@ export class FaunaUserManager {
       throw new Error("Cannot publish, event is not 'ready'");
     }
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       published: true,
     };
 
@@ -601,7 +601,7 @@ export class FaunaUserManager {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       published: false,
     };
 
@@ -613,7 +613,7 @@ export class FaunaUserManager {
   async eventSetVisibility(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    visibility: VibefireEventT["visibility"],
+    visibility: TModelVibefireEvent["visibility"],
     organisationId?: string,
   ): Promise<void> {
     checkUserIsPartOfOrg(userAc, organisationId);
@@ -627,7 +627,7 @@ export class FaunaUserManager {
       );
     }
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       visibility,
     };
 
@@ -776,7 +776,7 @@ export class FaunaUserManager {
         managerIds: [],
         type: "public",
       },
-    ] as VibefireGroupT[];
+    ] as TModelVibefireGroup[];
     return res;
   }
 
@@ -793,7 +793,7 @@ export class FaunaUserManager {
       ownerType: "user",
       managerIds: [],
       type: "public",
-    } as VibefireGroupT;
+    } as TModelVibefireGroup;
     return res;
   }
 

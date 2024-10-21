@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
 
 import { VibefireImage } from "!/c/image/VibefireImage";
@@ -9,10 +9,10 @@ import { ChipComponent } from "!/c/structural/ChipComponent";
 type EventChipProps = {
   eventLinkId: string;
   eventInfo: {
-    title: VibefireEventT["title"];
-    bannerImgKey?: VibefireEventT["images"]["banner"];
-    timeStartIsoNTZ?: VibefireEventT["timeStartIsoNTZ"];
-    state: VibefireEventT["state"];
+    title: TModelVibefireEvent["name"];
+    bannerImgKey?: string;
+    timeStartIsoNTZ?: string;
+    state: TModelVibefireEvent["state"];
   };
   onPress?: (eventLinkId: string) => void;
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
@@ -51,7 +51,7 @@ const DeleteConfirmationModal = (props: {
 };
 
 const EventsByOrganiserView = (props: {
-  events: PartialDeep<VibefireEventT>[];
+  events: PartialDeep<TModelVibefireEvent>[];
 }) => {
   const { events } = props;
 

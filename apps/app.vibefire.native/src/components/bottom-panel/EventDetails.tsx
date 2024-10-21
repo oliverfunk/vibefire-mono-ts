@@ -22,7 +22,7 @@ import {
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { useAtom, useSetAtom } from "jotai";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 import {
   appleMapsOpenEventLocationURL,
@@ -72,7 +72,7 @@ const ThreeDotsMenuOption = (props: {
   );
 };
 
-const MapsModalMenu = (props: { event: VibefireEventT }) => {
+const MapsModalMenu = (props: { event: TModelVibefireEvent }) => {
   const { event } = props;
 
   const [menuVisible, setMenuVisible] = useState(false);
@@ -142,7 +142,7 @@ const MapsModalMenu = (props: { event: VibefireEventT }) => {
   );
 };
 
-const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
+const ThreeDotsModalMenu = (props: { event: TModelVibefireEvent }) => {
   const { event } = props;
 
   const [userInfo] = useAtom(userInfoAtom);
@@ -267,7 +267,7 @@ const ThreeDotsModalMenu = (props: { event: VibefireEventT }) => {
   );
 };
 
-const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
+const EventOrganiserBarView = (props: { event: TModelVibefireEvent }) => {
   const { event } = props;
 
   const onOrganiserPress = useCallback(() => {}, [event.organiserId]);
@@ -309,7 +309,7 @@ const EventOrganiserBarView = (props: { event: VibefireEventT }) => {
   );
 };
 
-const EventDetailsView = (props: { event: VibefireEventT }) => {
+const EventDetailsView = (props: { event: TModelVibefireEvent }) => {
   const { event } = props;
 
   const width = Dimensions.get("window").width;

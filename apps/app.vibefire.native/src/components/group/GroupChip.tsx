@@ -1,7 +1,6 @@
 import { Text } from "react-native";
 
-import { type VibefireGroupT } from "@vibefire/models";
-import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
+import { type TModelVibefireGroup } from "@vibefire/models";
 
 import { VibefireImage } from "!/c/image/VibefireImage";
 import { ChipComponent } from "!/c/structural/ChipComponent";
@@ -9,9 +8,9 @@ import { ChipComponent } from "!/c/structural/ChipComponent";
 type GroupChipProps = {
   groupLinkId: string;
   groupInfo: {
-    name: VibefireGroupT["name"];
-    bannerImgKey: VibefireGroupT["bannerImgKey"];
-    dateUpdatedUTC: VibefireGroupT["dateUpdatedUTC"];
+    name: TModelVibefireGroup["name"];
+    bannerImgKey: string;
+
     notifications: number;
   };
   onPress: (groupLinkId: string) => void;
@@ -24,18 +23,13 @@ export const GroupChip = (props: GroupChipProps) => {
     <ChipComponent
       leftComponent={<VibefireImage imgIdKey={groupInfo.bannerImgKey} />}
       centerComponent={
-        <>
-          <Text
-            className="font-bold text-white"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {groupInfo.name}
-          </Text>
-          <Text className="text-neutral-400">
-            {toMonthDateTimeStr(isoNTZToUTCDateTime(groupInfo.dateUpdatedUTC))}
-          </Text>
-        </>
+        <Text
+          className="font-bold text-white"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {groupInfo.name}
+        </Text>
       }
       rightComponent={
         <Text className="text-white">{groupInfo.notifications}</Text>

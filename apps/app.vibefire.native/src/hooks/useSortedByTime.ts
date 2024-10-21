@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 
-import { type VibefireEventT, type VibefireGroupT } from "@vibefire/models";
+import {
+  type TModelVibefireEvent,
+  type TModelVibefireGroup,
+} from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
 export const useSortByTime = <T extends object>(
@@ -38,7 +41,7 @@ export const useSortByTime = <T extends object>(
 };
 
 export const useSortedEvents = (
-  events: PartialDeep<VibefireEventT>[],
+  events: PartialDeep<TModelVibefireEvent>[],
   p: {
     sortAsc?: boolean;
     sliceCount?: number;
@@ -52,7 +55,7 @@ export const useSortedEvents = (
 };
 
 export const useSortedGroupsByUpdated = (
-  events: VibefireGroupT[],
+  events: TModelVibefireGroup[],
   p: {
     sortAsc?: boolean;
     sliceCount?: number;

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Text, View, type ListRenderItemInfo } from "react-native";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { isoNTZToUTCDateTime, type PartialDeep } from "@vibefire/utils";
 
 import { useSortedEvents } from "!/hooks/useSortedByTime";
@@ -14,29 +14,32 @@ import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
 
 const useEventCardRenderer = (
-  onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void,
+  onEventPress: (
+    eventId: string,
+    event: PartialDeep<TModelVibefireEvent>,
+  ) => void,
   onEventCrossPress?: (
     eventId: string,
-    event: PartialDeep<VibefireEventT>,
+    event: PartialDeep<TModelVibefireEvent>,
   ) => void,
   showStatusBanner?: boolean,
 ) => {
   return useCallback(
-    ({ item: event }: ListRenderItemInfo<PartialDeep<VibefireEventT>>) => (
+    ({ item: event }: ListRenderItemInfo<PartialDeep<TModelVibefireEvent>>) => (
       <EventCard
-        published={event.published!}
+        state={event.state}
         eventInfo={{
-          bannerImgKey: event.images?.banner ?? undefined,
-          title: event.title!,
-          organiserId: event.organiserId!,
-          organiserType: event.organiserType!,
-          organiserName: event.organiserName!,
+          bannerImgKey: event.images?.bannerImgKeys?.[0] ?? undefined,
+          title: event.name!,
+          ownerId: event.ownerId!,
+          ownerType: event.ownerType!,
+          ownerName: event.ownerName!,
           addressDescription: event?.location?.addressDescription ?? undefined,
-          timeStart: event.timeStartIsoNTZ
-            ? isoNTZToUTCDateTime(event.timeStartIsoNTZ)
+          timeStart: event.times?.tsStart
+            ? isoNTZToUTCDateTime(event.times?.tsStart)
             : undefined,
-          timeEnd: event.timeEndIsoNTZ
-            ? isoNTZToUTCDateTime(event.timeEndIsoNTZ)
+          timeEnd: event.times?.tsEnd
+            ? isoNTZToUTCDateTime(event.times?.tsEnd)
             : undefined,
         }}
         onPress={() => {
@@ -49,7 +52,6 @@ const useEventCardRenderer = (
               }
             : undefined
         }
-        state={event.state}
         showStatusBanner={showStatusBanner}
       />
     ),
@@ -70,11 +72,14 @@ const useNoEventsText = (noEventsMessage?: string) => {
 };
 
 type EventsListProps = {
-  events: PartialDeep<VibefireEventT>[];
-  onEventPress: (eventId: string, event: PartialDeep<VibefireEventT>) => void;
+  events: PartialDeep<TModelVibefireEvent>[];
+  onEventPress: (
+    eventId: string,
+    event: PartialDeep<TModelVibefireEvent>,
+  ) => void;
   onEventCrossPress?: (
     eventId: string,
-    event: PartialDeep<VibefireEventT>,
+    event: PartialDeep<TModelVibefireEvent>,
   ) => void;
   listTitle?: string;
   noEventsMessage?: string;
@@ -182,13 +187,13 @@ export const EventsListWithSections = ({
 
 const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
   return useCallback(
-    (event: PartialDeep<VibefireEventT>) => (
+    (event: PartialDeep<TModelVibefireEvent>) => (
       <EventChip
         eventLinkId={event.linkId!}
         eventInfo={{
-          title: event.title!,
-          bannerImgKey: event?.images?.banner,
-          timeStartIsoNTZ: event.timeStartIsoNTZ,
+          title: event.name!,
+          bannerImgKey: event?.images?.bannerImgKeys?.[0],
+          timeStartIsoNTZ: event.times?.tsStart,
           state: event.state!,
         }}
         onPress={onPress}
@@ -199,7 +204,7 @@ const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
 };
 
 type EventsListSimpleChipViewProps = {
-  events: PartialDeep<VibefireEventT>[];
+  events: PartialDeep<TModelVibefireEvent>[];
   onPress: (eventLinkId: string) => void;
   noEventsMessage?: string;
   latestFirst?: boolean;

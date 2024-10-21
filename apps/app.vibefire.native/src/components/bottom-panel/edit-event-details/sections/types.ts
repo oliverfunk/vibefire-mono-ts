@@ -1,10 +1,10 @@
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
 export type FormSectionProps = {
-  currentEventData: PartialDeep<VibefireEventT>;
-  editedEventData: PartialDeep<VibefireEventT>;
-  setEditedEventData: (e: PartialDeep<VibefireEventT>) => void;
+  currentEventData: PartialDeep<TModelVibefireEvent>;
+  editedEventData: PartialDeep<TModelVibefireEvent>;
+  setEditedEventData: (e: PartialDeep<TModelVibefireEvent>) => void;
   setMayProceed: (mayProceed: boolean) => void;
   setFormValidations: (v: string[]) => void;
 };

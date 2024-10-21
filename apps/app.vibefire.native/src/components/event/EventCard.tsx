@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome } from "@expo/vector-icons";
 import { type DateTime } from "luxon";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { organisationProfileImagePath } from "@vibefire/utils";
 
 import { IconButton } from "!/c/button/IconButton";
@@ -11,13 +11,12 @@ import { StandardImage } from "!/c/image/StandardImage";
 import { VibefireImage } from "!/c/image/VibefireImage";
 
 type EventCardProps = {
-  state?: VibefireEventT["state"];
-  published: VibefireEventT["published"];
+  state?: TModelVibefireEvent["state"];
   eventInfo: {
     title: string;
-    organiserId: string;
-    organiserName: string;
-    organiserType: VibefireEventT["organiserType"];
+    ownerId: TModelVibefireEvent["ownerId"];
+    ownerType: TModelVibefireEvent["ownerType"];
+    ownerName: TModelVibefireEvent["ownerName"];
     addressDescription?: string;
     timeStart?: DateTime;
     timeEnd?: DateTime;
@@ -30,7 +29,6 @@ type EventCardProps = {
 
 export const EventCard = ({
   state,
-  published,
   eventInfo: event,
   onPress,
   onCrossPress,
@@ -44,16 +42,16 @@ export const EventCard = ({
         alt="Event Banner"
       />
 
-      {showStatusBanner && state && (
+      {showStatusBanner && state !== undefined && (
         <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
           <Text className="text-2xl font-bold text-white">
-            {state == "draft"
+            {state === -1
               ? "Draft"
-              : state === "ready"
-                ? published
+              : state === 0
+                ? "Ready to publish"
+                : state === 1
                   ? "Published"
-                  : "Ready to publish"
-                : "Archived"}
+                  : "Archived"}
           </Text>
         </View>
       )}
@@ -63,22 +61,22 @@ export const EventCard = ({
         colors={["rgba(50, 40, 40, 1)", "rgba(0,0,0,0)"]}
         locations={[0, 1]}
       >
-        {event.organiserType === "group" ? (
+        {event.ownerType === "group" ? (
           <StandardImage
             cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
             contentFit="cover"
-            source={organisationProfileImagePath(event.organiserId)}
+            source={organisationProfileImagePath(event.ownerId)}
             alt="Event Organizer Profile Picture"
           />
         ) : (
           <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black/80">
             <Text className="text-lg text-white">
-              {event.organiserName.at(0)!.toUpperCase()}
+              {event.ownerName.at(0)!.toUpperCase()}
               {"."}
             </Text>
           </View>
         )}
-        <Text className="ml-2 text-lg text-white">{event.organiserName}</Text>
+        <Text className="ml-2 text-lg text-white">{event.ownerName}</Text>
       </LinearGradient>
 
       {onCrossPress && (

@@ -21,7 +21,7 @@ export const CreateEventForm = () => {
     title: undefined,
   });
 
-  const createEventMut = trpc.events.createEvent.useMutation();
+  const createEventMut = trpc.events.createForSelf.useMutation();
 
   return (
     <ScrollViewSheet>
@@ -56,8 +56,9 @@ export const CreateEventForm = () => {
               if (!createEventState.title) {
                 return;
               }
-              const { linkId } = await createEventMut.mutateAsync({
-                title: createEventState.title,
+              const {  } = await createEventMut.mutateAsync({
+                eventType:
+                : createEventState.title,
               });
               close();
               navEditEvent(linkId);

@@ -6,7 +6,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import _ from "lodash";
 
-import { type CoordT, type VibefireEventT } from "@vibefire/models";
+import { type CoordT, type TModelVibefireEvent } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
@@ -24,7 +24,7 @@ import { EditEventTimes } from "./sections/EditEventTimes";
 export const EditEventForm = (props: {
   eventId: string;
   linkId: string;
-  currentEventData: PartialDeep<VibefireEventT>;
+  currentEventData: PartialDeep<TModelVibefireEvent>;
   dataRefetch: () => void;
   section: EditEventFormSectionT;
 }) => {

@@ -63,6 +63,7 @@ export class UFEventsManger {
         );
       }
 
+      let ownerName: string;
       if (p.forGroupId) {
         const g = (
           await this.repos.group.withIdIfUserCanManage(p.forGroupId, p.userAid)
@@ -74,12 +75,15 @@ export class UFEventsManger {
           );
         }
         accAct = { action: "link", accessId: g.accessRef.id };
+        ownerName = g.name;
       } else {
         accAct = {
           action: "create",
           access: newVibefireEntityAccess({ type: "invite" }), // default
           userId: p.userAid,
         };
+        ownerName =
+          (await this.repos.getUserProfile(p.userAid)).unwrap().name ?? "";
       }
 
       (
@@ -91,6 +95,7 @@ export class UFEventsManger {
       const newEvent = newVibefireEvent({
         ownerId: p.forGroupId ?? p.userAid,
         ownerType: p.forGroupId ? "group" : "user",
+        ownerName,
         eventType: p.eventType,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
@@ -147,6 +152,7 @@ export class UFEventsManger {
       const newEvent = newVibefireEvent({
         ownerId: event.ownerId,
         ownerType: event.ownerType,
+        ownerName: event.ownerName,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
         name: event.name,

@@ -33,30 +33,9 @@ export const eventsRouter = router({
   //   }),
 
   // todo: listUserHighlightsToday
-  // starredOwnedEvents: publicProcedure
-  //   .input(
-  //     tbValidator(
-  //       t.Object({
-  //         onDateIsoNTZ: t.String(),
-  //         isUpcoming: t.Boolean(),
-  //       }),
-  //     ),
-  //   )
-  //   .output((value) => value as VibefireEventT[])
-  //   .query(async ({ ctx, input }) => {
-  //     if (!ctx.auth.userId) {
-  //       return [];
-  //     }
-  //     const res = await ctx.fauna.eventsFromStarredOwnedInPeriodForUser(
-  //       ctx.auth,
-  //       input.onDateIsoNTZ,
-  //       input.isUpcoming,
-  //     );
-  //     return res;
-  //   }),
 
   listSelfAll: authedProcedure.query(({ ctx }) =>
-    wrapManagerReturn(() => {
+    wrapManagerReturn<Pageable<PartialDeep<TModelVibefireEvent>>>(() => {
       return getUFEventsManager().eventsUserIsPart({
         userAid: ctx.auth.userId,
       });
@@ -127,7 +106,7 @@ export const eventsRouter = router({
       ),
     )
     .query(({ ctx, input }) =>
-      wrapManagerReturn(() =>
+      wrapManagerReturn<TModelVibefireEvent>(() =>
         getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,
           eventId: input.eventId,
@@ -324,7 +303,7 @@ export const eventsRouter = router({
       ),
     )
     .query(({ ctx, input }) =>
-      wrapManagerReturn(() =>
+      wrapManagerReturn<TModelVibefireEvent[]>(() =>
         getUFEventsManager().queryEventsInGeoPeriods({
           userAid: ctx.auth.userId ?? undefined,
           query: {

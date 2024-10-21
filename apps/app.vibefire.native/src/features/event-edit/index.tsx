@@ -3,38 +3,36 @@ import { Text } from "react-native";
 
 import { trpc } from "!/api/trpc-client";
 
-import {
-  ErrorSheet,
-  LoadingSheet,
-  ScrollViewSheetWithRef,
-} from "!/c/misc/sheet-utils";
-import { withSuspenseErrorBoundary } from "!/c/misc/SuspenseWithError";
+import { ApiResponseView } from "!/components/misc/ApiResponseView";
+import { ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
+import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
 
-function ErrorFallback({ error, resetErrorBoundary }) {
-  // Call resetErrorBoundary() to reset the error boundary and retry the render.
-
-  return <ErrorSheet message="Couldn't load the event" />;
-}
-
-export const EditEventWysiwyg = withSuspenseErrorBoundary(
-  (props: { eventLinkId: string }) => {
-    const { eventLinkId } = props;
+export const EditEventWysiwyg = withSuspenseErrorBoundarySheet(
+  (props: { eventId: string }) => {
+    const { eventId } = props;
 
     const formRef = useRef(null);
 
-    const [data, query] = trpc.events.eventForEdit.useSuspenseQuery({
-      linkId: eventLinkId,
+    const [data] = trpc.events.viewManage.useSuspenseQuery({
+      eventId,
     });
+    const updateMut = trpc.events.update.useMutation();
+
+    updateMut.mutateAsync;
 
     return (
       <ScrollViewSheetWithRef ref={formRef}>
-        <Text>Event Name e:</Text>
-        <Text>{data.location?.addressDescription ?? "NONE"}</Text>
+        <ApiResponseView
+          response={data}
+          ok={(data) => {
+            return <Text>{JSON.stringify(data)}</Text>;
+          }}
+          error={(error) => {
+            error.code === "insufficient_permission";
+            return <Text>{JSON.stringify(error)}</Text>;
+          }}
+        />
       </ScrollViewSheetWithRef>
     );
-  },
-  {
-    LoadingFallback: <LoadingSheet />,
-    ErrorFallback,
   },
 );

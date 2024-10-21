@@ -2,18 +2,12 @@ import { Text, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 
-import {
-  mapPositionDateEventsQueryResultAtom,
-  upcomingEventsQueryResultAtom,
-} from "@vibefire/shared-state";
+import { mapDisplayableEventsAtom } from "@vibefire/shared-state";
 
 import { trpc } from "!/api/trpc-client";
 
 import { IconButton } from "!/c/button/IconButton";
-import {
-  EventsListSimpleChipView,
-  EventsListWithSections,
-} from "!/c/event/EventsList";
+import { EventsList, EventsListSimpleChipView } from "!/c/event/EventsList";
 import {
   ErrorDisplay,
   LoadingDisplay,
@@ -30,12 +24,16 @@ import {
 export const UsersEventsSummary = () => {
   const EventsListSuspense = withSuspenseErrorBoundary(
     () => {
-      const [eventsByUser] = trpc.events.eventsByUser.useSuspenseQuery({});
+      const [eventsByUser] = trpc.events.listSelfAll.useSuspenseQuery();
+
+      if (!eventsByUser.ok) {
+        throw eventsByUser.error;
+      }
 
       return (
         <View className="flex-col">
           <EventsListSimpleChipView
-            events={eventsByUser}
+            events={eventsByUser.value.data}
             onPress={navManageEvent}
           />
           <View className="items-start py-4">
@@ -85,15 +83,14 @@ export const UsersEventsSummary = () => {
 };
 
 export const EventsQueryListSheet = () => {
-  const [upcomingEvents] = useAtom(upcomingEventsQueryResultAtom);
-  const [mapPosDateEvents] = useAtom(mapPositionDateEventsQueryResultAtom);
+  const [mapDisplayableEvents] = useAtom(mapDisplayableEventsAtom);
 
   return (
-    <EventsListWithSections
-      events={mapPosDateEvents}
-      upcomingEvents={upcomingEvents}
+    <EventsList
+      events={mapDisplayableEvents}
+      noEventsMessage="No events in this area"
       onEventPress={(_eventId, event) => {
-        navViewEvent(event.linkId!);
+        navViewEvent(event.id!);
       }}
     />
   );

@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { Share } from "react-native";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { vibefireEventShareURL } from "@vibefire/utils";
 
-export const useShareEventLink = (event: VibefireEventT) => {
+export const useShareEventLink = (event: TModelVibefireEvent) => {
   return useCallback(async () => {
     try {
       await Share.share({

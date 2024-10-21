@@ -45,17 +45,17 @@ export const navCreateEvent = () => {
 export const navCreateEventFromPrevious = () => {
   routerNav("/event/create", { fromPrevious: "true" });
 };
-export const navViewEvent = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId);
+export const navViewEvent = (eventId: string) => {
+  routerNav("/event/" + eventId);
 };
-export const navViewEventPreview = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId, { preview: "true" });
+export const navViewEventPreview = (eventId: string) => {
+  routerNav("/event/" + eventId, { preview: "true" });
 };
-export const navManageEvent = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId + "/manage");
+export const navManageEvent = (eventId: string) => {
+  routerNav("/event/" + eventId + "/manage");
 };
-export const navEditEvent = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId + "/edit");
+export const navEditEvent = (eventId: string) => {
+  routerNav("/event/" + eventId + "/edit");
 };
 export const navEditEventSetSection = (section: EditEventFormSectionT) => {
   router.setParams({ section });
@@ -67,12 +67,12 @@ export const navGroupUserManaged = () => {
 export const navCreateGroup = () => {
   routerNav("/group/create");
 };
-export const navViewGroup = (groupLinkId: string) => {
-  routerNav("/group/" + groupLinkId);
+export const navViewGroup = (groupId: string) => {
+  routerNav("/group/" + groupId);
 };
-export const navManageGroup = (groupLinkId: string) => {
-  routerNav("/group/" + groupLinkId + "/manage");
+export const navManageGroup = (groupId: string) => {
+  routerNav("/group/" + groupId + "/manage");
 };
-export const navEditGroup = (groupLinkId: string) => {
-  routerNav("/group/" + groupLinkId + "/edit");
+export const navEditGroup = (groupId: string) => {
+  routerNav("/group/" + groupId + "/edit");
 };

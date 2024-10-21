@@ -8,13 +8,13 @@ import Svg, {
   Stop,
 } from "react-native-svg";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 
 export const EventIcon = ({
   vibeIndex,
   sizeFactor = 0.12,
 }: {
-  vibeIndex: VibefireEventT["vibe"];
+  vibeIndex: TModelVibefireEvent["vibe"];
   sizeFactor?: number;
 }) => (
   <Svg

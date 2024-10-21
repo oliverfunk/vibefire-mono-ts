@@ -6,8 +6,8 @@ import { useAtom } from "jotai";
 import { DateTime } from "luxon";
 
 import {
+  type TModelVibefireEvent,
   type VibefireEventManagementT,
-  type VibefireEventT,
 } from "@vibefire/models";
 import { vibefireEventShareURL } from "@vibefire/utils";
 
@@ -24,7 +24,7 @@ import {
 import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 import { navEditEvent, navViewEvent, navViewEventPreview } from "!/nav";
 
-const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
+const ShareEventLinkComponent = (props: { event: TModelVibefireEvent }) => {
   const { event } = props;
 
   const onShareEvent = useShareEventLink(event);
@@ -64,7 +64,7 @@ const ShareEventLinkComponent = (props: { event: VibefireEventT }) => {
 };
 
 export const ManagementView = (props: {
-  event: VibefireEventT;
+  event: TModelVibefireEvent;
   eventManagement: VibefireEventManagementT;
   dataRefetch: () => void;
 }) => {
@@ -206,8 +206,8 @@ export const ManagementView = (props: {
               eventInfo={{
                 title: event.title,
                 addressDescription: event.location.addressDescription,
-                organiserId: event.organiserId,
-                organiserType: event.organiserType,
+                ownerId: event.organiserId,
+                ownerType: event.organiserType,
                 organiserName: event.organiserName,
                 bannerImgKey: event.images.banner,
                 timeStart: DateTime.fromISO(event.timeStartIsoNTZ, {

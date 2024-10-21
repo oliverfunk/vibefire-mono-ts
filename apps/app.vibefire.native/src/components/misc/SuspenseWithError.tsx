@@ -6,14 +6,19 @@ import {
   type FallbackProps,
 } from "react-error-boundary";
 
+import { ErrorSheet, LoadingSheet } from "./sheet-utils";
+
 export const ErrorDisplay = (props: FallbackProps & { textWhite: boolean }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { error, textWhite } = props;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const msg = error?.message ?? "Something went wrong";
   return (
     <View className="items-center justify-center">
       <Text
         className={`text-center text-lg ${textWhite ? "text-white" : "text-black"}`}
       >
-        {error.message ?? "There was an error"}
+        {msg}
       </Text>
     </View>
   );
@@ -63,6 +68,31 @@ export const withSuspenseErrorBoundary = <Props extends object>(
   f: {
     LoadingFallback: ReactNode;
     ErrorFallback: ErrorBoundaryPropsWithComponent["FallbackComponent"];
+  },
+) => {
+  const { LoadingFallback, ErrorFallback } = f;
+  return function EnhancedComponent(props: Props) {
+    return (
+      <SuspenseWithError
+        LoadingFallback={LoadingFallback}
+        ErrorFallback={ErrorFallback}
+      >
+        <Component {...props} />
+      </SuspenseWithError>
+    );
+  };
+};
+
+export const withSuspenseErrorBoundarySheet = <Props extends object>(
+  Component: ComponentType<Props>,
+  f: {
+    LoadingFallback: ReactNode;
+    ErrorFallback: ErrorBoundaryPropsWithComponent["FallbackComponent"];
+  } = {
+    LoadingFallback: <LoadingSheet />,
+    ErrorFallback: ({ error, resetErrorBoundary }) => (
+      <ErrorSheet retryCallback={resetErrorBoundary} />
+    ),
   },
 ) => {
   const { LoadingFallback, ErrorFallback } = f;

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Text, View, type ListRenderItemInfo } from "react-native";
 
-import { type VibefireGroupT } from "@vibefire/models";
+import { type TModelVibefireGroup } from "@vibefire/models";
 
 import { useSortedGroupsByUpdated } from "!/hooks/useSortedByTime";
 
@@ -11,10 +11,10 @@ import { SimpleList } from "!/c/list/SimpleList";
 import { FlatListViewSheet } from "!/c/misc/sheet-utils";
 
 const useGroupCardRenderer = (
-  onPress: (groupId: string, group: VibefireGroupT) => void,
+  onPress: (groupId: string, group: TModelVibefireGroup) => void,
 ) => {
   return useCallback(
-    ({ item: group }: ListRenderItemInfo<VibefireGroupT>) => (
+    ({ item: group }: ListRenderItemInfo<TModelVibefireGroup>) => (
       <GroupCard
         group={group}
         onPress={() => {
@@ -45,8 +45,8 @@ const useNoGroupsText = (noGroupsMessage?: string) => {
 };
 
 type GroupsListProps = {
-  groups: VibefireGroupT[];
-  onGroupPress: (groupId: string, group: VibefireGroupT) => void;
+  groups: TModelVibefireGroup[];
+  onGroupPress: (groupId: string, group: TModelVibefireGroup) => void;
   noGroupsMessage?: string;
   sortAsc?: boolean;
   listTitle?: string;
@@ -84,7 +84,7 @@ export const GroupsList = ({
 };
 
 type GroupsListSimpleChipProps = {
-  groups: VibefireGroupT[];
+  groups: TModelVibefireGroup[];
   onPress: (groupLinkId: string) => void;
   noGroupsMessage?: string;
   latestFirst?: boolean;
@@ -105,13 +105,12 @@ export const GroupsListSimpleChipView = ({
 
   const noGroupsText = useNoGroupsText(noGroupsMessage);
   const groupChipRenderer = useCallback(
-    (group: VibefireGroupT) => (
+    (group: TModelVibefireGroup) => (
       <GroupChip
         groupLinkId={group.linkId}
         groupInfo={{
           name: group.name,
-          bannerImgKey: group.bannerImgKey,
-          dateUpdatedUTC: group.dateUpdatedUTC,
+          bannerImgKey: group.images.banners[0],
           notifications: 5,
         }}
         onPress={onPress}
