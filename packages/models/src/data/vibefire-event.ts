@@ -60,6 +60,7 @@ export const ModelVibefireEvent = tb.Object({
 
   ownerId: tb.String({ default: undefined }),
   ownerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
+  ownerName: tb.String({ default: undefined }),
   linkId: tb.String({ default: undefined }),
   linkEnabled: tb.Boolean({ default: true }),
 
@@ -96,6 +97,7 @@ export const ModelVibefireEvent = tb.Object({
 export const newVibefireEvent = (p: {
   ownerId: TModelVibefireEvent["ownerId"];
   ownerType: TModelVibefireEvent["ownerType"];
+  ownerName: TModelVibefireEvent["ownerName"];
   linkId: TModelVibefireEvent["linkId"];
   linkEnabled: TModelVibefireEvent["linkEnabled"];
   name: TModelVibefireEvent["name"];
@@ -105,6 +107,7 @@ export const newVibefireEvent = (p: {
   const d = Value.Create(ModelVibefireEvent);
   d.ownerId = p.ownerId;
   d.ownerType = p.ownerType;
+  d.ownerName = p.ownerName;
   d.linkId = p.linkId;
   d.linkEnabled = p.linkEnabled;
   d.name = p.name;

@@ -76,6 +76,7 @@ const expoConfig = ({ config }) => ({
   plugins: [
     "expo-router",
     "expo-font",
+    "expo-secure-store",
     // "./expo-plugins/with-modify-gradle.js",
     [
       "expo-image-picker",

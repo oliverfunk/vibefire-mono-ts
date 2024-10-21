@@ -1,6 +1,6 @@
 import { fql, type Client } from "fauna";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 
 import { dfq } from "../utils";
 
@@ -29,7 +29,7 @@ import { dfq } from "../utils";
 //   const q = fql`
 
 //   `;
-//   return await dfq<VibefireEventT[]>(faunaClient, q);
+//   return await dfq<TModelVibefireEvent[]>(faunaClient, q);
 // };
 
 export const callEventsInBBoxDuringPeriodForUser = async (
@@ -39,7 +39,7 @@ export const callEventsInBBoxDuringPeriodForUser = async (
   northWest: { lat: number; lng: number },
   southEast: { lat: number; lng: number },
 ) => {
-  const _fvLinkOnly: VibefireEventT["visibility"] = "link-only";
+  const _fvLinkOnly: TModelVibefireEvent["visibility"] = "link-only";
   const q = fql`
     // these can only be shown if user has starred them
     let filterOutLinkOnly = (userProfile, eventId, event) => {
@@ -59,7 +59,7 @@ export const callEventsInBBoxDuringPeriodForUser = async (
     events.filter((event) => filterEventIsPublishedAndViewable(user, event.id, event))
           .filter((event) => filterOutLinkOnly(user, event.id, event))
   `;
-  return await dfq<VibefireEventT[]>(faunaClient, q);
+  return await dfq<TModelVibefireEvent[]>(faunaClient, q);
 };
 
 export const createUDFFilterEventIsPublishedAndViewable = async (
@@ -70,7 +70,7 @@ export const createUDFFilterEventIsPublishedAndViewable = async (
   // remove that field before sending to the client
   // means you don't need to fetch maanagement per event, in the filter
   // will be a lot faster
-  const _fvInviteOnly: VibefireEventT["visibility"] = "invite-only";
+  const _fvInviteOnly: TModelVibefireEvent["visibility"] = "invite-only";
   const q = fql`
     Function.byName("filterEventIsPublishedAndViewable")!.delete()
     Function.create({
@@ -145,7 +145,7 @@ export const callEventPublishedByLinkIdForExternalUser = async (
       null
     }
   `;
-  return await dfq<VibefireEventT>(faunaClient, q);
+  return await dfq<TModelVibefireEvent>(faunaClient, q);
 };
 
 export const createUDFEventsStarredOwnedDuringPeriods = async (
@@ -185,5 +185,5 @@ export const callAuthedEventsStarredOwnedDuringPeriods = async (
     let upcomingEvents = followedEvents.concat(organisedEvents).where(.displayTimePeriods.any((dtp) => queryPeriods.includes(dtp))).toArray()
     upcomingEvents.filter((event) => filterEventIsPublishedAndViewable(user, event.id, event))
   `;
-  return await dfq<VibefireEventT[]>(faunaClient, q);
+  return await dfq<TModelVibefireEvent[]>(faunaClient, q);
 };

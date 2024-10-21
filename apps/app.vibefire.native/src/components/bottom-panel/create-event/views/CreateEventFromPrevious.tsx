@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
@@ -18,7 +18,7 @@ import {
 } from "../../../misc/sheet-utils";
 
 const CreateEventFromPreviousView = (props: {
-  events: PartialDeep<VibefireEventT>[];
+  events: PartialDeep<TModelVibefireEvent>[];
 }) => {
   const { events } = props;
 

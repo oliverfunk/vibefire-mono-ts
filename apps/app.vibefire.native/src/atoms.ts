@@ -1,7 +1,7 @@
 import type MapView from "react-native-maps";
 import { atom } from "jotai";
 
-import { type AppUserState, type VibefireUserT } from "@vibefire/models";
+import { type AppUserState } from "@vibefire/models";
 
 export const editEventButtonStateAtom = atom("inital");
 export const profileSelectedAtom = atom(false);
@@ -20,6 +20,6 @@ export const userInfoAtom = atom((get) => {
   if (user.state !== "authenticated") {
     return undefined;
   }
-  return user.userInfo as VibefireUserT;
+  return user.userInfo;
 });
 export const userAuthStateAtom = atom((get) => get(userAtom).state);

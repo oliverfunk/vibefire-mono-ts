@@ -42,13 +42,26 @@ export const LoadingSheet = () => {
   );
 };
 
-export const ErrorSheet = (props: { message: string | undefined }) => {
+export const ErrorSheet = (props: {
+  message?: string | undefined;
+  retryCallback?: () => void;
+}) => {
   return (
     <BottomSheetView focusHook={useFocusEffect}>
       <View className="flex h-full flex-col items-center justify-center">
         <Text className="text-center text-lg">
-          {props.message ?? "There was an error"}
+          {props.message ?? "Something went wrong"}
         </Text>
+        {props.retryCallback && (
+          <View className="flex-row">
+            <TouchableOpacity
+              className="rounded-lg border px-4 py-2"
+              onPress={props.retryCallback}
+            >
+              <Text className="text-xl text-blue-500">Retry</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </BottomSheetView>
   );
@@ -256,7 +269,7 @@ export const BackNextButtons = (props: {
             : props.isEdited
               ? "bg-green-500"
               : props.mayProceed
-                ? props.mayProceedBg ?? "bg-black"
+                ? (props.mayProceedBg ?? "bg-black")
                 : "bg-gray-300"
         }`}
         disabled={!(props.isEdited || props.mayProceed)}

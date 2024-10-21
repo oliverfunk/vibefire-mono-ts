@@ -21,7 +21,7 @@ import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
 import { debounce } from "lodash";
 import superjson from "superjson";
 
-import { type VibefireUserT } from "@vibefire/models";
+import { type TModelVibefireUser } from "@vibefire/models";
 
 import { tokenCache } from "!/utils/sec-store-cache";
 import { trpc, trpcUrl } from "!/api/trpc-client";
@@ -83,10 +83,10 @@ const UserSessionProvider = (props: { children: ReactNode }) => {
       case "success":
         const d = getSession.data;
         if (d.state === "authenticated") {
-          const userInfo = d.userInfo as VibefireUserT;
+          const userInfo = d.userInfo;
           Sentry.setUser({
             id: userInfo.id,
-            email: userInfo.contactEmail,
+            email: userInfo.email,
           });
         } else {
           Sentry.setUser({

@@ -2,14 +2,14 @@ import { useMemo } from "react";
 import Timeline from "react-native-timeline-flatlist";
 import _ from "lodash";
 
-import { type VibefireEventTimelineElementT } from "@vibefire/models";
+import { type TModelVibefireEventimelineElementT } from "@vibefire/models";
 import {
   isoNTZToUTCDateTime,
   MONTH_DATE_TIME_LB_FORMAT,
 } from "@vibefire/utils";
 
 export const EventTimeline = (props: {
-  timelineElements: VibefireEventTimelineElementT[];
+  timelineElements: TModelVibefireEventimelineElementT[];
   timeStartIsoNTZ?: string;
   timeEndIsoNTZ?: string | null;
   // styling

@@ -1,33 +1,27 @@
 import { Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { useTsQueryParam } from "!/hooks/useTs";
-
 import { EditEventWysiwyg } from "!/features/event-edit";
 import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
 
 const Screen = () => {
-  const { linkId, section } = useLocalSearchParams<{
-    linkId: string;
-    section: string;
+  const { eventId } = useLocalSearchParams<{
+    eventId: string;
   }>();
 
-  const ts = useTsQueryParam();
-
-  if (!linkId) {
+  if (!eventId) {
     return null;
   }
 
   return (
     <BottomPanelModal
       modalPath="event/[linkId]/edit"
-      ts={ts}
       headerText={"Edit Event"}
       enablePanDownToClose={Platform.OS === "android" ? false : true}
       snapPoints={["80%"]}
       backgroundColor="black"
     >
-      <EditEventWysiwyg eventLinkId={linkId} />
+      <EditEventWysiwyg eventId={eventId} />
     </BottomPanelModal>
   );
 };

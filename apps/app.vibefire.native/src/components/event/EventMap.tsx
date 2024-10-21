@@ -11,7 +11,7 @@ import { debounce } from "lodash";
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
 import { useLocationOnce } from "!/hooks/useLocation";
-import { useDisplayEvents } from "!/hooks/useMapQuery";
+import { useMapDisplayableEvents } from "!/hooks/useMapQuery";
 
 import { eventMapMapRefAtom } from "!/atoms";
 import { SEARCH_HANDLE_HEIGHT } from "!/c/bottom-panel/BottomPanelHandle";
@@ -87,8 +87,6 @@ const EventMapComponent = () => {
         _zoomLevel = altitudeToZoomLevel(_zoomLevel);
       }
 
-      console.log(JSON.stringify(_zoomLevel, null, 2));
-
       setMapQueryPositionAtomDbc({
         northEast: {
           lat: _bbox.northEast.latitude,
@@ -108,7 +106,7 @@ const EventMapComponent = () => {
     return SEARCH_HANDLE_HEIGHT * 1;
   });
 
-  const displayEvents = useDisplayEvents();
+  const displayEvents = useMapDisplayableEvents();
 
   return (
     <MapView
@@ -134,6 +132,7 @@ const EventMapComponent = () => {
       onRegionChangeComplete={onMapRegionChange}
       moveOnMarkerPress={false}
       rotateEnabled={false}
+      // cameraZoomRange={{}}
       maxZoomLevel={20}
       minZoomLevel={3}
     >
@@ -166,7 +165,7 @@ const EventMapComponent = () => {
                   <View className="h-full w-full bg-white" />
                 </View>
               </Callout> */}
-            <EventIcon vibeIndex={event.vibe} />
+            <EventIcon vibeIndex={event.map.vibe} />
           </Marker>
         ))}
     </MapView>

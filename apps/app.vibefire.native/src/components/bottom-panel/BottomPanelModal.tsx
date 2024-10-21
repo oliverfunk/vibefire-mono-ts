@@ -8,6 +8,7 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import { trpc } from "!/api/trpc-client";
+
 import { navReplaceHomeWithMinimise } from "!/nav";
 
 import { HandleWithHeader } from "./HandleWithHeader";
@@ -15,10 +16,9 @@ import { HandleWithHeader } from "./HandleWithHeader";
 type BottomPanelModalPropsT = {
   modalPath: string;
   snapPoints: BottomSheetModalProps["snapPoints"];
-  ts: number;
+  ts?: number;
   headerText?: string;
   handleComponent?: BottomSheetModalProps["handleComponent"];
-  handleHeight?: BottomSheetModalProps["handleHeight"];
   minimiseTwiddle?: string;
   backgroundColor?: string;
   enablePanDownToClose?: BottomSheetModalProps["enablePanDownToClose"];
@@ -34,7 +34,6 @@ export const BottomPanelModal = (
     ts,
     headerText,
     handleComponent,
-    handleHeight,
     minimiseTwiddle,
     backgroundColor,
     enablePanDownToClose,
@@ -71,7 +70,6 @@ export const BottomPanelModal = (
         // style={{
         //   maxWidth: 800,
         // }}
-        handleHeight={handleHeight}
         handleComponent={
           handleComponent === null
             ? null

@@ -5,7 +5,7 @@ import {
   type MapDisplayEventsInfoT,
   type MapPositionInfoT,
   type TimeOfDayT,
-  type VibefireEventT,
+  type TModelVibefireEvent,
 } from "@vibefire/models";
 import { nowAsUTCNoTime } from "@vibefire/utils";
 
@@ -16,10 +16,9 @@ export const selectedDateDTAtom = atom<DateTime>(nowAsUTCNoTime());
 
 export const mapPositionInfoAtom = atom<MapPositionInfoT | null>(null);
 
-export const displayEventsInfoAtom = atom<MapDisplayEventsInfoT>({
+export const mapDisplayableEventsAtom = atom<TModelVibefireEvent[]>([]);
+
+export const mapDisplayableEventsInfoAtom = atom<MapDisplayEventsInfoT>({
   numberOfEvents: 0,
   queryStatus: "done",
 });
-
-export const mapPositionDateEventsQueryResultAtom = atom<VibefireEventT[]>([]);
-export const upcomingEventsQueryResultAtom = atom<VibefireEventT[]>([]);
