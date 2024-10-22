@@ -214,11 +214,19 @@ export class FaunaFunctions {
     maxLon: number,
     datePeriod: number,
   ) {
-    return faunaAbortableQuery<TModelVibefireEvent[]>(
+    return faunaAbortableQuery<{ data: TModelVibefireEvent[] }>(
       this.faunaClient,
       fql`
         EventsGeoPeriodQuery(${userAid ?? null}, ${minLat}, ${minLon}, ${maxLat}, ${maxLon}, ${datePeriod})
       `,
+      {
+        // postProcess: (events) => {
+        //   console.log("events", JSON.stringify(events, null, 2));
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        //   return events.data;
+        // },
+        logQuery: true,
+      },
     );
   }
 }

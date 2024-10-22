@@ -10,7 +10,7 @@ import { LinearRedOrangeView } from "!/c/misc/sheet-utils";
 export const HandleWithHeader = (
   props: { header: string } & BottomSheetHandleProps,
 ) => {
-  const { close } = useBottomSheet();
+  const { collapse } = useBottomSheet();
   return (
     <View className="overflow-hidden rounded-t-lg bg-black p-2">
       <LinearRedOrangeView className="flex-row items-center overflow-hidden rounded-lg px-1 py-2">
@@ -22,7 +22,7 @@ export const HandleWithHeader = (
           <TouchableOpacity
             className="h-5 w-5 flex-row items-center justify-center rounded-full bg-black/60"
             onPress={() => {
-              close();
+              collapse();
             }}
           >
             <FontAwesome name="chevron-down" size={10} color="white" />

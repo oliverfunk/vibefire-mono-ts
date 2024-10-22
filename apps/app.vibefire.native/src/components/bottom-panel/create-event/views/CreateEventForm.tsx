@@ -56,12 +56,14 @@ export const CreateEventForm = () => {
               if (!createEventState.title) {
                 return;
               }
-              const {  } = await createEventMut.mutateAsync({
-                eventType:
-                : createEventState.title,
+              const resp = await createEventMut.mutateAsync({
+                eventType: "event-private",
+                name: createEventState.title,
               });
-              close();
-              navEditEvent(linkId);
+              if (resp.ok) {
+                navEditEvent(resp.value.id);
+                close();
+              }
             }}
           >
             <Text className="text-xl text-white">Start</Text>

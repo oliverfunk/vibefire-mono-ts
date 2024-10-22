@@ -85,6 +85,11 @@ export const UsersEventsSummary = () => {
 export const EventsQueryListSheet = () => {
   const [mapDisplayableEvents] = useAtom(mapDisplayableEventsAtom);
 
+  console.log(
+    "mapDisplayableEvents",
+    JSON.stringify(mapDisplayableEvents, null, 2),
+  );
+
   return (
     <EventsList
       events={mapDisplayableEvents}

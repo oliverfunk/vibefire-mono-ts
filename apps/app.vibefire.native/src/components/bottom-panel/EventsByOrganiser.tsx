@@ -70,7 +70,7 @@ const EventsByOrganiserView = (props: {
         events={events}
         noEventsMessage="You have made no events yet"
         onEventPress={(_eventId, event) => {
-          if (event?.state === "draft") {
+          if (event?.state === 0) {
             navEditEvent(event.linkId!);
           } else {
             navManageEvent(event.linkId!);
