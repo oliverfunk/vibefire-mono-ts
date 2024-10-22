@@ -17,7 +17,7 @@ import {
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { type ManagerAsyncResult } from "!managers/manager-result";
-import { getReposManager, ReposManager } from "!managers/repos-manager";
+import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
 export const ufPlansManagerSymbol = Symbol("ufPlansManagerSymbol");

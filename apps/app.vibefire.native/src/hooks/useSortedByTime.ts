@@ -48,8 +48,7 @@ export const useSortedEvents = (
   },
 ) => {
   return useSortByTime(events, {
-    extract: (e) =>
-      e?.timeStartIsoNTZ ? new Date(e.timeStartIsoNTZ) : undefined,
+    extract: (e) => (e.times?.tsStart ? new Date(e.times?.tsStart) : undefined),
     ...p,
   });
 };
@@ -62,8 +61,7 @@ export const useSortedGroupsByUpdated = (
   },
 ) => {
   return useSortByTime(events, {
-    extract: (g) =>
-      g?.dateUpdatedUTC ? new Date(g.dateUpdatedUTC) : undefined,
+    extract: (g) => undefined,
     ...p,
   });
 };

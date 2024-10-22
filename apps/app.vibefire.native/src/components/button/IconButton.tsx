@@ -20,18 +20,31 @@ export const IconButton = (props: {
     cn,
   } = props;
 
-  const classNameStr = `flex h-${size} w-${size} items-center justify-center ${circular && "rounded-full"} ${border && "border"} ${cn}`;
+  const classNames = ["flex items-center justify-center"];
+
+  if (size) {
+    classNames.push(`w-${size} h-${size}`);
+  }
+  if (circular) {
+    classNames.push("rounded-full");
+  }
+  if (border) {
+    classNames.push("border");
+  }
+  if (cn) {
+    classNames.push(cn);
+  }
 
   if (useOpacity) {
     return (
-      <TouchableOpacity className={classNameStr} onPress={onPress}>
+      <TouchableOpacity className={classNames.join(" ")} onPress={onPress}>
         {children}
       </TouchableOpacity>
     );
   }
 
   return (
-    <Pressable className={classNameStr} onPress={onPress}>
+    <Pressable className={classNames.join(" ")} onPress={onPress}>
       {children}
     </Pressable>
   );

@@ -365,7 +365,7 @@ export class UFEventsManger {
       const maxLat = neLatGe ? p.query.northEast.lat : p.query.southWest.lat;
       const maxLng = neLngGe ? p.query.northEast.lng : p.query.southWest.lng;
 
-      return (
+      const res = (
         await this.repos.event.geoPeriodQueryForUser(
           minLat,
           minLng,
@@ -375,6 +375,8 @@ export class UFEventsManger {
           p.userAid,
         ).result
       ).unwrap();
+
+      return res.data;
     });
   }
 

@@ -128,7 +128,7 @@ export const eventsRouter = router({
       ),
     )
     .mutation(({ ctx, input }) =>
-      wrapManagerReturn(async () => {
+      wrapManagerReturn<TModelVibefireEvent>(async () => {
         let eventId: string;
         if (input.fromPreviousEventId) {
           eventId = (

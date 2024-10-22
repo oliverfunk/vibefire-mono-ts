@@ -27,18 +27,19 @@ export const accessActionQuery = (
 
 const runFaunaQuery = async <R extends QueryValue>(
   faunaClient: Client,
-  query: Query,
+  query: Query<R>,
   logQuery = false,
   postProcess?: (d: R) => R,
 ): Promise<R> => {
   try {
     const qr = await faunaClient.query<R>(query);
 
-    if (logQuery) console.log(qr);
+    if (logQuery) console.log(JSON.stringify(qr, null, 2));
 
     if (postProcess) {
       return postProcess(qr.data);
     }
+
     return qr.data;
   } catch (e) {
     if (e instanceof QueryCheckError) {
@@ -55,7 +56,7 @@ const runFaunaQuery = async <R extends QueryValue>(
 
 const runFaunaNullableQuery = async <R extends QueryValue>(
   faunaClient: Client,
-  query: Query,
+  query: Query<R>,
   logQuery?: boolean,
   postProcess?: (d: R | null) => R,
 ): Promise<R | null> => {
@@ -69,7 +70,7 @@ const runFaunaNullableQuery = async <R extends QueryValue>(
 
 const runFaunaAbortableQuery = async <R extends QueryValue>(
   faunaClient: Client,
-  query: Query,
+  query: Query<R>,
   logQuery?: boolean,
   postProcess?: (d: R) => R,
 ): FaunaAsyncResult<R> => {
@@ -90,7 +91,7 @@ const runFaunaAbortableQuery = async <R extends QueryValue>(
 
 export const faunaQuery = <R extends QueryValue>(
   faunaClient: Client,
-  query: Query,
+  query: Query<R>,
   p?: {
     logQuery?: boolean;
     postProcess?: (d: R) => R;
@@ -105,14 +106,14 @@ export const faunaQuery = <R extends QueryValue>(
 
 export const faunaNullableQuery = <R extends QueryValue>(
   faunaClient: Client,
-  query: Query,
+  query: Query<R>,
   p?: {
     logQuery?: boolean;
     postProcess?: (d: R | null) => R;
   },
 ): {
   result: Promise<R | null>;
-  query: Query;
+  query: Query<R>;
 } => ({
   result: runFaunaNullableQuery<R>(
     faunaClient,
@@ -125,14 +126,14 @@ export const faunaNullableQuery = <R extends QueryValue>(
 
 export const faunaAbortableQuery = <R extends QueryValue>(
   faunaClient: Client,
-  query: Query,
+  query: Query<R>,
   p?: {
     logQuery?: boolean;
     postProcess?: (d: R) => R;
   },
 ): {
   result: FaunaAsyncResult<R>;
-  query: Query;
+  query: Query<R>;
 } => ({
   result: runFaunaAbortableQuery<R>(
     faunaClient,

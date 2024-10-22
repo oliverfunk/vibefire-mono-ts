@@ -3,6 +3,8 @@ import { atom } from "jotai";
 
 import { type AppUserState } from "@vibefire/models";
 
+export const showHandleAtom = atom(true);
+
 export const editEventButtonStateAtom = atom("inital");
 export const profileSelectedAtom = atom(false);
 export const userSessionRetryAtom = atom(false);
