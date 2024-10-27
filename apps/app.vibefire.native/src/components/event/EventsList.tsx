@@ -1,5 +1,10 @@
 import { useCallback, useMemo } from "react";
-import { Text, View, type ListRenderItemInfo } from "react-native";
+import {
+  ListRenderItem,
+  SectionListRenderItem,
+  Text,
+  View,
+} from "react-native";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
 import { isoNTZToUTCDateTime, type PartialDeep } from "@vibefire/utils";
@@ -8,7 +13,11 @@ import { useSortedEvents } from "!/hooks/useSortedByTime";
 
 import { SimpleList } from "!/c/list/SimpleList";
 import { useItemSeparator } from "!/c/misc/ItemSeparator";
-import { FlatListViewSheet, SectionListViewSheet } from "!/c/misc/sheet-utils";
+import {
+  FlashListViewSheet,
+  FlatListViewSheet,
+  SectionListViewSheet,
+} from "!/c/misc/sheet-utils";
 
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
@@ -25,7 +34,7 @@ const useEventCardRenderer = (
   showStatusBanner?: boolean,
 ) => {
   return useCallback(
-    ({ item: event }: ListRenderItemInfo<PartialDeep<TModelVibefireEvent>>) => (
+    ({ item: event }: ListRenderItem<PartialDeep<TModelVibefireEvent>>) => (
       <EventCard
         state={event.state}
         eventInfo={{
@@ -112,78 +121,79 @@ export const EventsList = ({
   const itemSep = useItemSeparator();
 
   return (
-    <FlatListViewSheet
+    <FlashListViewSheet
       ListEmptyComponent={noEventsText}
       ListHeaderComponent={listTitle ? header : undefined}
       ItemSeparatorComponent={itemSep}
       data={sortedEvents}
+      estimatedItemSize={200}
       contentContainerStyle={{ padding: 5 }}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id!}
+      keyExtractor={(item: PartialDeep<TModelVibefireEvent>) => item.id!}
     />
   );
 };
 
-export const EventsListWithSections = ({
-  events,
-  upcomingEvents,
-  onEventPress,
-  onEventCrossPress,
-  noEventsMessage,
-  showStatusBanner = false,
-  sortAsc = true,
-}: EventsListProps & { upcomingEvents: EventsListProps["events"] }) => {
-  const sortedEvents = useSortedEvents(events, { sortAsc });
-  const sortedUpcomingEvents = useSortedEvents(upcomingEvents, { sortAsc });
+// export const EventsListWithSections = ({
+//   events,
+//   upcomingEvents,
+//   onEventPress,
+//   onEventCrossPress,
+//   noEventsMessage,
+//   showStatusBanner = false,
+//   sortAsc = true,
+// }: EventsListProps & { upcomingEvents: EventsListProps["events"] }) => {
+//   const sortedEvents = useSortedEvents(events, { sortAsc });
+//   const sortedUpcomingEvents = useSortedEvents(upcomingEvents, { sortAsc });
 
-  const sections = useMemo(() => {
-    const r = [];
-    if (sortedUpcomingEvents.length > 0) {
-      r.push({
-        title: "Upcoming Events",
-        data: sortedUpcomingEvents,
-      });
-    }
-    if (sortedEvents.length > 0) {
-      r.push({
-        title: "All Events",
-        data: sortedEvents,
-      });
-    }
-    return r;
-  }, [sortedEvents, sortedUpcomingEvents]);
+//   const sections = useMemo(() => {
+//     const r = [];
+//     if (sortedUpcomingEvents.length > 0) {
+//       r.push({
+//         title: "Upcoming Events",
+//         data: sortedUpcomingEvents,
+//       });
+//     }
+//     if (sortedEvents.length > 0) {
+//       r.push({
+//         title: "All Events",
+//         data: sortedEvents,
+//       });
+//     }
+//     return r;
+//   }, [sortedEvents, sortedUpcomingEvents]);
 
-  const renderSectionHeader = useCallback(
-    ({ section }: { section: { title: string } }) => (
-      <View className="p-2">
-        <Text className="text-lg font-bold text-black">{section.title}</Text>
-      </View>
-    ),
-    [],
-  );
-  const renderItem = useEventCardRenderer(
-    onEventPress,
-    onEventCrossPress,
-    showStatusBanner,
-  );
-  const noEventsText = useNoEventsText(noEventsMessage);
+//   const renderSectionHeader = useCallback(
+//     ({ section }: { section: { title: string } }) => (
+//       <View className="p-2">
+//         <Text className="text-lg font-bold text-black">{section.title}</Text>
+//       </View>
+//     ),
+//     [],
+//   );
+//   const renderItem = useEventCardRenderer(
+//     onEventPress,
+//     onEventCrossPress,
+//     showStatusBanner,
+//   );
+//   const noEventsText = useNoEventsText(noEventsMessage);
 
-  const itemSep = useItemSeparator();
+//   const itemSep = useItemSeparator();
 
-  return (
-    <SectionListViewSheet
-      ListEmptyComponent={noEventsText}
-      ItemSeparatorComponent={itemSep}
-      contentContainerStyle={{ padding: 5 }}
-      sections={sections}
-      renderSectionHeader={renderSectionHeader}
-      stickyHeaderHiddenOnScroll={true}
-      stickySectionHeadersEnabled={false}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id!}
-    />
-  );
-};
+//   return (
+//     <SectionListViewSheet
+//       ListEmptyComponent={noEventsText}
+//       ItemSeparatorComponent={itemSep}
+//       contentContainerStyle={{ padding: 5 }}
+//       sections={sections}
+//       renderSectionHeader={renderSectionHeader}
+//       stickyHeaderHiddenOnScroll={true}
+//       stickySectionHeadersEnabled={false}
+//       renderItem={renderItem}
+//       keyExtractor={(item) => item.id!}
+//     />
+//   );
+// };
 
 const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
   return useCallback(

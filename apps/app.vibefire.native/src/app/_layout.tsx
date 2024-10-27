@@ -21,10 +21,9 @@ import AppProviders, { routingInstrumentation } from "!/providers";
 import "!/global.css";
 
 import * as Notifications from "expo-notifications";
-import { FontAwesome } from "@expo/vector-icons";
 
 import { NewBottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
-import { IconButton } from "!/components/button/IconButton";
+import { VfActionButton } from "!/components/VfActionButton";
 import { EventMap } from "!/c/event/EventMap";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
 
@@ -102,21 +101,14 @@ const RootLayout = () => {
         <StatusBar barStyle={"dark-content"} />
         <NoTopContainer>
           <EventMap />
-          <View className="absolute bottom-[100] self-end pr-1">
-            <IconButton
-              size={15}
-              border={true}
-              onPress={() => console.log("pressed")}
-              cn="bg-white"
-            >
-              <FontAwesome name="fire" size={15} color="black" />
-            </IconButton>
+          <View className="absolute bottom-[90] w-full px-2">
+            <VfActionButton />
           </View>
           <NewBottomPanelModal>
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: "transparent" },
+                contentStyle: { backgroundColor: "#171717" },
               }}
             />
           </NewBottomPanelModal>

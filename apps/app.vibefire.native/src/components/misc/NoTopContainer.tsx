@@ -11,7 +11,7 @@ const SafeAreaViewNoTopComponent = ({ children }: PropsWithChildren) => {
         paddingLeft: insets.left,
         paddingRight: insets.right,
       }}
-      className={`flex-1 items-center justify-center bg-black`}
+      className={`flex-1 items-center justify-center bg-neutral-900`}
     >
       {children}
     </View>

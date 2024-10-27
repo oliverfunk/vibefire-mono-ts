@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAtom, useSetAtom } from "jotai";
 
-import { type TModelVibefireEvent } from "@vibefire/models";
 import {
   mapDisplayableEventsAtom,
   mapDisplayableEventsInfoAtom,

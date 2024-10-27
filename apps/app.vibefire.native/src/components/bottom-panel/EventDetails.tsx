@@ -440,7 +440,7 @@ const EventDetailsView = (props: { event: TModelVibefireEvent }) => {
         </View>
 
         {!selectedDateDT.hasSame(
-          isoNTZToUTCDateTime(event.timeStartIsoNTZ),
+          isoNTZToUTCDateTime(event.times.tsStart),
           "day",
         ) && (
           <View className="items-center pt-2">

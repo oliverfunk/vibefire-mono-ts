@@ -1,34 +1,82 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { useEffect } from "react";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { useNavigation, useRootNavigationState } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   useBottomSheet,
   type BottomSheetHandleProps,
 } from "@gorhom/bottom-sheet";
+import { useAtom } from "jotai";
 
-import { LinearRedOrangeView } from "!/c/misc/sheet-utils";
+import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 
-export const HandleWithHeader = (
-  props: { header: string } & BottomSheetHandleProps,
-) => {
-  const { collapse } = useBottomSheet();
+import { bottomSheetCollapsedAtom } from "!/atoms";
+import { navHomeWithMinimise } from "!/nav";
+
+export const HANDLE_HEIGHT = 40;
+
+export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
+  const { collapse, expand } = useBottomSheet();
+
+  const [bottomSheetCollapsed] = useAtom(bottomSheetCollapsedAtom);
+  const [mapEventsInfo] = useAtom(mapDisplayableEventsInfoAtom);
+
+  const nav = useNavigation();
+  useRootNavigationState();
+
+  useEffect(() => {
+    if (bottomSheetCollapsed) {
+      navHomeWithMinimise();
+    }
+  }, [bottomSheetCollapsed]);
+
   return (
-    <View className="overflow-hidden rounded-t-lg bg-black p-2">
-      <LinearRedOrangeView className="flex-row items-center overflow-hidden rounded-lg px-1 py-2">
-        <View className="flex-1" />
-        <Text className="text-center text-2xl font-bold text-white">
-          {props.header}
-        </Text>
-        <View className="flex-1 items-end">
+    <View
+      className={`h-[${HANDLE_HEIGHT}] flex-row items-center justify-center overflow-hidden rounded-t-xl bg-neutral-900 px-3`}
+    >
+      <View className="flex-1 pt-2">
+        {nav.canGoBack() && (
           <TouchableOpacity
-            className="h-5 w-5 flex-row items-center justify-center rounded-full bg-black/60"
+            className="flex-row items-center space-x-1"
             onPress={() => {
-              collapse();
+              nav.goBack();
             }}
           >
-            <FontAwesome name="chevron-down" size={10} color="white" />
+            <FontAwesome name="chevron-left" size={10} color="white" />
+            <Text className="text-white">Back</Text>
           </TouchableOpacity>
-        </View>
-      </LinearRedOrangeView>
+        )}
+      </View>
+      <View className="flex-1 items-center justify-center pt-2">
+        {bottomSheetCollapsed ? (
+          <Pressable
+            onPress={() => expand()}
+            className="flex-row items-center justify-center space-x-1"
+          >
+            <FontAwesome
+              className="justify-start"
+              name="chevron-up"
+              size={10}
+              color="white"
+            />
+            <Text className="text-sm text-white">Pull</Text>
+            <View className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
+              <Text className="text-center text-sm text-white">
+                {mapEventsInfo.numberOfEvents}
+              </Text>
+            </View>
+          </Pressable>
+        ) : (
+          <TouchableOpacity
+            onPress={() => collapse()}
+            className="flex-row items-center justify-center space-x-1"
+          >
+            <FontAwesome name="chevron-down" size={10} color="white" />
+            <Text className="text-sm text-white">Close</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      <View className="flex-1" />
     </View>
   );
 };

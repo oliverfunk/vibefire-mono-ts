@@ -8,7 +8,7 @@ import { useTsQueryParam } from "!/hooks/useTs";
 
 import { EventsQueryListSheet } from "!/features/events-list";
 import { UserProfileSheet } from "!/features/user-profile";
-import { showHandleAtom } from "!/atoms";
+import { bottomSheetIndex } from "!/atoms";
 import {
   BottomPanelHandle,
   SEARCH_HANDLE_HEIGHT,
@@ -40,13 +40,6 @@ const Screen = () => {
   //       console.error("sign in error", JSON.stringify(err, null, 2));
   //     });
   // }
-
-  const ts = useTsQueryParam();
-
-  const showHandle = useSetAtom(showHandleAtom);
-  useEffect(() => {
-    showHandle(true);
-  }, [showHandle, ts]);
 
   return (
     <View>
