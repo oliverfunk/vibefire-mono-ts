@@ -21,14 +21,15 @@ import {
   BottomSheetScrollView,
   BottomSheetSectionList,
   BottomSheetView,
+  type BottomSheetBackdropProps,
   type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
-import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
-import { BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
+import { type BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
 import {
   type BottomSheetFlatListProps,
   type BottomSheetSectionListProps,
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types";
+import { type BottomSheetViewProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetView/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { type FallbackProps } from "react-error-boundary";
 
@@ -83,7 +84,7 @@ export const ErrorSheetSuspense = (props: FallbackProps) => {
 
 export const useSheetBackdrop = () => {
   return useCallback(
-    (props: BottomSheetDefaultBackdropProps) => (
+    (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
         {...props}
         // disappearsOnIndex={0}
@@ -160,6 +161,10 @@ export const FormTextInput = (props: FormTextInputProps) => {
       />
     </View>
   );
+};
+
+export const BasicViewSheet = (props: BottomSheetViewProps) => {
+  return <BottomSheetView focusHook={useFocusEffect} {...props} />;
 };
 
 export const SectionListViewSheet = <T, S>(

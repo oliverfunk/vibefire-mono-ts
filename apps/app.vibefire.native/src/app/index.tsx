@@ -1,27 +1,36 @@
-import { useEffect, useLayoutEffect } from "react";
-import { Button, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { useAtom, useSetAtom } from "jotai";
+import { useLayoutEffect } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
-import { useTsQueryParam } from "!/hooks/useTs";
 
 import { EventsQueryListSheet } from "!/features/events-list";
-import { UserProfileSheet } from "!/features/user-profile";
-import { bottomSheetIndex } from "!/atoms";
-import {
-  BottomPanelHandle,
-  SEARCH_HANDLE_HEIGHT,
-} from "!/c/bottom-panel/BottomPanelHandle";
-import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
 
 const Screen = () => {
-  // this isn't the best place for this
+  // This isn't the best place for this
   // should use a nested group and put it in the layout there
   // but is okay for now as the index route should also be
   // loaded on app start
   // you need a route to have loaded before this can be called
   useNotificationsResponder();
+
+  const { expand, collapse } = useBottomSheet();
+
+  const { collapse: withCollapse, expand: withExpand } = useLocalSearchParams<{
+    collapse?: string;
+    expand?: string;
+  }>();
+
+  // this might be a bad idea,
+  // bettter to useBottomSheet() at the nav call site
+  useLayoutEffect(() => {
+    if (withCollapse === "true") {
+      collapse();
+    }
+    if (withExpand === "true") {
+      expand();
+    }
+  }, [withCollapse, withExpand, collapse, expand]);
 
   // const impersonating = true;
 
@@ -41,26 +50,6 @@ const Screen = () => {
   //     });
   // }
 
-  return (
-    <View>
-      <Button
-        onPress={() => router.navigate("/profile")}
-        title="Show Profile"
-      />
-      <EventsQueryListSheet />
-    </View>
-  );
-  // <BottomPanelModal
-  //   modalPath="index"
-  //   ts={ts}
-  //   handleComponent={BottomPanelHandle}
-  //   backgroundColor="rgba(255,255,255,0.9)"
-  //   snapPoints={[SEARCH_HANDLE_HEIGHT, "80%"]}
-  //   minimiseTwiddle={minimise}
-  //   enableDismissOnClose={false}
-  //   enablePanDownToClose={false}
-  // >
-  //   {profileSelected ? UserProfile : }
-  // </BottomPanelModal>
+  return <EventsQueryListSheet />;
 };
 export default Screen;

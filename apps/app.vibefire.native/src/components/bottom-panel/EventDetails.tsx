@@ -52,7 +52,7 @@ import {
   LoadingSheet,
   ScrollViewSheet,
 } from "!/c/misc/sheet-utils";
-import { navHomeWithMinimise, navManageEvent } from "!/nav";
+import { navHomeWithCollapse, navManageEvent } from "!/nav";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
@@ -373,7 +373,7 @@ const EventDetailsView = (props: { event: TModelVibefireEvent }) => {
     eventMapMapRef?.animateCamera(
       defaultCameraForPosition(event.location.position),
     );
-    navHomeWithMinimise();
+    navHomeWithCollapse();
   }, [event, eventMapMapRef, setSelectedDateDT]);
 
   return (

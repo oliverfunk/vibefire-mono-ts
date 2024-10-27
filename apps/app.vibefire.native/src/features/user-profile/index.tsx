@@ -6,7 +6,11 @@ import { userAtom, userSessionRetryAtom } from "!/atoms";
 import { ContinueWithApple } from "!/c/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "!/c/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "!/c/auth/ContinueWithGoogle";
-import { LoadingSheet, ScrollViewSheet } from "!/c/misc/sheet-utils";
+import {
+  BasicViewSheet,
+  LinearRedOrangeView,
+  LoadingSheet,
+} from "!/c/misc/sheet-utils";
 
 import { UserProfileAuthenticatedView } from "./_authenticated";
 
@@ -14,32 +18,41 @@ const UserProfileErrorView = () => {
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   return (
-    <ScrollViewSheet>
-      <View className="mt-5 flex h-full flex-col items-center space-y-5">
-        <FontAwesome5 name="user-alt" size={150} color="black" />
-        <View className="flex-col items-center space-y-2">
-          <Text>There was an issue loading your account</Text>
+    <BasicViewSheet>
+      <LinearRedOrangeView className="h-full flex-col items-center space-y-4 p-4">
+        <View className="w-full flex-1">
+          <View className="flex-col items-center space-y-4 rounded-lg bg-neutral-900 p-4">
+            <FontAwesome5 name="user" size={50} color="red" />
+            <Text className="text-md text-white">
+              There was an issue loading your profile
+            </Text>
+            <TouchableOpacity
+              className="rounded-lg border bg-green-500 px-4 py-2"
+              onPress={() => {
+                setUserSessionRetry((prev) => !prev);
+              }}
+            >
+              <Text className="text-md text-white">Try again</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View className="flex-row">
-          <TouchableOpacity
-            className="rounded-lg border px-4 py-2"
-            onPress={() => {
-              setUserSessionRetry((prev) => !prev);
-            }}
-          >
-            <Text className="text-xl text-blue-500">Retry</Text>
-          </TouchableOpacity>
+
+        <View className="flex-row items-center space-x-2 rounded-full bg-black p-2 px-4">
+          <FontAwesome5 name="fire" size={30} color="white" />
+          <Text className="text-4xl text-white">Vibefire</Text>
         </View>
-      </View>
-    </ScrollViewSheet>
+      </LinearRedOrangeView>
+    </BasicViewSheet>
   );
 };
 
 const UserProfileUnauthenticatedView = () => {
   return (
-    <ScrollViewSheet>
-      <View className="flex h-full flex-col items-center space-y-10 py-10">
-        <FontAwesome5 name="user-alt" size={150} />
+    <BasicViewSheet>
+      <LinearRedOrangeView className="h-full flex-col items-center space-y-5 bg-slate-100 p-10">
+        <View className="bg-black">
+          <FontAwesome5 name="user-alt" size={150} />
+        </View>
         <View className="mx-10 flex-row">
           <Text className="text-center">
             Sign in to create private events, get invites and share events with
@@ -59,8 +72,8 @@ const UserProfileUnauthenticatedView = () => {
             </View>
           )}
         </View>
-      </View>
-    </ScrollViewSheet>
+      </LinearRedOrangeView>
+    </BasicViewSheet>
   );
 };
 

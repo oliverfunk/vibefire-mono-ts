@@ -1,14 +1,14 @@
-import { useEffect } from "react";
-import { useSetAtom } from "jotai";
+import { useLayoutEffect } from "react";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { UserProfileSheet } from "!/features/user-profile";
-import { bottomSheetIndex } from "!/atoms";
 
 const Screen = () => {
-  const showHandle = useSetAtom(bottomSheetIndex);
-  useEffect(() => {
-    showHandle(false);
-  }, [showHandle]);
+  const { expand } = useBottomSheet();
+
+  useLayoutEffect(() => {
+    expand();
+  }, [expand]);
 
   return <UserProfileSheet />;
 };

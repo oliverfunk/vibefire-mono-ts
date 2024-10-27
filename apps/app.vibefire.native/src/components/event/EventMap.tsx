@@ -13,8 +13,8 @@ import { mapPositionInfoAtom } from "@vibefire/shared-state";
 import { useLocationOnce } from "!/hooks/useLocation";
 import { useMapDisplayableEvents } from "!/hooks/useMapQuery";
 
+import { HANDLE_HEIGHT } from "!/components/bottom-panel/HandleWithNavigation";
 import { eventMapMapRefAtom } from "!/atoms";
-import { HANDLE_HEIGHT } from "!/c/bottom-panel/HandleWithHeader";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
 

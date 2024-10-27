@@ -3,30 +3,22 @@ import { router } from "expo-router";
 import { type EditEventFormSectionT } from "./types";
 
 const routerNav = (path: string, params: Record<string, string> = {}) => {
-  params.ts = new Date().getTime().toString();
   router.navigate(path);
   router.setParams(params);
 };
 
-const routerReplace = (path: string, params: Record<string, string> = {}) => {
-  params.ts = new Date().getTime().toString();
-  router.replace(path);
-  router.setParams(params);
+export const navProfile = () => {
+  routerNav("/profile");
 };
 
-export const navHomeWithProfileSelected = ({
-  profileSelected,
-}: {
-  profileSelected?: boolean;
-}) => {
-  routerNav("/", profileSelected ? { profileSelected: "true" } : {});
+export const navHome = () => {
+  routerNav("/", { expand: "false", collapse: "false" });
 };
-export const navHomeWithMinimise = () => {
-  routerNav("/", { minimise: "true" + Math.random() });
+export const navHomeWithCollapse = () => {
+  routerNav("/", { expand: "false", collapse: "true" });
 };
-export const navReplaceHomeWithMinimise = () => {
-  routerReplace("/");
-  router.setParams({ minimise: "true" + Math.random() });
+export const navHomeWithExpand = () => {
+  routerNav("/", { expand: "true", collapse: "false" });
 };
 
 export const navPop = () => {
