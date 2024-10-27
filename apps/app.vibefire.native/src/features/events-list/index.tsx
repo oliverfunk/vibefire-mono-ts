@@ -85,18 +85,15 @@ export const UsersEventsSummary = () => {
 export const EventsQueryListSheet = () => {
   const [mapDisplayableEvents] = useAtom(mapDisplayableEventsAtom);
 
-  console.log(
-    "mapDisplayableEvents",
-    JSON.stringify(mapDisplayableEvents, null, 2),
-  );
-
   return (
-    <EventsList
-      events={mapDisplayableEvents}
-      noEventsMessage="No events in this area"
-      onEventPress={(_eventId, event) => {
-        navViewEvent(event.id!);
-      }}
-    />
+    <View className="h-full">
+      <EventsList
+        events={mapDisplayableEvents}
+        noEventsMessage="No events in this area"
+        onEventPress={(_eventId, event) => {
+          navViewEvent(event.id!);
+        }}
+      />
+    </View>
   );
 };

@@ -14,7 +14,7 @@ import { useLocationOnce } from "!/hooks/useLocation";
 import { useMapDisplayableEvents } from "!/hooks/useMapQuery";
 
 import { eventMapMapRefAtom } from "!/atoms";
-import { SEARCH_HANDLE_HEIGHT } from "!/c/bottom-panel/BottomPanelHandle";
+import { HANDLE_HEIGHT } from "!/c/bottom-panel/HandleWithHeader";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
 
@@ -102,10 +102,6 @@ const EventMapComponent = () => {
     [setMapQueryPositionAtomDbc],
   );
 
-  const [bottomPanelHeight] = useState(() => {
-    return SEARCH_HANDLE_HEIGHT * 1;
-  });
-
   const displayEvents = useMapDisplayableEvents();
 
   return (
@@ -117,9 +113,9 @@ const EventMapComponent = () => {
       }}
       className="h-full w-full"
       mapPadding={{
-        top: bottomPanelHeight,
+        top: HANDLE_HEIGHT,
         right: 0,
-        bottom: bottomPanelHeight,
+        bottom: HANDLE_HEIGHT,
         left: 0,
       }}
       // provider={PROVIDER_GOOGLE}

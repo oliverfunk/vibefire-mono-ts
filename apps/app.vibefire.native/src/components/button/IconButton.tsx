@@ -1,5 +1,10 @@
 import { type ReactNode } from "react";
-import { Pressable, TouchableOpacity } from "react-native";
+import {
+  Pressable,
+  TouchableOpacity,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
 
 export const IconButton = (props: {
   children: ReactNode;
@@ -9,6 +14,7 @@ export const IconButton = (props: {
   border?: boolean;
   useOpacity?: boolean;
   cn?: string;
+  style?: StyleProp<ViewStyle>;
 }) => {
   const {
     children,
@@ -18,13 +24,11 @@ export const IconButton = (props: {
     border = false,
     useOpacity = false,
     cn,
+    style,
   } = props;
 
   const classNames = ["flex items-center justify-center"];
 
-  if (size) {
-    classNames.push(`w-${size} h-${size}`);
-  }
   if (circular) {
     classNames.push("rounded-full");
   }
@@ -37,14 +41,34 @@ export const IconButton = (props: {
 
   if (useOpacity) {
     return (
-      <TouchableOpacity className={classNames.join(" ")} onPress={onPress}>
+      <TouchableOpacity
+        style={[
+          {
+            width: size * 4,
+            height: size * 4,
+          },
+          style,
+        ]}
+        className={classNames.join(" ")}
+        onPress={onPress}
+      >
         {children}
       </TouchableOpacity>
     );
   }
 
   return (
-    <Pressable className={classNames.join(" ")} onPress={onPress}>
+    <Pressable
+      style={[
+        {
+          width: size * 4,
+          height: size * 4,
+        },
+        style,
+      ]}
+      className={classNames.join(" ")}
+      onPress={onPress}
+    >
       {children}
     </Pressable>
   );

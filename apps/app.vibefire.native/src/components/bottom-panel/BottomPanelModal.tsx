@@ -9,14 +9,13 @@ import {
   type BottomSheetBackdropProps,
   type BottomSheetModalProps,
 } from "@gorhom/bottom-sheet";
-import { useAtom } from "jotai";
+import { useSetAtom } from "jotai";
 
 import { trpc } from "!/api/trpc-client";
 
-import { showHandleAtom } from "!/atoms";
-import { navReplaceHomeWithMinimise } from "!/nav";
+import { bottomSheetIndex } from "!/atoms";
 
-import { HandleWithHeader } from "./HandleWithHeader";
+import { HANDLE_HEIGHT, HandleWithNavigation } from "./HandleWithHeader";
 
 type BottomPanelModalPropsT = {
   modalPath: string;
@@ -33,11 +32,10 @@ type BottomPanelModalPropsT = {
 export const NewBottomPanelModal = (props: { children?: React.ReactNode }) => {
   const { children } = props;
   const modalPanelRef = useRef<BottomSheetModal>(null);
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const utils = trpc.useUtils();
+  // const utils = trpc.useUtils();
 
-  const [showHandle] = useAtom(showHandleAtom);
+  const setBottomSheetIndex = useSetAtom(bottomSheetIndex);
 
   useLayoutEffect(() => {
     requestAnimationFrame(() => {
@@ -45,11 +43,6 @@ export const NewBottomPanelModal = (props: { children?: React.ReactNode }) => {
     });
   }, []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    if (index === 0) {
-      console.log("collapsed");
-    }
-  }, []);
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -63,25 +56,20 @@ export const NewBottomPanelModal = (props: { children?: React.ReactNode }) => {
   );
 
   return (
-    <GestureHandlerRootView
-      style={{
-        // flex: 1,
-        backgroundColor: "grey",
-      }}
-    >
+    <GestureHandlerRootView>
       <BottomSheetModal
         ref={modalPanelRef}
         backdropComponent={renderBackdrop}
         enableDismissOnClose={false}
         enablePanDownToClose={false}
         enableDynamicSizing={false}
-        snapPoints={[60, "80%"]}
+        snapPoints={[HANDLE_HEIGHT, "80%"]}
         bottomInset={insets.bottom}
-        onChange={handleSheetChanges}
+        onChange={setBottomSheetIndex}
         backgroundStyle={{
-          backgroundColor: "rgba(0,255,255,1)",
+          backgroundColor: "#171717",
         }}
-        handleComponent={showHandle ? undefined : null}
+        handleComponent={HandleWithNavigation}
         onDismiss={() => {
           modalPanelRef.current?.present();
         }}
@@ -92,85 +80,85 @@ export const NewBottomPanelModal = (props: { children?: React.ReactNode }) => {
   );
 };
 
-export const BottomPanelModal = (
-  props: BottomPanelModalPropsT & { children?: React.ReactNode },
-) => {
-  const {
-    modalPath,
-    snapPoints,
-    ts,
-    headerText,
-    handleComponent,
-    minimiseTwiddle,
-    backgroundColor,
-    enablePanDownToClose,
-    enableDismissOnClose,
-    children,
-  } = props;
+// export const BottomPanelModal = (
+//   props: BottomPanelModalPropsT & { children?: React.ReactNode },
+// ) => {
+//   const {
+//     modalPath,
+//     snapPoints,
+//     ts,
+//     headerText,
+//     handleComponent,
+//     minimiseTwiddle,
+//     backgroundColor,
+//     enablePanDownToClose,
+//     enableDismissOnClose,
+//     children,
+//   } = props;
 
-  const modalPanelRef = useRef<BottomSheetModal>(null);
+//   const modalPanelRef = useRef<BottomSheetModal>(null);
 
-  const navigation = useNavigation();
+//   const navigation = useNavigation();
 
-  const insets = useSafeAreaInsets();
-  const utils = trpc.useUtils();
+//   const insets = useSafeAreaInsets();
+//   const utils = trpc.useUtils();
 
-  useLayoutEffect(() => {
-    requestAnimationFrame(() => {
-      modalPanelRef.current?.present();
-    });
-  }, [ts]);
+//   useLayoutEffect(() => {
+//     requestAnimationFrame(() => {
+//       modalPanelRef.current?.present();
+//     });
+//   }, [ts]);
 
-  useLayoutEffect(() => {
-    if (!minimiseTwiddle) {
-      return;
-    }
-    requestAnimationFrame(() => {
-      modalPanelRef.current?.collapse();
-    });
-  }, [minimiseTwiddle]);
+//   useLayoutEffect(() => {
+//     if (!minimiseTwiddle) {
+//       return;
+//     }
+//     requestAnimationFrame(() => {
+//       modalPanelRef.current?.collapse();
+//     });
+//   }, [minimiseTwiddle]);
 
-  return (
-    <View className="left-[50%]">
-      <BottomSheetModal
-        ref={modalPanelRef}
-        // style={{
-        //   maxWidth: 800,
-        // }}
-        handleComponent={
-          handleComponent === null
-            ? null
-            : handleComponent
-              ? handleComponent
-              : headerText
-                ? (p) => HandleWithHeader({ header: headerText, ...p })
-                : undefined
-        }
-        enableDismissOnClose={enableDismissOnClose}
-        enablePanDownToClose={enablePanDownToClose}
-        stackBehavior="push"
-        backgroundStyle={{
-          backgroundColor: backgroundColor ?? "rgba(255,255,255,1)",
-        }}
-        bottomInset={insets.bottom}
-        index={0}
-        snapPoints={snapPoints}
-        onDismiss={async () => {
-          const navState = navigation.getState();
-          const routes = navState.routes;
-          const isTopRoute = routes.at(-1)?.name === modalPath;
-          if (isTopRoute) {
-            if (navigation.canGoBack()) {
-              navigation.goBack();
-            } else {
-              navReplaceHomeWithMinimise();
-            }
-          }
-          await utils.invalidate();
-        }}
-      >
-        {children}
-      </BottomSheetModal>
-    </View>
-  );
-};
+//   return (
+//     <View className="left-[50%]">
+//       <BottomSheetModal
+//         ref={modalPanelRef}
+//         // style={{
+//         //   maxWidth: 800,
+//         // }}
+//         handleComponent={
+//           handleComponent === null
+//             ? null
+//             : handleComponent
+//               ? handleComponent
+//               : headerText
+//                 ? HandleWithNavigation
+//                 : undefined
+//         }
+//         enableDismissOnClose={enableDismissOnClose}
+//         enablePanDownToClose={enablePanDownToClose}
+//         stackBehavior="push"
+//         backgroundStyle={{
+//           backgroundColor: backgroundColor ?? "rgba(255,255,255,1)",
+//         }}
+//         bottomInset={insets.bottom}
+//         index={0}
+//         snapPoints={snapPoints}
+//         onDismiss={async () => {
+//           const navState = navigation.getState();
+//           const routes = navState.routes;
+//           const isTopRoute = routes.at(-1)?.name === modalPath;
+//           if (isTopRoute) {
+//             if (navigation.canGoBack()) {
+//               navigation.goBack();
+//             } else {
+//               navReplaceHomeWithMinimise();
+//             }
+//           }
+//           await utils.invalidate();
+//         }}
+//       >
+//         {children}
+//       </BottomSheetModal>
+//     </View>
+//   );
+// };

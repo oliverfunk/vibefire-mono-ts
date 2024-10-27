@@ -3,7 +3,10 @@ import { atom } from "jotai";
 
 import { type AppUserState } from "@vibefire/models";
 
-export const showHandleAtom = atom(true);
+export const bottomSheetIndex = atom(0);
+export const bottomSheetCollapsedAtom = atom(
+  (get) => get(bottomSheetIndex) === 0,
+);
 
 export const editEventButtonStateAtom = atom("inital");
 export const profileSelectedAtom = atom(false);

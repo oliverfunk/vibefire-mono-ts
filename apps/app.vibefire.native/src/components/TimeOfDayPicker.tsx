@@ -30,11 +30,12 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
   });
 
   return (
-    <View className="h-full justify-center">
+    <View>
       <Carousel
+        // height={height}
         width={width}
         defaultIndex={todToIndexMapping[selectedTod]}
-        loop={false}
+        loop={true}
         overscrollEnabled={false}
         data={periods}
         panGestureHandlerProps={{
@@ -45,15 +46,15 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
         }}
         renderItem={({ index, item: period }) => {
           return (
-            <View key={index} className="flex-1 items-center justify-center">
-              <Text className="text-xl font-bold">{period}</Text>
+            <View key={index} className="h-full items-center justify-center">
+              <Text className="text-lg text-white">{period}</Text>
             </View>
           );
         }}
       />
 
       <Pressable
-        className="absolute right-1"
+        className="absolute right-0 h-full justify-center"
         onPress={() => {
           // the ai wrote this
           setSelectedTod(
@@ -63,11 +64,11 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
           );
         }}
       >
-        <MaterialIcons name="navigate-next" size={20} color="black" />
+        <MaterialIcons name="navigate-next" size={20} color="white" />
       </Pressable>
 
       <Pressable
-        className="absolute left-1"
+        className="absolute left-0 h-full justify-center "
         onPress={() => {
           setSelectedTod(
             _.invert(todToIndexMapping)[
@@ -76,7 +77,7 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
           );
         }}
       >
-        <MaterialIcons name="navigate-before" size={20} color="black" />
+        <MaterialIcons name="navigate-before" size={20} color="white" />
       </Pressable>
     </View>
   );

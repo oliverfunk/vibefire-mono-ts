@@ -16,6 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   BottomSheetBackdrop,
+  BottomSheetFlashList,
   BottomSheetFlatList,
   BottomSheetScrollView,
   BottomSheetSectionList,
@@ -23,6 +24,7 @@ import {
   type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
 import { type BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
+import { BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
 import {
   type BottomSheetFlatListProps,
   type BottomSheetSectionListProps,
@@ -174,6 +176,16 @@ export const SectionListViewSheet = <T, S>(
 
 export const FlatListViewSheet = <T,>(props: BottomSheetFlatListProps<T>) => (
   <BottomSheetFlatList
+    automaticallyAdjustKeyboardInsets={true}
+    keyboardShouldPersistTaps={"handled"}
+    keyboardDismissMode={"interactive"}
+    focusHook={useFocusEffect}
+    {...props}
+  />
+);
+
+export const FlashListViewSheet = <T,>(props: BottomSheetFlashListProps<T>) => (
+  <BottomSheetFlashList
     automaticallyAdjustKeyboardInsets={true}
     keyboardShouldPersistTaps={"handled"}
     keyboardDismissMode={"interactive"}
