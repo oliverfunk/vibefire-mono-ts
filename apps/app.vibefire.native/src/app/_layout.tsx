@@ -101,14 +101,15 @@ const RootLayout = () => {
         <StatusBar barStyle={"dark-content"} />
         <NoTopContainer>
           <EventMap />
-          <View className="absolute bottom-[90] w-full px-2">
+          {/* Cannot dyn. set the bottom's, 2*handle height + 15 for ios, +15 for and */}
+          <View className="android:bottom-[45] ios:bottom-[75] absolute w-full px-2">
             <VfActionButton />
           </View>
           <NewBottomPanelModal>
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: "#171717" },
+                contentStyle: { backgroundColor: "#171717", paddingTop: 5 },
               }}
             />
           </NewBottomPanelModal>

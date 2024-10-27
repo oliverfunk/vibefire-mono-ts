@@ -15,19 +15,7 @@ import { trpc } from "!/api/trpc-client";
 
 import { bottomSheetIndex } from "!/atoms";
 
-import { HANDLE_HEIGHT, HandleWithNavigation } from "./HandleWithHeader";
-
-type BottomPanelModalPropsT = {
-  modalPath: string;
-  snapPoints: BottomSheetModalProps["snapPoints"];
-  ts?: number;
-  headerText?: string;
-  handleComponent?: BottomSheetModalProps["handleComponent"];
-  minimiseTwiddle?: string;
-  backgroundColor?: string;
-  enablePanDownToClose?: BottomSheetModalProps["enablePanDownToClose"];
-  enableDismissOnClose?: BottomSheetModalProps["enableDismissOnClose"];
-};
+import { HANDLE_HEIGHT, HandleWithNavigation } from "./HandleWithNavigation";
 
 export const NewBottomPanelModal = (props: { children?: React.ReactNode }) => {
   const { children } = props;

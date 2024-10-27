@@ -11,9 +11,9 @@ import { useAtom } from "jotai";
 import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 
 import { bottomSheetCollapsedAtom } from "!/atoms";
-import { navHomeWithMinimise } from "!/nav";
+import { navHome, navPop } from "!/nav";
 
-export const HANDLE_HEIGHT = 40;
+export const HANDLE_HEIGHT = 30;
 
 export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
   const { collapse, expand } = useBottomSheet();
@@ -26,28 +26,29 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
 
   useEffect(() => {
     if (bottomSheetCollapsed) {
-      navHomeWithMinimise();
+      navHome();
     }
   }, [bottomSheetCollapsed]);
 
   return (
+    // The pt-1 is to adjust for the the padding applied to the bp content
+    // otherwise it looks too squashed to the top
     <View
-      className={`h-[${HANDLE_HEIGHT}] flex-row items-center justify-center overflow-hidden rounded-t-xl bg-neutral-900 px-3`}
+      className="flex-row items-center justify-center rounded-t-xl bg-neutral-900 px-3 pt-1"
+      style={{ height: HANDLE_HEIGHT }}
     >
-      <View className="flex-1 pt-2">
+      <View className="flex-1">
         {nav.canGoBack() && (
           <TouchableOpacity
             className="flex-row items-center space-x-1"
-            onPress={() => {
-              nav.goBack();
-            }}
+            onPress={navPop}
           >
             <FontAwesome name="chevron-left" size={10} color="white" />
-            <Text className="text-white">Back</Text>
+            <Text className="text-md text-white">Back</Text>
           </TouchableOpacity>
         )}
       </View>
-      <View className="flex-1 items-center justify-center pt-2">
+      <View className="flex-1 items-center justify-center">
         {bottomSheetCollapsed ? (
           <Pressable
             onPress={() => expand()}
@@ -59,7 +60,7 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
               size={10}
               color="white"
             />
-            <Text className="text-sm text-white">Pull</Text>
+            <Text className="text-md text-white">Pull</Text>
             <View className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
               <Text className="text-center text-sm text-white">
                 {mapEventsInfo.numberOfEvents}
@@ -72,7 +73,7 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
             className="flex-row items-center justify-center space-x-1"
           >
             <FontAwesome name="chevron-down" size={10} color="white" />
-            <Text className="text-sm text-white">Close</Text>
+            <Text className="text-md text-white">Close</Text>
           </TouchableOpacity>
         )}
       </View>

@@ -71,8 +71,8 @@ const useEventCardRenderer = (
 const useNoEventsText = (noEventsMessage?: string) => {
   return useMemo(() => {
     return (
-      <View className="h-[30vh] items-center justify-center">
-        <Text className="text-lg font-bold text-black">
+      <View className="items-center justify-center pt-10">
+        <Text className="text-lg font-bold text-white">
           {noEventsMessage ? noEventsMessage : "No events here yet"}
         </Text>
       </View>
@@ -115,7 +115,7 @@ export const EventsList = ({
   const noEventsText = useNoEventsText(noEventsMessage);
 
   const header = useMemo(() => {
-    return <Text className="text-2xl font-bold text-black">{listTitle}</Text>;
+    return <Text className="text-2xl font-bold">{listTitle}</Text>;
   }, [listTitle]);
 
   const itemSep = useItemSeparator();
