@@ -14,7 +14,7 @@ export const ModelVibefireUser = tb.Object({
   hiddenEvents: tb.Array(tb.String(), { default: [] }),
   blockedOrganisers: tb.Array(tb.String(), { default: [] }),
   kycStatus: tb.Union([
-    tb.Literal("not_started"),
+    tb.Literal("not-started"),
     tb.Literal("pending"),
     tb.Literal("approved"),
   ]),
@@ -39,6 +39,7 @@ export const newVibefireUser = (p: {
 }): TModelVibefireUserNoId => {
   const d = Value.Create(ModelVibefireUser);
   d.aid = p.aid;
+  d.kycStatus = "not-started";
   d.name = p.name;
   d.email = p.email;
   d.dateOfBirth = p.dateOfBirth;

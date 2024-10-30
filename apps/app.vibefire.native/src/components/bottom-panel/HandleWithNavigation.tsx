@@ -13,7 +13,7 @@ import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 import { bottomSheetCollapsedAtom } from "!/atoms";
 import { navHome, navPop } from "!/nav";
 
-export const HANDLE_HEIGHT = 30;
+export const HANDLE_HEIGHT = 40;
 
 export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
   const { collapse, expand } = useBottomSheet();

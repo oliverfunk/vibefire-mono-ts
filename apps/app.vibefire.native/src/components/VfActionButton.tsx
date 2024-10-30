@@ -47,7 +47,7 @@ const DatePicker = () => {
         setShowDatePicker(true);
       }}
     >
-      <DateTimePickerModal
+      {/* <DateTimePickerModal
         isVisible={showDatePicker}
         date={selectedDate.toJSDate()}
         mode="date"
@@ -64,7 +64,7 @@ const DatePicker = () => {
         }}
         maximumDate={new Date(2030, 1, 1)}
         minimumDate={new Date(2020, 1, 1)}
-      />
+      /> */}
       <MaterialIcons name="event" size={24} color="white" />
       <Text className="text-lg text-white">{selectedDate.toFormat("d")}</Text>
     </TouchableOpacity>
