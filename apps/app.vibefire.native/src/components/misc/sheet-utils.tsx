@@ -37,11 +37,11 @@ import { usePrevious } from "!/hooks/usePrevious";
 
 export const LoadingSheet = () => {
   return (
-    <BottomSheetView focusHook={useFocusEffect}>
-      <View className="flex h-full flex-col items-center justify-center">
-        <ActivityIndicator size="large" color="black" />
+    <BasicViewSheet>
+      <View className="h-full items-center justify-center">
+        <ActivityIndicator size="large" color="white" />
       </View>
-    </BottomSheetView>
+    </BasicViewSheet>
   );
 };
 
@@ -50,7 +50,7 @@ export const ErrorSheet = (props: {
   retryCallback?: () => void;
 }) => {
   return (
-    <BottomSheetView focusHook={useFocusEffect}>
+    <BasicViewSheet>
       <View className="flex h-full flex-col items-center justify-center">
         <Text className="text-center text-lg">
           {props.message ?? "Something went wrong"}
@@ -66,7 +66,7 @@ export const ErrorSheet = (props: {
           </View>
         )}
       </View>
-    </BottomSheetView>
+    </BasicViewSheet>
   );
 };
 

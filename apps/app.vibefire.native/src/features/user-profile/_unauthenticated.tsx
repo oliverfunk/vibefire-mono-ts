@@ -1,0 +1,35 @@
+import { Platform, Text, View } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+
+import { ContinueWithApple } from "!/components/auth/ContinueWithApple";
+import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
+import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
+
+import { PreAuthedLayout } from "./_layout";
+
+export const UserProfileUnauthenticatedView = () => {
+  return (
+    <PreAuthedLayout>
+      <View className="flex-col items-center space-y-5 rounded-lg bg-neutral-900 p-5">
+        <FontAwesome5 name="user-alt" size={50} color="white" />
+        <Text className="text-md text-white">
+          Sign in to create private events, get invites and share events with
+          friends, filter and follow events and organisers and more.
+        </Text>
+      </View>
+      <View className="flex-1 flex-col justify-center space-y-5 self-center">
+        <View>
+          <ContinueWithGoogle />
+        </View>
+        <View>
+          <ContinueWithFacebook />
+        </View>
+        {Platform.OS === "ios" && (
+          <View>
+            <ContinueWithApple />
+          </View>
+        )}
+      </View>
+    </PreAuthedLayout>
+  );
+};

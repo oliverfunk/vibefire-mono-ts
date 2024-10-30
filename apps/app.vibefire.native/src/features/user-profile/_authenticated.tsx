@@ -3,7 +3,7 @@ import { capitalize } from "lodash";
 
 import {
   type AppUserAuthenticated,
-  type VibefireUserT,
+  type TModelVibefireUser,
 } from "@vibefire/models";
 
 import { UsersEventsSummary } from "!/features/events-list";
@@ -47,7 +47,7 @@ export const UserProfileAuthenticatedView = (props: {
 }) => {
   const { appUser: user } = props;
 
-  const userInfo = user.userInfo as VibefireUserT;
+  const userInfo = user.userInfo;
 
   return (
     <ScrollViewSheet>
@@ -65,8 +65,8 @@ export const UserProfileAuthenticatedView = (props: {
           <View className="w-full flex-col">
             <Text className="ml-4">Email</Text>
             <View className="rounded-lg bg-slate-200 py-2">
-              {userInfo.contactEmail ? (
-                <Text className="ml-4">{userInfo.contactEmail}</Text>
+              {userInfo.email ? (
+                <Text className="ml-4">{userInfo.email}</Text>
               ) : (
                 <TouchableOpacity onPress={async () => {}}>
                   <Text className="ml-4">Tap to add email</Text>
@@ -101,7 +101,7 @@ export const UserProfileAuthenticatedView = (props: {
           <View className="py-10">
             <UsersEventsSummary />
           </View>
-          <UsersGroupsSummary />
+          {/* <UsersGroupsSummary /> */}
         </View>
 
         {/* <View className="w-full px-2">
