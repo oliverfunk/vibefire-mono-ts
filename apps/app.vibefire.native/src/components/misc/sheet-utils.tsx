@@ -106,7 +106,7 @@ export const FormTitleInput = (props: {
     <View className="flex-col">
       <Text
         className={`pl-3 text-lg font-bold ${
-          props.inputRequired && "text-[#ff1111]"
+          props.inputRequired ? "text-[#ff1111]" : "text-white"
         }`}
       >
         {props.title}
@@ -148,12 +148,12 @@ export const FormTitleTextInput = (
 
 export const FormTextInput = (props: FormTextInputProps) => {
   return (
-    <View className="rounded-lg bg-slate-200">
+    <View className="flex-1 rounded-lg bg-slate-200">
       <TextInput
         className="px-3 py-2"
         style={{ fontSize: props.fontSize ?? 18 }}
         multiline={props.multiline ?? false}
-        placeholderTextColor={"#000000FF"}
+        placeholderTextColor={"#909090FF"}
         onChangeText={props.onChangeText}
         value={props.value}
         editable={props.editable}
@@ -173,7 +173,7 @@ export const SectionListViewSheet = <T, S>(
   <BottomSheetSectionList
     automaticallyAdjustKeyboardInsets={true}
     keyboardShouldPersistTaps={"handled"}
-    keyboardDismissMode={"interactive"}
+    keyboardDismissMode={"on-drag"}
     focusHook={useFocusEffect}
     {...props}
   />
@@ -207,7 +207,7 @@ export const ScrollViewSheet = (
     ref={ref}
     automaticallyAdjustKeyboardInsets={true}
     keyboardShouldPersistTaps={"handled"}
-    keyboardDismissMode={"interactive"}
+    keyboardDismissMode={"on-drag"}
     focusHook={useFocusEffect}
   >
     {props.children}

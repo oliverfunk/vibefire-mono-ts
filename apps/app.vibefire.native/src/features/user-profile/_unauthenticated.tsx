@@ -4,12 +4,11 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { ContinueWithApple } from "!/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
-
-import { PreAuthedLayout } from "./_layout";
+import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulVF";
 
 export const UserProfileUnauthenticatedView = () => {
   return (
-    <PreAuthedLayout>
+    <SheetBasicColourfulVF>
       <View className="flex-col items-center space-y-5 rounded-lg bg-neutral-900 p-5">
         <FontAwesome5 name="user-alt" size={50} color="white" />
         <Text className="text-md text-white">
@@ -30,6 +29,6 @@ export const UserProfileUnauthenticatedView = () => {
           </View>
         )}
       </View>
-    </PreAuthedLayout>
+    </SheetBasicColourfulVF>
   );
 };

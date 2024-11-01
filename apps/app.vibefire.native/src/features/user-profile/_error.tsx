@@ -2,15 +2,14 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useSetAtom } from "jotai";
 
+import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulVF";
 import { userSessionRetryAtom } from "!/atoms";
-
-import { PreAuthedLayout } from "./_layout";
 
 export const UserProfileErrorView = () => {
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   return (
-    <PreAuthedLayout>
+    <SheetBasicColourfulVF>
       <View className="flex-col items-center space-y-4 rounded-lg bg-neutral-900 p-4">
         <FontAwesome5 name="user-alt" size={50} color="red" />
         <Text className="text-md text-white">
@@ -25,6 +24,6 @@ export const UserProfileErrorView = () => {
           <Text className="text-md text-white">Try again</Text>
         </TouchableOpacity>
       </View>
-    </PreAuthedLayout>
+    </SheetBasicColourfulVF>
   );
 };
