@@ -1,5 +1,4 @@
-import { type TModelVibefireError } from "@vibefire/models";
-import { type AsyncResult } from "@vibefire/utils";
+import { type AsyncResult, type TModelVibefireError } from "@vibefire/models";
 
 export class ManagerErrorResponse extends Error {
   constructor(readonly value: TModelVibefireError) {

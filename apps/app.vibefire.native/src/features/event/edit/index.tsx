@@ -13,12 +13,10 @@ export const EditEventWysiwyg = withSuspenseErrorBoundarySheet(
 
     const formRef = useRef(null);
 
-    const [data] = trpc.events.viewManage.useSuspenseQuery({
+    const [data, viewManageCont] = trpc.events.viewManage.useSuspenseQuery({
       eventId,
     });
     const updateMut = trpc.events.update.useMutation();
-
-    updateMut.mutateAsync;
 
     return (
       <ScrollViewSheetWithRef ref={formRef}>

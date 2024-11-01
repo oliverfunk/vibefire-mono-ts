@@ -1,4 +1,4 @@
-import { tb, type Static } from "@vibefire/utils";
+import { tb, type Static } from "!models/modelling";
 
 export const TimeOfDaySchema = tb.Union([
   tb.Literal("D"),

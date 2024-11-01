@@ -4,10 +4,12 @@ import {
   ModelDatePeriodString,
   ModelEventType,
   ModelEventUpdate,
+  tb,
+  tbValidator,
   type Pageable,
   type TModelVibefireEvent,
 } from "@vibefire/models";
-import { tb, tbValidator, type PartialDeep } from "@vibefire/utils";
+import { type PartialDeep } from "@vibefire/utils";
 
 import {
   authedProcedure,

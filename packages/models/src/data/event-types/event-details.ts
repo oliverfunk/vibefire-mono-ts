@@ -1,6 +1,5 @@
-import { clearable, tb } from "@vibefire/utils";
-
 import { CoordSchema } from "!models/general";
+import { clearable, tb } from "!models/modelling";
 
 const ModelNOrder = tb.Number({ minimum: 0, maximum: 10 });
 

@@ -1,4 +1,4 @@
-import { tb, Value, type Static } from "@vibefire/utils";
+import { tb, Value, type Static } from "!models/modelling";
 
 export type TModelVibefireEntityAccess = Static<
   typeof ModelVibefireEntityAccess

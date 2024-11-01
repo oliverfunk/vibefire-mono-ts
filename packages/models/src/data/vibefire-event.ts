@@ -1,11 +1,10 @@
-import { clearable, tb, Value, type Static } from "@vibefire/utils";
-
 import {
   ModelEventType,
   newEventType,
   type TModelEventType,
 } from "!models/data/event-types";
 import { DatePeriodSchema, VibefireLocationSchema } from "!models/general";
+import { clearable, tb, Value, type Static } from "!models/modelling";
 
 import { ModelVibefireEntityAccess } from "./vibefire-access";
 

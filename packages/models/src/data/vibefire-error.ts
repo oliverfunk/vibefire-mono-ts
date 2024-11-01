@@ -1,4 +1,4 @@
-import { tb, type Static } from "@vibefire/utils";
+import { tb, type Static } from "!models/modelling";
 
 export type TModelVibefireError = Static<typeof ModelVibefireError>;
 export const ModelVibefireError = tb.Union([

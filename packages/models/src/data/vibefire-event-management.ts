@@ -1,4 +1,4 @@
-import { tb, type Static } from "@vibefire/utils";
+import { tb, type Static } from "!models/modelling";
 
 export const VibefireEventManagementSchema = tb.Object({
   id: tb.String({ default: undefined }),

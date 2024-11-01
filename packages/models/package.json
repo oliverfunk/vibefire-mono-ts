@@ -7,9 +7,6 @@
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
-  "dependencies": {
-    "@vibefire/utils": "0.1.0"
-  },
   "devDependencies": {
     "@vibefire/config": "0.1.0"
   }

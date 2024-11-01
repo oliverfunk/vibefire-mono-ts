@@ -9,8 +9,13 @@ import {
   type QueryValue,
 } from "fauna";
 
-import { ModelVibefireError, type AccessAction } from "@vibefire/models";
-import { Result, tbValidatorResult, type AsyncResult } from "@vibefire/utils";
+import {
+  ModelVibefireError,
+  Result,
+  tbValidatorResult,
+  type AccessAction,
+  type AsyncResult,
+} from "@vibefire/models";
 
 import { FaunaCallAborted } from "./errors";
 import { type FaunaFunctions } from "./functions";

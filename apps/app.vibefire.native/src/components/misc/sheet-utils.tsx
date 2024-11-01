@@ -199,20 +199,9 @@ export const FlashListViewSheet = <T,>(props: BottomSheetFlashListProps<T>) => (
   />
 );
 
-export const ScrollViewSheet = (props: { children: React.ReactNode }) => (
-  <BottomSheetScrollView
-    automaticallyAdjustKeyboardInsets={true}
-    keyboardShouldPersistTaps={"handled"}
-    keyboardDismissMode={"interactive"}
-    focusHook={useFocusEffect}
-  >
-    {props.children}
-  </BottomSheetScrollView>
-);
-
-const _ScrollViewSheetWithRef = (
+export const ScrollViewSheet = (
   props: { children: React.ReactNode },
-  ref: React.Ref<BottomSheetScrollViewMethods>,
+  ref?: React.Ref<BottomSheetScrollViewMethods>,
 ) => (
   <BottomSheetScrollView
     ref={ref}
@@ -224,7 +213,8 @@ const _ScrollViewSheetWithRef = (
     {props.children}
   </BottomSheetScrollView>
 );
-export const ScrollViewSheetWithRef = forwardRef(_ScrollViewSheetWithRef);
+
+export const ScrollViewSheetWithRef = forwardRef(ScrollViewSheet);
 
 export const BackNextButtons = (props: {
   onBackPressed: () => void;

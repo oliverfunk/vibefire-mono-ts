@@ -27,7 +27,7 @@ import { selectedDateDTAtom } from "@vibefire/shared-state";
 
 import { IconButton } from "!/c//button/IconButton";
 import { TimeOfDayPicker } from "!/c/TimeOfDayPicker";
-import { navProfile } from "!/nav";
+import { navCreateEvent, navProfile } from "!/nav";
 
 // https://docs.swmansion.com/react-native-reanimated/examples/floatingactionbutton
 
@@ -47,7 +47,7 @@ const DatePicker = () => {
         setShowDatePicker(true);
       }}
     >
-      {/* <DateTimePickerModal
+      <DateTimePickerModal
         isVisible={showDatePicker}
         date={selectedDate.toJSDate()}
         mode="date"
@@ -64,7 +64,7 @@ const DatePicker = () => {
         }}
         maximumDate={new Date(2030, 1, 1)}
         minimumDate={new Date(2020, 1, 1)}
-      /> */}
+      />
       <MaterialIcons name="event" size={24} color="white" />
       <Text className="text-lg text-white">{selectedDate.toFormat("d")}</Text>
     </TouchableOpacity>
@@ -140,6 +140,7 @@ export const VfActionButton = () => {
       {/* <Modal visible={isExpandedState} transparent>
         <Pressable className="h-full w-full" onPress={handlePress} />
       </Modal> */}
+
       <View className="flex-row space-x-4">
         <FloatingActionBar isExpandedState={isExpandedState} />
 
@@ -166,7 +167,7 @@ export const VfActionButton = () => {
           ) : (
             <Animated.View
               key={"inFade"}
-              // entering={PinwheelIn}
+              entering={FadeIn}
               exiting={PinwheelOut}
             >
               <FontAwesome6 name="fire" size={30} color="white" />
@@ -191,7 +192,7 @@ export const VfActionButton = () => {
         label="Create Event"
         icon={<FontAwesome6 name="plus" size={15} color="orange" />}
         onPress={() => {
-          console.log("Create");
+          navCreateEvent();
         }}
       />
       <FloatingActionButton

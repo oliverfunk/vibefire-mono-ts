@@ -2,11 +2,12 @@ import { fql, type Client, type Page } from "fauna";
 
 import {
   ModelVibefirePlan,
+  tbClean,
   type AccessAction,
   type TModelPlanItem,
   type TModelVibefirePlan,
 } from "@vibefire/models";
-import { tbClean, type PartialDeep } from "@vibefire/utils";
+import { type PartialDeep } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna/functions";
 import {

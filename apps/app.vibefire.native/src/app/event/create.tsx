@@ -1,28 +1,16 @@
-import { Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { useTsQueryParam } from "!/hooks/useTs";
+import { useExpandBottomSheet } from "!/hooks/useExpandBottomSheet";
 
-import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
-import { CreateEvent } from "!/c/bottom-panel/create-event/CreateEvent";
+import { CreateEvent } from "!/features/event/create";
 
 const Screen = () => {
   const { fromPrevious } = useLocalSearchParams<{
     fromPrevious?: string;
   }>();
 
-  const ts = useTsQueryParam();
+  useExpandBottomSheet();
 
-  return (
-    <BottomPanelModal
-      modalPath="event/create"
-      headerText={"Create Event"}
-      enablePanDownToClose={Platform.OS === "android" ? false : true}
-      snapPoints={["80%"]}
-      ts={ts}
-    >
-      <CreateEvent fromPrevious={!!fromPrevious} />
-    </BottomPanelModal>
-  );
+  return <CreateEvent fromPrevious={!!fromPrevious} />;
 };
 export default Screen;

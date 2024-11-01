@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { StatusBar, Text, View } from "react-native";
+import { StatusBar, View } from "react-native";
 import * as Linking from "expo-linking";
 import {
   Stack,
@@ -22,8 +22,8 @@ import "!/global.css";
 
 import * as Notifications from "expo-notifications";
 
+import { VfActionButton } from "!/features/vf-action-button";
 import { NewBottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
-import { VfActionButton } from "!/components/VfActionButton";
 import { EventMap } from "!/c/event/EventMap";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
 

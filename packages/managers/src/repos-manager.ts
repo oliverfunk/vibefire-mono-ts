@@ -1,13 +1,13 @@
+import { Result, type AsyncResult } from "@vibefire/models";
 import {
   getFaunaService,
-  type RepositoryService,
   type TAccessRepository,
   type TEventRepository,
   type TGroupRepository,
   type TPlanRepository,
   type TUserRepository,
 } from "@vibefire/services/fauna";
-import { resourceLocator, Result, type AsyncResult } from "@vibefire/utils";
+import { resourceLocator } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "./errors";
 import { nullablePromiseToRes } from "./utils";

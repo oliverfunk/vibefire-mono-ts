@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 
 import { useTsQueryParam } from "!/hooks/useTs";
 
-import { EditEventWysiwyg } from "!/features/event-edit";
+import { EditEventWysiwyg } from "!/features/event/edit";
 import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
 
 const Screen = () => {
