@@ -1,4 +1,4 @@
-import { tb, tbValidator } from "@vibefire/utils";
+import { tb, tbValidator } from "@vibefire/models";
 
 import {
   authedProcedure,

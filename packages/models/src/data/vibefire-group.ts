@@ -1,6 +1,5 @@
-import { tb, Value, type Static } from "@vibefire/utils";
-
 import { VibefireLocationSchema } from "!models//general";
+import { tb, Value, type Static } from "!models/modelling";
 
 import { ModelVibefireEntityAccess } from "./vibefire-access";
 

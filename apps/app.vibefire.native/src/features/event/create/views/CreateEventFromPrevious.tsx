@@ -15,7 +15,7 @@ import {
   LoadingSheet,
   ScrollViewSheet,
   SectionHeader,
-} from "../../../misc/sheet-utils";
+} from "../../../../components/misc/sheet-utils";
 
 const CreateEventFromPreviousView = (props: {
   events: PartialDeep<TModelVibefireEvent>[];

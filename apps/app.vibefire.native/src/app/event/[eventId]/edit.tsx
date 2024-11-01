@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { EditEventWysiwyg } from "!/features/event-edit";
+import { EditEventWysiwyg } from "!/features/event/edit";
 import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
 
 const Screen = () => {

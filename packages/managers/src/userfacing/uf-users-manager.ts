@@ -1,8 +1,12 @@
 import { DateTime } from "luxon";
 
-import { ModelVibefireUser, newVibefireUser } from "@vibefire/models";
+import {
+  ModelVibefireUser,
+  newVibefireUser,
+  tbValidator,
+} from "@vibefire/models";
 import { getClerkService, type ClerkService } from "@vibefire/services/clerk";
-import { resourceLocator, tbValidator, trimAndCropText } from "@vibefire/utils";
+import { resourceLocator, trimAndCropText } from "@vibefire/utils";
 
 import { getReposManager, type ReposManager } from "!managers/repos-manager";
 

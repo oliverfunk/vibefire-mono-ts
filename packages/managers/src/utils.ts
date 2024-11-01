@@ -1,5 +1,5 @@
+import { Result, wrapToAsyncResult } from "@vibefire/models";
 import { FaunaCallAborted } from "@vibefire/services/fauna";
-import { Result, wrapToAsyncResult } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "./errors";
 import {

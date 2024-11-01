@@ -21,8 +21,6 @@ import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
 import { debounce } from "lodash";
 import superjson from "superjson";
 
-import { type TModelVibefireUser } from "@vibefire/models";
-
 import { tokenCache } from "!/utils/sec-store-cache";
 import { trpc, trpcUrl } from "!/api/trpc-client";
 

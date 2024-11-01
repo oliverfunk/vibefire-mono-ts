@@ -5,8 +5,9 @@ import * as WebBrowser from "expo-web-browser";
 import { useAuth, useOAuth, type UseOAuthFlowParams } from "@clerk/clerk-expo";
 import { useSetAtom } from "jotai";
 
-import { userAtom } from "!/atoms";
 import { useWarmUpBrowser } from "!/hooks/useWarmUpBrowser";
+
+import { userAtom } from "!/atoms";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -27,7 +28,7 @@ export const AuthButton = (props: {
   const oauthRedirectUrl = useMemo(
     () =>
       AuthSession.makeRedirectUri({
-        path: "/",
+        path: "/profile",
       }),
     [],
   );
