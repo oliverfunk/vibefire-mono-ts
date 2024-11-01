@@ -12,7 +12,7 @@
     "clean-nms": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean": "git clean -xdf ./node_modules */**/node_modules",
     "vfa": "turbo dev --parallel --filter vibefire.app",
-    "app": "turbo dev --parallel --filter api.vibefire.app --filter app.vibefire.native",
+    "app": "turbo run dev --ui tui --parallel --filter api.vibefire.app --filter app.vibefire.native",
     "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore --ignore-path .wrangler",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",

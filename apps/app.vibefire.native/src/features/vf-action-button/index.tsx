@@ -192,6 +192,7 @@ export const VfActionButton = () => {
         label="Create Event"
         icon={<FontAwesome6 name="plus" size={15} color="orange" />}
         onPress={() => {
+          handlePress();
           navCreateEvent();
         }}
       />
