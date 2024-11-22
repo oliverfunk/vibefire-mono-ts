@@ -7,19 +7,20 @@ import {
   EventDetailTimelineModel,
 } from "./event-details";
 
+export type EventDetail = Static<typeof EventDetail>;
+export const EventDetail = tb.Union([
+  EventDetailOffersModel,
+  EventDetailTimelineModel,
+  EventDetailPoiModel,
+  EventDetailDescModel,
+]);
+
 const ModelEventTypeEventPublic = tb.Object({
   type: tb.Literal("event-public"),
-  details: tb.Array(
-    tb.Union([
-      EventDetailDescModel,
-      EventDetailTimelineModel,
-      EventDetailOffersModel,
-      EventDetailPoiModel,
-    ]),
-    {
-      default: [],
-    },
-  ),
+  // all details available
+  details: tb.Array(EventDetail, {
+    default: [],
+  }),
   tags: tb.Array(tb.String(), { default: [], uniqueItems: true }),
 });
 
@@ -35,7 +36,7 @@ const ModelEventTypeEventPrivate = tb.Object({
 
 const ModelEventTypeWhenWhere = tb.Object({
   type: tb.Literal("whenwhere"),
-  description: tb.Optional(tb.String()),
+  details: tb.Array(EventDetailDescModel, { default: [], maxItems: 1 }),
 });
 
 export type TModelEventType = Static<typeof ModelEventType>;

@@ -206,7 +206,7 @@ export const ScrollViewSheet = (
   <BottomSheetScrollView
     ref={ref}
     automaticallyAdjustKeyboardInsets={true}
-    keyboardShouldPersistTaps={"handled"}
+    keyboardShouldPersistTaps={"never"}
     keyboardDismissMode={"on-drag"}
     focusHook={useFocusEffect}
   >
@@ -326,14 +326,6 @@ export const LinearRedOrangeView = (
   </LinearGradient>
 );
 
-export const JuicyWrapper = (props: { children: ReactNode }) => (
-  <View className="w-full bg-black p-2">
-    <LinearRedOrangeView className="overflow-hidden rounded-lg p-2">
-      {props.children}
-    </LinearRedOrangeView>
-  </View>
-);
-
 export const SectionHeader = (props: {
   text: string;
   children?: ReactNode;
@@ -343,24 +335,3 @@ export const SectionHeader = (props: {
     {props.children}
   </View>
 );
-
-// export const SheetModal = (props: {}) => {
-//   return (
-//     <BottomSheetModal
-//       ref={ref}
-//       stackBehavior="push"
-//       backgroundStyle={{
-//         backgroundColor: "black",
-//       }}
-//       backdropComponent={backdrop}
-//       bottomInset={insets.bottom}
-//       index={0}
-//       snapPoints={["80%"]}
-//       handleComponent={null}
-//       onDismiss={() => {
-//       }}
-//     >
-//       {props.children}
-//     </BottomSheetModal>
-//   );
-// };

@@ -19,23 +19,7 @@ import {
 import { wrapManagerReturn, type ApiResponse } from "!api/utils";
 
 export const eventsRouter = router({
-  // positionAddressInfo: authedProcedure
-  //   .input(
-  //     tbValidator(
-  //       t.Object({
-  //         position: CoordSchema,
-  //       }),
-  //     ),
-  //   )
-  //   .output((value) => value as string)
-  //   .mutation(async ({ ctx, input }) => {
-  //     return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
-  //       input.position,
-  //     );
-  //   }),
-
   // todo: listUserHighlightsToday
-
   listSelfAll: authedProcedure.query(({ ctx }) =>
     wrapManagerReturn<Pageable<PartialDeep<TModelVibefireEvent>>>(() => {
       return getUFEventsManager().eventsUserIsPart({
@@ -285,7 +269,10 @@ export const eventsRouter = router({
     //     },
     // )
     .mutation(async ({ ctx, input }) =>
-      wrapManagerReturn(() =>
+      wrapManagerReturn<{
+        id: string;
+        uploadURL: string;
+      }>(() =>
         getUFEventsManager().generateEventImageLink({
           userAid: ctx.auth.userId,
           eventId: input.eventId,

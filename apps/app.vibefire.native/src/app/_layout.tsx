@@ -1,5 +1,9 @@
 import { useEffect, type ReactNode } from "react";
 import { StatusBar, View } from "react-native";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
 import * as Linking from "expo-linking";
 import {
   Stack,
@@ -16,16 +20,22 @@ import {
 
 import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
 
-import AppProviders, { routingInstrumentation } from "!/providers";
+import AppProviders, { navigationIntegration } from "!/providers";
 
 import "!/global.css";
 
 import * as Notifications from "expo-notifications";
 
+import { GeoQueryMap } from "!/features/geo-query/GeoQueryMap";
 import { VfActionButton } from "!/features/vf-action-button";
 import { NewBottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
-import { EventMap } from "!/c/event/EventMap";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
+
+// todo: make strict in the future
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 Notifications.setNotificationHandler({
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -50,8 +60,8 @@ const PostProviders = (props: { children: ReactNode }) => {
   const navContRef = useNavigationContainerRef();
 
   useEffect(() => {
-    if (navContRef) {
-      routingInstrumentation.registerNavigationContainer(navContRef);
+    if (navContRef?.current) {
+      navigationIntegration.registerNavigationContainer(navContRef);
     }
   }, [navContRef]);
 
@@ -75,7 +85,7 @@ const PostProviders = (props: { children: ReactNode }) => {
   return children;
 };
 
-const RootLayout = () => {
+export default function HomeLayout() {
   const [fontsLoaded, fontsError] = useFonts({
     Inter_500Medium,
     Inter_700Bold,
@@ -100,9 +110,9 @@ const RootLayout = () => {
       <PostProviders>
         <StatusBar barStyle={"dark-content"} />
         <NoTopContainer>
-          <EventMap />
+          <GeoQueryMap />
           {/* Cannot dyn. set the bottom's, 2*handle height + 10 for ios, +15 for and */}
-          <View className="android:bottom-[55] ios:bottom-[90] absolute w-full px-3">
+          <View className="android:bottom-[55] ios:bottom-[90] absolute z-0 w-full px-3">
             <VfActionButton />
           </View>
           <NewBottomPanelModal>
@@ -117,6 +127,4 @@ const RootLayout = () => {
       </PostProviders>
     </AppProviders>
   );
-};
-
-export default RootLayout;
+}

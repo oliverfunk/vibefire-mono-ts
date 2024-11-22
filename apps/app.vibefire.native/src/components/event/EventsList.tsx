@@ -96,7 +96,7 @@ type EventsListProps = {
   sortAsc?: boolean;
 };
 
-export const EventsList = ({
+export const EventsFlashListSheet = ({
   events,
   onEventPress,
   onEventCrossPress,
@@ -195,19 +195,12 @@ export const EventsList = ({
 //   );
 // };
 
-const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
+const useEventChipRenderer = (
+  onPress: (event: PartialDeep<TModelVibefireEvent>) => void,
+) => {
   return useCallback(
     (event: PartialDeep<TModelVibefireEvent>) => (
-      <EventChip
-        eventLinkId={event.linkId!}
-        eventInfo={{
-          title: event.name!,
-          bannerImgKey: event?.images?.bannerImgKeys?.[0],
-          timeStartIsoNTZ: event.times?.tsStart,
-          state: event.state!,
-        }}
-        onPress={onPress}
-      />
+      <EventChip event={event} onPress={onPress} />
     ),
     [onPress],
   );
@@ -215,7 +208,7 @@ const useEventChipRenderer = (onPress: (eventLinkId: string) => void) => {
 
 type EventsListSimpleChipViewProps = {
   events: PartialDeep<TModelVibefireEvent>[];
-  onPress: (eventLinkId: string) => void;
+  onChipPress: (event: PartialDeep<TModelVibefireEvent>) => void;
   noEventsMessage?: string;
   latestFirst?: boolean;
   limit?: number;
@@ -223,7 +216,7 @@ type EventsListSimpleChipViewProps = {
 
 export const EventsListSimpleChipView = ({
   events,
-  onPress,
+  onChipPress,
   noEventsMessage,
   latestFirst = true,
   limit = 4,
@@ -235,7 +228,7 @@ export const EventsListSimpleChipView = ({
 
   const noEventsText = useNoEventsText(noEventsMessage);
 
-  const renderEventChip = useEventChipRenderer(onPress);
+  const renderEventChip = useEventChipRenderer(onChipPress);
 
   return (
     <SimpleList

@@ -146,6 +146,7 @@ export class ReposManager {
   ): AsyncResult<true> {
     const { data: drafts } = await this.event.allByOwnerByState(
       groupId ?? userAid,
+      groupId ? "group" : "user",
       -1, // is draft
       6, // limit
     ).result;

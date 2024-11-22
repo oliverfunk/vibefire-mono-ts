@@ -1,75 +1,23 @@
 import React, { useState } from "react";
-import {
-  Dimensions,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   FadeIn,
   PinwheelIn,
   PinwheelOut,
 } from "react-native-reanimated";
-import {
-  FontAwesome6,
-  MaterialIcons,
-  SimpleLineIcons,
-} from "@expo/vector-icons";
-import { useAtom } from "jotai";
+import { useRouter } from "expo-router";
+import { FontAwesome6, SimpleLineIcons } from "@expo/vector-icons";
 import { max } from "lodash";
-import { DateTime } from "luxon";
-
-import { selectedDateDTAtom } from "@vibefire/shared-state";
 
 import { IconButton } from "!/c//button/IconButton";
-import { TimeOfDayPicker } from "!/c/TimeOfDayPicker";
 import { navCreateEvent, navProfile } from "!/nav";
+
+import { DatePickerButton } from "./DatePickerButton";
+import { TimeOfDayPicker } from "./TimeOfDayPicker";
 
 // https://docs.swmansion.com/react-native-reanimated/examples/floatingactionbutton
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-const OFFSET = 50;
-
-const DatePicker = () => {
-  const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
-  return (
-    <TouchableOpacity
-      className="flex-row items-center justify-center space-x-1"
-      onPress={() => {
-        setShowDatePicker(true);
-      }}
-    >
-      <DateTimePickerModal
-        isVisible={showDatePicker}
-        date={selectedDate.toJSDate()}
-        mode="date"
-        locale="utc"
-        onConfirm={(date) => {
-          setShowDatePicker(false);
-          if (date) setSelectedDate(DateTime.fromJSDate(date));
-        }}
-        onCancel={() => {
-          setShowDatePicker(false);
-        }}
-        onError={(_) => {
-          setShowDatePicker(false);
-        }}
-        maximumDate={new Date(2030, 1, 1)}
-        minimumDate={new Date(2020, 1, 1)}
-      />
-      <MaterialIcons name="event" size={24} color="white" />
-      <Text className="text-lg text-white">{selectedDate.toFormat("d")}</Text>
-    </TouchableOpacity>
-  );
-};
+const ACTION_BUTTON_OFFSET = 50;
 
 const FloatingActionBar = (props: { isExpandedState: boolean }) => {
   const { isExpandedState } = props;
@@ -82,7 +30,7 @@ const FloatingActionBar = (props: { isExpandedState: boolean }) => {
   return (
     <Animated.View entering={FadeIn} className="items-center justify-center">
       <View className="flex-row items-center justify-center rounded-full bg-neutral-900 px-3 py-2 pl-5">
-        <DatePicker />
+        <DatePickerButton />
         <View className="px-1" />
         <TimeOfDayPicker width={max([width / 3, 150])!} height={30} />
       </View>
@@ -104,30 +52,35 @@ const FloatingActionButton = (props: {
   }
 
   return (
-    <AnimatedPressable
-      onPress={onPress}
+    <Animated.View
       entering={FadeIn}
       style={[
         styles.shadow,
         {
-          transform: [{ translateY: -(OFFSET * index + 10) }],
+          transform: [{ translateY: -(ACTION_BUTTON_OFFSET * index + 10) }],
         },
       ]}
-      className="absolute flex-row items-center justify-end space-x-1"
+      className="absolute"
     >
-      <View className="items-center justify-center rounded-lg border bg-neutral-900 px-2 py-1">
-        <Text className="text-white">{label}</Text>
-      </View>
-
-      <View className="items-center justify-center rounded-full bg-red-500 p-2">
-        {icon}
-      </View>
-    </AnimatedPressable>
+      <Pressable
+        onPress={onPress}
+        className="flex-row items-center justify-end space-x-1"
+      >
+        <View className="items-center justify-center rounded-lg border bg-neutral-900 px-2 py-1">
+          <Text className="text-white">{label}</Text>
+        </View>
+        <View className="items-center justify-center rounded-full bg-red-500 p-2">
+          {icon}
+        </View>
+      </Pressable>
+    </Animated.View>
   );
 };
 
 export const VfActionButton = () => {
   const [isExpandedState, setIsExpandedState] = useState(false);
+
+  const router = useRouter();
 
   const handlePress = () => {
     setIsExpandedState(!isExpandedState);
@@ -183,7 +136,7 @@ export const VfActionButton = () => {
         icon={<FontAwesome6 name="user" size={15} color="orange" />}
         onPress={() => {
           handlePress();
-          navProfile();
+          navProfile(router);
         }}
       />
       <FloatingActionButton
@@ -193,7 +146,7 @@ export const VfActionButton = () => {
         icon={<FontAwesome6 name="plus" size={15} color="orange" />}
         onPress={() => {
           handlePress();
-          navCreateEvent();
+          navCreateEvent(router);
         }}
       />
       <FloatingActionButton
@@ -202,7 +155,7 @@ export const VfActionButton = () => {
         label="Create Plan"
         icon={<SimpleLineIcons name="graph" size={15} color="orange" />}
         onPress={() => {
-          console.log("Create");
+          console.log("Create plan");
         }}
       />
       <FloatingActionButton
@@ -211,7 +164,7 @@ export const VfActionButton = () => {
         label="Create Group"
         icon={<FontAwesome6 name="user-group" size={15} color="orange" />}
         onPress={() => {
-          console.log("Create");
+          console.log("Create plan");
         }}
       />
     </View>

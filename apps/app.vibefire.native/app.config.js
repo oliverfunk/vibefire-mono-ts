@@ -7,6 +7,7 @@ const expoConfig = ({ config }) => ({
   version: "0.2.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
+  newArchEnabled: true,
   splash: {
     image: "./assets/icons/appicon-ios.png",
     resizeMode: "contain",

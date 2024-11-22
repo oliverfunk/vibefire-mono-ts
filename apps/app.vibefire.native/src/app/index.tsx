@@ -4,7 +4,7 @@ import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
 
-import { EventsQueryListSheet } from "!/features/events-list";
+import { GeoQueryListSheet } from "!/features/geo-query/GeoQueryList";
 
 const Screen = () => {
   // This isn't the best place for this
@@ -50,6 +50,6 @@ const Screen = () => {
   //     });
   // }
 
-  return <EventsQueryListSheet />;
+  return <GeoQueryListSheet />;
 };
 export default Screen;

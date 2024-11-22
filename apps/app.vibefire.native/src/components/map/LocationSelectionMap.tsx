@@ -66,7 +66,8 @@ export const LocationSelectionMap = (props: {
   //   }
   // }, [locPermDeniedMsg]);
 
-  const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
+  const positionAddressInfoMut =
+    trpc.services.positionAddressInfo.useMutation();
   useEffect(() => {
     if (!onAddressDescription) {
       return;
@@ -82,19 +83,23 @@ export const LocationSelectionMap = (props: {
         position: selectedPosition,
       })
       .then((res) => {
-        onAddressDescription(res);
+        if (!res.ok) {
+          console.error(JSON.stringify(res.error, null, 2));
+          return;
+        }
+        onAddressDescription(res.value);
       })
       .catch((err) => {
         console.error(JSON.stringify(err, null, 2));
-        onAddressDescription("");
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPosition]);
 
   return (
     <MapView
       ref={mvRef}
       className="h-full w-full"
-      provider={PROVIDER_GOOGLE}
+      // provider={PROVIDER_GOOGLE}
       onMapReady={() => {
         setMapReady(true);
       }}

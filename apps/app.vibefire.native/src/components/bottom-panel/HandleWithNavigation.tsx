@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
-import { useNavigation, useRootNavigationState } from "expo-router";
+import { useRootNavigationState, useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   useBottomSheet,
@@ -11,7 +11,6 @@ import { useAtom } from "jotai";
 import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 
 import { bottomSheetCollapsedAtom } from "!/atoms";
-import { navHome, navPop } from "!/nav";
 
 export const HANDLE_HEIGHT = 40;
 
@@ -20,15 +19,30 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
 
   const [bottomSheetCollapsed] = useAtom(bottomSheetCollapsedAtom);
   const [mapEventsInfo] = useAtom(mapDisplayableEventsInfoAtom);
+  const [firstRun, setFirstRun] = useState(false);
 
-  const nav = useNavigation();
-  useRootNavigationState();
+  const router = useRouter();
+  // refreshes this component when the navigation state changes
+  const { routes } = useRootNavigationState();
+
+  console.log("routes", JSON.stringify(routes, null, 2));
 
   useEffect(() => {
-    if (bottomSheetCollapsed) {
-      navHome();
+    if (!firstRun) {
+      setFirstRun(true);
+      return;
     }
-  }, [bottomSheetCollapsed]);
+    if (bottomSheetCollapsed) {
+      if (router.canGoBack()) {
+        router.dismissAll();
+      } else {
+        //! todo: this might cause issues when deeplinking
+        router.replace("/");
+      }
+    }
+    // specifically ignore firstRun
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bottomSheetCollapsed, router]);
 
   return (
     // The pt-1 is to adjust for the the padding applied to the bp content
@@ -38,10 +52,12 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
       style={{ height: HANDLE_HEIGHT }}
     >
       <View className="flex-1">
-        {nav.canGoBack() && (
+        {router.canGoBack() && (
           <TouchableOpacity
             className="flex-row items-center space-x-1"
-            onPress={navPop}
+            onPress={() => {
+              router.back();
+            }}
           >
             <FontAwesome name="chevron-left" size={10} color="white" />
             <Text className="text-md text-white">Back</Text>

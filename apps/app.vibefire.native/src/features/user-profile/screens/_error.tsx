@@ -5,7 +5,7 @@ import { useSetAtom } from "jotai";
 import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulVF";
 import { userSessionRetryAtom } from "!/atoms";
 
-export const UserProfileErrorView = () => {
+export const UserProfileErrorSheet = () => {
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   return (

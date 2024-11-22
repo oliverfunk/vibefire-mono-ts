@@ -6,7 +6,7 @@ import { type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
-import { EventsList } from "!/c/event/EventsList";
+import { EventsFlashListSheet } from "!/c/event/EventsList";
 import { ErrorSheet, LoadingSheet } from "!/c/misc/sheet-utils";
 import { navEditEvent, navManageEvent } from "!/nav";
 
@@ -66,7 +66,7 @@ const EventsByOrganiserView = (props: {
         hideModal={() => setShowModalUsingEventId(undefined)}
         eventId={showModalUsingEventId}
       />
-      <EventsList
+      <EventsFlashListSheet
         events={events}
         noEventsMessage="You have made no events yet"
         onEventPress={(_eventId, event) => {

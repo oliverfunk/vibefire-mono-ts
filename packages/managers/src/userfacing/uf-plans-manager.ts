@@ -171,7 +171,7 @@ export class UFPlansManager {
         throw new ManagerRuleViolation("This plan is not owned by this group.");
       }
 
-      if (!p.groupId && plan.ownerType === "group") {
+      if (!p.groupId && plan.planOwnerType === "group") {
         throw new ManagerRuleViolation(
           "This plan is owned by a group, you are not in a group context.",
         );

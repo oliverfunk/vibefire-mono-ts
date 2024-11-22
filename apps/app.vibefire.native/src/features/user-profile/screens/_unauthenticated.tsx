@@ -6,7 +6,7 @@ import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
 import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulVF";
 
-export const UserProfileUnauthenticatedView = () => {
+export const UserProfileUnauthenticatedSheet = () => {
   return (
     <SheetBasicColourfulVF>
       <View className="flex-col items-center space-y-5 rounded-lg bg-neutral-900 p-5">

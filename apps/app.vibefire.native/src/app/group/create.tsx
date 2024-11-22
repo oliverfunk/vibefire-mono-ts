@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 
 import { useTsQueryParam } from "!/hooks/useTs";
 
-import { CreateEvent } from "!/features/event/create";
+import { CreateEvent } from "!/features/event/create/screens";
 import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
 
 const Screen = () => {

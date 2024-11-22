@@ -23,7 +23,7 @@ export const ModelVibefirePlan = tb.Object({
   accessRef: ModelVibefireEntityAccess,
 
   ownerId: tb.String({ default: undefined }),
-  ownerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
+  planOwnerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
   linkId: tb.String({ default: undefined }),
   linkEnabled: tb.Boolean({ default: true }),
 
@@ -40,7 +40,7 @@ export const ModelVibefirePlan = tb.Object({
 
 export const newVibefirePlan = (p: {
   ownerId: TModelVibefirePlan["ownerId"];
-  ownerType: TModelVibefirePlan["ownerType"];
+  planOwnerType: TModelVibefirePlan["planOwnerType"];
   linkId: TModelVibefirePlan["linkId"];
   linkEnabled: TModelVibefirePlan["linkEnabled"];
   organiserId: TModelVibefirePlan["organiserId"];
@@ -49,7 +49,7 @@ export const newVibefirePlan = (p: {
   epochCreated: TModelVibefirePlan["epochCreated"];
 }): TModelVibefirePlan => {
   const d = Value.Create(ModelVibefirePlan);
-  d.ownerType = p.ownerType;
+  d.planOwnerType = p.planOwnerType;
   d.linkId = p.linkId;
   d.linkEnabled = p.linkEnabled;
   d.organiserId = p.organiserId;
