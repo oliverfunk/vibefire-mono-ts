@@ -1,4 +1,4 @@
-import { tb, Value, type Static } from "!models/modelling";
+import { tb, type Static } from "!models/modelling";
 
 import { ModelVibefireEntityAccess } from "./vibefire-access";
 import { ModelVibefireUser } from "./vibefire-user";

@@ -1,8 +1,10 @@
 import { DateTime } from "luxon";
 
 import {
+  ModelEventUpdate,
   newVibefireEntityAccess,
   newVibefireEvent,
+  tbClean,
   type AccessAction,
   type MapQueryT,
   type Pageable,
@@ -94,7 +96,7 @@ export class UFEventsManger {
 
       const newEvent = newVibefireEvent({
         ownerId: p.forGroupId ?? p.userAid,
-        ownerType: p.forGroupId ? "group" : "user",
+        eventOwnerType: p.forGroupId ? "group" : "user",
         ownerName,
         eventType: p.eventType,
         linkEnabled: true,
@@ -102,8 +104,9 @@ export class UFEventsManger {
         name,
         epochCreated: DateTime.utc().toMillis(),
       });
-      const { id: eventId } = await this.repos.event.create(newEvent, accAct)
-        .result;
+      const { id: eventId } = await (
+        await this.repos.event.create(newEvent, accAct)
+      ).result;
 
       return eventId;
     });
@@ -151,7 +154,7 @@ export class UFEventsManger {
 
       const newEvent = newVibefireEvent({
         ownerId: event.ownerId,
-        ownerType: event.ownerType,
+        eventOwnerType: event.eventOwnerType,
         ownerName: event.ownerName,
         linkEnabled: true,
         linkId: crypto.randomUUID(),
@@ -229,9 +232,11 @@ export class UFEventsManger {
         const limit = 10;
         const { data, after: afterKey } =
           p.scope === "all"
-            ? await this.repos.event.allByOwner(p.groupId, limit).result
+            ? await this.repos.event.allByOwner(p.groupId, "group", limit)
+                .result
             : await this.repos.event.allByOwnerByState(
                 p.groupId,
+                "group",
                 1, // published
                 limit,
               ).result;
@@ -281,6 +286,7 @@ export class UFEventsManger {
     update: Partial<TModelEventUpdate>;
   }) {
     return managerReturn(async () => {
+      const update = tbClean(ModelEventUpdate, p.update);
       const _e = await this.repos.eventIfManager(p.eventId, p.userAid);
 
       // todo! : this is wildly insufficient
@@ -297,7 +303,9 @@ export class UFEventsManger {
 
       // we blindly trust the update here, as we assume
       // all inputs have been validated and sanitized
-      await this.repos.event.update(p.eventId, p.update).result;
+      console.log("update", JSON.stringify(update, null, 2));
+      const a = await this.repos.event.update(p.eventId, update).result;
+      console.log("a", JSON.stringify(a, null, 2));
     });
   }
 

@@ -58,8 +58,9 @@ export const ModelVibefireEvent = tb.Object({
   accessRef: ModelVibefireEntityAccess,
 
   ownerId: tb.String({ default: undefined }),
-  ownerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
+  eventOwnerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
   ownerName: tb.String({ default: undefined }),
+
   linkId: tb.String({ default: undefined }),
   linkEnabled: tb.Boolean({ default: true }),
 
@@ -82,12 +83,11 @@ export const ModelVibefireEvent = tb.Object({
     minLength: 2,
     maxLength: 100,
   }),
+  event: ModelEventType,
+
   images: ModelEventImages,
   times: ModelEventTimes,
   location: VibefireLocationSchema,
-
-  event: ModelEventType,
-
   map: ModelEventCustomMapData,
 
   // meta
@@ -95,7 +95,7 @@ export const ModelVibefireEvent = tb.Object({
 });
 export const newVibefireEvent = (p: {
   ownerId: TModelVibefireEvent["ownerId"];
-  ownerType: TModelVibefireEvent["ownerType"];
+  eventOwnerType: TModelVibefireEvent["eventOwnerType"];
   ownerName: TModelVibefireEvent["ownerName"];
   linkId: TModelVibefireEvent["linkId"];
   linkEnabled: TModelVibefireEvent["linkEnabled"];
@@ -104,8 +104,10 @@ export const newVibefireEvent = (p: {
   eventType: TModelEventType["type"];
 }): TModelVibefireEventNoId => {
   const d = Value.Create(ModelVibefireEvent);
+  // @ts-expect-error the access ref is set later during creation.
+  d.accessRef = undefined;
   d.ownerId = p.ownerId;
-  d.ownerType = p.ownerType;
+  d.eventOwnerType = p.eventOwnerType;
   d.ownerName = p.ownerName;
   d.linkId = p.linkId;
   d.linkEnabled = p.linkEnabled;

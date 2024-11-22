@@ -1,5 +1,13 @@
+type CloudFlareImagesResponse<T> = {
+  errors: string[];
+  messages: string[];
+  result: T;
+  success: boolean;
+};
+
 export class CloudFlareImagesClient {
   private readonly baseApiUrl: string;
+
   constructor(
     accountId: string,
     private readonly apiKey: string,
@@ -15,12 +23,11 @@ export class CloudFlareImagesClient {
     return formData;
   }
 
-  async _post(url: string, body: FormData) {
-    return await fetch(url, {
+  _post(url: string, body: FormData) {
+    return fetch(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "multipart/form-data",
       },
       body,
     });
@@ -56,8 +63,11 @@ export class CloudFlareImagesClient {
     imageId?: string;
     expiry?: string;
     metadata?: Record<string, string>;
-  }): Promise<Record<string, unknown>> {
-    const { imageId, metadata } = p;
+  }): Promise<{
+    id: string;
+    uploadURL: string;
+  }> {
+    const { imageId, metadata, expiry } = p;
 
     const apiUrl = `${this.baseApiUrl}/images/v2/direct_upload`;
 
@@ -65,14 +75,57 @@ export class CloudFlareImagesClient {
     if (imageId) {
       fd.append("id", imageId);
     }
-
-    const res = await this._post(apiUrl, fd);
-    if (!res.ok) {
-      throw new Error(
-        `/images/v2/direct_upload POST failed: ${res.status} ${res.statusText}`,
-      );
+    if (expiry) {
+      fd.append("expiry", expiry);
     }
-    return (await res.json()) as Record<string, unknown>;
+
+    const resJson = await this._post(apiUrl, fd).then<
+      CloudFlareImagesResponse<{
+        id: string;
+        uploadURL: string;
+      }>
+    >((response) => response.json());
+
+    if (!resJson.success) {
+      console.error(resJson);
+      throw new Error(`/images/v2/direct_upload POST failed`);
+    }
+
+    return {
+      id: resJson.result.id,
+      uploadURL: resJson.result.uploadURL,
+    };
+  }
+
+  async du2(p: {
+    imageId?: string;
+    expiry?: string;
+    metadata?: Record<string, string>;
+  }) {
+    const { imageId, metadata, expiry } = p;
+
+    const url =
+      "https://api.cloudflare.com/client/v4/accounts/6248da148b4512c4fafb7aa130cedcc4/images/v2/direct_upload";
+    const token = "35iShlIWH_FwKD04WYSPRjfJJTz3ZVsj6VPNRB19";
+
+    const fd = this._formData(metadata);
+    if (imageId) {
+      fd.append("id", imageId);
+    }
+    if (expiry) {
+      fd.append("expiry", expiry);
+    }
+
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: fd,
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error("Error:", error));
   }
 
   async deleteImage(imageId: string) {

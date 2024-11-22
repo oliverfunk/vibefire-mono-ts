@@ -4,6 +4,7 @@ import {
   ModelVibefireEvent,
   tbClean,
   type AccessAction,
+  type TModelVibefireEntityAccess,
   type TModelVibefireEvent,
   type TModelVibefireEventNoId,
 } from "@vibefire/models";
@@ -22,13 +23,19 @@ export class FaunaEventRepository {
     private readonly funcs: FaunaFunctions,
   ) {}
 
-  create(event: TModelVibefireEventNoId, accAct: AccessAction) {
+  async create(event: TModelVibefireEventNoId, accAct: AccessAction) {
+    const acc = await faunaQuery<TModelVibefireEntityAccess>(
+      this.faunaClient,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      accessActionQuery(this.funcs, accAct),
+    ).result;
+    event.accessRef = acc;
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        let acc = ${accessActionQuery(this.funcs, accAct)}
+        // let acc = ${accessActionQuery(this.funcs, accAct)}
         let d = ${event}
-        d["accessRef"] = acc
+        // d.accessRef = acc
         Event.create(d) {
           id
         }
@@ -71,11 +78,15 @@ export class FaunaEventRepository {
     );
   }
 
-  allByOwner(ownerId: string, limit = 0) {
+  allByOwner(
+    ownerId: string,
+    ownerType: TModelVibefireEvent["eventOwnerType"],
+    limit = 0,
+  ) {
     return faunaQuery<Page<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        let q = Event.byOwnerId(${ownerId})
+        let q = Event.byOwnerWithType(${ownerId}, ${ownerType})
         if (${limit} != 0) {
           q.pageSize(${limit})
         } else {
@@ -87,13 +98,14 @@ export class FaunaEventRepository {
 
   allByOwnerByState(
     ownerId: string,
+    ownerType: TModelVibefireEvent["eventOwnerType"],
     state: TModelVibefireEvent["state"],
     limit = 0,
   ) {
     return faunaQuery<Page<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        ${this.allByOwner(ownerId).query}.where(.state == ${state})
+        ${this.allByOwner(ownerId, ownerType).query}.where(.state == ${state})
         if (${limit} != 0) {
           q.pageSize(${limit})
         } else {
@@ -105,6 +117,7 @@ export class FaunaEventRepository {
 
   allByOwnerByStates(
     ownerId: string,
+    ownerType: TModelVibefireEvent["eventOwnerType"],
     states: TModelVibefireEvent["state"][],
     limit = 0,
   ) {
@@ -113,7 +126,7 @@ export class FaunaEventRepository {
       fql`
         let states = ${states}.toSet()
         let q = states.flatMap((state) => {
-          ${this.allByOwner(ownerId).query}.where(.state == state)
+          ${this.allByOwner(ownerId, ownerType).query}.where(.state == state)
         })
         if (${limit} != 0) {
           q.pageSize(${limit})

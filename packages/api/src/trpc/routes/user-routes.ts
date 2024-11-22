@@ -31,35 +31,35 @@ export const userRouter = router({
   //       input.starIt,
   //     );
   //   }),
-  // hideEvent: publicProcedure
-  //   .input(
-  //     tbValidator(
-  //       tb.Object({
-  //         eventId: tb.String(),
-  //         report: tb.Boolean(),
-  //       }),
-  //     ),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     if (!ctx.auth.userId) {
-  //       return;
-  //     }
-  //     return await ctx.fauna.hideEventForUser(ctx.auth, input.eventId);
-  //   }),
-  // blockOrganiser: publicProcedure
-  //   .input(
-  //     tbValidator(
-  //       tb.Object({
-  //         organiserId: tb.String(),
-  //       }),
-  //     ),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     if (!ctx.auth.userId) {
-  //       return;
-  //     }
-  //     return await ctx.fauna.blockOrganiserForUser(ctx.auth, input.organiserId);
-  //   }),
+  hideEvent: publicProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventId: tb.String(),
+          report: tb.Boolean(),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        return;
+      }
+      return true;
+    }),
+  blockOrganiser: publicProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventid: tb.String(),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) => {
+      if (!ctx.auth.userId) {
+        return;
+      }
+      return true;
+    }),
   // registerToken: authedProcedure
   //   .input(
   //     tbValidator(

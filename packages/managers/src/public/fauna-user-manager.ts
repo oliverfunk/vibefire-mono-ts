@@ -754,7 +754,7 @@ export class FaunaUserManager {
         dateCreatedUTC: "2021-09-01T00:00:00.000Z",
         dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
         ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-        ownerType: "user",
+        groupOwnerType: "user",
         managerIds: [],
         type: "public",
         socials: {
@@ -772,7 +772,7 @@ export class FaunaUserManager {
         dateCreatedUTC: "2021-09-01T00:00:00.000Z",
         dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
         ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-        ownerType: "user",
+        groupOwnerType: "user",
         managerIds: [],
         type: "public",
       },
@@ -790,7 +790,7 @@ export class FaunaUserManager {
       dateCreatedUTC: "2021-09-01T00:00:00.000Z",
       dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
       ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-      ownerType: "user",
+      groupOwnerType: "user",
       managerIds: [],
       type: "public",
     } as TModelVibefireGroup;

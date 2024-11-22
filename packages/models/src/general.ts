@@ -20,7 +20,10 @@ export const ModelDatePeriodString = tb.String({
 
 export type DatePeriodT = Static<typeof DatePeriodSchema>;
 
-export const CoordSchema = tb.Object({ lat: tb.Number(), lng: tb.Number() });
+export const CoordSchema = tb.Object(
+  { lat: tb.Number(), lng: tb.Number() },
+  { default: { lat: 0, lng: 0 } },
+);
 export type CoordT = Static<typeof CoordSchema>;
 
 export const MapPositionInfoSchema = tb.Object({
@@ -54,10 +57,7 @@ export const VibefireIndexableLocationSchema = tb.Object(
   { default: undefined },
 );
 
-export const VibefireLocationSchema = tb.Object(
-  {
-    addressDescription: tb.String(),
-    position: CoordSchema,
-  },
-  { default: undefined },
-);
+export const VibefireLocationSchema = tb.Object({
+  addressDescription: tb.String({ default: "" }),
+  position: CoordSchema,
+});

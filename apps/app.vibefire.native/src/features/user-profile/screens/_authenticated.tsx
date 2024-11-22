@@ -1,48 +1,88 @@
 import { Text, TouchableOpacity, View } from "react-native";
+import { useNavigation, useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
 import { capitalize } from "lodash";
 
-import {
-  type AppUserAuthenticated,
-  type TModelVibefireUser,
-} from "@vibefire/models";
+import { type AppUserAuthenticated } from "@vibefire/models";
 
-import { UsersEventsSummary } from "!/features/events-list";
-import { UsersGroupsSummary } from "!/features/groups-list";
+import { trpc } from "!/api/trpc-client";
+
+import { IconButton } from "!/components/button/IconButton";
+import { EventsListSimpleChipView } from "!/components/event/EventsList";
+import {
+  ErrorDisplay,
+  LoadingDisplay,
+  withSuspenseErrorBoundary,
+} from "!/components/misc/SuspenseWithError";
+import { SummaryComponent } from "!/components/structural/SummaryComponent";
 import { DeleteAccount } from "!/c/auth/DeleteAccount";
 import { SignOut } from "!/c/auth/SignOut";
-import { LinearRedOrangeView, ScrollViewSheet } from "!/c/misc/sheet-utils";
+import { ScrollViewSheet } from "!/c/misc/sheet-utils";
 import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
+import { navEditEvent } from "!/nav";
 
-// const UserEventsChipListEmbed = () => {
-//   return (
-//     <LinearRedOrangeView className="mt-1 flex-col py-2">
-//       <Text className="text-center text-xl text-black">
-//         View your previous events or create new ones from here
-//       </Text>
-//       <View className="flex-row items-center justify-around">
-//         <TouchableOpacity
-//           className="rounded-lg bg-black px-4 py-4"
-//           onPress={() => {
-//             navCreateEvent();
-//           }}
-//         >
-//           <Text className="text-lg font-bold text-white">Create event</Text>
-//         </TouchableOpacity>
+const UsersEventsSummary = () => {
+  const router = useRouter();
 
-//         <TouchableOpacity
-//           className="rounded-lg bg-black px-4 py-4"
-//           onPress={() => {
-//             navOwnEventsByOrganiser();
-//           }}
-//         >
-//           <Text className="text-lg font-bold text-white">Your events</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </LinearRedOrangeView>
-//   );
-// };
+  const EventsListSuspense = withSuspenseErrorBoundary(
+    () => {
+      const [eventsByUser] = trpc.events.listSelfAll.useSuspenseQuery();
 
-export const UserProfileAuthenticatedView = (props: {
+      if (!eventsByUser.ok) {
+        throw eventsByUser.error;
+      }
+
+      return (
+        <View className="flex-col">
+          <EventsListSimpleChipView
+            events={eventsByUser.value.data}
+            onChipPress={(e) => navEditEvent(router, e.id!)}
+          />
+          {/* <View className="items-start py-4">
+            <IconButton onPress={() => {}} useOpacity={true} size={1}>
+              <View className="flex-row items-center justify-center rounded-sm bg-white/10 px-4 py-2">
+                <FontAwesome name="eye" size={20} color="white" />
+                <Text className="text-white"> View all</Text>
+              </View>
+            </IconButton>
+          </View> */}
+        </View>
+      );
+    },
+    {
+      ErrorFallback: ({ error, resetErrorBoundary }) => (
+        <View className="p-5">
+          <ErrorDisplay
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            error={error}
+            resetErrorBoundary={resetErrorBoundary}
+            textWhite={true}
+          />
+        </View>
+      ),
+      LoadingFallback: (
+        <View className="p-5">
+          <LoadingDisplay loadingWhite={true} />
+        </View>
+      ),
+    },
+  );
+
+  return (
+    <View className="bg-black px-2">
+      <SummaryComponent
+        headerTitle="Your Events"
+        onHeaderButtonPress={() => {
+          router.navigate("/event/create");
+        }}
+      >
+        <EventsListSuspense />
+      </SummaryComponent>
+    </View>
+  );
+};
+
+export const UserProfileAuthenticatedSheet = (props: {
   appUser: AppUserAuthenticated;
 }) => {
   const { appUser: user } = props;

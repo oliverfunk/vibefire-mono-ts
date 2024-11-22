@@ -1,16 +1,25 @@
 import { useLocalSearchParams } from "expo-router";
 
 import { useExpandBottomSheet } from "!/hooks/useExpandBottomSheet";
+import { useUserAuthedRedirect } from "!/hooks/useUserAuthedRedirect";
 
-import { CreateEvent } from "!/features/event/create";
+import {
+  CreateEventFromPreviousSheet,
+  CreateEventSheet,
+} from "!/features/event/create/screens";
 
 const Screen = () => {
   const { fromPrevious } = useLocalSearchParams<{
     fromPrevious?: string;
   }>();
 
+  useUserAuthedRedirect();
   useExpandBottomSheet();
 
-  return <CreateEvent fromPrevious={!!fromPrevious} />;
+  if (fromPrevious) {
+    return <CreateEventFromPreviousSheet />;
+  }
+
+  return <CreateEventSheet />;
 };
 export default Screen;

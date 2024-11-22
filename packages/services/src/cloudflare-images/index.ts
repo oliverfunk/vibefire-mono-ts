@@ -31,8 +31,6 @@ export class CloudFlareImagesService {
     metadata?: Record<string, string>;
   }) {
     const { metadata, expiry } = p;
-    // todo: extract relevant data from response
-    console.log("!!!! todo: extract relveant data from response");
     return await this.client.directUpload({ expiry, metadata });
   }
 

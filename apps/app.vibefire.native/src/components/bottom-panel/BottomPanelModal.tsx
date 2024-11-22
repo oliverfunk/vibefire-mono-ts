@@ -44,27 +44,25 @@ export const NewBottomPanelModal = (props: { children?: React.ReactNode }) => {
   );
 
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModal
-        ref={modalPanelRef}
-        backdropComponent={renderBackdrop}
-        enableDismissOnClose={false}
-        enablePanDownToClose={false}
-        enableDynamicSizing={false}
-        snapPoints={[HANDLE_HEIGHT, "80%"]}
-        bottomInset={insets.bottom}
-        onChange={setBottomSheetIndex}
-        backgroundStyle={{
-          backgroundColor: "#171717",
-        }}
-        handleComponent={HandleWithNavigation}
-        onDismiss={() => {
-          modalPanelRef.current?.present();
-        }}
-      >
-        {children}
-      </BottomSheetModal>
-    </GestureHandlerRootView>
+    <BottomSheetModal
+      ref={modalPanelRef}
+      backdropComponent={renderBackdrop}
+      enableDismissOnClose={false}
+      enablePanDownToClose={false}
+      enableDynamicSizing={false}
+      snapPoints={[HANDLE_HEIGHT, "80%"]}
+      bottomInset={insets.bottom}
+      onChange={setBottomSheetIndex}
+      backgroundStyle={{
+        backgroundColor: "#171717",
+      }}
+      handleComponent={HandleWithNavigation}
+      onDismiss={() => {
+        modalPanelRef.current?.present();
+      }}
+    >
+      {children}
+    </BottomSheetModal>
   );
 };
 

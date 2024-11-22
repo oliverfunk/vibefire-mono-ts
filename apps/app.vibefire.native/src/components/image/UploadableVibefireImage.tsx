@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { type ImageProps } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 
 import { trpc } from "!/api/trpc-client";
 
@@ -54,7 +54,6 @@ type UploadableVibefireImageProps = {
   eventId: string;
   alt: ImageProps["alt"];
   selectNewOnPressed?: boolean;
-  unsetImageText?: string;
   imgIdKey?: string;
   rounded?: boolean;
   onImageUploaded: (imgKeyId: string) => void;
@@ -68,7 +67,6 @@ export const UploadableVibefireImage = (
     eventId,
     alt,
     selectNewOnPressed,
-    unsetImageText,
     imgIdKey,
     rounded,
     onImageUploaded,
@@ -95,7 +93,15 @@ export const UploadableVibefireImage = (
       setLoading(false);
     }
     if (getImageUploadLink.isSuccess) {
-      const { id, uploadURL } = getImageUploadLink.data;
+      const resp = getImageUploadLink.data;
+
+      if (!resp.ok) {
+        setHasError(true);
+        setLoading(false);
+        return;
+      }
+
+      const { id, uploadURL } = resp.value;
 
       const selectImageAndUpload = async (
         uploadURL: string,
@@ -120,6 +126,7 @@ export const UploadableVibefireImage = (
 
       selectImageAndUpload(uploadURL, id).catch(console.error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getImageUploadLink.status, pickedImageUri]);
 
   if (loading) {
@@ -152,7 +159,7 @@ export const UploadableVibefireImage = (
   if (!imgIdKey) {
     return (
       <Pressable
-        className="aspect-[4/4] w-full flex-col items-center justify-center bg-slate-200"
+        className="aspect-[4/4] w-full flex-col items-center justify-center bg-neutral-500"
         onPress={async () => {
           const pickedImage = await selectImage();
           if (!pickedImage) {
@@ -164,9 +171,9 @@ export const UploadableVibefireImage = (
           });
         }}
       >
-        <FontAwesome name="image" size={20} color="black" />
-        <Text className="text-center text-lg text-black">
-          {unsetImageText ?? "Add Image"}
+        <FontAwesome6 name="image" size={60} color="white" />
+        <Text className="text-center text-lg text-white">
+          (tap to choose an image)
         </Text>
       </Pressable>
     );

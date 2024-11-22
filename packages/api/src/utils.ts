@@ -22,7 +22,7 @@ export const wrapApiReturn = async <T>(
       error: {
         code: "ise",
         message: "Something went wrong, we're looking into it. :(",
-        action: "",
+        action: "api",
       },
     };
   }

@@ -5,6 +5,7 @@ import MapView, {
   type Region,
 } from "react-native-maps";
 import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
 import { debounce } from "lodash";
 
@@ -18,15 +19,19 @@ import { eventMapMapRefAtom } from "!/atoms";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
 
-function altitudeToZoomLevel(altitude: number): number {
+const INITIAL_ZOOM_LEVEL = 16;
+
+const altitudeToZoomLevel = (altitude: number): number => {
   const earthCircumference = 40075000; // Earth's circumference in meters
   const zoomLevel = Math.round(Math.log2(earthCircumference / altitude));
   return Math.max(0, Math.min(zoomLevel, 21));
-}
+};
 
-const EventMapComponent = () => {
+export const GeoQueryMap = () => {
   const mvRef = useRef<MapView>(null);
   const [mapReady, setMapReady] = useState(false);
+
+  const router = useRouter();
 
   const setEventMapMapRef = useSetAtom(eventMapMapRefAtom);
 
@@ -35,7 +40,7 @@ const EventMapComponent = () => {
     1000,
   );
 
-  const { location, locPermDeniedMsg } = useLocationOnce();
+  const { location: locationOnce, locPermDeniedMsg } = useLocationOnce();
 
   //#region effects
   useEffect(() => {
@@ -45,17 +50,17 @@ const EventMapComponent = () => {
     if (mvRef.current === null) {
       return;
     }
-    if (!location) {
+    if (!locationOnce) {
       return;
     }
     mvRef.current.setCamera({
       center: {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: locationOnce.coords.latitude,
+        longitude: locationOnce.coords.longitude,
       },
-      zoom: 16,
+      zoom: INITIAL_ZOOM_LEVEL,
     });
-  }, [location, mapReady]);
+  }, [locationOnce, mapReady]);
 
   useEffect(() => {
     if (locPermDeniedMsg) {
@@ -107,6 +112,15 @@ const EventMapComponent = () => {
   return (
     <MapView
       ref={mvRef}
+      initialCamera={{
+        zoom: INITIAL_ZOOM_LEVEL,
+        center: {
+          latitude: 0,
+          longitude: 0,
+        },
+        heading: 0,
+        pitch: 0,
+      }}
       onMapReady={() => {
         setMapReady(true);
         setEventMapMapRef(mvRef.current);
@@ -128,7 +142,7 @@ const EventMapComponent = () => {
       onRegionChangeComplete={onMapRegionChange}
       moveOnMarkerPress={false}
       rotateEnabled={false}
-      // cameraZoomRange={{}}
+      //   cameraZoomRange={{}}
       maxZoomLevel={20}
       minZoomLevel={3}
     >
@@ -142,7 +156,7 @@ const EventMapComponent = () => {
             }}
             anchor={{ x: 0.5, y: 1 }} // bottom center
             onPress={() => {
-              navViewEvent(event.linkId);
+              navViewEvent(router, event.linkId);
               mvRef.current?.animateCamera({
                 center: {
                   latitude: event.location.position.lat,
@@ -166,8 +180,4 @@ const EventMapComponent = () => {
         ))}
     </MapView>
   );
-};
-
-export const EventMap = () => {
-  return <EventMapComponent />;
 };

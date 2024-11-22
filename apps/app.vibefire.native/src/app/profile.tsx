@@ -1,10 +1,27 @@
+import { useAppUser } from "!/hooks/useAppUser";
 import { useExpandBottomSheet } from "!/hooks/useExpandBottomSheet";
 
-import { UserProfileSheet } from "!/features/user-profile";
+import {
+  UserProfileAuthenticatedSheet,
+  UserProfileErrorSheet,
+  UserProfileUnauthenticatedSheet,
+} from "!/features/user-profile/screens";
+import { LoadingSheet } from "!/components/misc/sheet-utils";
 
 const Screen = () => {
   useExpandBottomSheet();
 
-  return <UserProfileSheet />;
+  const user = useAppUser();
+
+  switch (user.state) {
+    case "loading":
+      return <LoadingSheet />;
+    case "error":
+      return <UserProfileErrorSheet />;
+    case "unauthenticated":
+      return <UserProfileUnauthenticatedSheet />;
+    case "authenticated":
+      return <UserProfileAuthenticatedSheet appUser={user} />;
+  }
 };
 export default Screen;

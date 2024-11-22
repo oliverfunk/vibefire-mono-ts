@@ -15,7 +15,7 @@ type EventCardProps = {
   eventInfo: {
     title: string;
     ownerId: TModelVibefireEvent["ownerId"];
-    ownerType: TModelVibefireEvent["ownerType"];
+    ownerType: TModelVibefireEvent["eventOwnerType"];
     ownerName: TModelVibefireEvent["ownerName"];
     addressDescription?: string;
     timeStart?: DateTime;

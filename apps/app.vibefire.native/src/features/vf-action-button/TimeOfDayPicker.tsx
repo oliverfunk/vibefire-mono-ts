@@ -15,10 +15,10 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
 
   const [periods] = useState([
     "All Day",
-    "12am - 6am",
-    "6am - 12pm",
-    "12pm - 6pm",
-    "6pm - 12am",
+    "12 am - 6 am",
+    "6 am - 12 pm",
+    "12 pm - 6 pm",
+    "6 pm - 12 am",
   ]);
 
   const [todToIndexMapping] = useState({
@@ -47,7 +47,7 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
         renderItem={({ index, item: period }) => {
           return (
             <View key={index} className="h-full items-center justify-center">
-              <Text className="text-lg text-white">{period}</Text>
+              <Text className="text-base text-white">{period}</Text>
             </View>
           );
         }}

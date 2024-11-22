@@ -57,7 +57,7 @@ export const ModelVibefireGroup = tb.Object({
   accessRef: ModelVibefireEntityAccess,
 
   ownerId: tb.String({ default: undefined }),
-  ownerType: tb.Union([tb.Literal("user"), tb.Literal("org")]),
+  groupOwnerType: tb.Union([tb.Literal("user"), tb.Literal("org")]),
   linkId: tb.String({ default: undefined }),
   linkEnabled: tb.Boolean({ default: true }),
 
@@ -84,7 +84,7 @@ export const ModelVibefireGroup = tb.Object({
 
 export const newVibefireGroup = (p: {
   ownerId: TModelVibefireGroup["ownerId"];
-  ownerType: TModelVibefireGroup["ownerType"];
+  groupOwnerType: TModelVibefireGroup["groupOwnerType"];
   linkId: TModelVibefireGroup["linkId"];
   linkEnabled: TModelVibefireGroup["linkEnabled"];
   name: TModelVibefireGroup["name"];
@@ -93,7 +93,7 @@ export const newVibefireGroup = (p: {
 }): TModelVibefireGroup => {
   const d = Value.Create(ModelVibefireGroup);
   d.ownerId = p.ownerId;
-  d.ownerType = p.ownerType;
+  d.groupOwnerType = p.groupOwnerType;
   d.linkId = p.linkId;
   d.linkEnabled = p.linkEnabled;
   d.name = p.name;
