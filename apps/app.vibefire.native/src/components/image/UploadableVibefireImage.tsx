@@ -16,7 +16,7 @@ import { VibefireImage } from "!/c/image/VibefireImage";
 
 const selectImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ["images"],
     allowsEditing: true,
     aspect: [4, 4],
     quality: 0.9,

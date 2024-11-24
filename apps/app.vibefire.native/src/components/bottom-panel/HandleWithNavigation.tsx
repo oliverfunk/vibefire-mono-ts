@@ -25,7 +25,7 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
   // refreshes this component when the navigation state changes
   const { routes } = useRootNavigationState();
 
-  console.log("routes", JSON.stringify(routes, null, 2));
+  // console.log("routes", JSON.stringify(routes, null, 2));
 
   useEffect(() => {
     if (!firstRun) {

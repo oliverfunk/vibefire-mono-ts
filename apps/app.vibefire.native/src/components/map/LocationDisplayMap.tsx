@@ -5,7 +5,7 @@ import { type CoordT } from "@vibefire/models";
 
 import { defaultCameraForPosition } from "!/utils/constants";
 
-import { EventIcon } from "../SvgIcon";
+import { EventIcon } from "!/c/SvgIcon";
 
 export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
   const { markerPosition } = props;
@@ -17,7 +17,7 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
       ref={mvRef}
       className="h-full w-full"
       initialCamera={defaultCameraForPosition(markerPosition)}
-      provider={PROVIDER_GOOGLE}
+      // provider={PROVIDER_GOOGLE}
       pointerEvents={"none"}
       zoomEnabled={false}
       scrollEnabled={false}

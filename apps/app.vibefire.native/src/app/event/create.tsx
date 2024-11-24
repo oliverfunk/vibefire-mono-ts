@@ -6,7 +6,7 @@ import { useUserAuthedRedirect } from "!/hooks/useUserAuthedRedirect";
 import {
   CreateEventFromPreviousSheet,
   CreateEventSheet,
-} from "!/features/event/create/screens";
+} from "!/features/event/create";
 
 const Screen = () => {
   const { fromPrevious } = useLocalSearchParams<{

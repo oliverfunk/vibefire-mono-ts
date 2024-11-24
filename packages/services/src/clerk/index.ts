@@ -1,20 +1,14 @@
 import {
   createClerkClient,
+  type AuthObject,
   type ClerkClient,
   type ClerkOptions,
 } from "@clerk/backend";
-import {
-  signedOutAuthObject,
-  type AuthObject,
-  type SignedInAuthObject,
-  type SignedOutAuthObject,
-} from "@clerk/backend/internal";
+import { signedOutAuthObject } from "@clerk/backend/internal";
 
 import { resourceLocator } from "@vibefire/utils";
 
 export type ClerkAuthContext = AuthObject;
-export type ClerkSignedInAuthContext = SignedInAuthObject;
-export type ClerkSignedOutAuthContext = SignedOutAuthObject;
 
 export const clerkServiceSymbol = Symbol("clerkServiceSymbol");
 
@@ -37,7 +31,7 @@ export const getClerkService = (options?: ClerkOptions): ClerkService =>
 export class ClerkService {
   constructor(private readonly client: ClerkClient) {}
 
-  async authenticateRequest(req: Request) {
+  async authenticateRequest(req: Request): Promise<ClerkAuthContext> {
     const reqAuth = await this.client.authenticateRequest(req);
     return reqAuth.toAuth() ?? signedOutAuthObject();
   }

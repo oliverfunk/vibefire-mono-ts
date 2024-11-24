@@ -77,10 +77,10 @@ const PostProviders = (props: { children: ReactNode }) => {
     }
   }, [deeplinkURL]);
 
-  useEffect(() => {
-    console.log("routing pathname", pathname);
-    console.log("routing params", JSON.stringify(params, null, 2));
-  }, [pathname, params]);
+  // useEffect(() => {
+  //   console.log("routing pathname", pathname);
+  //   console.log("routing params", JSON.stringify(params, null, 2));
+  // }, [pathname, params]);
 
   return children;
 };
@@ -92,16 +92,14 @@ export default function HomeLayout() {
   });
 
   useEffect(() => {
-    void (async () => {
-      if (fontsLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    })();
-  }, [fontsLoaded]);
+    if (fontsLoaded || fontsError) {
+      SplashScreen.hide();
+    }
+  }, [fontsLoaded, fontsError]);
 
   if (fontsError) console.warn(fontsError);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontsError) {
     return null;
   }
 

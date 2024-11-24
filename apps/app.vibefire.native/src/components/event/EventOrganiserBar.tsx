@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 
@@ -35,6 +36,8 @@ const ThreeDotsModalMenu = (props: {
   disabled: boolean;
 }) => {
   const { event, disabled } = props;
+
+  const router = useRouter();
 
   const [userInfo] = useAtom(userInfoAtom);
 
@@ -87,7 +90,7 @@ const ThreeDotsModalMenu = (props: {
                 }
                 onPress={() => {
                   setMenuVisible(false);
-                  navManageEvent(event.id);
+                  navManageEvent(router, event.id);
                 }}
               />
             ) : (
@@ -107,7 +110,7 @@ const ThreeDotsModalMenu = (props: {
                       eventId: event.id,
                       report: false,
                     });
-                    navHome();
+                    navHome(router);
                   }}
                 />
                 <View className="h-px bg-gray-200" />
@@ -126,7 +129,7 @@ const ThreeDotsModalMenu = (props: {
                       eventId: event.id,
                       report: true,
                     });
-                    navHome();
+                    navHome(router);
                   }}
                 />
                 <View className="h-px bg-gray-200" />
@@ -144,7 +147,7 @@ const ThreeDotsModalMenu = (props: {
                     await blockOrganiserMut.mutateAsync({
                       eventid: event.id,
                     });
-                    navHome();
+                    navHome(router);
                   }}
                 />
               </>
@@ -163,16 +166,18 @@ const ThreeDotsModalMenu = (props: {
 
 export const EventOrganiserBarView = (props: {
   event: TModelVibefireEvent;
+  onPress?: () => void;
   disabled?: boolean;
 }) => {
-  const { event, disabled = false } = props;
+  const { event, onPress, disabled = false } = props;
 
   const onOrganiserPress = useCallback(() => {
     if (disabled) return;
-  }, [event.ownerId]);
+    onPress?.();
+  }, [disabled, onPress]);
 
   return (
-    <View className="flex-row items-center justify-center space-x-4 bg-black py-4 pl-2">
+    <View className="flex-row items-center justify-center space-x-4 bg-black px-4 py-4">
       <Pressable onPress={onOrganiserPress}>
         {event.eventOwnerType === "group" ? (
           <StandardImage

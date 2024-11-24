@@ -52,13 +52,13 @@ export const ErrorSheet = (props: {
   return (
     <BasicViewSheet>
       <View className="flex h-full flex-col items-center justify-center">
-        <Text className="text-center text-lg">
+        <Text className="text-center text-lg text-white">
           {props.message ?? "Something went wrong"}
         </Text>
         {props.retryCallback && (
           <View className="flex-row">
             <TouchableOpacity
-              className="rounded-lg border px-4 py-2"
+              className="rounded-lg border border-white px-4 py-2"
               onPress={props.retryCallback}
             >
               <Text className="text-xl text-blue-500">Retry</Text>

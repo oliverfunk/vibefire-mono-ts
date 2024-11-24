@@ -34,8 +34,6 @@ export const AddEventDetailWidgetButton = (props: {
             break;
 
           case cancelButtonIndex:
-            // Canceled
-            console.log("Can");
             break;
         }
       },
@@ -47,8 +45,8 @@ export const AddEventDetailWidgetButton = (props: {
       className="rounded-full border-2 border-white p-2 px-4"
       onPress={onPress}
     >
-      <Text className="text-lg text-white">
-        <FontAwesome6 name="plus" color="white" size={15} /> Add widget
+      <Text className="text-center text-lg text-white">
+        <FontAwesome6 name="plus" size={15} /> Add widget
       </Text>
     </TouchableOpacity>
   );

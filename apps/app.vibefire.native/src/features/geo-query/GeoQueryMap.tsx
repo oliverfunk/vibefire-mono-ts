@@ -11,6 +11,10 @@ import { debounce } from "lodash";
 
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
+import {
+  defaultCameraForPosition,
+  INITIAL_ZOOM_LEVEL,
+} from "!/utils/constants";
 import { useLocationOnce } from "!/hooks/useLocation";
 import { useMapDisplayableEvents } from "!/hooks/useMapQuery";
 
@@ -18,18 +22,10 @@ import { HANDLE_HEIGHT } from "!/components/bottom-panel/HandleWithNavigation";
 import { eventMapMapRefAtom } from "!/atoms";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
-
-const INITIAL_ZOOM_LEVEL = 16;
-
-const altitudeToZoomLevel = (altitude: number): number => {
-  const earthCircumference = 40075000; // Earth's circumference in meters
-  const zoomLevel = Math.round(Math.log2(earthCircumference / altitude));
-  return Math.max(0, Math.min(zoomLevel, 21));
-};
+import { altitudeToZoomLevel, zoomLevelToAltitude } from "!utils/math";
 
 export const GeoQueryMap = () => {
   const mvRef = useRef<MapView>(null);
-  const [mapReady, setMapReady] = useState(false);
 
   const router = useRouter();
 
@@ -44,23 +40,20 @@ export const GeoQueryMap = () => {
 
   //#region effects
   useEffect(() => {
-    if (!mapReady) {
-      return;
-    }
     if (mvRef.current === null) {
       return;
     }
+    setEventMapMapRef(mvRef.current);
     if (!locationOnce) {
       return;
     }
-    mvRef.current.setCamera({
-      center: {
-        latitude: locationOnce.coords.latitude,
-        longitude: locationOnce.coords.longitude,
-      },
-      zoom: INITIAL_ZOOM_LEVEL,
-    });
-  }, [locationOnce, mapReady]);
+    mvRef.current.setCamera(
+      defaultCameraForPosition({
+        lat: locationOnce.coords.latitude,
+        lng: locationOnce.coords.longitude,
+      }),
+    );
+  }, [locationOnce, setEventMapMapRef]);
 
   useEffect(() => {
     if (locPermDeniedMsg) {
@@ -83,13 +76,13 @@ export const GeoQueryMap = () => {
       }
 
       const cam = await mvRef.current?.getCamera();
-      let _zoomLevel = cam?.zoom;
-      if (_zoomLevel === undefined) {
-        _zoomLevel = cam?.altitude;
-        if (_zoomLevel === undefined) {
+      let _queryZoomLevel = cam?.zoom;
+      if (_queryZoomLevel === undefined) {
+        _queryZoomLevel = cam?.altitude;
+        if (_queryZoomLevel === undefined) {
           return;
         }
-        _zoomLevel = altitudeToZoomLevel(_zoomLevel);
+        _queryZoomLevel = altitudeToZoomLevel(_queryZoomLevel);
       }
 
       setMapQueryPositionAtomDbc({
@@ -101,7 +94,7 @@ export const GeoQueryMap = () => {
           lat: _bbox.southWest.latitude,
           lng: _bbox.southWest.longitude,
         },
-        zoomLevel: _zoomLevel,
+        zoomLevel: _queryZoomLevel,
       });
     },
     [setMapQueryPositionAtomDbc],
@@ -112,20 +105,21 @@ export const GeoQueryMap = () => {
   return (
     <MapView
       ref={mvRef}
-      initialCamera={{
-        zoom: INITIAL_ZOOM_LEVEL,
-        center: {
-          latitude: 0,
-          longitude: 0,
-        },
-        heading: 0,
-        pitch: 0,
-      }}
-      onMapReady={() => {
-        setMapReady(true);
-        setEventMapMapRef(mvRef.current);
-      }}
       className="h-full w-full"
+      initialCamera={
+        locationOnce
+          ? defaultCameraForPosition({
+              lat: locationOnce.coords.latitude,
+              lng: locationOnce.coords.longitude,
+            })
+          : defaultCameraForPosition(
+              {
+                lat: 0,
+                lng: 0,
+              },
+              1,
+            )
+      }
       mapPadding={{
         top: HANDLE_HEIGHT,
         right: 0,
@@ -142,7 +136,7 @@ export const GeoQueryMap = () => {
       onRegionChangeComplete={onMapRegionChange}
       moveOnMarkerPress={false}
       rotateEnabled={false}
-      //   cameraZoomRange={{}}
+      // cameraZoomRange={{}}
       maxZoomLevel={20}
       minZoomLevel={3}
     >
