@@ -36,7 +36,9 @@ const UsersEventsSummary = () => {
         <View className="flex-col">
           <EventsListSimpleChipView
             events={eventsByUser.value.data}
-            onChipPress={(e) => navEditEvent(router, e.id!)}
+            onChipPress={(e) => {
+              navEditEvent(router, e.id!);
+            }}
           />
           {/* <View className="items-start py-4">
             <IconButton onPress={() => {}} useOpacity={true} size={1}>

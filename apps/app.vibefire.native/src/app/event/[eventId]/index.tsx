@@ -1,32 +1,28 @@
 import { useLocalSearchParams } from "expo-router";
 
-import { useTsQueryParam } from "!/hooks/useTs";
-
-import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
-import { EventDetails } from "!/c/bottom-panel/EventDetails";
+import {
+  ViewEventPreviewSheet,
+  ViewEventPublishedSheet,
+  ViewEventViaLinkSheet,
+} from "!/features/event/view";
 
 const Screen = () => {
-  const { linkId, preview } = useLocalSearchParams<{
-    linkId: string;
-    preview: string;
+  const { eventId, preview, link } = useLocalSearchParams<{
+    eventId: string;
+    preview?: string;
+    link?: string;
   }>();
 
-  const ts = useTsQueryParam();
-
-  if (!linkId) {
+  if (!eventId) {
     return null;
   }
 
-  return (
-    <BottomPanelModal
-      modalPath="event/[linkId]/index"
-      ts={ts}
-      snapPoints={["80%"]}
-      backgroundColor="black"
-      handleComponent={null}
-    >
-      <EventDetails linkId={linkId} preview={!!preview} />
-    </BottomPanelModal>
-  );
+  if (link === "true") {
+    return <ViewEventViaLinkSheet eventId={eventId} />;
+  }
+  if (preview === "true") {
+    return <ViewEventPreviewSheet eventId={eventId} />;
+  }
+  return <ViewEventPublishedSheet eventId={eventId} />;
 };
 export default Screen;

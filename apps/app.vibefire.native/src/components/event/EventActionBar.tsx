@@ -102,7 +102,7 @@ export const EventActionsBar = (props: {
   event: TModelVibefireEvent;
   disabled?: boolean;
 }) => {
-  const { event, disabled = true } = props;
+  const { event, disabled = false } = props;
 
   const onShareEvent = useShareEventLink(event);
 
@@ -131,7 +131,7 @@ export const EventActionsBar = (props: {
           size={20}
           color={disabled ? "grey" : "white"}
         />
-        <Text className="text-sm text-white">Get there</Text>
+        <Text className="text-white">Get there</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -144,7 +144,7 @@ export const EventActionsBar = (props: {
           size={20}
           color={disabled ? "grey" : "white"}
         />
-        <Text className="text-sm text-white">Share</Text>
+        <Text className="text-white">Share</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,12 +1,8 @@
 import { type ReactNode } from "react";
-import { Text, View } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { View } from "react-native";
 
-import {
-  BasicViewSheet,
-  LinearRedOrangeView,
-  ScrollViewSheet,
-} from "!/c/misc/sheet-utils";
+import { BasicViewSheet, LinearRedOrangeView } from "!/c/misc/sheet-utils";
+import { VibefireBottomLogo } from "!/c/VibefireBottomLogo";
 
 export const SheetBasicColourfulVF = ({
   children,
@@ -17,11 +13,7 @@ export const SheetBasicColourfulVF = ({
     <BasicViewSheet>
       <LinearRedOrangeView className="h-full flex-col items-center space-y-4 p-4">
         <View className="w-full flex-1">{children}</View>
-
-        <View className="flex-row items-center space-x-2 rounded-full bg-black p-2 px-4">
-          <FontAwesome5 name="fire" size={30} color="white" />
-          <Text className="text-4xl text-white">Vibefire</Text>
-        </View>
+        <VibefireBottomLogo />
       </LinearRedOrangeView>
     </BasicViewSheet>
   );

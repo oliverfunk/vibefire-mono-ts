@@ -74,7 +74,7 @@ export const eventsRouter = router({
       ),
     )
     .query(({ ctx, input }) =>
-      wrapManagerReturn(() =>
+      wrapManagerReturn<TModelVibefireEvent>(() =>
         getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId ?? undefined,
           eventId: input.eventId,

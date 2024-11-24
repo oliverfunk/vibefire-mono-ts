@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useRef, type ReactNode } from "react";
+import React, { forwardRef, useMemo, useRef, type ReactNode } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Formik, type FormikProps } from "formik";
@@ -29,26 +30,54 @@ import {
   ScrollViewSheetWithRef,
 } from "!/c/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
+import { navManageEvent, navViewEventPreview } from "!/nav";
 
 import { AddEventDetailWidgetButton } from "./AddEventDetailWidgetButton";
 import { EditableEventDetailWidget } from "./EditableEventDetailWidget";
+import { EditableIconWrapper } from "./EditableIconWrapper";
 
-const EditableIconWrapper = (props: { children: ReactNode }) => {
+const EditInfoDisplay = (props: {
+  onPreviewPress: () => void;
+  onManagePress: () => void;
+}) => {
+  const { onPreviewPress, onManagePress } = props;
   return (
-    <View className="flex-row items-center justify-center">
-      <FontAwesome6 name="edit" size={15} color="white" />
-      {props.children}
-    </View>
+    <LinearRedOrangeView className="p-1">
+      <View className="flex-col space-y-4 rounded-lg bg-neutral-900 p-3">
+        <Text className="text-base text-white">
+          Add details, widgets and info to your event.{"\n"}Tap on values with{" "}
+          <FontAwesome6 name="edit" size={12} color="white" /> to edit them.
+        </Text>
+
+        <View className="flex-row justify-evenly space-x-2">
+          <TouchableOpacity
+            onPress={onManagePress}
+            className="rounded-full border-2 border-red-500 p-2 px-4"
+          >
+            <Text className="text-center text-lg text-white">
+              <FontAwesome6 name="gear" size={15} /> Manage event
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onPreviewPress}
+            className="rounded-full border-2 border-blue-500 p-2 px-4"
+          >
+            <Text className="text-center text-lg text-white">
+              <FontAwesome5 name="eye" size={15} /> Preview event
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </LinearRedOrangeView>
   );
 };
 
-const EditableEventForm = (
-  props: {
-    formik: FormikProps<TModelVibefireEvent>;
-  },
-  ref: React.Ref<BottomSheetScrollViewMethods>,
-) => {
-  const { formik } = props;
+const EditableEventForm = (props: {
+  formik: FormikProps<TModelVibefireEvent>;
+  onPreviewEventPress: () => void;
+  onManageEventPress: () => void;
+}) => {
+  const { formik, onPreviewEventPress, onManageEventPress } = props;
   const { values: event, handleBlur, handleChange, setFieldValue } = formik;
 
   const width = Dimensions.get("window").width;
@@ -63,8 +92,8 @@ const EditableEventForm = (
   }, [event.event.details]);
 
   return (
-    // Header
     <>
+      {/* Header */}
       <View className="relative">
         {/* Background image */}
         <ImageCarousel
@@ -92,13 +121,13 @@ const EditableEventForm = (
         />
 
         <LinearGradient
-          className="absolute bottom-0 w-full pt-2"
+          className="absolute bottom-0 w-full px-4 pt-2"
           colors={["rgba(0,0,0,0)", "rgba(0, 0, 0, 0.8)"]}
           locations={[0, 1]}
         >
-          <EditableIconWrapper>
+          <EditableIconWrapper center>
             <TextInput
-              className="p-2 text-2xl text-white"
+              className="py-2 text-center text-2xl text-white"
               multiline={false}
               placeholderTextColor={"#909090FF"}
               onChangeText={handleChange("name")}
@@ -112,20 +141,17 @@ const EditableEventForm = (
       {/* bars */}
       <EventOrganiserBarView event={event} disabled={true} />
       <EventActionsBar event={event} disabled={true} />
+      {/* Add info bars */}
 
-      <LinearRedOrangeView className="flex-col space-y-2 p-2">
-        <View className="rounded-lg bg-neutral-900 p-4">
-          <Text className="text-lg text-white">
-            <FontAwesome6 name="edit" size={15} color="white" /> shows editable
-            text, tap to change its value.
-          </Text>
-        </View>
-      </LinearRedOrangeView>
+      <EditInfoDisplay
+        onManagePress={onManageEventPress}
+        onPreviewPress={onPreviewEventPress}
+      />
 
       {/* Main */}
-      <View className="flex-col space-y-2 p-2">
+      <View className="flex-col space-y-4 p-2">
         {details.map((detail, index) => (
-          <View key={index} className="rounded-lg bg-neutral-900 p-3">
+          <View key={index}>
             <EditableEventDetailWidget
               index={index}
               formik={formik}
@@ -134,17 +160,10 @@ const EditableEventForm = (
             />
           </View>
         ))}
-        <View className="items-center justify-center p-4">
+        <View className="p-2">
           <AddEventDetailWidgetButton
             onAdd={async (detail) => {
               await formik.setFieldValue("event.details", [...details, detail]);
-              // wait for the form to update
-              setTimeout(() => {
-                // todo: fixme dono why this is needed
-                if (ref && "current" in ref && ref.current) {
-                  ref.current.scrollToEnd();
-                }
-              }, 100);
             }}
           />
         </View>
@@ -153,9 +172,7 @@ const EditableEventForm = (
       {/* Map */}
       <View>
         <Text className="p-2 text-2xl font-bold text-white">Location</Text>
-        <View className="flex-row items-center p-2">
-          <FontAwesome6 name="map-pin" size={20} color="white" />
-          <View className="pl-2" />
+        <View className="p-2">
           <EditableIconWrapper>
             <TextInput
               className="p-2 text-white"
@@ -183,16 +200,20 @@ const EditableEventForm = (
             }}
           />
         </View>
+
+        <Text className="p-2 text-center text-white">
+          (Tap the map to select a location)
+        </Text>
       </View>
     </>
   );
 };
 
-const EditableEventFormWithRef = forwardRef(EditableEventForm);
-
-export const EditEventWysiwyg = withSuspenseErrorBoundarySheet(
+export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
   (props: { eventId: string }) => {
     const { eventId } = props;
+
+    const router = useRouter();
 
     const [viewManage, viewManageCntlr] =
       trpc.events.viewManage.useSuspenseQuery(
@@ -258,24 +279,53 @@ export const EditEventWysiwyg = withSuspenseErrorBoundarySheet(
         {(formik) => (
           <>
             <ScrollViewSheetWithRef ref={formRef}>
-              <EditableEventFormWithRef ref={formRef} formik={formik} />
+              <EditableEventForm
+                formik={formik}
+                onManageEventPress={() => {
+                  navManageEvent(router, formik.values.id);
+                }}
+                onPreviewEventPress={() => {
+                  navViewEventPreview(router, formik.values.id);
+                }}
+              />
+
+              {/* For the form btns */}
+              <View className="h-20" />
             </ScrollViewSheetWithRef>
 
-            <TouchableOpacity
-              disabled={!formik.dirty || formik.isSubmitting}
-              className={`absolute bottom-4 right-4 rounded-full ${formik.dirty ? "border-2 border-white bg-blue-500" : "bg-blue-950"} p-2 px-4`}
-              onPress={() => formik.handleSubmit()}
-            >
-              {formik.isSubmitting ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Text
-                  className={`${formik.dirty ? "text-white" : "text-gray-600"} text-lg`}
-                >
-                  Update
-                </Text>
-              )}
-            </TouchableOpacity>
+            <View className="absolute bottom-0 h-20 w-full flex-row items-center justify-evenly bg-black/90">
+              <TouchableOpacity
+                disabled={!formik.dirty || formik.isSubmitting}
+                className={`rounded-full border-2 ${formik.dirty ? "border-orange-500" : "border-gray-700"} p-2 px-4`}
+                onPress={() => formik.resetForm()}
+              >
+                {formik.isSubmitting ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text
+                    className={`${formik.dirty ? "text-white" : "text-gray-600"} text-lg`}
+                  >
+                    <FontAwesome5 name="redo" size={15} /> Reset
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={!formik.dirty || formik.isSubmitting}
+                className={`rounded-full border-2 ${formik.dirty ? "border-green-500" : "border-gray-700"} p-2 px-4`}
+                onPress={() => formik.handleSubmit()}
+              >
+                {formik.isSubmitting ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text
+                    className={`${formik.dirty ? "text-white" : "text-gray-600"} text-lg`}
+                  >
+                    <FontAwesome6 name="file-arrow-up" size={20} /> Update
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </>
         )}
       </Formik>

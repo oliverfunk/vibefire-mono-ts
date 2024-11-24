@@ -8,8 +8,15 @@ const route = (
   router: Router,
   path: string,
   opts?: RouteingOpts,
-  params?: Record<string, string>,
+  queryParams?: Record<string, string>,
 ) => {
+  if (queryParams) {
+    const queryParamsString = new URLSearchParams(queryParams).toString();
+    path += `?${queryParamsString}`;
+  }
+
+  console.log("route", path, JSON.stringify(opts, null, 2));
+
   if (opts?.manner === "nav") {
     router.navigate(path);
   } else if (opts?.manner === "push") {
@@ -23,9 +30,6 @@ const route = (
     router.dismissAll();
   } else {
     router.navigate(path);
-  }
-  if (params) {
-    router.setParams(params);
   }
 };
 
@@ -78,14 +82,14 @@ export const navViewEvent = (
   eventId: string,
   opts?: RouteingOpts,
 ) => {
-  route(router, "/event/", opts);
+  route(router, "/event/" + eventId + "/", opts);
 };
 export const navViewEventPreview = (
   router: Router,
   eventId: string,
   opts?: RouteingOpts,
 ) => {
-  route(router, "/event/" + eventId, opts, { preview: "true" });
+  route(router, "/event/" + eventId + "/", opts, { preview: "true" });
 };
 
 export const navManageEvent = (
@@ -102,7 +106,8 @@ export const navEditEvent = (
 ) => {
   route(router, "/event/" + eventId + "/edit", opts);
 };
-
+// /event/413667586913337550/manage
+// /event/413667586913337550/edit
 // export const navGroupUserManaged = (router: Router, opts?: RouteingOpts) => {
 //   routerNav("/group/manage");
 // };

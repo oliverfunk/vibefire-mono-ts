@@ -5,7 +5,7 @@ import {
   UserProfileAuthenticatedSheet,
   UserProfileErrorSheet,
   UserProfileUnauthenticatedSheet,
-} from "!/features/user-profile/screens";
+} from "!/features/user-profile";
 import { LoadingSheet } from "!/components/misc/sheet-utils";
 
 const Screen = () => {

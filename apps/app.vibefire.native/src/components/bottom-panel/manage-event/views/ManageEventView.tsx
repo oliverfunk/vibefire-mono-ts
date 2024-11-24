@@ -33,7 +33,7 @@ const ShareEventLinkComponent = (props: { event: TModelVibefireEvent }) => {
     <Pressable
       className="flex-row border bg-orange-100"
       onPress={async () => {
-        await Clipboard.setUrlAsync(vibefireEventShareURL(event.linkId));
+        // await Clipboard.setUrlAsync(vibefireEventShareURL(event.linkId));
         Toast.show({
           type: "success",
           text1: "Link copied!",
