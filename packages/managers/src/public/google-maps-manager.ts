@@ -18,7 +18,7 @@ export const getGoogleMapsManager = (): GoogleMapsManager => {
   }
   return _GoogleMapsManager;
 };
-
+// TODO: FOR REFERNACE
 export class GoogleMapsManager {
   private googleMapsClient: GoogleMapsClient;
   constructor(googleMapsApiKey: string) {

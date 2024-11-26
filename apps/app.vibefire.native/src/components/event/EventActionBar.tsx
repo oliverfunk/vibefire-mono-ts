@@ -36,6 +36,7 @@ const MapsModalMenu = (props: {
     const url = googleMapsOpenEventLocationURL(event);
     try {
       await Linking.openURL(url);
+      setMenuVisible(false);
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
@@ -45,6 +46,7 @@ const MapsModalMenu = (props: {
     const url = appleMapsOpenEventLocationURL(event);
     try {
       await Linking.openURL(url);
+      setMenuVisible(false);
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
@@ -69,7 +71,7 @@ const MapsModalMenu = (props: {
           <View className="flex-col space-y-4 overflow-hidden rounded bg-white p-4">
             <Text className="text-xl font-bold">Open in maps</Text>
             <Text className="text-base">
-              {"Open the event's location in another maps app"}
+              {"Open the event's location in another app"}
             </Text>
             <View className="flex-col items-end space-y-2">
               <TouchableOpacity onPress={onOpenInGoogleMaps}>

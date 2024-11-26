@@ -1,4 +1,12 @@
-import React, { forwardRef, useMemo, useRef, type ReactNode } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -8,19 +16,26 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Toast from "react-native-toast-message";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
-import Clipboard from "@react-native-clipboard/clipboard";
 import { Formik, type FormikProps } from "formik";
+import { DateTime } from "luxon";
 
 import { CoordT, type TModelVibefireEvent } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
 import { EventActionsBar } from "!/components/event/EventActionBar";
+import {
+  EventInfoAddressBar,
+  EventInfoAddressBarEditable,
+  EventInfoTimesBar,
+} from "!/components/event/EventInfoBars";
 import { EventOrganiserBarView } from "!/components/event/EventOrganiserBar";
 import { ImageCarousel } from "!/components/image/ImageCarousel";
 import { UploadableVibefireImage } from "!/components/image/UploadableVibefireImage";
@@ -31,6 +46,7 @@ import {
 } from "!/c/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
 import { navManageEvent, navViewEventPreview } from "!/nav";
+import { MONTH_DATE_TIME_FORMAT } from "!utils/time-conversion";
 
 import { AddEventDetailWidgetButton } from "./AddEventDetailWidgetButton";
 import { EditableEventDetailWidget } from "./EditableEventDetailWidget";
@@ -42,33 +58,121 @@ const EditInfoDisplay = (props: {
 }) => {
   const { onPreviewPress, onManagePress } = props;
   return (
-    <LinearRedOrangeView className="p-1">
-      <View className="flex-col space-y-4 rounded-lg bg-neutral-900 p-3">
-        <Text className="text-base text-white">
-          Add details, widgets and info to your event.{"\n"}Tap on values with{" "}
-          <FontAwesome6 name="edit" size={12} color="white" /> to edit them.
-        </Text>
+    <View className="flex-col space-y-4 rounded-lg bg-black p-4">
+      <Text className="text-2xl font-bold text-white">Edit your event</Text>
+      <Text className="text-base text-white">
+        Add details, widgets and info to your event.{"\n"}Tap on values with{" "}
+        <FontAwesome6 name="edit" size={12} color="white" /> to edit them.
+      </Text>
 
-        <View className="flex-row justify-evenly space-x-2">
-          <TouchableOpacity
-            onPress={onManagePress}
-            className="rounded-full border-2 border-red-500 p-2 px-4"
-          >
-            <Text className="text-center text-lg text-white">
-              <FontAwesome6 name="gear" size={15} /> Manage event
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={onPreviewPress}
-            className="rounded-full border-2 border-blue-500 p-2 px-4"
-          >
-            <Text className="text-center text-lg text-white">
-              <FontAwesome5 name="eye" size={15} /> Preview event
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <View className="flex-row justify-evenly space-x-2">
+        <TouchableOpacity
+          onPress={onManagePress}
+          className="rounded-full border-2 border-red-500 p-2 px-4"
+        >
+          <Text className="text-center text-lg text-white">
+            <FontAwesome6 name="gear" size={15} /> Manage event
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onPreviewPress}
+          className="rounded-full border-2 border-blue-500 p-2 px-4"
+        >
+          <Text className="text-center text-lg text-white">
+            <FontAwesome5 name="eye" size={15} /> Preview event
+          </Text>
+        </TouchableOpacity>
       </View>
-    </LinearRedOrangeView>
+    </View>
+  );
+};
+
+const SelectEventTimeAndDateButton = (props: {
+  children: ReactNode;
+  event: TModelVibefireEvent;
+  onSetStart: (d: Date) => void;
+  onSetEnd: (d: Date | null) => void;
+}) => {
+  const { children, event, onSetStart, onSetEnd } = props;
+
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
+
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const onPress = useCallback(() => {
+    const options = [
+      "Set start time",
+      "Set end time",
+      "Clear end time",
+      "Cancel",
+    ];
+    const cancelButtonIndex = options.length - 1;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      (selectedIndex?: number) => {
+        switch (selectedIndex) {
+          case 0:
+            setShowStartPicker(true);
+            break;
+          case 1:
+            setShowEndPicker(true);
+            break;
+          case 2:
+            onSetEnd(null);
+            break;
+
+          case cancelButtonIndex:
+            break;
+        }
+      },
+    );
+  }, [onSetEnd, showActionSheetWithOptions]);
+
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <DateTimePickerModal
+        isVisible={showStartPicker}
+        date={new Date()}
+        mode="datetime"
+        locale="utc"
+        onConfirm={(date) => {
+          setShowStartPicker(false);
+          if (date) onSetStart(date);
+        }}
+        onCancel={() => {
+          setShowStartPicker(false);
+        }}
+        onError={(_) => {
+          setShowStartPicker(false);
+        }}
+        maximumDate={new Date(2030, 1, 1)}
+        minimumDate={new Date(2020, 1, 1)}
+      />
+      <DateTimePickerModal
+        isVisible={showEndPicker}
+        date={new Date()}
+        mode="datetime"
+        locale="utc"
+        onConfirm={(date) => {
+          setShowEndPicker(false);
+          if (date) onSetEnd(date);
+        }}
+        onCancel={() => {
+          setShowEndPicker(false);
+        }}
+        onError={(_) => {
+          setShowEndPicker(false);
+        }}
+        maximumDate={new Date(2030, 1, 1)}
+        minimumDate={new Date(2020, 1, 1)}
+      />
+      {children}
+    </TouchableOpacity>
   );
 };
 
@@ -93,9 +197,8 @@ const EditableEventForm = (props: {
 
   return (
     <>
-      {/* Header */}
+      {/* header */}
       <View className="relative">
-        {/* Background image */}
         <ImageCarousel
           width={width}
           imgIdKeys={bannerImgKeys}
@@ -138,15 +241,71 @@ const EditableEventForm = (props: {
         </LinearGradient>
       </View>
 
-      {/* bars */}
+      {/* black bars */}
       <EventOrganiserBarView event={event} disabled={true} />
       <EventActionsBar event={event} disabled={true} />
-      {/* Add info bars */}
 
       <EditInfoDisplay
         onManagePress={onManageEventPress}
         onPreviewPress={onPreviewEventPress}
       />
+
+      {/* infos */}
+      <LinearRedOrangeView className="flex-col p-0.5">
+        <View className="flex-col space-y-4 rounded-md bg-neutral-900 p-3.5">
+          <View>
+            <SelectEventTimeAndDateButton
+              event={event}
+              onSetStart={async (d) => {
+                await setFieldValue("times.tsStart", d.toISOString());
+              }}
+              onSetEnd={async (d) => {
+                await setFieldValue("times.tsEnd", d ? d.toISOString() : null);
+              }}
+            >
+              <EditableIconWrapper>
+                <EventInfoTimesBar event={event} noEndTimeText="set end time" />
+              </EditableIconWrapper>
+            </SelectEventTimeAndDateButton>
+          </View>
+          <View>
+            <EditableIconWrapper>
+              <EventInfoAddressBarEditable
+                event={event}
+                className="text-white"
+                multiline={true}
+                numberOfLines={2}
+                placeholderTextColor={"#909090FF"}
+                placeholder="Location name"
+                onChangeText={handleChange("location.addressDescription")}
+                onBlur={handleBlur("location.addressDescription")}
+                value={event.location.addressDescription}
+              />
+            </EditableIconWrapper>
+          </View>
+        </View>
+      </LinearRedOrangeView>
+
+      {/* map */}
+      <View>
+        <Text className="p-2 text-center text-white">
+          (Tap the map to select a location)
+        </Text>
+        <View className="aspect-[4/4]">
+          <LocationSelectionMap
+            initialPosition={event.location?.position ?? undefined}
+            onPositionSelected={async (position) => {
+              await setFieldValue("location.position", position);
+            }}
+            onAddressDescription={async (addressDescription) => {
+              await setFieldValue(
+                "location.addressDescription",
+                addressDescription,
+              );
+            }}
+          />
+        </View>
+      </View>
 
       {/* Main */}
       <View className="flex-col space-y-4 p-2">
@@ -167,43 +326,6 @@ const EditableEventForm = (props: {
             }}
           />
         </View>
-      </View>
-
-      {/* Map */}
-      <View>
-        <Text className="p-2 text-2xl font-bold text-white">Location</Text>
-        <View className="p-2">
-          <EditableIconWrapper>
-            <TextInput
-              className="p-2 text-white"
-              multiline={false}
-              placeholderTextColor={"#909090FF"}
-              placeholder="Location name"
-              onChangeText={handleChange("location.addressDescription")}
-              onBlur={handleBlur("location.addressDescription")}
-              value={event.location.addressDescription}
-            />
-          </EditableIconWrapper>
-        </View>
-
-        <View className="aspect-[4/4] border-2 border-slate-200">
-          <LocationSelectionMap
-            initialPosition={event.location?.position ?? undefined}
-            onPositionSelected={async (position) => {
-              await setFieldValue("location.position", position);
-            }}
-            onAddressDescription={async (addressDescription) => {
-              await setFieldValue(
-                "location.addressDescription",
-                addressDescription,
-              );
-            }}
-          />
-        </View>
-
-        <Text className="p-2 text-center text-white">
-          (Tap the map to select a location)
-        </Text>
       </View>
     </>
   );
@@ -227,6 +349,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
     const updateMut = trpc.events.update.useMutation();
 
     const formRef = useRef<BottomSheetScrollViewMethods>(null);
+    const formikRef = useRef<FormikProps<TModelVibefireEvent>>(null);
 
     if (!viewManage.ok) {
       throw viewManage.error;
@@ -236,10 +359,9 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
 
     return (
       <Formik
+        innerRef={formikRef}
         initialValues={viewManage.value}
         onSubmit={async (values) => {
-          // console.log(JSON.stringify(values, null, 2));
-          // return; // todo remove
           try {
             const res = await updateMut.mutateAsync({
               eventId,
@@ -251,7 +373,11 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                 times: values.times,
               },
             });
-            if (!res.ok) {
+            if (res.ok) {
+              formikRef.current?.resetForm({
+                values: res.value,
+              });
+            } else {
               Toast.show({
                 type: "error",
                 text1: res.error.message,
@@ -272,7 +398,6 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
             setTimeout(() => {
               updateMut.reset();
             }, 3000);
-            await viewManageCntlr.refetch();
           }
         }}
       >
@@ -293,23 +418,20 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
               <View className="h-20" />
             </ScrollViewSheetWithRef>
 
-            <View className="absolute bottom-0 h-20 w-full flex-row items-center justify-evenly bg-black/90">
+            <View className="absolute bottom-0 h-14 w-full flex-row items-end justify-evenly bg-black/90">
+              <View className="flex-1" />
               <TouchableOpacity
                 disabled={!formik.dirty || formik.isSubmitting}
-                className={`rounded-full border-2 ${formik.dirty ? "border-orange-500" : "border-gray-700"} p-2 px-4`}
+                className={`rounded-full border-2 ${formik.dirty && !formik.isSubmitting ? "border-orange-500" : "border-gray-700"} p-2 px-4`}
                 onPress={() => formik.resetForm()}
               >
-                {formik.isSubmitting ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <Text
-                    className={`${formik.dirty ? "text-white" : "text-gray-600"} text-lg`}
-                  >
-                    <FontAwesome5 name="redo" size={15} /> Reset
-                  </Text>
-                )}
+                <Text
+                  className={`${formik.dirty && !formik.isSubmitting ? "text-white" : "text-gray-600"} text-lg`}
+                >
+                  <FontAwesome5 name="redo" size={15} /> Reset
+                </Text>
               </TouchableOpacity>
-
+              <View className="flex-1" />
               <TouchableOpacity
                 disabled={!formik.dirty || formik.isSubmitting}
                 className={`rounded-full border-2 ${formik.dirty ? "border-green-500" : "border-gray-700"} p-2 px-4`}
@@ -325,6 +447,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                   </Text>
                 )}
               </TouchableOpacity>
+              <View className="flex-1" />
             </View>
           </>
         )}

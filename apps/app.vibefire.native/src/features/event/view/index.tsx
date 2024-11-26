@@ -1,11 +1,17 @@
 import { useMemo } from "react";
-import { Dimensions, Pressable, Text, View } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { FontAwesome6 } from "@expo/vector-icons";
-
-// import Clipboard from "@react-native-clipboard/clipboard";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
 
@@ -15,7 +21,7 @@ import { EventActionsBar } from "!/components/event/EventActionBar";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import {
   EventInfoAddressBar,
-  EventInfoTimeStartBar,
+  EventInfoTimesBar,
 } from "!/components/event/EventInfoBars";
 import { EventOrganiserBarView } from "!/components/event/EventOrganiserBar";
 import { VibefireImage } from "!/components/image/VibefireImage";
@@ -74,6 +80,7 @@ const ViewEventSheet = (props: {
     props;
 
   const width = Dimensions.get("window").width;
+  const height = Dimensions.get("window").height;
 
   const bannerImgKeys = useMemo(
     () => event.images.bannerImgKeys,
@@ -86,7 +93,7 @@ const ViewEventSheet = (props: {
 
   return (
     <ScrollViewSheet>
-      {/* Header */}
+      {/* image, title header */}
       <View className="relative">
         {/* Background image */}
         {bannerImgKeys.length === 1 ? (
@@ -106,40 +113,50 @@ const ViewEventSheet = (props: {
         </LinearGradient>
       </View>
 
+      {/* black bars */}
       <EventOrganiserBarView event={event} onPress={onOrganiserPress} />
       <EventActionsBar event={event} />
-      {/* add info */}
+
+      {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">
         <View className="flex-col space-y-4 rounded-md bg-neutral-900 p-3.5">
           <View>
-            <EventInfoTimeStartBar event={event} />
+            <EventInfoTimesBar event={event} />
           </View>
-          <View>
+          <TouchableOpacity
+            onPress={async () => {
+              await Clipboard.setStringAsync(event.location.addressDescription);
+              Toast.show({
+                type: "success",
+                text1: "Address copied",
+                position: "top",
+                topOffset: height / 10,
+                visibilityTime: 1000,
+              });
+            }}
+          >
             <EventInfoAddressBar event={event} />
-          </View>
+          </TouchableOpacity>
         </View>
-
-        {/* <View className="self-center p-2">
-          <VibefireBottomLogo />
-        </View> */}
       </LinearRedOrangeView>
 
-      <View className="flex-col space-y-4 p-4">
-        {details.map((detail, index) => (
-          <View key={index}>
-            <EventDetailWidgetView detail={detail} />
-          </View>
-        ))}
-      </View>
-
-      {/* Map */}
-      <View>
+      {/* map */}
+      <View className="pt-1">
         {/* <Text className="p-2 text-center text-white">
           (Tap the map to select a location)
         </Text> */}
         <View className="aspect-[4/4]">
           <LocationDisplayMap markerPosition={event.location.position} />
         </View>
+      </View>
+
+      {/* details */}
+      <View className="flex-col space-y-4 p-4">
+        {details.map((detail, index) => (
+          <View key={index}>
+            <EventDetailWidgetView detail={detail} />
+          </View>
+        ))}
       </View>
     </ScrollViewSheet>
   );

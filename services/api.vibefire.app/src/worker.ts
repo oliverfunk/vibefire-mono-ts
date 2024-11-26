@@ -23,14 +23,14 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 app.use(timing());
 
-app.onError((err, c) => {
-  console.error(JSON.stringify(err, null, 2));
-  if (err instanceof HTTPException) {
-    // Get the custom response
-    return err.getResponse();
-  }
-  return c.text("internal error!", 500);
-});
+// app.onError((err, c) => {
+//   console.error(JSON.stringify(err, null, 2));
+//   if (err instanceof HTTPException) {
+//     // Get the custom response
+//     return err.getResponse();
+//   }
+//   return c.text("internal error!", 500);
+// });
 
 app.all(
   `${BASEPATH_TRPC}/*`,

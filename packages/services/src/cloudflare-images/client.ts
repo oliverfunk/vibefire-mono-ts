@@ -87,7 +87,7 @@ export class CloudFlareImagesClient {
     >((response) => response.json());
 
     if (!resJson.success) {
-      console.error(resJson);
+      console.error("directUpload", JSON.stringify(resJson, null, 2));
       throw new Error(`/images/v2/direct_upload POST failed`);
     }
 

@@ -1,17 +1,11 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
-import { View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "expo-router";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   type BottomSheetBackdropProps,
-  type BottomSheetModalProps,
 } from "@gorhom/bottom-sheet";
 import { useSetAtom } from "jotai";
-
-import { trpc } from "!/api/trpc-client";
 
 import { bottomSheetIndex } from "!/atoms";
 

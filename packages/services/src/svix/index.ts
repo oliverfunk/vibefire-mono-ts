@@ -10,7 +10,7 @@ export const validateClerkWebhook = (
   try {
     return wh.verify(reqPayload, reqHeaders) as WebhookEvent;
   } catch (err) {
-    console.error(err);
+    console.error("validateClerkWebhook", err);
     return undefined;
   }
 };

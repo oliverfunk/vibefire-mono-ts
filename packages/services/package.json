@@ -12,7 +12,7 @@
     "@googlemaps/google-maps-services-js": "^3.4.0",
     "@vibefire/models": "0.1.0",
     "@vibefire/utils": "0.1.0",
-    "axios": "1.7.7",
+    "axios": "1.7.8",
     "fauna": "^2.3.0",
     "svix": "^1.40.0"
   },

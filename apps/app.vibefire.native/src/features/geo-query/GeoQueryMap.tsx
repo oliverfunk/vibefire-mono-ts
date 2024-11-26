@@ -112,13 +112,7 @@ export const GeoQueryMap = () => {
               lat: locationOnce.coords.latitude,
               lng: locationOnce.coords.longitude,
             })
-          : defaultCameraForPosition(
-              {
-                lat: 0,
-                lng: 0,
-              },
-              1,
-            )
+          : undefined
       }
       mapPadding={{
         top: HANDLE_HEIGHT,
