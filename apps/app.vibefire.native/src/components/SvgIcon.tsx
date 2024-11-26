@@ -14,7 +14,7 @@ export const EventIcon = ({
   vibeIndex,
   sizeFactor = 0.12,
 }: {
-  vibeIndex: TModelVibefireEvent["vibe"];
+  vibeIndex: TModelVibefireEvent["map"]["vibe"];
   sizeFactor?: number;
 }) => (
   <Svg

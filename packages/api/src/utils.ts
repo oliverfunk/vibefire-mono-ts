@@ -13,10 +13,7 @@ export const wrapApiReturn = async <T>(
       value,
     };
   } catch (error) {
-    // although logging should primarily be done in the managers,
-    // we do it here because api's may call other packages
-    // although they shouldn't
-    console.error(error);
+    console.error("wrapApiReturn", error);
     return {
       ok: false,
       error: {
@@ -48,7 +45,7 @@ export const wrapManagerReturn = async <T>(
       };
     }
   } catch (error) {
-    console.error(error);
+    console.error("wrapManagerReturn", error);
   }
 
   return {

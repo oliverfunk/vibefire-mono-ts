@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
+import { type Result } from "@vibefire/models";
 import {
   getFaunaService,
   type RepositoryService,
 } from "@vibefire/services/fauna";
-import { type Result } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
 import { ReposManager } from "!managers/repos-manager";

@@ -11,7 +11,7 @@ export { Status } from "@googlemaps/google-maps-services-js";
 
 export const googleMapsServiceSymbol = Symbol("googleMapsServiceSymbol");
 
-export const getGoogleMapService = (timeout = 500): GoogleMapsService =>
+export const getGoogleMapService = (): GoogleMapsService =>
   resourceLocator().bindResource<GoogleMapsService>(
     googleMapsServiceSymbol,
     (ctx) => {
@@ -20,14 +20,9 @@ export const getGoogleMapService = (timeout = 500): GoogleMapsService =>
         throw new Error("Google Maps configuration is missing");
       }
       const googleClient = new Client({
-        config: {
+        axiosInstance: axios.create({
           adapter: "fetch",
-          timeout,
-        },
-        // axiosInstance: axios.create({
-        //   adapter: "fetch",
-        //   timeout,
-        // }),
+        }),
       });
 
       return new GoogleMapsService(googleClient, gooleMaps.apiKey);

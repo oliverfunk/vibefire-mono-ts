@@ -193,7 +193,7 @@ export const eventsRouter = router({
       ),
     )
     .mutation(({ ctx, input }) =>
-      wrapManagerReturn(() =>
+      wrapManagerReturn<TModelVibefireEvent>(() =>
         getUFEventsManager().updateEvent({
           userAid: ctx.auth.userId,
           eventId: input.eventId,

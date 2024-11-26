@@ -1,5 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 
+import { useFocusUserAuthedRedirect } from "!/hooks/useUserAuthedRedirect";
+
 import { EditEventWysiwygSheet } from "!/features/event/edit";
 
 const Screen = () => {
@@ -7,9 +9,7 @@ const Screen = () => {
     eventId: string;
   }>();
 
-  if (!eventId) {
-    return null;
-  }
+  useFocusUserAuthedRedirect();
 
   return <EditEventWysiwygSheet eventId={eventId} />;
 };

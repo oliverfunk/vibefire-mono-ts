@@ -1,5 +1,5 @@
-import { ImageCarousel } from "../image/ImageCarousel";
-import { VibefireImage } from "../image/VibefireImage";
+import { ImageCarousel } from "!/c/image/ImageCarousel";
+import { VibefireImage } from "!/c/image/VibefireImage";
 
 export const EventImageCarousel = (props: {
   imgIdKeys: string[];

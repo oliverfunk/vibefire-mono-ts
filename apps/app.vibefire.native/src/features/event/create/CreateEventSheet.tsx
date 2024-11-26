@@ -1,6 +1,12 @@
 import { useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+// import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";

@@ -43,7 +43,7 @@ export const managerReturn = async <T>(
       if (e instanceof FaunaCallAborted && e.value.code !== "ise") {
         return new ManagerErrorResponse(e.value);
       }
-      console.error(e);
+      console.error("managerReturn", e);
       return new ManagerErrorResponse({
         code: "ise",
         action: "manager",

@@ -84,7 +84,7 @@ export const LocationSelectionMap = (props: {
       })
       .then((res) => {
         if (!res.ok) {
-          console.error(JSON.stringify(res.error, null, 2));
+          console.log("could not get address description");
           return;
         }
         onAddressDescription(res.value);

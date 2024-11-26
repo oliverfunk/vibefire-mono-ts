@@ -303,9 +303,8 @@ export class UFEventsManger {
 
       // we blindly trust the update here, as we assume
       // all inputs have been validated and sanitized
-      console.log("update", JSON.stringify(update, null, 2));
-      const a = await this.repos.event.update(p.eventId, update).result;
-      console.log("a", JSON.stringify(a, null, 2));
+      return (await this.repos.event.update(p.eventId, update)
+        .result) as TModelVibefireEvent;
     });
   }
 
