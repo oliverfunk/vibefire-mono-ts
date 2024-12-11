@@ -2,8 +2,8 @@ import { getUFEventsManager } from "@vibefire/managers/userfacing";
 import {
   CoordSchema,
   ModelDatePeriodString,
-  ModelEventType,
   ModelEventUpdate,
+  ModelVibefireAccess,
   tb,
   tbValidator,
   type Pageable,
@@ -107,9 +107,7 @@ export const eventsRouter = router({
         tb.Object({
           name: tb.String(),
           fromPreviousEventId: tb.Optional(tb.String()),
-          eventType: tb.Union(
-            ModelEventType.anyOf.map((e) => e.properties.type),
-          ),
+          accessType: ModelVibefireAccess.properties.type,
         }),
       ),
     )
@@ -128,7 +126,7 @@ export const eventsRouter = router({
             await getUFEventsManager().createNewEvent({
               userAid: ctx.auth.userId,
               name: input.name,
-              eventType: input.eventType,
+              accessType: input.accessType,
             })
           ).unwrap();
         }
@@ -146,9 +144,7 @@ export const eventsRouter = router({
         tb.Object({
           name: tb.String(),
           groupId: tb.String(),
-          eventType: tb.Union(
-            ModelEventType.anyOf.map((e) => e.properties.type),
-          ),
+          accessType: ModelVibefireAccess.properties.type,
           fromPreviousEventId: tb.Optional(tb.String()),
         }),
       ),
@@ -171,7 +167,7 @@ export const eventsRouter = router({
               userAid: ctx.auth.userId,
               forGroupId: input.groupId,
               name: input.name,
-              eventType: input.eventType,
+              accessType: input.accessType,
             })
           ).unwrap();
         }

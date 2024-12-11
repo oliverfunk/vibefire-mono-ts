@@ -1,11 +1,11 @@
 import { DateTime } from "luxon";
 
 import {
-  newVibefireEntityAccess,
+  newVibefireAccess,
   newVibefireGroup,
   type AccessAction,
   type Pageable,
-  type TModelVibefireEntityAccess,
+  type TModelVibefireAccess,
   type TModelVibefireGroup,
 } from "@vibefire/models";
 import {
@@ -32,7 +32,7 @@ export class UFGroupsManger {
     userAid: string;
     name: string;
     description: string;
-    accessType: TModelVibefireEntityAccess["type"];
+    accessType: TModelVibefireAccess["type"];
     forOrgId?: string;
   }) {
     return managerReturn(async () => {
@@ -60,7 +60,7 @@ export class UFGroupsManger {
         }
         accAct = {
           action: "create",
-          access: newVibefireEntityAccess({ type: "invite" }), // default, settable by user
+          access: newVibefireAccess({ type: "invite" }), // default, settable by user
           userId: p.userAid,
         };
       }

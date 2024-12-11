@@ -2,23 +2,23 @@ import { DateTime } from "luxon";
 
 import {
   ModelEventUpdate,
-  newVibefireEntityAccess,
+  newVibefireAccess,
   newVibefireEvent,
   tbClean,
   type AccessAction,
   type MapQueryT,
   type Pageable,
-  type TModelEventType,
   type TModelEventUpdate,
+  type TModelVibefireAccess,
   type TModelVibefireEvent,
   type TModelVibefireGroup,
+  type TModelVibefireOwnership,
 } from "@vibefire/models";
 import {
   getCloudFlareImagesService,
   type CloudFlareImagesService,
 } from "@vibefire/services/cloudflare-images";
 import {
-  isValidUuidV4,
   resourceLocator,
   trimAndCropText,
   type PartialDeep,
@@ -52,11 +52,10 @@ export class UFEventsManger {
     userAid: string;
     forGroupId?: string;
     name: string;
-    eventType: TModelEventType["type"];
+    accessType: TModelVibefireAccess["type"];
   }): ManagerAsyncResult<string> {
     return managerReturn(async () => {
-      const eventIsPublicType = p.eventType === "event-public";
-      let accAct: AccessAction | undefined = undefined;
+      const eventIsPublicType = p.accessType === "public";
 
       // non-group event
       if (p.forGroupId === undefined && eventIsPublicType) {
@@ -65,7 +64,12 @@ export class UFEventsManger {
         );
       }
 
-      let ownerName: string;
+      (
+        await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
+      ).unwrap();
+
+      let accAct: AccessAction | undefined = undefined;
+      let ownerRef: TModelVibefireOwnership;
       if (p.forGroupId) {
         const g = (
           await this.repos.group.withIdIfUserCanManage(p.forGroupId, p.userAid)
@@ -77,37 +81,32 @@ export class UFEventsManger {
           );
         }
         accAct = { action: "link", accessId: g.accessRef.id };
-        ownerName = g.name;
+        ownerRef = g.ownershipRef;
       } else {
+        const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
+
         accAct = {
           action: "create",
-          access: newVibefireEntityAccess({ type: "invite" }), // default
+          access: newVibefireAccess({ type: "open" }), // default
           userId: p.userAid,
         };
-        ownerName =
-          (await this.repos.getUserProfile(p.userAid)).unwrap().name ?? "";
+        ownerRef = u.ownershipRef;
       }
 
-      (
-        await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
+      const accessRef = (
+        await this.repos.access.createOrGetAccess(accAct).result
       ).unwrap();
 
       const name = trimAndCropText(p.name, 100);
 
       const newEvent = newVibefireEvent({
-        ownerId: p.forGroupId ?? p.userAid,
-        eventOwnerType: p.forGroupId ? "group" : "user",
-        ownerName,
-        eventType: p.eventType,
-        linkEnabled: true,
-        linkId: crypto.randomUUID(),
         name,
+        accessRef,
+        ownerRef,
         epochCreated: DateTime.utc().toMillis(),
       });
-      // todo: there must be a better way to do this
-      const { id: eventId } = await (
-        await this.repos.event.create(newEvent, accAct)
-      ).result;
+
+      const { id: eventId } = await this.repos.event.create(newEvent).result;
 
       return eventId;
     });
@@ -133,39 +132,43 @@ export class UFEventsManger {
         await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
       ).unwrap();
 
-      // be pretty unlikely this happens
-      if (p.forGroupId && event.ownerId !== p.forGroupId) {
-        throw new ManagerRuleViolation("This event is not part of this group");
-      }
-
+      let ownerRef: TModelVibefireOwnership;
       if (p.forGroupId) {
         const g: TModelVibefireGroup = await this.repos.groupIfManager(
           p.forGroupId,
           p.userAid,
         );
         accAct = { action: "link", accessId: g.accessRef.id };
+        ownerRef = g.ownershipRef;
       } else {
+        const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
         accAct = {
           action: "create",
-          access: newVibefireEntityAccess({
+          access: newVibefireAccess({
             type: event.accessRef.type,
           }),
           userId: p.userAid,
         };
+        ownerRef = u.ownershipRef;
       }
 
+      if (event.ownerRef.id !== ownerRef.id) {
+        throw new ManagerRuleViolation(
+          "You cannot copy an event you do not own",
+        );
+      }
+
+      const accessRef = (
+        await this.repos.access.createOrGetAccess(accAct).result
+      ).unwrap();
+
       const newEvent = newVibefireEvent({
-        ownerId: event.ownerId,
-        eventOwnerType: event.eventOwnerType,
-        ownerName: event.ownerName,
-        linkEnabled: true,
-        linkId: crypto.randomUUID(),
+        ownerRef,
+        accessRef,
         name: event.name,
         epochCreated: DateTime.utc().toMillis(),
       });
-      const { id: newEventId } = await (
-        await this.repos.event.create(newEvent, accAct)
-      ).result;
+      const { id: newEventId } = await this.repos.event.create(newEvent).result;
 
       const newEventFetched = await this.repos.eventIfManager(
         newEventId,
@@ -271,14 +274,14 @@ export class UFEventsManger {
           return await this.repos.eventIfManager(p.eventId, p.userAid);
         case "published":
           return await this.repos.eventIfViewer(p.eventId, p.userAid);
-        case "viaLink":
-          if (!isValidUuidV4(p.eventId)) {
-            throw new ManagerRuleViolation("Invalid event link id");
-          }
-          return (
-            await this.repos.event.withLinkIdIfUserCanView(p.eventId, p.userAid)
-              .result
-          ).unwrap();
+        // case "viaLink":
+        //   if (!isValidUuidV4(p.eventId)) {
+        //     throw new ManagerRuleViolation("Invalid event link id");
+        //   }
+        //   return (
+        //     await this.repos.event.withLinkIdIfUserCanView(p.eventId, p.userAid)
+        //       .result
+        //   ).unwrap();
         default:
           throw new ManagerRuleViolation("Invalid scope");
       }
@@ -329,18 +332,6 @@ export class UFEventsManger {
     });
   }
 
-  updateEventToggleLinkEnabled(p: { userAid: string; eventId: string }) {
-    return managerReturn(async () => {
-      const e = await this.repos.eventIfManager(p.eventId, p.userAid);
-
-      const update: PartialDeep<TModelVibefireEvent> = {
-        linkEnabled: !e.linkEnabled,
-      };
-
-      await this.repos.event.update(p.eventId, update).result;
-    });
-  }
-
   generateEventImageLink(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
       const e = await this.repos.eventIfManager(p.eventId, p.userAid);
@@ -348,7 +339,7 @@ export class UFEventsManger {
       return await this.cfImages.getUploadUrl({
         metadata: {
           eventId: p.eventId,
-          ownerId: e.ownerId,
+          ownershipId: e.ownerRef.id,
           uploaderUserAid: p.userAid,
         },
       });

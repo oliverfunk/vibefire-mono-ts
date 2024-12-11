@@ -1,9 +1,14 @@
 import { tb, Value, type Static } from "!models/modelling";
 
+import { ModelVibefireOwnership } from "./vibefire-ownership";
+
 export type TModelVibefireUser = Static<typeof ModelVibefireUser>;
 export type TModelVibefireUserNoId = Omit<TModelVibefireUser, "id">;
 export const ModelVibefireUser = tb.Object({
   id: tb.String({ default: undefined }),
+
+  ownershipRef: ModelVibefireOwnership,
+
   aid: tb.String({ default: undefined }),
   pushToken: tb.Optional(tb.String()),
   onboardingComplete: tb.Boolean({ default: false }),
@@ -30,6 +35,7 @@ export const ModelVibefireUser = tb.Object({
 });
 
 export const newVibefireUser = (p: {
+  ownershipRef: TModelVibefireUser["ownershipRef"];
   aid: TModelVibefireUser["aid"];
   name: TModelVibefireUser["name"];
   email: TModelVibefireUser["email"];
@@ -38,6 +44,7 @@ export const newVibefireUser = (p: {
   epochCreated: TModelVibefireUser["epochCreated"];
 }): TModelVibefireUserNoId => {
   const d = Value.Create(ModelVibefireUser);
+  d.ownershipRef = p.ownershipRef;
   d.aid = p.aid;
   d.kycStatus = "not-started";
   d.name = p.name;

@@ -1,13 +1,8 @@
 import { tb, Value, type Static } from "!models/modelling";
 
-export type TModelVibefireEntityAccess = Static<
-  typeof ModelVibefireEntityAccess
->;
-export type TModelVibefireEntityAccessNoId = Omit<
-  TModelVibefireEntityAccess,
-  "id"
->;
-export const ModelVibefireEntityAccess = tb.Object(
+export type TModelVibefireAccess = Static<typeof ModelVibefireAccess>;
+export type TModelVibefireAccessNoId = Omit<TModelVibefireAccess, "id">;
+export const ModelVibefireAccess = tb.Object(
   {
     id: tb.String({ default: undefined }),
     type: tb.Union([
@@ -15,16 +10,14 @@ export const ModelVibefireEntityAccess = tb.Object(
       tb.Literal("open"),
       tb.Literal("invite"),
     ]),
-    inviteCode: tb.Optional(tb.String()),
   },
   { default: {} },
 );
-export const newVibefireEntityAccess = (
-  p: TModelVibefireEntityAccessNoId,
-): TModelVibefireEntityAccessNoId => {
-  const d = Value.Create(ModelVibefireEntityAccess);
+export const newVibefireAccess = (
+  p: TModelVibefireAccessNoId,
+): TModelVibefireAccessNoId => {
+  const d = Value.Create(ModelVibefireAccess);
   d.type = p.type;
-  d.inviteCode = p.inviteCode;
 
   return d;
 };
@@ -36,6 +29,6 @@ export type AccessAction =
     }
   | {
       action: "create";
-      access: TModelVibefireEntityAccessNoId;
+      access: TModelVibefireAccessNoId;
       userId: string;
     };

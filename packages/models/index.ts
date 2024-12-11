@@ -2,7 +2,7 @@ export * from "!models/data/vibefire-error";
 export * from "!models/data/vibefire-user";
 export * from "!models/data/vibefire-group";
 export * from "!models/data/vibefire-event";
-export * from "!models/data/event-models";
+export * from "!models/data/vibefire-ownership";
 export * from "!models/data/event-models/event-detail";
 export * from "!models/data/vibefire-access";
 export * from "!models/data/vibefire-plan";

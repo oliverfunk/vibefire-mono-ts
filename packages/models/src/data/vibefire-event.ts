@@ -3,7 +3,8 @@ import { clearable, tb, Value, type Static } from "!models/modelling";
 
 import { EventDetail } from "./event-models/event-detail";
 import { EventInfoModel } from "./event-models/event-info";
-import { ModelVibefireEntityAccess } from "./vibefire-access";
+import { ModelVibefireAccess } from "./vibefire-access";
+import { ModelVibefireOwnership } from "./vibefire-ownership";
 
 const ModelEventDetails = tb.Array(EventDetail, {
   default: [],
@@ -58,17 +59,11 @@ export type TModelVibefireEventNoId = Omit<TModelVibefireEvent, "id">;
 export const ModelVibefireEvent = tb.Object({
   id: tb.String({ default: undefined }),
 
-  accessRef: ModelVibefireEntityAccess,
+  accessRef: ModelVibefireAccess,
+  ownerRef: ModelVibefireOwnership,
 
-  ownerId: tb.String({ default: undefined }),
-  eventOwnerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),
-  ownerName: tb.String({ default: undefined }),
-
-  linkId: tb.String({ default: undefined }),
-  linkEnabled: tb.Boolean({ default: true }),
-
-  // links to a 'plan' type event
-  partOf: clearable(tb.String()),
+  // links to a 'Timeline' type event
+  timeline: clearable(tb.String()),
 
   state: tb.Union(
     [
@@ -97,22 +92,14 @@ export const ModelVibefireEvent = tb.Object({
   epochCreated: tb.Number({ default: undefined }),
 });
 export const newVibefireEvent = (p: {
-  ownerId: TModelVibefireEvent["ownerId"];
-  eventOwnerType: TModelVibefireEvent["eventOwnerType"];
-  ownerName: TModelVibefireEvent["ownerName"];
-  linkId: TModelVibefireEvent["linkId"];
-  linkEnabled: TModelVibefireEvent["linkEnabled"];
+  accessRef: TModelVibefireEvent["accessRef"];
+  ownerRef: TModelVibefireEvent["ownerRef"];
   name: TModelVibefireEvent["name"];
   epochCreated: TModelVibefireEvent["epochCreated"];
 }): TModelVibefireEventNoId => {
   const d = Value.Create(ModelVibefireEvent);
-  // @ts-expect-error the access ref is set later during creation.
-  d.accessRef = undefined;
-  d.ownerId = p.ownerId;
-  d.eventOwnerType = p.eventOwnerType;
-  d.ownerName = p.ownerName;
-  d.linkId = p.linkId;
-  d.linkEnabled = p.linkEnabled;
+  d.accessRef = p.accessRef;
+  d.ownerRef = p.ownerRef;
   d.name = p.name;
   d.epochCreated = p.epochCreated;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
