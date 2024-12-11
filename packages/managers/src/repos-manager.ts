@@ -151,7 +151,7 @@ export class ReposManager {
       6, // limit
     ).result;
 
-    if (drafts.length >= 5) {
+    if (drafts.length >= 50) {
       return Result.err(
         new ManagerRuleViolation(
           groupId

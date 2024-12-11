@@ -10,11 +10,7 @@ import {
 import { type PartialDeep } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna/functions";
-import {
-  accessActionQuery,
-  faunaNullableQuery,
-  faunaQuery,
-} from "!services/fauna/utils";
+import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
 
 export class FaunaPlanRepository {
   constructor(
@@ -22,13 +18,11 @@ export class FaunaPlanRepository {
     private readonly funcs: FaunaFunctions,
   ) {}
 
-  create(plan: TModelVibefirePlan, accAct: AccessAction) {
+  create(plan: TModelVibefirePlan) {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        let acc = ${accessActionQuery(this.funcs, accAct)}
         let d = ${plan}
-        d["accessRef"] = acc
         Plan.create(d) {
           id
         }
@@ -46,34 +40,42 @@ export class FaunaPlanRepository {
   }
 
   withIdIfUserCanManage(planId: string, userAid: string) {
-    return this.funcs.planIfUserCanManage(planId, userAid);
-  }
-
-  withIdIfUserCanView(planId: string, userAid?: string) {
-    return this.funcs.planIfUserCanView(planId, userAid);
-  }
-
-  allUserIsPart(userAid: string, limit = 0) {
-    return faunaQuery<Page<TModelVibefirePlan>>(
-      this.faunaClient,
-      fql`
-        let q = ${this.funcs.plansUserIsPart(userAid).query}
-        if (${limit} != 0) {
-          q.pageSize(${limit})
-        } else {
-          q
-        }
-      `,
+    return this.funcs.entityIfUserCanManage<TModelVibefirePlan>(
+      planId,
+      "plan",
+      userAid,
     );
   }
 
-  allItemsUserCanManage(planId: string, userAid: string) {
-    return this.funcs.planItemsUserCanManage(planId, userAid);
+  withIdIfUserCanView(planId: string, userAid?: string) {
+    return this.funcs.entityIfUserCanView<TModelVibefirePlan>(
+      planId,
+      "plan",
+      userAid,
+    );
   }
 
-  allItemsUserCanView(planId: string, userAid?: string) {
-    return this.funcs.planItemsUserCanView(planId, userAid);
-  }
+  // allUserIsPart(userAid: string, limit = 0) {
+  //   return faunaQuery<Page<TModelVibefirePlan>>(
+  //     this.faunaClient,
+  //     fql`
+  //       let q = ${this.funcs.plansUserIsPart(userAid).query}
+  //       if (${limit} != 0) {
+  //         q.pageSize(${limit})
+  //       } else {
+  //         q
+  //       }
+  //     `,
+  //   );
+  // }
+
+  // allItemsUserCanManage(planId: string, userAid: string) {
+  //   return this.funcs.planItemsUserCanManage(planId, userAid);
+  // }
+
+  // allItemsUserCanView(planId: string, userAid?: string) {
+  //   return this.funcs.planItemsUserCanView(planId, userAid);
+  // }
 
   allByOwner(ownerId: string, limit = 0) {
     return faunaQuery<Page<TModelVibefirePlan>>(

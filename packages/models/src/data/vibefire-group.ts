@@ -1,7 +1,8 @@
 import { SocialLinksModel, VibefireLocationSchema } from "!models//general";
 import { tb, Value, type Static } from "!models/modelling";
 
-import { ModelVibefireEntityAccess } from "./vibefire-access";
+import { ModelVibefireAccess } from "./vibefire-access";
+import { ModelVibefireOwnership } from "./vibefire-ownership";
 
 // export const VibefireGroupPlanEntry = t.Object({
 //   entry: t.Union([
@@ -54,12 +55,10 @@ export type TModelVibefireGroup = Static<typeof ModelVibefireGroup>;
 export const ModelVibefireGroup = tb.Object({
   id: tb.String({ default: undefined }),
 
-  accessRef: ModelVibefireEntityAccess,
+  ownershipRef: ModelVibefireOwnership,
 
-  ownerId: tb.String({ default: undefined }),
-  groupOwnerType: tb.Union([tb.Literal("user"), tb.Literal("org")]),
-  linkId: tb.String({ default: undefined }),
-  linkEnabled: tb.Boolean({ default: true }),
+  accessRef: ModelVibefireAccess,
+  ownerRef: ModelVibefireOwnership,
 
   name: tb.String({ default: undefined }),
   description: tb.String({ default: undefined }),
@@ -74,19 +73,16 @@ export const ModelVibefireGroup = tb.Object({
 });
 
 export const newVibefireGroup = (p: {
-  ownerId: TModelVibefireGroup["ownerId"];
-  groupOwnerType: TModelVibefireGroup["groupOwnerType"];
-  linkId: TModelVibefireGroup["linkId"];
-  linkEnabled: TModelVibefireGroup["linkEnabled"];
+  ownershipRef: TModelVibefireGroup["ownershipRef"];
+  ownerRef: TModelVibefireGroup["ownerRef"];
+  accessRef: TModelVibefireGroup["accessRef"];
   name: TModelVibefireGroup["name"];
   description: TModelVibefireGroup["description"];
   epochCreated: TModelVibefireGroup["epochCreated"];
 }): TModelVibefireGroup => {
   const d = Value.Create(ModelVibefireGroup);
-  d.ownerId = p.ownerId;
-  d.groupOwnerType = p.groupOwnerType;
-  d.linkId = p.linkId;
-  d.linkEnabled = p.linkEnabled;
+  d.ownerRef = p.ownerRef;
+  d.accessRef = p.accessRef;
   d.name = p.name;
   d.description = p.description;
   d.epochCreated = p.epochCreated;

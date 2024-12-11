@@ -1,17 +1,12 @@
 import { fql, type Client, type Page } from "fauna";
 
 import {
-  type AccessAction,
-  type TModelVibefireEntityAccess,
+  type TModelVibefireAccess,
   type TModelVibefireGroup,
 } from "@vibefire/models";
 
 import { type FaunaFunctions } from "!services/fauna//functions";
-import {
-  accessActionQuery,
-  faunaNullableQuery,
-  faunaQuery,
-} from "!services/fauna/utils";
+import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
 
 export class FaunaGroupRepository {
   constructor(
@@ -19,13 +14,11 @@ export class FaunaGroupRepository {
     private readonly funcs: FaunaFunctions,
   ) {}
 
-  create(group: TModelVibefireGroup, accAct: AccessAction) {
+  create(group: TModelVibefireGroup) {
     return faunaQuery<{ id: string }>(
       this.faunaClient,
       fql`
-        let acc = ${accessActionQuery(this.funcs, accAct)}
         let d = ${group}
-        d["accessRef"] = acc
         Group.create(d) {
           id
         }
@@ -43,11 +36,19 @@ export class FaunaGroupRepository {
   }
 
   withIdIfUserCanManage(groupId: string, userAid: string) {
-    return this.funcs.groupIfUserCanManage(groupId, userAid);
+    return this.funcs.entityIfUserCanManage<TModelVibefireGroup>(
+      groupId,
+      "group",
+      userAid,
+    );
   }
 
   withIdIfUserCanView(groupId: string, userAid?: string) {
-    return this.funcs.groupIfUserCanView(groupId, userAid);
+    return this.funcs.entityIfUserCanView<TModelVibefireGroup>(
+      groupId,
+      "group",
+      userAid,
+    );
   }
 
   // todo: not sure about pageing here
@@ -63,7 +64,7 @@ export class FaunaGroupRepository {
 
   allUserOwnedWithAccessType(
     userAid: string,
-    accessType: TModelVibefireEntityAccess["type"],
+    accessType: TModelVibefireAccess["type"],
   ) {
     return faunaQuery<TModelVibefireGroup[]>(
       this.faunaClient,
@@ -91,7 +92,7 @@ export class FaunaGroupRepository {
     return faunaQuery<Page<TModelVibefireGroup>>(
       this.faunaClient,
       fql`
-        let q = ${this.funcs.groupsUserIsPart(userAid).query}
+        let q = ${this.funcs.entitiesUserIsPart("group", userAid).query}
         if (${limit} != 0) {
           q.pageSize(${limit})
         } else {

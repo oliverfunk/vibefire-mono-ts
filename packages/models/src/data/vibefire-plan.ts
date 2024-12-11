@@ -1,6 +1,6 @@
 import { tb, Value, type Static } from "!models/modelling";
 
-import { ModelVibefireEntityAccess } from "./vibefire-access";
+import { ModelVibefireAccess } from "./vibefire-access";
 
 export type TModelPlanItem = Static<typeof ModelPlanItem>;
 export const ModelPlanItem = tb.Object({
@@ -20,7 +20,7 @@ export type TModelVibefirePlan = Static<typeof ModelVibefirePlan>;
 export const ModelVibefirePlan = tb.Object({
   id: tb.String({ default: undefined }),
 
-  accessRef: ModelVibefireEntityAccess,
+  accessRef: ModelVibefireAccess,
 
   ownerId: tb.String({ default: undefined }),
   planOwnerType: tb.Union([tb.Literal("user"), tb.Literal("group")]),

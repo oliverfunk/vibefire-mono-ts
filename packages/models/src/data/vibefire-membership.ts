@@ -1,6 +1,6 @@
 import { tb, type Static } from "!models/modelling";
 
-import { ModelVibefireEntityAccess } from "./vibefire-access";
+import { ModelVibefireAccess } from "./vibefire-access";
 import { ModelVibefireUser } from "./vibefire-user";
 
 export type TModelVibefireMembership = Static<typeof ModelVibefireMembership>;
@@ -8,7 +8,7 @@ export const ModelVibefireMembership = tb.Object({
   id: tb.String({ default: undefined }),
 
   userRef: ModelVibefireUser,
-  accessRef: ModelVibefireEntityAccess,
+  accessRef: ModelVibefireAccess,
 
   role: tb.Union([
     tb.Literal("manger"),
