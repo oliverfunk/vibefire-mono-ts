@@ -1,4 +1,4 @@
-import { Client, ClientConfiguration, HTTPClient } from "fauna";
+import { Client, type ClientConfiguration, type HTTPClient } from "fauna";
 
 import { resourceLocator } from "@vibefire/utils";
 

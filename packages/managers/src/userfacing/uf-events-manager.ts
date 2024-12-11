@@ -68,7 +68,7 @@ export class UFEventsManger {
         await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
       ).unwrap();
 
-      let accAct: AccessAction | undefined = undefined;
+      let accessRef: TModelVibefireAccess;
       let ownerRef: TModelVibefireOwnership;
       if (p.forGroupId) {
         const g = (
@@ -80,22 +80,15 @@ export class UFEventsManger {
             "This group is private and cannot make public events",
           );
         }
-        accAct = { action: "link", accessId: g.accessRef.id };
+        accessRef = g.accessRef;
         ownerRef = g.ownershipRef;
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
-
-        accAct = {
-          action: "create",
-          access: newVibefireAccess({ type: "open" }), // default
-          userId: p.userAid,
-        };
+        accessRef = (
+          await this.repos.access.createAccess(p.accessType, p.userAid).result
+        ).unwrap();
         ownerRef = u.ownershipRef;
       }
-
-      const accessRef = (
-        await this.repos.access.createOrGetAccess(accAct).result
-      ).unwrap();
 
       const name = trimAndCropText(p.name, 100);
 
@@ -118,8 +111,6 @@ export class UFEventsManger {
     previousEventId: string;
   }) {
     return managerReturn(async () => {
-      let accAct: AccessAction | undefined = undefined;
-
       const event = (
         await this.viewEvent({
           userAid: p.userAid,
@@ -133,22 +124,20 @@ export class UFEventsManger {
       ).unwrap();
 
       let ownerRef: TModelVibefireOwnership;
+      let accessRef: TModelVibefireAccess;
       if (p.forGroupId) {
         const g: TModelVibefireGroup = await this.repos.groupIfManager(
           p.forGroupId,
           p.userAid,
         );
-        accAct = { action: "link", accessId: g.accessRef.id };
+        accessRef = g.accessRef;
         ownerRef = g.ownershipRef;
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
-        accAct = {
-          action: "create",
-          access: newVibefireAccess({
-            type: event.accessRef.type,
-          }),
-          userId: p.userAid,
-        };
+        accessRef = (
+          await this.repos.access.createAccess(event.accessRef.type, p.userAid)
+            .result
+        ).unwrap();
         ownerRef = u.ownershipRef;
       }
 
@@ -157,10 +146,6 @@ export class UFEventsManger {
           "You cannot copy an event you do not own",
         );
       }
-
-      const accessRef = (
-        await this.repos.access.createOrGetAccess(accAct).result
-      ).unwrap();
 
       const newEvent = newVibefireEvent({
         ownerRef,

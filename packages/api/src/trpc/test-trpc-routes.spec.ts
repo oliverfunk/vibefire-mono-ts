@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 
-import { ApiResponse } from "!api/utils";
+import { type ApiResponse } from "!api/utils";
 
 import type { TRPCRouter } from ".";
 

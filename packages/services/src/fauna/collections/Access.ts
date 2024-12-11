@@ -28,18 +28,22 @@ export class FaunaAccessRepository {
     );
   }
 
-  createOrGetAccess(accAct: AccessAction) {
-    if (accAct.action === "link") {
-      return faunaAbortableQuery<TModelVibefireAccess>(
-        this.faunaClient,
-        fql`
-          Access.byId(${accAct.accessId})
-        `,
-      );
-    } else {
-      return this.funcs.createNewAccess(accAct.access.type, accAct.userId);
-    }
+  createAccess(accessType: TModelVibefireAccess["type"], userId: string) {
+    return this.funcs.createNewAccess(accessType, userId);
   }
+
+  // createOrGetAccess(accAct: AccessAction) {
+  //   if (accAct.action === "link") {
+  //     return faunaAbortableQuery<TModelVibefireAccess>(
+  //       this.faunaClient,
+  //       fql`
+  //         Access.byId(${accAct.accessId})
+  //       `,
+  //     );
+  //   } else {
+  //     return this.funcs.createNewAccess(accAct.access.type, accAct.userId);
+  //   }
+  // }
 
   membershipWithId(membershipId: string) {
     return faunaNullableQuery<TModelVibefireMembership>(
