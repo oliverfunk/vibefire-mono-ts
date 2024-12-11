@@ -70,7 +70,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
               eventId,
               update: {
                 name: values.name,
-                event: values.event,
+                details: values.details,
                 images: values.images,
                 location: values.location,
                 times: values.times,

@@ -76,8 +76,8 @@ export const EditableEventForm = (props: {
   }, [event.images.bannerImgKeys]);
 
   const details = useMemo(() => {
-    return event.event.details;
-  }, [event.event.details]);
+    return event.details;
+  }, [event.details]);
 
   return (
     <>
@@ -205,14 +205,14 @@ export const EditableEventForm = (props: {
               n={index}
               nDetails={details.length}
               detail={detail}
-              detailsPath={`event.details`}
+              detailsPath={`details`}
             />
           </View>
         ))}
         <View>
           <AddEventDetailWidgetButton
             onAdd={async (detail) => {
-              await formik.setFieldValue("event.details", [...details, detail]);
+              await formik.setFieldValue("details", [...details, detail]);
             }}
           />
         </View>

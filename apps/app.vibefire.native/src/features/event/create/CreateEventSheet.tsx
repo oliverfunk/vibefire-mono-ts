@@ -57,7 +57,7 @@ export const CreateEventSheet = () => {
                 }
                 try {
                   const res = await createEventMut.mutateAsync({
-                    eventType: "event-private",
+                    accessType: "open",
                     name: createEventState.title,
                   });
                   if (res.ok) {

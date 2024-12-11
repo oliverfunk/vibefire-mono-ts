@@ -55,8 +55,8 @@ const ThreeDotsModalMenu = (props: {
   };
 
   const eventOrganisedByUser = useMemo(() => {
-    return userInfo?.aid === event.ownerId;
-  }, [userInfo, event.ownerId]);
+    return userInfo?.ownershipRef.id === event.ownerRef.id;
+  }, [userInfo?.ownershipRef.id, event.ownerRef.id]);
 
   const hideEventMut = trpc.user.hideEvent.useMutation();
   const blockOrganiserMut = trpc.user.blockOrganiser.useMutation();
@@ -179,20 +179,11 @@ export const EventOrganiserBarView = (props: {
   return (
     <View className="flex-row items-center justify-center space-x-4 bg-black px-4 py-4">
       <Pressable onPress={onOrganiserPress}>
-        {event.eventOwnerType === "group" ? (
-          <StandardImage
-            cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black"
-            source={organisationProfileImagePath(event.ownerId)}
-            alt="Event Organizer Profile Picture"
-            contentFit="cover"
-          />
-        ) : (
-          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black">
-            <Text className="text-lg text-white">
-              {event.ownerName.at(0)!.toUpperCase()}
-            </Text>
-          </View>
-        )}
+        <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black">
+          <Text className="text-lg text-white">
+            {event.ownerRef.ownerName.at(0)!.toUpperCase()}
+          </Text>
+        </View>
       </Pressable>
       <Pressable
         className="flex-1 flex-col justify-center"
@@ -204,7 +195,7 @@ export const EventOrganiserBarView = (props: {
           ellipsizeMode="tail"
           className="text-lg font-bold text-white"
         >
-          {event.ownerName}
+          {event.ownerRef.ownerName}
         </Text>
       </Pressable>
       <ThreeDotsModalMenu event={event} disabled={disabled} />

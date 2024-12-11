@@ -1,13 +1,11 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { useNavigation, useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { capitalize } from "lodash";
 
 import { type AppUserAuthenticated } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
-import { IconButton } from "!/components/button/IconButton";
 import { EventsListSimpleChipView } from "!/components/event/EventsList";
 import {
   ErrorDisplay,
