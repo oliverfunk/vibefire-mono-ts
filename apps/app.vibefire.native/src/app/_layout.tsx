@@ -28,7 +28,7 @@ import * as Notifications from "expo-notifications";
 
 import { GeoQueryMap } from "!/features/geo-query/GeoQueryMap";
 import { VfActionButton } from "!/features/vf-action-button";
-import { NewBottomPanelModal } from "!/components/bottom-panel/BottomPanelModal";
+import { BottomPanelPersistentModal } from "!/components/bottom-panel/BottomPanelModal";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
 
 // todo: make strict in the future
@@ -113,14 +113,14 @@ export default function HomeLayout() {
           <View className="android:bottom-[55] ios:bottom-[90] absolute z-0 w-full px-3">
             <VfActionButton />
           </View>
-          <NewBottomPanelModal>
+          <BottomPanelPersistentModal>
             <Stack
               screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: "#171717", paddingTop: 5 },
               }}
             />
-          </NewBottomPanelModal>
+          </BottomPanelPersistentModal>
         </NoTopContainer>
       </PostProviders>
     </AppProviders>

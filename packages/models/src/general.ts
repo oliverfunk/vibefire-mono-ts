@@ -61,3 +61,14 @@ export const VibefireLocationSchema = tb.Object({
   addressDescription: tb.String({ default: "" }),
   position: CoordSchema,
 });
+
+export const SocialLinksModel = tb.Object(
+  {
+    x: tb.Optional(tb.String({ default: undefined })),
+    facebook: tb.Optional(tb.String({ default: undefined })),
+    instagram: tb.Optional(tb.String({ default: undefined })),
+    tiktok: tb.Optional(tb.String({ default: undefined })),
+    website: tb.Optional(tb.String({ default: undefined })),
+  },
+  { default: {} },
+);

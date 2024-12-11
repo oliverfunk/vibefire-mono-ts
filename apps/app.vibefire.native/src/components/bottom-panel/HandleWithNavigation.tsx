@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
-import { useRootNavigationState, useRouter } from "expo-router";
+import { usePathname, useRootNavigationState, useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   useBottomSheet,
@@ -21,11 +21,11 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
   const [mapEventsInfo] = useAtom(mapDisplayableEventsInfoAtom);
   const [firstRun, setFirstRun] = useState(false);
 
+  const pathname = usePathname();
+
   const router = useRouter();
   // refreshes this component when the navigation state changes
-  const { routes } = useRootNavigationState();
-
-  // console.log("routes", JSON.stringify(routes, null, 2));
+  useRootNavigationState();
 
   useEffect(() => {
     if (!firstRun) {
@@ -35,8 +35,8 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
     if (bottomSheetCollapsed) {
       if (router.canGoBack()) {
         router.dismissAll();
-      } else {
-        //! todo: this might cause issues when deeplinking
+      } else if (pathname !== "/") {
+        // todo: this might cause issues when deeplinking
         router.replace("/");
       }
     }

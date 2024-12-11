@@ -1,12 +1,12 @@
 import { DateTime } from "luxon";
 
-export const MONTH_DATE_TIME_FORMAT = "LLL d, T";
-export const MONTH_DATE_TIME_LB_FORMAT = "LLL d\nT";
+export const DOW_MONTH_DATE_TIME_FORMAT = "ccc dd LLL h:mm a";
+// export const DOW_MONTH_DATE_TIME_FORMAT = "ccc ff";
 export const DATE_STR_FORMAT = "yyyyMMdd";
 
 export const toDateStr = (dt: DateTime) => dt.toFormat(DATE_STR_FORMAT);
 export const toMonthDateTimeStr = (dt: DateTime) =>
-  dt.toFormat(MONTH_DATE_TIME_FORMAT);
+  dt.toFormat(DOW_MONTH_DATE_TIME_FORMAT);
 
 export const nowAtUTC = () => DateTime.now().setZone("utc");
 
@@ -15,6 +15,9 @@ export const nowAsUTC = () =>
 
 export const nowAsUTCNoTime = () =>
   nowAsUTC().set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+
+export const nowAsUTCNoMins = () =>
+  nowAsUTC().set({ minute: 0, second: 0, millisecond: 0 });
 
 export const isoNTZToUTCDateTime = (isoStr: string) => {
   return DateTime.fromISO(isoStr, { zone: "utc" });

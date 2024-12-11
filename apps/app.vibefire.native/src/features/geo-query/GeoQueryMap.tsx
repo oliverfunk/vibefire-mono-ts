@@ -70,8 +70,8 @@ export const GeoQueryMap = () => {
 
   const onMapRegionChange = useCallback(
     async (region: Region) => {
-      const _bbox = mvRef.current?.boundingBoxForRegion(region);
-      if (_bbox === undefined) {
+      const bbox = mvRef.current?.boundingBoxForRegion(region);
+      if (bbox === undefined) {
         return;
       }
 
@@ -87,12 +87,12 @@ export const GeoQueryMap = () => {
 
       setMapQueryPositionAtomDbc({
         northEast: {
-          lat: _bbox.northEast.latitude,
-          lng: _bbox.northEast.longitude,
+          lat: bbox.northEast.latitude,
+          lng: bbox.northEast.longitude,
         },
         southWest: {
-          lat: _bbox.southWest.latitude,
-          lng: _bbox.southWest.longitude,
+          lat: bbox.southWest.latitude,
+          lng: bbox.southWest.longitude,
         },
         zoomLevel: _queryZoomLevel,
       });

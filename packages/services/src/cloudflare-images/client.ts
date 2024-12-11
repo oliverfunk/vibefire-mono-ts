@@ -97,37 +97,6 @@ export class CloudFlareImagesClient {
     };
   }
 
-  async du2(p: {
-    imageId?: string;
-    expiry?: string;
-    metadata?: Record<string, string>;
-  }) {
-    const { imageId, metadata, expiry } = p;
-
-    const url =
-      "https://api.cloudflare.com/client/v4/accounts/6248da148b4512c4fafb7aa130cedcc4/images/v2/direct_upload";
-    const token = "35iShlIWH_FwKD04WYSPRjfJJTz3ZVsj6VPNRB19";
-
-    const fd = this._formData(metadata);
-    if (imageId) {
-      fd.append("id", imageId);
-    }
-    if (expiry) {
-      fd.append("expiry", expiry);
-    }
-
-    return fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: fd,
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error("Error:", error));
-  }
-
   async deleteImage(imageId: string) {
     const apiUrl = `${this.baseApiUrl}/images/v1/${imageId}`;
 

@@ -42,7 +42,7 @@ export const AddEventDetailWidgetButton = (props: {
 
   return (
     <TouchableOpacity
-      className="rounded-full border-2 border-white p-2 px-4"
+      className="rounded-full border-2 border-white p-2"
       onPress={onPress}
     >
       <Text className="text-center text-lg text-white">

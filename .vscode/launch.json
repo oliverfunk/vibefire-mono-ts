@@ -31,8 +31,14 @@
       "cwd": "${workspaceFolder}/apps/app.vibefire.native/",
       "type": "reactnative",
       "request": "attach",
-      "port": 19000, //Port number may be different in your machine
+      "port": 19000,
       "sourceMaps": true
+    },
+    {
+      "type": "radon-ide",
+      "request": "launch",
+      "name": "Radon IDE panel",
+      "ios": {}
     }
   ]
 }

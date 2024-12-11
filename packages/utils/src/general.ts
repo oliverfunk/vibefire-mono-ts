@@ -1,3 +1,5 @@
+import { type CoordT } from "@vibefire/models";
+
 export const trimAndCropText = (text: string, length: number = 500) => {
   text = text.trim();
   if (text.length > length) {
@@ -5,6 +7,9 @@ export const trimAndCropText = (text: string, length: number = 500) => {
   }
   return text;
 };
+
+export const isCoordZeroZero = (coord: CoordT) =>
+  coord.lat === 0 && coord.lng === 0;
 
 export const removeUndef = (
   obj: { [key: string]: unknown },

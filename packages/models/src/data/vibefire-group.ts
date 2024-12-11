@@ -1,4 +1,4 @@
-import { VibefireLocationSchema } from "!models//general";
+import { SocialLinksModel, VibefireLocationSchema } from "!models//general";
 import { tb, Value, type Static } from "!models/modelling";
 
 import { ModelVibefireEntityAccess } from "./vibefire-access";
@@ -65,16 +65,7 @@ export const ModelVibefireGroup = tb.Object({
   description: tb.String({ default: undefined }),
   images: ModelGroupImages,
 
-  socials: tb.Object(
-    {
-      x: tb.Optional(tb.String({ default: undefined })),
-      facebook: tb.Optional(tb.String({ default: undefined })),
-      instagram: tb.Optional(tb.String({ default: undefined })),
-      tiktok: tb.Optional(tb.String({ default: undefined })),
-      website: tb.Optional(tb.String({ default: undefined })),
-    },
-    { default: {} },
-  ),
+  socials: SocialLinksModel,
 
   location: tb.Optional(VibefireLocationSchema),
 

@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 import { userAtom } from "!/atoms";
 
-export const useFocusUserAuthedRedirect = () => {
+export const useOnFocusUserNotAuthedRedirect = () => {
   const [user] = useAtom(userAtom);
   const router = useRouter();
 

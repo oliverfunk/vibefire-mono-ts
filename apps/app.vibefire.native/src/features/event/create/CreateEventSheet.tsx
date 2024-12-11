@@ -61,7 +61,8 @@ export const CreateEventSheet = () => {
                     name: createEventState.title,
                   });
                   if (res.ok) {
-                    navEditEvent(router, res.value.id);
+                    // todo: make sure this works
+                    navEditEvent(router, res.value.id, { manner: "replace" });
                   } else {
                     setIsInErrorState(true);
                     Toast.show({
