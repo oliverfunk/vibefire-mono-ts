@@ -1,9 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import MapView, {
-  Marker,
-  PROVIDER_GOOGLE,
-  type Region,
-} from "react-native-maps";
+import React, { useCallback, useEffect, useRef } from "react";
+import MapView, { Marker, type Region } from "react-native-maps";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
@@ -11,10 +7,7 @@ import { debounce } from "lodash";
 
 import { mapPositionInfoAtom } from "@vibefire/shared-state";
 
-import {
-  defaultCameraForPosition,
-  INITIAL_ZOOM_LEVEL,
-} from "!/utils/constants";
+import { defaultCameraForPosition } from "!/utils/constants";
 import { useLocationOnce } from "!/hooks/useLocation";
 import { useMapDisplayableEvents } from "!/hooks/useMapQuery";
 
@@ -22,7 +15,7 @@ import { HANDLE_HEIGHT } from "!/components/bottom-panel/HandleWithNavigation";
 import { eventMapMapRefAtom } from "!/atoms";
 import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
-import { altitudeToZoomLevel, zoomLevelToAltitude } from "!utils/math";
+import { altitudeToZoomLevel } from "!utils/math";
 
 export const GeoQueryMap = () => {
   const mvRef = useRef<MapView>(null);

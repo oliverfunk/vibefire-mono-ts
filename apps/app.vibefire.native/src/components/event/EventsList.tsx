@@ -1,10 +1,6 @@
 import { useCallback, useMemo } from "react";
-import {
-  ListRenderItem,
-  SectionListRenderItem,
-  Text,
-  View,
-} from "react-native";
+import { Text, View } from "react-native";
+import { type ListRenderItemInfo } from "@shopify/flash-list";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
 import { isoNTZToUTCDateTime, type PartialDeep } from "@vibefire/utils";
@@ -13,11 +9,7 @@ import { useSortedEvents } from "!/hooks/useSortedByTime";
 
 import { SimpleList } from "!/c/list/SimpleList";
 import { useItemSeparator } from "!/c/misc/ItemSeparator";
-import {
-  FlashListViewSheet,
-  FlatListViewSheet,
-  SectionListViewSheet,
-} from "!/c/misc/sheet-utils";
+import { FlashListViewSheet } from "!/c/misc/sheet-utils";
 
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
@@ -34,15 +26,14 @@ const useEventCardRenderer = (
   showStatusBanner?: boolean,
 ) => {
   return useCallback(
-    ({ item: event }: ListRenderItem<PartialDeep<TModelVibefireEvent>>) => (
+    ({ item: event }: ListRenderItemInfo<PartialDeep<TModelVibefireEvent>>) => (
       <EventCard
         state={event.state}
         eventInfo={{
           bannerImgKey: event.images?.bannerImgKeys?.[0] ?? undefined,
           title: event.name!,
-          ownerId: event.ownerId!,
-          ownerType: event.ownerType!,
-          ownerName: event.ownerName!,
+          ownerType: event.ownerRef!.ownerType!,
+          ownerName: event.ownerRef!.ownerName!,
           addressDescription: event?.location?.addressDescription ?? undefined,
           timeStart: event.times?.tsStart
             ? isoNTZToUTCDateTime(event.times?.tsStart)

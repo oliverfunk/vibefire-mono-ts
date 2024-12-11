@@ -49,7 +49,7 @@ export const EditableEventDetailWidget = (props: {
               onPress={async () => {
                 // swap with previous
                 if (n > 0) {
-                  const newDetails = [...formik.values.event.details];
+                  const newDetails = [...formik.values.details];
                   newDetails[n] = newDetails[n - 1];
                   newDetails[n - 1] = detail;
                   await setFieldValue(detailsPath, newDetails);
@@ -60,7 +60,7 @@ export const EditableEventDetailWidget = (props: {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={async () => {
-                const newDetails = [...formik.values.event.details];
+                const newDetails = [...formik.values.details];
                 newDetails.splice(n, 1);
                 await setFieldValue(detailsPath, newDetails);
               }}
@@ -71,7 +71,7 @@ export const EditableEventDetailWidget = (props: {
               onPress={async () => {
                 // swap with next
                 if (n != nDetails - 1) {
-                  const newDetails = [...formik.values.event.details];
+                  const newDetails = [...formik.values.details];
                   newDetails[n] = newDetails[n + 1];
                   newDetails[n + 1] = detail;
                   await setFieldValue(detailsPath, newDetails);

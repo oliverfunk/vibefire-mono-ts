@@ -3,20 +3,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome } from "@expo/vector-icons";
 import { type DateTime } from "luxon";
 
-import { type TModelVibefireEvent } from "@vibefire/models";
-import { organisationProfileImagePath } from "@vibefire/utils";
+import {
+  type TModelVibefireEvent,
+  type TModelVibefireOwnership,
+} from "@vibefire/models";
 
 import { IconButton } from "!/c/button/IconButton";
-import { StandardImage } from "!/c/image/StandardImage";
 import { VibefireImage } from "!/c/image/VibefireImage";
 
 type EventCardProps = {
   state?: TModelVibefireEvent["state"];
   eventInfo: {
     title: string;
-    ownerId: TModelVibefireEvent["ownerId"];
-    ownerType: TModelVibefireEvent["eventOwnerType"];
-    ownerName: TModelVibefireEvent["ownerName"];
+    ownerType: TModelVibefireOwnership["ownerType"];
+    ownerName: TModelVibefireOwnership["ownerName"];
     addressDescription?: string;
     timeStart?: DateTime;
     timeEnd?: DateTime;
@@ -62,13 +62,19 @@ export const EventCard = ({
         locations={[0, 1]}
       >
         {event.ownerType === "group" ? (
-          <StandardImage
-            cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
-            contentFit="cover"
-            source={organisationProfileImagePath(event.ownerId)}
-            alt="Event Organizer Profile Picture"
-          />
+          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black/80">
+            <Text className="text-lg text-white">
+              {event.ownerName.at(0)!.toUpperCase()}
+              {"."}
+            </Text>
+          </View>
         ) : (
+          // <StandardImage
+          //   cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
+          //   contentFit="cover"
+          //   source={}
+          //   alt="Event Organizer Profile Picture"
+          // />
           <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black/80">
             <Text className="text-lg text-white">
               {event.ownerName.at(0)!.toUpperCase()}
