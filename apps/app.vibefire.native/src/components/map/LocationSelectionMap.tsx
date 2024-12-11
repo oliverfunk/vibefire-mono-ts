@@ -3,8 +3,11 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
 
+import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
 import { useLocationOnce } from "!/hooks/useLocation";
+
+import { isCoordZeroZero } from "!utils/general";
 
 export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;
@@ -16,44 +19,33 @@ export const LocationSelectionMap = (props: {
     props;
 
   const mvRef = useRef<MapView>(null);
-  const [mapReady, setMapReady] = useState(false);
 
   const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
     initialPosition,
   );
 
-  const { location, locPermDeniedMsg } = useLocationOnce();
-  useEffect(() => {
-    if (!mapReady) {
-      return;
-    }
+  const { location: locationOnce, locPermDeniedMsg } = useLocationOnce();
 
+  useEffect(() => {
     if (mvRef.current === null) {
       return;
     }
-
-    if (initialPosition) {
-      mvRef.current.setCamera({
-        center: {
-          latitude: initialPosition.lat,
-          longitude: initialPosition.lng,
-        },
-        zoom: 16,
-      });
-    } else {
-      if (!location) {
-        return;
-      }
-      mvRef.current.setCamera({
-        center: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
-        zoom: 16,
-      });
+    if (initialPosition && !isCoordZeroZero(initialPosition)) {
+      mvRef.current.setCamera(defaultCameraForPosition(initialPosition));
+      return;
     }
-  }, [initialPosition, location, mapReady]);
+    if (!locationOnce) {
+      return;
+    }
+    mvRef.current.setCamera(
+      defaultCameraForPosition({
+        lat: locationOnce.coords.latitude,
+        lng: locationOnce.coords.longitude,
+      }),
+    );
+  }, [initialPosition, locationOnce]);
 
+  // todo: standardise
   // useEffect(() => {
   //   if (locPermDeniedMsg !== null) {
   //     Toast.show({
@@ -90,7 +82,7 @@ export const LocationSelectionMap = (props: {
         onAddressDescription(res.value);
       })
       .catch((err) => {
-        console.error(JSON.stringify(err, null, 2));
+        console.log(JSON.stringify(err, null, 2));
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPosition]);
@@ -100,9 +92,14 @@ export const LocationSelectionMap = (props: {
       ref={mvRef}
       className="h-full w-full"
       // provider={PROVIDER_GOOGLE}
-      onMapReady={() => {
-        setMapReady(true);
-      }}
+      initialCamera={
+        locationOnce
+          ? defaultCameraForPosition({
+              lat: locationOnce.coords.latitude,
+              lng: locationOnce.coords.longitude,
+            })
+          : undefined
+      }
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
@@ -143,7 +140,7 @@ export const LocationSelectionMap = (props: {
             }
       }
     >
-      {selectedPosition && (
+      {selectedPosition && !isCoordZeroZero(selectedPosition) && (
         <Marker
           coordinate={{
             latitude: selectedPosition.lat,

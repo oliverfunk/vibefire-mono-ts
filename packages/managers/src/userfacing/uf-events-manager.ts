@@ -104,6 +104,7 @@ export class UFEventsManger {
         name,
         epochCreated: DateTime.utc().toMillis(),
       });
+      // todo: there must be a better way to do this
       const { id: eventId } = await (
         await this.repos.event.create(newEvent, accAct)
       ).result;
@@ -120,12 +121,13 @@ export class UFEventsManger {
     return managerReturn(async () => {
       let accAct: AccessAction | undefined = undefined;
 
-      const viewEventRes = await this.viewEvent({
-        userAid: p.userAid,
-        eventId: p.previousEventId,
-        scope: "manage",
-      });
-      const event = viewEventRes.unwrap();
+      const event = (
+        await this.viewEvent({
+          userAid: p.userAid,
+          eventId: p.previousEventId,
+          scope: "manage",
+        })
+      ).unwrap();
 
       (
         await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
@@ -159,29 +161,32 @@ export class UFEventsManger {
         linkEnabled: true,
         linkId: crypto.randomUUID(),
         name: event.name,
-        eventType: event.event.type,
         epochCreated: DateTime.utc().toMillis(),
       });
-      const { id: newEventId } = await this.repos.event.create(newEvent, accAct)
-        .result;
+      const { id: newEventId } = await (
+        await this.repos.event.create(newEvent, accAct)
+      ).result;
 
-      const eNew = await this.repos.eventIfManager(newEventId, p.userAid);
+      const newEventFetched = await this.repos.eventIfManager(
+        newEventId,
+        p.userAid,
+      );
 
       // copy over the rest of the event
-      eNew.times = event.times;
-      eNew.location = event.location;
-      eNew.images = event.images;
-      eNew.event = event.event;
+      newEventFetched.times = event.times;
+      newEventFetched.location = event.location;
+      newEventFetched.images = event.images;
+      newEventFetched.details = event.details;
 
       // update the new event
       const updateEventRes = await this.updateEvent({
         userAid: p.userAid,
         eventId: newEventId,
-        update: eNew,
+        update: newEventFetched,
       });
       updateEventRes.unwrap();
 
-      return eNew.id;
+      return newEventFetched.id;
     });
   }
 
@@ -372,7 +377,7 @@ export class UFEventsManger {
       const maxLat = neLatGe ? p.query.northEast.lat : p.query.southWest.lat;
       const maxLng = neLngGe ? p.query.northEast.lng : p.query.southWest.lng;
 
-      const res = (
+      const { data } = (
         await this.repos.event.geoPeriodQueryForUser(
           minLat,
           minLng,
@@ -383,7 +388,7 @@ export class UFEventsManger {
         ).result
       ).unwrap();
 
-      return res.data;
+      return data;
     });
   }
 

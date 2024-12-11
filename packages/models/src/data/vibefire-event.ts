@@ -1,12 +1,17 @@
-import {
-  ModelEventType,
-  newEventType,
-  type TModelEventType,
-} from "!models/data/event-types";
 import { DatePeriodSchema, VibefireLocationSchema } from "!models/general";
 import { clearable, tb, Value, type Static } from "!models/modelling";
 
+import { EventDetail } from "./event-models/event-detail";
+import { EventInfoModel } from "./event-models/event-info";
 import { ModelVibefireEntityAccess } from "./vibefire-access";
+
+const ModelEventDetails = tb.Array(EventDetail, {
+  default: [],
+});
+
+const ModelEventAddInfos = tb.Array(EventInfoModel, {
+  default: [],
+});
 
 const ModelEventImages = tb.Object({
   bannerImgKeys: tb.Array(tb.String(), {
@@ -48,8 +53,6 @@ const ModelEventCustomMapData = tb.Object({
   customIcon: clearable(tb.String()),
 });
 
-export { ModelEventType, type TModelEventType };
-
 export type TModelVibefireEvent = Static<typeof ModelVibefireEvent>;
 export type TModelVibefireEventNoId = Omit<TModelVibefireEvent, "id">;
 export const ModelVibefireEvent = tb.Object({
@@ -83,8 +86,8 @@ export const ModelVibefireEvent = tb.Object({
     minLength: 2,
     maxLength: 100,
   }),
-  event: ModelEventType,
-
+  details: ModelEventDetails,
+  addInfos: ModelEventAddInfos,
   images: ModelEventImages,
   times: ModelEventTimes,
   location: VibefireLocationSchema,
@@ -101,7 +104,6 @@ export const newVibefireEvent = (p: {
   linkEnabled: TModelVibefireEvent["linkEnabled"];
   name: TModelVibefireEvent["name"];
   epochCreated: TModelVibefireEvent["epochCreated"];
-  eventType: TModelEventType["type"];
 }): TModelVibefireEventNoId => {
   const d = Value.Create(ModelVibefireEvent);
   // @ts-expect-error the access ref is set later during creation.
@@ -113,7 +115,6 @@ export const newVibefireEvent = (p: {
   d.linkEnabled = p.linkEnabled;
   d.name = p.name;
   d.epochCreated = p.epochCreated;
-  d.event = newEventType(p.eventType);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...dWithoutId } = d;
   return dWithoutId;
@@ -126,7 +127,7 @@ export const ModelEventUpdate = tb.Partial(
     images: tb.Partial(ModelEventImages),
     times: tb.Partial(tb.Omit(ModelEventTimes, ["datePeriods"])),
     location: tb.Partial(VibefireLocationSchema),
-    event: tb.Partial(ModelEventType),
+    details: tb.Partial(ModelEventDetails),
   }),
 );
 

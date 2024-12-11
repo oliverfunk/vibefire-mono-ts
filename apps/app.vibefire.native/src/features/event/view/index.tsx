@@ -4,6 +4,7 @@ import {
   Pressable,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -79,8 +80,7 @@ const ViewEventSheet = (props: {
   const { event, onEditEventPress, onManageEventPress, onOrganiserPress } =
     props;
 
-  const width = Dimensions.get("window").width;
-  const height = Dimensions.get("window").height;
+  const { width, height } = useWindowDimensions();
 
   const bannerImgKeys = useMemo(
     () => event.images.bannerImgKeys,
@@ -121,7 +121,7 @@ const ViewEventSheet = (props: {
       <LinearRedOrangeView className="flex-col p-0.5">
         <View className="flex-col space-y-4 rounded-md bg-neutral-900 p-3.5">
           <View>
-            <EventInfoTimesBar event={event} />
+            <EventInfoTimesBar noStartTimeText="(start time)" event={event} />
           </View>
           <TouchableOpacity
             onPress={async () => {
@@ -135,29 +135,26 @@ const ViewEventSheet = (props: {
               });
             }}
           >
-            <EventInfoAddressBar event={event} />
+            <EventInfoAddressBar event={event} noAddressText="(location)" />
           </TouchableOpacity>
         </View>
       </LinearRedOrangeView>
 
       {/* map */}
-      <View className="pt-1">
-        {/* <Text className="p-2 text-center text-white">
-          (Tap the map to select a location)
-        </Text> */}
-        <View className="aspect-[4/4]">
-          <LocationDisplayMap markerPosition={event.location.position} />
-        </View>
+      <View className="aspect-[4/4] pt-1">
+        <LocationDisplayMap markerPosition={event.location.position} />
       </View>
 
       {/* details */}
-      <View className="flex-col space-y-4 p-4">
-        {details.map((detail, index) => (
-          <View key={index}>
-            <EventDetailWidgetView detail={detail} />
-          </View>
-        ))}
-      </View>
+      {details.length != 0 && (
+        <View className="flex-col space-y-4 p-4">
+          {details.map((detail, index) => (
+            <View key={index}>
+              <EventDetailWidgetView detail={detail} />
+            </View>
+          ))}
+        </View>
+      )}
     </ScrollViewSheet>
   );
 };

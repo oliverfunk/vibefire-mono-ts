@@ -1,14 +1,14 @@
 import { Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { useFocusUserAuthedRedirect } from "!/hooks/useUserAuthedRedirect";
+import { useOnFocusUserNotAuthedRedirect } from "!/hooks/useUserAuthedRedirect";
 
 const Screen = () => {
   const { eventId } = useLocalSearchParams<{
     eventId: string;
   }>();
 
-  useFocusUserAuthedRedirect();
+  useOnFocusUserNotAuthedRedirect();
 
   return <Text>Hello</Text>;
 };

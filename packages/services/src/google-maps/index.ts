@@ -75,10 +75,16 @@ export class GoogleMapsService {
       params: {
         key: this.apiKey,
         latlng: [params.lat, params.lng],
-        result_type: [AddressType.street_address],
+        result_type: [
+          AddressType.street_address,
+          AddressType.route,
+          AddressType.intersection,
+          AddressType.political,
+          AddressType.country,
+        ],
       },
     });
-    const data = res.data;
+    const { data } = res;
     if (data.status === Status.ZERO_RESULTS) {
       return "";
     }
@@ -87,6 +93,6 @@ export class GoogleMapsService {
         `Failed to get timezone info: ${data.status}\n${data.error_message}`,
       );
     }
-    return data.results[0]?.address_components[0]?.types[0] ?? "";
+    return data.results[0]?.formatted_address ?? "";
   }
 }

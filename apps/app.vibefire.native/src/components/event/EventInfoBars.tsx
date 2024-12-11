@@ -2,13 +2,14 @@ import { type ReactNode } from "react";
 import {
   Text,
   TextInput,
-  TextInputProps,
   View,
+  type TextInputProps,
   type ViewProps,
 } from "react-native";
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
+import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
 
 const EventInfoBar = (props: { children: ReactNode } & ViewProps) => {
   const { children } = props;
@@ -23,10 +24,20 @@ const EventInfoBar = (props: { children: ReactNode } & ViewProps) => {
 export const EventInfoTimesBar = (
   props: {
     event: TModelVibefireEvent;
+    noStartTimeText: string;
     noEndTimeText?: string;
   } & ViewProps,
 ) => {
-  const { event, noEndTimeText } = props;
+  const { event, noStartTimeText, noEndTimeText } = props;
+
+  const startDT = event.times.tsStart
+    ? isoNTZToUTCDateTime(event.times.tsStart)
+    : undefined;
+  const endDT = event.times.tsEnd
+    ? isoNTZToUTCDateTime(event.times.tsEnd)
+    : undefined;
+
+  const isValid = startDT && endDT && startDT < endDT;
 
   const isNoTimeText = event.times.tsEnd || noEndTimeText;
 
@@ -34,12 +45,19 @@ export const EventInfoTimesBar = (
     <EventInfoBar {...props}>
       <FontAwesome6 name="clock" size={20} color="white" />
       <View className="flex-col">
-        <Text className="text-base text-white">
-          {event.times.tsStart ?? "set a start time"}
+        <Text
+          className={`text-base ${startDT ? "text-white" : "text-[#909090FF]"}`}
+        >
+          {startDT ? toMonthDateTimeStr(startDT) : noStartTimeText}
         </Text>
         {isNoTimeText && (
           <Text className="text-base text-white">
-            {event.times.tsEnd ?? noEndTimeText}
+            Until:{" "}
+            <Text
+              className={`text-base ${endDT ? (isValid ? "text-white" : "text-red-600") : "text-[#909090FF]"}`}
+            >
+              {endDT ? toMonthDateTimeStr(endDT) : noEndTimeText}
+            </Text>
           </Text>
         )}
       </View>
@@ -47,26 +65,33 @@ export const EventInfoTimesBar = (
   );
 };
 
-export const EventInfoAddressBar = (props: { event: TModelVibefireEvent }) => {
-  const { event } = props;
+export const EventInfoAddressBar = (props: {
+  event: TModelVibefireEvent;
+  noAddressText: string;
+}) => {
+  const { event, noAddressText } = props;
+
+  const isAddressEmpty =
+    !event.location.addressDescription ||
+    event.location.addressDescription.trim() === "";
+  const addr = isAddressEmpty
+    ? noAddressText
+    : event.location.addressDescription;
 
   return (
     <EventInfoBar>
       <FontAwesome6 name="map-location-dot" size={20} color="white" />
-      <Text numberOfLines={2} className="text-base text-white">
-        {event.location.addressDescription ?? "set a start time"}
+      <Text
+        numberOfLines={2}
+        className={`text-base ${isAddressEmpty ? "text-[#909090FF]" : "text-white"}`}
+      >
+        {addr}
       </Text>
     </EventInfoBar>
   );
 };
 
-export const EventInfoAddressBarEditable = (
-  props: {
-    event: TModelVibefireEvent;
-  } & TextInputProps,
-) => {
-  const { event } = props;
-
+export const EventInfoAddressBarEditable = (props: TextInputProps) => {
   return (
     <EventInfoBar>
       <FontAwesome6 name="map-location-dot" size={20} color="white" />

@@ -8,7 +8,7 @@ export const EditableIconWrapper = (props: {
 }) => {
   const { center, children } = props;
   return (
-    <View className="flex-row items-center">
+    <View className="flex-row items-center justify-stretch space-x-2">
       {center && <FontAwesome6 name="edit" size={12} color="transparent" />}
       <View className="flex-1">{children}</View>
       <FontAwesome6 name="edit" size={12} color="white" />
