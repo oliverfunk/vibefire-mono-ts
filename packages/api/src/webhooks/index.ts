@@ -1,38 +1,47 @@
 import { Hono } from "hono";
 
-import { UFUsersManager } from "@vibefire/managers/userfacing";
-import { getClerkService } from "@vibefire/services/clerk";
-import { getFaunaService } from "@vibefire/services/fauna";
+import { getUFUsersManager } from "@vibefire/managers/userfacing";
 import { validateClerkWebhook } from "@vibefire/services/svix";
+import { resourceLocator } from "@vibefire/utils";
 
 import { BASEPATH_WEBHOOKS } from "!api/basepaths";
 
 import { validateToHttpExp } from "./utils";
 
 type Bindings = {
-  FAUNA_SECRET: string;
-  CLERK_WEBHOOK_EVENT_SECRET: string;
+  FAUNA_ROLE_KEY: string;
+  CLERK_PEM_STRING: string;
+  CLERK_SECRET_KEY: string;
+  CLERK_PUBLISHABLE_KEY: string;
+  WEBHOOK_CLERK_SIGNING_SECRET: string;
 };
 
 const webhooksRouter = new Hono<{ Bindings: Bindings }>();
 
-// webhooksRouter.use("*", async (c, next) => {
-//   await next();
-// });
+webhooksRouter.use("*", async (c, next) => {
+  resourceLocator().setCtx({
+    fauna: {
+      roleKey: c.env.FAUNA_ROLE_KEY,
+    },
+    clerk: {
+      pemString: c.env.CLERK_PEM_STRING,
+      secretKey: c.env.CLERK_SECRET_KEY,
+      publishableKey: c.env.CLERK_PUBLISHABLE_KEY,
+    },
+  });
+  await next();
+});
 
 webhooksRouter.get("/", (c) => c.text("Vibefire Webhooks!"));
 
 webhooksRouter.post(BASEPATH_WEBHOOKS + "/clerk", async (c) => {
-  const usersManager = UFUsersManager.fromService(
-    getFaunaService(c.env.FAUNA_SECRET),
-    getClerkService("", ""),
-  );
+  const usersManager = getUFUsersManager();
 
   const headers = c.req.header();
   const payload = await c.req.text();
 
   const event = validateToHttpExp(() =>
-    validateClerkWebhook(headers, payload, c.env.CLERK_WEBHOOK_EVENT_SECRET),
+    validateClerkWebhook(headers, payload, c.env.WEBHOOK_CLERK_SIGNING_SECRET),
   );
   switch (event.type) {
     case "user.created": {

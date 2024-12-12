@@ -53,7 +53,13 @@ export class UFUsersManager {
       ? (DateTime.fromISO(birthdayISO).toISODate() ?? undefined)
       : undefined;
 
+    const ownershipRef = await this.repos.access.createOwnership(
+      "user",
+      firstName || "User",
+    ).result;
+
     const u = newVibefireUser({
+      ownershipRef,
       aid,
       name: firstName,
       email: primaryEmail,

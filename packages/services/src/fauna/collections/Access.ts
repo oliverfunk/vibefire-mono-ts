@@ -4,6 +4,7 @@ import {
   type AccessAction,
   type TModelVibefireAccess,
   type TModelVibefireMembership,
+  type TModelVibefireOwnership,
 } from "@vibefire/models";
 
 import { type FaunaFunctions } from "!services/fauna//functions";
@@ -28,8 +29,21 @@ export class FaunaAccessRepository {
     );
   }
 
-  createAccess(accessType: TModelVibefireAccess["type"], userId: string) {
-    return this.funcs.createNewAccess(accessType, userId);
+  createAccess(accessType: TModelVibefireAccess["type"], userAid: string) {
+    return this.funcs.createNewAccess(accessType, userAid);
+  }
+
+  // todo: move to Ownership file
+  createOwnership(
+    ownerType: TModelVibefireOwnership["ownerType"],
+    ownerName: string,
+  ) {
+    return faunaQuery<TModelVibefireOwnership>(
+      this.faunaClient,
+      fql`
+        Ownership.create({ ownerType: ${ownerType}, ownerName: ${ownerName} })
+      `,
+    );
   }
 
   // createOrGetAccess(accAct: AccessAction) {

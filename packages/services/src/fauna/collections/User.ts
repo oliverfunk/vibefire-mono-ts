@@ -1,8 +1,8 @@
 import { fql, type Client } from "fauna";
 
 import {
-  TModelVibefireUserNoId,
   type TModelVibefireUser,
+  type TModelVibefireUserNoId,
 } from "@vibefire/models";
 
 import { faunaNullableQuery, faunaQuery } from "!services/fauna/utils";
@@ -15,15 +15,6 @@ export class FaunaUserRepository {
       this.faunaClient,
       fql`
         User.withAid(${userAid}).first()
-      `,
-    );
-  }
-
-  withEmail(email: string) {
-    return faunaNullableQuery<TModelVibefireUser>(
-      this.faunaClient,
-      fql`
-        User.withEmail(${email}).first()
       `,
     );
   }
