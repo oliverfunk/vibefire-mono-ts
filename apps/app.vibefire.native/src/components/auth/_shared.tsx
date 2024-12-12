@@ -49,7 +49,7 @@ export const AuthButton = (props: {
     } catch (err) {
       console.error("OAuth error", err);
     }
-    setUser({ state: "unauthenticated", anonId: "anon" });
+    setUser({ state: "unauthenticated", anonId: crypto.randomUUID() });
   }, [oauthRedirectUrl, setUser, signOut, startOAuthFlow]);
 
   return (

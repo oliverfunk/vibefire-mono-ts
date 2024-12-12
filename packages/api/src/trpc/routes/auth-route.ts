@@ -14,7 +14,7 @@ export const authRouter = router({
     if (!userId) {
       session = {
         state: "unauthenticated",
-        anonId: "anon", // this will change in the future to an identifier
+        anonId: crypto.randomUUID(),
       };
     } else {
       const userInfo = await getUFUsersManager().getUserProfileWithRetry(

@@ -15,4 +15,7 @@ export type LocatorContext = {
     accountId: string;
     imagesApiKey: string;
   };
+  webhooks?: {
+    clerkValidationSecret?: string;
+  };
 };

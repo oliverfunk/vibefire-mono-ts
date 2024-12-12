@@ -51,5 +51,6 @@ export const newVibefireUser = (p: {
   d.email = p.email;
   d.dateOfBirth = p.dateOfBirth;
   d.epochCreated = p.epochCreated;
+  d.epochLastSession = p.epochCreated;
   return d;
 };
