@@ -48,7 +48,8 @@ export const useSortedEvents = (
   },
 ) => {
   return useSortByTime(events, {
-    extract: (e) => (e.times?.tsStart ? new Date(e.times?.tsStart) : undefined),
+    extract: (e) =>
+      e.times?.ntzStart ? new Date(e.times?.ntzStart) : undefined,
     ...p,
   });
 };

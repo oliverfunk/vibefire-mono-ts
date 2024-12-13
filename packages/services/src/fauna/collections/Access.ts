@@ -45,6 +45,14 @@ export class FaunaAccessRepository {
       `,
     );
   }
+  ownershipWithId(ownershipId: string) {
+    return faunaNullableQuery<TModelVibefireOwnership>(
+      this.faunaClient,
+      fql`
+        Ownership.byId(${ownershipId})
+      `,
+    );
+  }
 
   // createOrGetAccess(accAct: AccessAction) {
   //   if (accAct.action === "link") {

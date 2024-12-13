@@ -47,3 +47,11 @@ export const isValidUuidV4 = (uuid: string): boolean => {
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return regex.test(uuid);
 };
+
+export const isPositionEqual = (coord1?: CoordT, coord2?: CoordT): boolean =>
+  // will be equal when both undefined
+  coord1 === coord2 ||
+  (coord1 !== undefined &&
+    coord2 !== undefined &&
+    coord1.lat === coord2.lat &&
+    coord1.lng === coord2.lng);

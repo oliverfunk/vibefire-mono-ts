@@ -8,10 +8,12 @@ import { ModelVibefireOwnership } from "./vibefire-ownership";
 
 const ModelEventDetails = tb.Array(EventDetail, {
   default: [],
+  minItems: 0,
 });
 
 const ModelEventAddInfos = tb.Array(EventInfoModel, {
   default: [],
+  minItems: 0,
 });
 
 const ModelEventImages = tb.Object({
@@ -22,14 +24,13 @@ const ModelEventImages = tb.Object({
   }),
 });
 
-const ModelEventTimes = tb.Object(
-  {
-    tsStart: tb.String({ default: undefined }),
-    tsEnd: clearable(tb.String()),
-    datePeriods: tb.Array(DatePeriodSchema, { default: [] }),
-  },
-  { default: {} },
-);
+const ModelEventTimes = tb.Object({
+  ntzStart: tb.String({ default: undefined }),
+  ntzEnd: clearable(tb.String()),
+  datePeriods: tb.Array(DatePeriodSchema, { default: [] }),
+  timezone: tb.Optional(tb.String()),
+  offsetSeconds: tb.Optional(tb.Number()),
+});
 
 const ModelEventCustomMapData = tb.Object({
   zoomGroup: tb.Union(
@@ -102,9 +103,7 @@ export const newVibefireEvent = (p: {
   d.ownerRef = p.ownerRef;
   d.name = p.name;
   d.epochCreated = p.epochCreated;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...dWithoutId } = d;
-  return dWithoutId;
+  return d;
 };
 
 export type TModelEventUpdate = Static<typeof ModelEventUpdate>;
@@ -112,9 +111,10 @@ export const ModelEventUpdate = tb.Partial(
   tb.Object({
     name: ModelVibefireEvent.properties.name,
     images: tb.Partial(ModelEventImages),
-    times: tb.Partial(tb.Omit(ModelEventTimes, ["datePeriods"])),
+    times: tb.Partial(ModelEventTimes),
     location: tb.Partial(VibefireLocationSchema),
-    details: tb.Partial(ModelEventDetails),
+    details: ModelEventDetails,
+    addInfos: ModelEventAddInfos,
   }),
 );
 

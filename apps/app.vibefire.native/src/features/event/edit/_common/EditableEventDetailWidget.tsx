@@ -46,6 +46,7 @@ export const EditableEventDetailWidget = (props: {
           </View>
           <View className="flex-col items-center space-y-2">
             <TouchableOpacity
+              disabled={n == 0}
               onPress={async () => {
                 // swap with previous
                 if (n > 0) {
@@ -56,7 +57,11 @@ export const EditableEventDetailWidget = (props: {
                 }
               }}
             >
-              <FontAwesome6 name="chevron-up" size={20} color="white" />
+              <FontAwesome6
+                name="chevron-up"
+                size={20}
+                color={`${n == 0 ? "grey" : "white"}`}
+              />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={async () => {
@@ -65,9 +70,10 @@ export const EditableEventDetailWidget = (props: {
                 await setFieldValue(detailsPath, newDetails);
               }}
             >
-              <AntDesign name="closecircle" size={15} color="red" />
+              <AntDesign name="closecircle" size={15} color="white" />
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={n == nDetails - 1}
               onPress={async () => {
                 // swap with next
                 if (n != nDetails - 1) {
@@ -78,7 +84,11 @@ export const EditableEventDetailWidget = (props: {
                 }
               }}
             >
-              <FontAwesome6 name="chevron-down" size={20} color="white" />
+              <FontAwesome6
+                name="chevron-down"
+                size={20}
+                color={`${n == nDetails - 1 ? "grey" : "white"}`}
+              />
             </TouchableOpacity>
           </View>
         </View>

@@ -59,8 +59,8 @@ export const SelectEventTimesButton = (props: {
       <DateTimePickerModal
         isVisible={showStartPicker}
         date={
-          event.times.tsStart
-            ? isoNTZToUTCDateTime(event.times.tsStart).toJSDate()
+          event.times.ntzStart
+            ? isoNTZToUTCDateTime(event.times.ntzStart).toJSDate()
             : nowAsUTCNoMins().toJSDate()
         }
         mode="datetime"
@@ -83,8 +83,8 @@ export const SelectEventTimesButton = (props: {
       <DateTimePickerModal
         isVisible={showEndPicker}
         date={
-          event.times.tsEnd
-            ? isoNTZToUTCDateTime(event.times.tsEnd).toJSDate()
+          event.times.ntzEnd
+            ? isoNTZToUTCDateTime(event.times.ntzEnd).toJSDate()
             : nowAsUTCNoMins().toJSDate()
         }
         mode="datetime"
