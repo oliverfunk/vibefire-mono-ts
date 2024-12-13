@@ -31,9 +31,10 @@ const UsersEventsSummary = () => {
       }
 
       return (
-        <View className="flex-col">
+        <View className="flex-col pb-10">
           <EventsListSimpleChipView
             events={eventsByUser.value.data}
+            noEventsMessage="You have no events"
             onChipPress={(e) => {
               navEditEvent(router, e.id!);
             }}

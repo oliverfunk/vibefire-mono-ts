@@ -73,3 +73,14 @@ export const displayPeriodsFor = (
 
   return periods;
 };
+
+export const dateIndexesFor = (
+  dt: DateTime,
+  numberOfDays: number,
+): number[] => {
+  const indexes = [parseInt(toDateStr(dt))];
+  for (let i = 0; i < numberOfDays; i++) {
+    indexes.push(dt.plus({ day: i }).toUnixInteger());
+  }
+  return indexes;
+};

@@ -46,7 +46,7 @@ export const AddEventDetailWidgetButton = (props: {
       onPress={onPress}
     >
       <Text className="text-center text-lg text-white">
-        <FontAwesome6 name="plus" size={15} /> Add widget
+        <FontAwesome6 name="plus" size={15} /> Add Detail
       </Text>
     </TouchableOpacity>
   );

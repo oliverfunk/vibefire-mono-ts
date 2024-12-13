@@ -142,11 +142,11 @@ export const EditableEventForm = (props: {
               <SelectEventTimesButton
                 event={event}
                 onSetStart={async (d) => {
-                  await setFieldValue("times.tsStart", d.toISOString());
+                  await setFieldValue("times.ntzStart", d.toISOString());
                 }}
                 onSetEnd={async (d) => {
                   await setFieldValue(
-                    "times.tsEnd",
+                    "times.ntzEnd",
                     d ? d.toISOString() : null,
                   );
                 }}

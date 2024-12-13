@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
@@ -23,15 +23,14 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
 
     const router = useRouter();
 
-    const [viewManage, _viewManageCtl] =
-      trpc.events.viewManage.useSuspenseQuery(
-        {
-          eventId,
-        },
-        {
-          gcTime: 1000,
-        },
-      );
+    const [viewManage, viewManageCtl] = trpc.events.viewManage.useSuspenseQuery(
+      {
+        eventId,
+      },
+      {
+        gcTime: 1000,
+      },
+    );
     const updateMut = trpc.events.update.useMutation();
 
     const formRef = useRef<BottomSheetScrollViewMethods>(null);
@@ -41,6 +40,12 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
       throw viewManage.error;
     }
 
+    useEffect(() => {
+      formikRef.current?.resetForm({
+        values: viewManage.value,
+      });
+    }, [viewManage]);
+
     return (
       <Formik
         innerRef={formikRef}
@@ -48,18 +53,18 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
         validate={(values) => {
           const errors: FormikErrors<TModelVibefireEvent> = {};
 
-          const startDT = values.times.tsStart
-            ? isoNTZToUTCDateTime(values.times.tsStart)
+          const startDT = values.times.ntzStart
+            ? isoNTZToUTCDateTime(values.times.ntzStart)
             : undefined;
-          const endDT = values.times.tsEnd
-            ? isoNTZToUTCDateTime(values.times.tsEnd)
+          const endDT = values.times.ntzEnd
+            ? isoNTZToUTCDateTime(values.times.ntzEnd)
             : undefined;
 
           if (startDT && endDT && startDT > endDT) {
             if (!errors.times) {
               errors.times = {};
             }
-            errors.times.tsEnd = "End time must be after start time";
+            errors.times.ntzEnd = "End time must be after start time";
           }
           return errors;
         }}
@@ -77,9 +82,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
               },
             });
             if (res.ok) {
-              formikRef.current?.resetForm({
-                values: res.value,
-              });
+              await viewManageCtl.refetch();
             } else {
               Toast.show({
                 type: "error",
@@ -92,7 +95,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
           } catch (error: unknown) {
             Toast.show({
               type: "error",
-              text1: "We could not update your event, something went wrong",
+              text1: "We could not update your event, try again",
               position: "bottom",
               bottomOffset: 50,
               visibilityTime: 4000,
@@ -127,6 +130,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                 <View className="h-16" />
               </ScrollViewSheetWithRef>
 
+              {/* form btns */}
               <View className="absolute bottom-0 h-14 w-full flex-row items-end justify-evenly bg-black/90">
                 <View className="flex-1" />
                 <TouchableOpacity

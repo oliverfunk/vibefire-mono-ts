@@ -30,16 +30,16 @@ export const EventInfoTimesBar = (
 ) => {
   const { event, noStartTimeText, noEndTimeText } = props;
 
-  const startDT = event.times.tsStart
-    ? isoNTZToUTCDateTime(event.times.tsStart)
+  const startDT = event.times.ntzStart
+    ? isoNTZToUTCDateTime(event.times.ntzStart)
     : undefined;
-  const endDT = event.times.tsEnd
-    ? isoNTZToUTCDateTime(event.times.tsEnd)
+  const endDT = event.times.ntzEnd
+    ? isoNTZToUTCDateTime(event.times.ntzEnd)
     : undefined;
 
   const isValid = startDT && endDT && startDT < endDT;
 
-  const isNoTimeText = event.times.tsEnd || noEndTimeText;
+  const isNoTimeText = event.times.ntzEnd || noEndTimeText;
 
   return (
     <EventInfoBar {...props}>

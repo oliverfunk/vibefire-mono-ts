@@ -52,6 +52,7 @@ const OfferModel = tb.Object({
   claimsTotal: tb.Number({ minimum: 1 }),
   claimsPerUser: tb.Number({ minimum: 1 }),
   claimableByGroups: tb.Optional(tb.Array(tb.String())),
+  // should maybe be an epoch or ts (with tz)
   tsStart: clearable(tb.String({ format: "date-time" })),
   tsEnd: clearable(tb.String({ format: "date-time" })),
 });

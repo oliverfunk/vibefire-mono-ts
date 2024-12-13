@@ -33,8 +33,8 @@ export const EventChip = (props: EventChipProps) => {
             {event.name}
           </Text>
           <Text className="text-neutral-400">
-            {event.times?.tsStart
-              ? toMonthDateTimeStr(isoNTZToUTCDateTime(event.times?.tsStart))
+            {event.times?.ntzStart
+              ? toMonthDateTimeStr(isoNTZToUTCDateTime(event.times?.ntzStart))
               : "<Start Time>"}
           </Text>
         </>

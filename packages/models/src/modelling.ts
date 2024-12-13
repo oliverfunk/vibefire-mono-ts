@@ -146,5 +146,5 @@ export const tbValidatorWithCompile = <S extends TSchema>(schema: S) => {
 };
 
 export const tbClean = <S extends TSchema, T>(schema: S, value: T) => {
-  return Value.Clean(schema, value) as T;
+  return Value.Clean(schema, value) as Static<S>;
 };

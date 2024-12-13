@@ -35,11 +35,11 @@ const useEventCardRenderer = (
           ownerType: event.ownerRef!.ownerType!,
           ownerName: event.ownerRef!.ownerName!,
           addressDescription: event?.location?.addressDescription ?? undefined,
-          timeStart: event.times?.tsStart
-            ? isoNTZToUTCDateTime(event.times?.tsStart)
+          timeStart: event.times?.ntzStart
+            ? isoNTZToUTCDateTime(event.times?.ntzStart)
             : undefined,
-          timeEnd: event.times?.tsEnd
-            ? isoNTZToUTCDateTime(event.times?.tsEnd)
+          timeEnd: event.times?.ntzEnd
+            ? isoNTZToUTCDateTime(event.times?.ntzEnd)
             : undefined,
         }}
         onPress={() => {

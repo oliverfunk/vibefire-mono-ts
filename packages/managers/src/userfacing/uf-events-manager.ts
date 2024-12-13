@@ -4,6 +4,7 @@ import {
   ModelEventUpdate,
   newVibefireEvent,
   tbClean,
+  tbValidator,
   type MapQueryT,
   type Pageable,
   type TModelEventUpdate,
@@ -17,6 +18,15 @@ import {
   type CloudFlareImagesService,
 } from "@vibefire/services/cloudflare-images";
 import {
+  getGoogleMapService,
+  type GoogleMapsService,
+} from "@vibefire/services/google-maps";
+import {
+  dateIndexesFor,
+  displayPeriodsFor,
+  isoNTZToTZDateTime,
+  isoNTZToUTCDateTime,
+  isPositionEqual,
   resourceLocator,
   trimAndCropText,
   type PartialDeep,
@@ -37,13 +47,18 @@ import { managerReturn } from "!managers/utils";
 export const ufEventsManagerSymbol = Symbol("ufEventsManagerSymbol");
 export const getUFEventsManager = () =>
   resourceLocator().bindResource(ufEventsManagerSymbol, () => {
-    return new UFEventsManger(getReposManager(), getCloudFlareImagesService());
+    return new UFEventsManger(
+      getReposManager(),
+      getCloudFlareImagesService(),
+      getGoogleMapService(),
+    );
   });
 
 export class UFEventsManger {
   constructor(
     private readonly repos: ReposManager,
     private readonly cfImages: CloudFlareImagesService,
+    private readonly googleMaps: GoogleMapsService,
   ) {}
 
   createNewEvent(p: {
@@ -247,6 +262,7 @@ export class UFEventsManger {
     scope: "manage" | "published" | "viaLink";
   }): ManagerAsyncResult<TModelVibefireEvent> {
     return managerReturn(async () => {
+      let event: TModelVibefireEvent;
       switch (p.scope) {
         case "manage":
           if (!p.userAid) {
@@ -254,20 +270,30 @@ export class UFEventsManger {
               "You must be signed in to view this",
             );
           }
-          return await this.repos.eventIfManager(p.eventId, p.userAid);
+          event = await this.repos.eventIfManager(p.eventId, p.userAid);
+          break;
         case "published":
-          return await this.repos.eventIfViewer(p.eventId, p.userAid);
-        // case "viaLink":
-        //   if (!isValidUuidV4(p.eventId)) {
-        //     throw new ManagerRuleViolation("Invalid event link id");
-        //   }
-        //   return (
-        //     await this.repos.event.withLinkIdIfUserCanView(p.eventId, p.userAid)
-        //       .result
-        //   ).unwrap();
+          event = await this.repos.eventIfViewer(p.eventId, p.userAid);
+          // case "viaLink":
+          //   if (!isValidUuidV4(p.eventId)) {
+          //     throw new ManagerRuleViolation("Invalid event link id");
+          //   }
+          //   return (
+          //     await this.repos.event.withLinkIdIfUserCanView(p.eventId, p.userAid)
+          //       .result
+          //   ).unwrap();
+          break;
         default:
           throw new ManagerRuleViolation("Invalid scope");
       }
+      const ownerRef = await this.repos.access.ownershipWithId(
+        event.ownerRef.id,
+      ).result;
+      if (!ownerRef) {
+        throw new ManagerRuleViolation("Event owner not found");
+      }
+      event.ownerRef = ownerRef;
+      return event;
     });
   }
 
@@ -277,24 +303,58 @@ export class UFEventsManger {
     update: Partial<TModelEventUpdate>;
   }) {
     return managerReturn(async () => {
-      const update = tbClean(ModelEventUpdate, p.update);
-      const _e = await this.repos.eventIfManager(p.eventId, p.userAid);
+      const e = await this.repos.eventIfManager(p.eventId, p.userAid);
+      // const eManage = await this.repos.event.eventManagement(p.eventId);
 
-      // todo! : this is wildly insufficient
-      // changing times means you need to udate peroids
+      const delta = tbClean(ModelEventUpdate, p.update);
+      const prior = tbClean(ModelEventUpdate, e);
+      const next = tbValidator(ModelEventUpdate)({ ...prior, ...delta });
 
-      // what about changing postion
-      // might not effect periods becuase start time is now string with
-      // tz info, they only get one period (one day)
+      if (!next.times) {
+        next.times = {};
+      }
+
+      if (
+        !isPositionEqual(next.location?.position, prior.location?.position) &&
+        next.location?.position
+      ) {
+        const tzInfo = await this.googleMaps.getTimezoneInfo(
+          next.location?.position,
+          DateTime.now().toUnixInteger(),
+        );
+        next.times.timezone = tzInfo.timeZoneId;
+        next.times.offsetSeconds = tzInfo.rawOffset;
+      }
+
+      if (next.times.ntzStart !== prior.times?.ntzStart) {
+        // if somehow the start time was cleared, clear the periods
+        next.times.datePeriods = next.times.ntzStart
+          ? dateIndexesFor(
+              isoNTZToUTCDateTime(next.times.ntzStart),
+              0, // that day only
+            )
+          : [];
+      }
+
+      if (next.times.ntzStart && next.times.ntzEnd) {
+        if (
+          isoNTZToUTCDateTime(next.times.ntzStart) >
+          isoNTZToUTCDateTime(next.times.ntzEnd)
+        ) {
+          throw new ManagerRuleViolation("Start time must be before end time");
+        }
+      }
+
+      // todo !
+      if (next.images?.bannerImgKeys !== prior.images?.bannerImgKeys) {
+      }
 
       // changes images, you could perpahs add outdated image to a dlete q
       // but only the keys are proviede here,
       // the actual upload must be hanlded by the client or elsewhere
       // could check the image exististststs to
 
-      // we blindly trust the update here, as we assume
-      // all inputs have been validated and sanitized
-      return (await this.repos.event.update(p.eventId, update)
+      return (await this.repos.event.update(p.eventId, next)
         .result) as TModelVibefireEvent;
     });
   }
