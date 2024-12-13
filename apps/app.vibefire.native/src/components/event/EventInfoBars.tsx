@@ -9,7 +9,7 @@ import {
 import { FontAwesome6 } from "@expo/vector-icons";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
+import { ntzToDateTime, toMonthDateTimeStr } from "@vibefire/utils";
 
 const EventInfoBar = (props: { children: ReactNode } & ViewProps) => {
   const { children } = props;
@@ -31,10 +31,10 @@ export const EventInfoTimesBar = (
   const { event, noStartTimeText, noEndTimeText } = props;
 
   const startDT = event.times.ntzStart
-    ? isoNTZToUTCDateTime(event.times.ntzStart)
+    ? ntzToDateTime(event.times.ntzStart)
     : undefined;
   const endDT = event.times.ntzEnd
-    ? isoNTZToUTCDateTime(event.times.ntzEnd)
+    ? ntzToDateTime(event.times.ntzEnd)
     : undefined;
 
   const isValid = startDT && endDT && startDT < endDT;

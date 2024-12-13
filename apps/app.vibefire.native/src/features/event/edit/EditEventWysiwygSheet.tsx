@@ -7,7 +7,7 @@ import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
 import { Formik, type FormikErrors, type FormikProps } from "formik";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { isoNTZToUTCDateTime } from "@vibefire/utils";
+import { ntzToDateTime } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
@@ -18,8 +18,8 @@ import { navManageEvent, navViewEventPreview } from "!/nav";
 import { EditableEventForm } from "./EditableEventForm";
 
 export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
-  (props: { eventId: string }) => {
-    const { eventId } = props;
+  (props: { eventId: string; create: boolean }) => {
+    const { eventId, create } = props;
 
     const router = useRouter();
 
@@ -54,10 +54,10 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
           const errors: FormikErrors<TModelVibefireEvent> = {};
 
           const startDT = values.times.ntzStart
-            ? isoNTZToUTCDateTime(values.times.ntzStart)
+            ? ntzToDateTime(values.times.ntzStart)
             : undefined;
           const endDT = values.times.ntzEnd
-            ? isoNTZToUTCDateTime(values.times.ntzEnd)
+            ? ntzToDateTime(values.times.ntzEnd)
             : undefined;
 
           if (startDT && endDT && startDT > endDT) {

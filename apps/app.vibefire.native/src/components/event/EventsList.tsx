@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { type ListRenderItemInfo } from "@shopify/flash-list";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { isoNTZToUTCDateTime, type PartialDeep } from "@vibefire/utils";
+import { ntzToDateTime, type PartialDeep } from "@vibefire/utils";
 
 import { useSortedEvents } from "!/hooks/useSortedByTime";
 
@@ -36,10 +36,10 @@ const useEventCardRenderer = (
           ownerName: event.ownerRef!.ownerName!,
           addressDescription: event?.location?.addressDescription ?? undefined,
           timeStart: event.times?.ntzStart
-            ? isoNTZToUTCDateTime(event.times?.ntzStart)
+            ? ntzToDateTime(event.times?.ntzStart)
             : undefined,
           timeEnd: event.times?.ntzEnd
-            ? isoNTZToUTCDateTime(event.times?.ntzEnd)
+            ? ntzToDateTime(event.times?.ntzEnd)
             : undefined,
         }}
         onPress={() => {

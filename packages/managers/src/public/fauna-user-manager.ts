@@ -46,9 +46,9 @@ import {
   displayPeriodsBetween,
   displayPeriodsFor,
   h3ToH3Parents,
-  isoNTZToTZEpochSecs,
   latLngPositionToH3,
   nowAtUTC,
+  ntzToTZEpochSecs,
   removeUndef,
   tbValidator,
   trimAndCropText,
@@ -357,7 +357,7 @@ export class FaunaUserManager {
           VibefireEventSchema.properties.timeStartIsoNTZ,
         )(timeStartIsoNTZ);
         updateData.timeStartIsoNTZ = timeStartIsoNTZ;
-        updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
+        updateData.timeStart = ntzToTZEpochSecs(timeStartIsoNTZ, tz);
       }
 
       if (timeEndIsoNTZ !== undefined) {
@@ -369,7 +369,7 @@ export class FaunaUserManager {
             VibefireEventSchema.properties.timeEndIsoNTZ,
           )(timeEndIsoNTZ);
           updateData.timeEndIsoNTZ = timeEndIsoNTZ;
-          updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ!, tz);
+          updateData.timeEnd = ntzToTZEpochSecs(timeEndIsoNTZ!, tz);
         }
       }
 
@@ -422,14 +422,14 @@ export class FaunaUserManager {
         );
 
         if (updateData.timeStartIsoNTZ) {
-          updateData.timeStart = isoNTZToTZEpochSecs(
+          updateData.timeStart = ntzToTZEpochSecs(
             updateData.timeStartIsoNTZ,
             posTZ,
           );
         }
 
         if (updateData.timeEndIsoNTZ) {
-          updateData.timeEnd = isoNTZToTZEpochSecs(
+          updateData.timeEnd = ntzToTZEpochSecs(
             updateData.timeEndIsoNTZ,
             posTZ,
           );

@@ -5,7 +5,7 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import { DateTime } from "luxon";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { isoNTZToUTCDateTime, nowAsUTCNoMins } from "@vibefire/utils";
+import { nowAsUTCNoMins, ntzToDateTime } from "@vibefire/utils";
 
 import { EventInfoTimesBar } from "!/components/event/EventInfoBars";
 
@@ -60,7 +60,7 @@ export const SelectEventTimesButton = (props: {
         isVisible={showStartPicker}
         date={
           event.times.ntzStart
-            ? isoNTZToUTCDateTime(event.times.ntzStart).toJSDate()
+            ? ntzToDateTime(event.times.ntzStart).toJSDate()
             : nowAsUTCNoMins().toJSDate()
         }
         mode="datetime"
@@ -84,7 +84,7 @@ export const SelectEventTimesButton = (props: {
         isVisible={showEndPicker}
         date={
           event.times.ntzEnd
-            ? isoNTZToUTCDateTime(event.times.ntzEnd).toJSDate()
+            ? ntzToDateTime(event.times.ntzEnd).toJSDate()
             : nowAsUTCNoMins().toJSDate()
         }
         mode="datetime"
