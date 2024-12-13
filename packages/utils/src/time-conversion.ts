@@ -19,18 +19,18 @@ export const nowAsUTCNoTime = () =>
 export const nowAsUTCNoMins = () =>
   nowAsUTC().set({ minute: 0, second: 0, millisecond: 0 });
 
-export const isoNTZToUTCDateTime = (isoStr: string) => {
+export const ntzToDateTime = (isoStr: string) => {
   return DateTime.fromISO(isoStr, { zone: "utc" });
 };
 
-export const isoNTZToTZDateTime = (isoStr: string, timeZone: string) => {
-  return isoNTZToUTCDateTime(isoStr).setZone(timeZone, {
+export const ntzToTZDateTime = (isoStr: string, timeZone: string) => {
+  return ntzToDateTime(isoStr).setZone(timeZone, {
     keepLocalTime: true,
   });
 };
 
-export const isoNTZToTZEpochSecs = (isoStr: string, timeZone: string) => {
-  return isoNTZToTZDateTime(isoStr, timeZone).toUnixInteger();
+export const ntzToTZEpochSecs = (isoStr: string, timeZone: string) => {
+  return ntzToTZDateTime(isoStr, timeZone).toUnixInteger();
 };
 
 export const displayPeriodsBetween = (
@@ -38,8 +38,8 @@ export const displayPeriodsBetween = (
   endIsoStr?: string | null,
   hardLimit = 20,
 ) => {
-  const start = isoNTZToUTCDateTime(startIsoStr);
-  const end = endIsoStr ? isoNTZToUTCDateTime(endIsoStr) : undefined;
+  const start = ntzToDateTime(startIsoStr);
+  const end = endIsoStr ? ntzToDateTime(endIsoStr) : undefined;
 
   const periods = [];
 
@@ -61,7 +61,7 @@ export const displayPeriodsFor = (
   startIsoStr: string,
   numberOfDays: number,
 ) => {
-  const start = isoNTZToUTCDateTime(startIsoStr);
+  const start = ntzToDateTime(startIsoStr);
 
   const periods = [];
 

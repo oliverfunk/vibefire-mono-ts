@@ -23,10 +23,8 @@ import {
 } from "@vibefire/services/google-maps";
 import {
   dateIndexesFor,
-  displayPeriodsFor,
-  isoNTZToTZDateTime,
-  isoNTZToUTCDateTime,
   isPositionEqual,
+  ntzToDateTime,
   resourceLocator,
   trimAndCropText,
   type PartialDeep,
@@ -330,7 +328,7 @@ export class UFEventsManger {
         // if somehow the start time was cleared, clear the periods
         next.times.datePeriods = next.times.ntzStart
           ? dateIndexesFor(
-              isoNTZToUTCDateTime(next.times.ntzStart),
+              ntzToDateTime(next.times.ntzStart),
               0, // that day only
             )
           : [];
@@ -338,8 +336,7 @@ export class UFEventsManger {
 
       if (next.times.ntzStart && next.times.ntzEnd) {
         if (
-          isoNTZToUTCDateTime(next.times.ntzStart) >
-          isoNTZToUTCDateTime(next.times.ntzEnd)
+          ntzToDateTime(next.times.ntzStart) > ntzToDateTime(next.times.ntzEnd)
         ) {
           throw new ManagerRuleViolation("Start time must be before end time");
         }

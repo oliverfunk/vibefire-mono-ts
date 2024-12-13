@@ -19,9 +19,7 @@ const BottomPanelBackdrop = (props: BottomSheetBackdropProps) => (
   />
 );
 
-export const BottomPanelPersistentModal = (props: {
-  children?: React.ReactNode;
-}) => {
+export const BottomPanel = (props: { children?: React.ReactNode }) => {
   const { children } = props;
 
   const modalPanelRef = useRef<BottomSheet>(null);

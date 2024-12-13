@@ -27,7 +27,7 @@ import { selectedDateDTAtom } from "@vibefire/shared-state";
 import {
   appleMapsOpenEventLocationURL,
   googleMapsOpenEventLocationURL,
-  isoNTZToUTCDateTime,
+  ntzToDateTime,
   organisationProfileImagePath,
   uberClientRequestToEventLocationURL,
 } from "@vibefire/utils";
@@ -101,7 +101,7 @@ const EventDetailsView = (props: { event: TModelVibefireEvent }) => {
   ]);
 
   const onGoToEvent = useCallback(() => {
-    setSelectedDateDT(isoNTZToUTCDateTime(event.timeStartIsoNTZ));
+    setSelectedDateDT(ntzToDateTime(event.timeStartIsoNTZ));
     eventMapMapRef?.animateCamera(
       defaultCameraForPosition(event.location.position),
     );
@@ -142,7 +142,7 @@ const EventDetailsView = (props: { event: TModelVibefireEvent }) => {
         </View>
 
         {!selectedDateDT.hasSame(
-          isoNTZToUTCDateTime(event.times.ntzStart),
+          ntzToDateTime(event.times.ntzStart),
           "day",
         ) && (
           <View className="items-center pt-2">

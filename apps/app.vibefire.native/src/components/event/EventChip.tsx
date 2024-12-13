@@ -2,7 +2,7 @@ import { Text } from "react-native";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
 import {
-  isoNTZToUTCDateTime,
+  ntzToDateTime,
   toMonthDateTimeStr,
   type PartialDeep,
 } from "@vibefire/utils";
@@ -34,7 +34,7 @@ export const EventChip = (props: EventChipProps) => {
           </Text>
           <Text className="text-neutral-400">
             {event.times?.ntzStart
-              ? toMonthDateTimeStr(isoNTZToUTCDateTime(event.times?.ntzStart))
+              ? toMonthDateTimeStr(ntzToDateTime(event.times?.ntzStart))
               : "<Start Time>"}
           </Text>
         </>
