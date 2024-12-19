@@ -33,6 +33,14 @@ export class FaunaAccessRepository {
     return this.funcs.createNewAccess(accessType, userAid);
   }
 
+  makeAccessOpen(accessId: string, userAid: string) {
+    return this.funcs.makeAccessOpen(accessId, userAid);
+  }
+
+  makeAccessInvite(accessId: string, userAid: string) {
+    return this.funcs.makeAccessInvite(accessId, userAid);
+  }
+
   // todo: move to Ownership file
   createOwnership(
     ownerType: TModelVibefireOwnership["ownerType"],

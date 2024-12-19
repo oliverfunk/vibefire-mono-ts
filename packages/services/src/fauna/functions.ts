@@ -92,6 +92,24 @@ export class FaunaFunctions {
     );
   }
 
+  makeAccessOpen(accessId: string, userAid: string) {
+    return faunaAbortableQuery<TModelVibefireAccess>(
+      this.faunaClient,
+      fql`
+        MakeAccessOpen(${accessId}, ${userAid})
+      `,
+    );
+  }
+
+  makeAccessInvite(accessId: string, userAid: string) {
+    return faunaAbortableQuery<TModelVibefireAccess>(
+      this.faunaClient,
+      fql`
+        MakeAccessInvite(${accessId}, ${userAid})
+      `,
+    );
+  }
+
   setManagerForAccess(accessId: string, userAid: string, toSetUserAid: string) {
     return faunaAbortableQuery<TModelVibefireMembership>(
       this.faunaClient,

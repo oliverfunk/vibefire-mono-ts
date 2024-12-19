@@ -137,7 +137,7 @@ export const GeoQueryMap = () => {
             }}
             anchor={{ x: 0.5, y: 1 }} // bottom center
             onPress={() => {
-              navViewEvent(router, event.linkId);
+              navViewEvent(router, event.id);
               mvRef.current?.animateCamera({
                 center: {
                   latitude: event.location.position.lat,

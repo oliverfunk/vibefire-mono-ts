@@ -2,9 +2,12 @@ import { DateTime } from "luxon";
 
 import {
   ModelEventUpdate,
+  ModelVibefireEvent,
+  ModelVibefireEventData,
   newVibefireEvent,
   tbClean,
   tbValidator,
+  tbValidatorResult,
   type MapQueryT,
   type Pageable,
   type TModelEventUpdate,
@@ -76,7 +79,7 @@ export class UFEventsManger {
       }
 
       (
-        await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
+        await this.repos.checkHasReachedCreationLimit(p.userAid, p.forGroupId)
       ).unwrap();
 
       let accessRef: TModelVibefireAccess;
@@ -131,7 +134,7 @@ export class UFEventsManger {
       ).unwrap();
 
       (
-        await this.repos.checkHasReachedDraftLimit(p.userAid, p.forGroupId)
+        await this.repos.checkHasReachedCreationLimit(p.userAid, p.forGroupId)
       ).unwrap();
 
       let ownerRef: TModelVibefireOwnership;
@@ -290,7 +293,13 @@ export class UFEventsManger {
       if (!ownerRef) {
         throw new ManagerRuleViolation("Event owner not found");
       }
+      const accessRef = await this.repos.access.withId(event.accessRef.id)
+        .result;
+      if (!accessRef) {
+        throw new ManagerRuleViolation("Event access not found");
+      }
       event.ownerRef = ownerRef;
+      event.accessRef = accessRef;
       return event;
     });
   }
@@ -304,54 +313,53 @@ export class UFEventsManger {
       const e = await this.repos.eventIfManager(p.eventId, p.userAid);
       // const eManage = await this.repos.event.eventManagement(p.eventId);
 
-      const delta = tbClean(ModelEventUpdate, p.update);
-      const prior = tbClean(ModelEventUpdate, e);
-      const next = tbValidator(ModelEventUpdate)({ ...prior, ...delta });
+      const update = tbClean(ModelEventUpdate, p.update);
 
-      if (!next.times) {
-        next.times = {};
+      if (
+        update.location?.position &&
+        !isPositionEqual(update.location?.position, e.location?.position)
+      ) {
+        const tzInfo = await this.googleMaps.getTimezoneInfo(
+          update.location.position,
+          DateTime.now().toUnixInteger(),
+        );
+        update.times ??= {};
+        update.times.timezone = tzInfo.timeZoneId;
+        update.times.offsetSeconds = tzInfo.rawOffset;
       }
 
       if (
-        !isPositionEqual(next.location?.position, prior.location?.position) &&
-        next.location?.position
+        update.times?.ntzStart &&
+        update.times.ntzStart !== e.times?.ntzStart
       ) {
-        const tzInfo = await this.googleMaps.getTimezoneInfo(
-          next.location?.position,
-          DateTime.now().toUnixInteger(),
+        update.times.datePeriods = dateIndexesFor(
+          ntzToDateTime(update.times.ntzStart),
+          0, // will come from management at some point
         );
-        next.times.timezone = tzInfo.timeZoneId;
-        next.times.offsetSeconds = tzInfo.rawOffset;
       }
 
-      if (next.times.ntzStart !== prior.times?.ntzStart) {
-        // if somehow the start time was cleared, clear the periods
-        next.times.datePeriods = next.times.ntzStart
-          ? dateIndexesFor(
-              ntzToDateTime(next.times.ntzStart),
-              0, // that day only
-            )
-          : [];
-      }
-
-      if (next.times.ntzStart && next.times.ntzEnd) {
-        if (
-          ntzToDateTime(next.times.ntzStart) > ntzToDateTime(next.times.ntzEnd)
-        ) {
+      const nextStart = update.times?.ntzStart ?? e.times.ntzStart;
+      const nextEnd = update.times?.ntzEnd ?? e.times.ntzEnd;
+      if (nextStart && nextEnd) {
+        if (ntzToDateTime(nextStart) > ntzToDateTime(nextEnd)) {
           throw new ManagerRuleViolation("Start time must be before end time");
         }
       }
 
       // todo !
-      if (next.images?.bannerImgKeys !== prior.images?.bannerImgKeys) {
+      if (update.images?.bannerImgKeys !== e.images?.bannerImgKeys) {
+        // changes images, you could perpahs add outdated image to a dlete q
+        // but only the keys are proviede here,
+        // the actual upload must be hanlded by the client or elsewhere
+        // could check the image exististststs to
       }
 
-      // changes images, you could perpahs add outdated image to a dlete q
-      // but only the keys are proviede here,
-      // the actual upload must be hanlded by the client or elsewhere
-      // could check the image exististststs to
+      const valdRes = tbValidatorResult(ModelVibefireEventData)(update);
+      if (e.state === 1 && valdRes.isErr) {
+        throw new ManagerRuleViolation(`Missing required fields in event`);
+      }
 
-      return (await this.repos.event.update(p.eventId, next)
+      return (await this.repos.event.update(p.eventId, update)
         .result) as TModelVibefireEvent;
     });
   }
@@ -359,16 +367,48 @@ export class UFEventsManger {
   updateEventVisibility(p: {
     userAid: string;
     eventId: string;
-    update: "hidden" | "published";
+    update: "hide" | "publish";
   }) {
     return managerReturn(async () => {
-      await this.repos.eventIfManager(p.eventId, p.userAid);
+      const e = await this.repos.eventIfManager(p.eventId, p.userAid);
+      if (p.update === "hide") {
+        await this.repos.event.update(p.eventId, {
+          state: 0,
+        }).result;
+      } else if (p.update === "publish") {
+        const valdRes = tbValidatorResult(ModelVibefireEventData)(e);
+        if (valdRes.isErr) {
+          throw new ManagerRuleViolation(`Missing required fields in event`);
+        }
+        await this.repos.event.update(p.eventId, {
+          state: 1,
+        }).result;
+      } else {
+        throw new Error(`Invalid visibility update - ${p.update}`);
+      }
+    });
+  }
 
-      const update: Partial<TModelVibefireEvent> = {
-        state: p.update === "published" ? 1 : 0,
-      };
+  updateEventAccess(p: {
+    userAid: string;
+    eventId: string;
+    update: "open" | "invite";
+  }) {
+    return managerReturn(async () => {
+      const e = await this.repos.eventIfManager(p.eventId, p.userAid);
+      const acc = await this.repos.getAccessRef(e.accessRef.id);
 
-      await this.repos.event.update(p.eventId, update).result;
+      if (acc.type === p.update) {
+        return;
+      }
+
+      if (p.update === "open") {
+        await this.repos.access.makeAccessOpen(acc.id, p.userAid).result;
+      } else if (p.update === "invite") {
+        await this.repos.access.makeAccessInvite(acc.id, p.userAid).result;
+      } else {
+        throw new Error(`Invalid access type - ${p.update}`);
+      }
     });
   }
 

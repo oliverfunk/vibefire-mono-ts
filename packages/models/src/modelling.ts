@@ -45,7 +45,7 @@ export class SchemaValidationError extends Error {
     if (schemaTitle) {
       forTitle = `[for ${schemaTitle}]`;
     }
-    super(`Schema validation failed:${forTitle}\n${msg}`);
+    super(`Schema validation failed: ${forTitle}\n${msg}`);
   }
 }
 

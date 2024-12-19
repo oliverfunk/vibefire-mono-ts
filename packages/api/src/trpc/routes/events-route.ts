@@ -203,13 +203,32 @@ export const eventsRouter = router({
       tbValidator(
         tb.Object({
           eventId: tb.String(),
-          update: tb.Union([tb.Literal("hidden"), tb.Literal("published")]),
+          update: tb.Union([tb.Literal("hide"), tb.Literal("publish")]),
         }),
       ),
     )
     .mutation(({ ctx, input }) =>
       wrapManagerReturn(() =>
         getUFEventsManager().updateEventVisibility({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          update: input.update,
+        }),
+      ),
+    ),
+
+  updateAccess: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Union([tb.Literal("open"), tb.Literal("invite")]),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().updateEventAccess({
           userAid: ctx.auth.userId,
           eventId: input.eventId,
           update: input.update,
