@@ -13,7 +13,7 @@ export const EventDetailWidgetView = (props: { detail: EventDetail }) => {
             {detail.blockTitle}
           </Text>
           <View className="py-2" />
-          <Text className="text-white">{detail.value}</Text>
+          <Text className="text-base text-white">{detail.value}</Text>
         </View>
       );
   }

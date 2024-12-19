@@ -51,7 +51,7 @@ export const ErrorSheet = (props: {
 }) => {
   return (
     <BasicViewSheet>
-      <View className="flex h-full flex-col items-center justify-center">
+      <View className="flex h-full flex-col items-center justify-center space-y-2">
         <Text className="text-center text-lg text-white">
           {props.message ?? "Something went wrong"}
         </Text>

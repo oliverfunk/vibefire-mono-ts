@@ -35,13 +35,6 @@ export class ReposManager {
     readonly access: TAccessRepository,
   ) {}
 
-  getEvent(eventId: string) {
-    return nullablePromiseToRes(
-      this.event.withId(eventId).result,
-      "This event does not exist",
-    );
-  }
-
   async eventIfManager(eventId: string, userAid: string) {
     return (
       await this.event.withIdIfUserCanManage(eventId, userAid).result
@@ -54,13 +47,6 @@ export class ReposManager {
     ).unwrap();
   }
 
-  getGroup(groupId: string) {
-    return nullablePromiseToRes(
-      this.group.withId(groupId).result,
-      "This group does not exist",
-    );
-  }
-
   async groupIfManager(groupId: string, userAid: string) {
     return (
       await this.group.withIdIfUserCanManage(groupId, userAid).result
@@ -71,13 +57,6 @@ export class ReposManager {
     return (
       await this.group.withIdIfUserCanView(groupId, userAid).result
     ).unwrap();
-  }
-
-  getPlan(planId: string) {
-    return nullablePromiseToRes(
-      this.plan.withId(planId).result,
-      "This plan does not exist",
-    );
   }
 
   async planIfManager(planId: string, userAid: string) {
@@ -99,55 +78,23 @@ export class ReposManager {
     );
   }
 
-  async entityAccess(entity: "event" | "group" | "plan", entityId: string) {
-    switch (entity) {
-      case "event":
-        return (await this.getEvent(entityId)).unwrap().accessRef;
-      case "group":
-        return (await this.getGroup(entityId)).unwrap().accessRef;
-      case "plan":
-        return (await this.getPlan(entityId)).unwrap().accessRef;
-    }
+  async getAccessRef(accessId: string) {
+    return (
+      await nullablePromiseToRes(
+        this.access.withId(accessId).result,
+        "Access does not exist",
+      )
+    ).unwrap();
   }
 
-  async entityAccessIfManager(
-    entity: "event" | "group" | "plan",
-    entityId: string,
-    userAid: string,
-  ) {
-    switch (entity) {
-      case "event":
-        return (await this.eventIfManager(entityId, userAid)).accessRef;
-      case "group":
-        return (await this.groupIfManager(entityId, userAid)).accessRef;
-      case "plan":
-        return (await this.planIfManager(entityId, userAid)).accessRef;
-    }
-  }
-
-  async entityAccessIfMember(
-    entity: "event" | "group" | "plan",
-    entityId: string,
-    userAid: string,
-  ) {
-    switch (entity) {
-      case "event":
-        return (await this.eventIfViewer(entityId, userAid)).accessRef;
-      case "group":
-        return (await this.groupIfViewer(entityId, userAid)).accessRef;
-      case "plan":
-        return (await this.planIfViewer(entityId, userAid)).accessRef;
-    }
-  }
-
-  async checkHasReachedDraftLimit(
+  async checkHasReachedCreationLimit(
     userAid: string,
     groupId?: string,
   ): AsyncResult<true> {
     const { data: drafts } = await this.event.allByOwnerByState(
       groupId ?? userAid,
       groupId ? "group" : "user",
-      -1, // is draft
+      0, // is draft
       6, // limit
     ).result;
 

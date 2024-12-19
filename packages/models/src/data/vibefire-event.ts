@@ -68,13 +68,12 @@ export const ModelVibefireEvent = tb.Object({
 
   state: tb.Union(
     [
-      tb.Literal(-1), // draft
       tb.Literal(0), // hidden
       tb.Literal(1), // published
       tb.Literal(2), // archived
       tb.Literal(3), // deleted
     ],
-    { default: -1 },
+    { default: 0 },
   ),
 
   name: tb.String({
@@ -117,13 +116,11 @@ export const ModelEventUpdate = tb.Partial(
     addInfos: ModelEventAddInfos,
   }),
 );
-
-// todo: this may not be correct, better to create a custom model
-// instead of using ModelEventUpdate
-export const ModelIncompleteVibefireEvent = tb.Object({
-  ...ModelVibefireEvent.properties,
-  ...ModelEventUpdate.properties,
+export const ModelVibefireEventData = tb.Object({
+  name: ModelVibefireEvent.properties.name,
+  images: ModelEventImages,
+  times: ModelEventTimes,
+  location: VibefireLocationSchema,
+  details: ModelEventDetails,
+  addInfos: ModelEventAddInfos,
 });
-export type TModelIncompleteVibefireEvent = Static<
-  typeof ModelIncompleteVibefireEvent
->;

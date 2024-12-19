@@ -1,9 +1,6 @@
 import { fql, type Client, type Page } from "fauna";
 
 import {
-  ModelVibefireEvent,
-  tbClean,
-  type TModelEventUpdate,
   type TModelVibefireEvent,
   type TModelVibefireEventNoId,
   type TModelVibefireOwnership,
@@ -98,7 +95,7 @@ export class FaunaEventRepository {
     return faunaQuery<Page<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        ${this.allByOwner(ownerId, ownerType).query}.where(.state == ${state})
+        let q = {${this.allByOwner(ownerId, ownerType).query}.where(.state == ${state})}
         if (${limit} != 0) {
           q.pageSize(${limit})
         } else {
@@ -108,13 +105,12 @@ export class FaunaEventRepository {
     );
   }
 
-  update(eventId: string, data: Partial<TModelEventUpdate>) {
+  update(eventId: string, data: PartialDeep<TModelVibefireEvent>) {
     return faunaQuery<PartialDeep<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        let data = ${data}
         let event = ${this.withId(eventId).query}
-        event?.update(data)
+        event?.update(${data})
       `,
     );
   }
@@ -147,12 +143,6 @@ export class FaunaEventRepository {
       fql`
         Set.paginate(${hash})
       `,
-      {
-        postProcess: (d) => {
-          const data = tbClean(ModelVibefireEvent, d.data);
-          return { ...d, data };
-        },
-      },
     );
   }
 }

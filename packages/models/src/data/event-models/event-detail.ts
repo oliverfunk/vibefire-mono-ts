@@ -4,8 +4,8 @@ import { clearable, tb, Value, type Static } from "!models/modelling";
 export type EventDetailDescModel = Static<typeof EventDetailDescModel>;
 export const EventDetailDescModel = tb.Object({
   type: tb.Literal("description"),
-  blockTitle: tb.String({ default: "Description" }),
-  value: tb.String(),
+  blockTitle: tb.String({ default: "Description", minLength: 1 }),
+  value: tb.String({ default: "" }),
 });
 export const newEventDetailDescModel = (p: {
   value: EventDetailDescModel["value"];

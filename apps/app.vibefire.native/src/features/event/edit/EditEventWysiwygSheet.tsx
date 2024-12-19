@@ -18,8 +18,8 @@ import { navManageEvent, navViewEventPreview } from "!/nav";
 import { EditableEventForm } from "./EditableEventForm";
 
 export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
-  (props: { eventId: string; create: boolean }) => {
-    const { eventId, create } = props;
+  (props: { eventId: string; isCreateNew: boolean }) => {
+    const { eventId, isCreateNew } = props;
 
     const router = useRouter();
 
@@ -32,6 +32,8 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
       },
     );
     const updateMut = trpc.events.update.useMutation();
+    const updateVisibilityMut = trpc.events.updateVisibility.useMutation();
+    const updateAccessMut = trpc.events.updateAccess.useMutation();
 
     const formRef = useRef<BottomSheetScrollViewMethods>(null);
     const formikRef = useRef<FormikProps<TModelVibefireEvent>>(null);
@@ -50,6 +52,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
       <Formik
         innerRef={formikRef}
         initialValues={viewManage.value}
+        validateOnChange={true}
         validate={(values) => {
           const errors: FormikErrors<TModelVibefireEvent> = {};
 
@@ -68,7 +71,6 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
           }
           return errors;
         }}
-        validateOnChange={true}
         onSubmit={async (values) => {
           try {
             const res = await updateMut.mutateAsync({
@@ -110,18 +112,64 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
         {(formik) => {
           const eventId = formik.values.id;
           const isSubmitting = formik.isSubmitting;
-          const isActive = formik.dirty && !isSubmitting;
+          const isUpdated = formik.dirty;
+          const isActive = isUpdated && !isSubmitting;
           const hasErrors = Object.keys(formik.errors).length > 0;
-          const hasValuesWithNoErrors = formik.dirty && !hasErrors;
+          const isActiveNoErrors = isUpdated && !hasErrors;
+          const noErrorsNotSubmitting = !hasErrors && !isSubmitting;
           return (
             <>
               <ScrollViewSheetWithRef ref={formRef}>
                 <EditableEventForm
                   formik={formik}
-                  onManageEventPress={() => {
-                    navManageEvent(router, eventId);
+                  isFormUpdated={isUpdated}
+                  updateAccessLoading={
+                    updateAccessMut.isPending ||
+                    viewManageCtl.isFetching ||
+                    viewManageCtl.isPending
+                  }
+                  updateVisibilityLoading={
+                    updateVisibilityMut.isPending ||
+                    viewManageCtl.isFetching ||
+                    viewManageCtl.isPending
+                  }
+                  onHidePress={async () => {
+                    await updateVisibilityMut.mutateAsync({
+                      eventId,
+                      update: "hide",
+                    });
+                    await viewManageCtl.refetch();
                   }}
-                  onPreviewEventPress={() => {
+                  onPublishPress={async () => {
+                    if (noErrorsNotSubmitting) {
+                      await updateVisibilityMut.mutateAsync({
+                        eventId,
+                        update: "publish",
+                      });
+                      await viewManageCtl.refetch();
+                    }
+                  }}
+                  onMakeInviteOnlyPress={async () => {
+                    await updateAccessMut.mutateAsync({
+                      eventId,
+                      update: "invite",
+                    });
+                    await viewManageCtl.refetch();
+                  }}
+                  onMakeOpenPress={() => {
+                    updateAccessMut.mutate(
+                      {
+                        eventId,
+                        update: "open",
+                      },
+                      {
+                        onSuccess: () => {
+                          void viewManageCtl.refetch();
+                        },
+                      },
+                    );
+                  }}
+                  onPreviewPress={() => {
                     navViewEventPreview(router, eventId);
                   }}
                 />
@@ -135,26 +183,26 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                 <View className="flex-1" />
                 <TouchableOpacity
                   disabled={!isActive}
-                  className={`rounded-full border-2 ${isActive ? "border-orange-500" : "border-gray-700"} p-2 px-4`}
+                  className={`rounded-full border-2 ${isActive ? "border-orange-500" : "border-neutral-600"} p-2 px-4`}
                   onPress={() => formik.resetForm()}
                 >
                   <Text
-                    className={`${isActive ? "text-white" : "text-gray-600"} text-lg`}
+                    className={`${isActive ? "text-white" : "text-neutral-600"} text-lg`}
                   >
                     <FontAwesome5 name="redo" size={15} /> Reset
                   </Text>
                 </TouchableOpacity>
                 <View className="flex-1" />
                 <TouchableOpacity
-                  disabled={!isActive || hasErrors}
-                  className={`rounded-full border-2 ${hasValuesWithNoErrors ? "border-green-500" : "border-gray-700"} p-2 px-4`}
+                  disabled={!isActiveNoErrors}
+                  className={`rounded-full border-2 ${isActiveNoErrors ? "border-green-500" : "border-neutral-600"} p-2 px-4`}
                   onPress={() => formik.handleSubmit()}
                 >
                   {isSubmitting ? (
                     <ActivityIndicator size="small" color="white" />
                   ) : (
                     <Text
-                      className={`${hasValuesWithNoErrors ? "text-white" : "text-gray-600"} text-lg`}
+                      className={`${isActiveNoErrors ? "text-white" : "text-neutral-600"} text-lg`}
                     >
                       <FontAwesome6 name="file-arrow-up" size={20} /> Update
                     </Text>
