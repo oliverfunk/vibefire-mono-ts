@@ -19,12 +19,12 @@ import { ScrollViewSheet } from "!/c/misc/sheet-utils";
 import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 import { navEditEvent } from "!/nav";
 
-const UsersEventsSummary = () => {
+const UsersEventsManageSummary = () => {
   const router = useRouter();
 
   const EventsListSuspense = withSuspenseErrorBoundary(
     () => {
-      const [eventsByUser] = trpc.events.listSelfAll.useSuspenseQuery();
+      const [eventsByUser] = trpc.events.listSelfAllManage.useSuspenseQuery();
 
       if (!eventsByUser.ok) {
         throw eventsByUser.error;
@@ -140,7 +140,7 @@ export const UserProfileAuthenticatedSheet = (props: {
 
         <View>
           <View className="py-10">
-            <UsersEventsSummary />
+            <UsersEventsManageSummary />
           </View>
           {/* <UsersGroupsSummary /> */}
         </View>

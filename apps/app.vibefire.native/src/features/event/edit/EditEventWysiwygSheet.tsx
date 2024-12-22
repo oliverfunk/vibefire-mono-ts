@@ -42,16 +42,18 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
       throw viewManage.error;
     }
 
+    const { event, membership } = viewManage.value;
+
     useEffect(() => {
       formikRef.current?.resetForm({
-        values: viewManage.value,
+        values: event,
       });
-    }, [viewManage]);
+    }, [event]);
 
     return (
       <Formik
         innerRef={formikRef}
-        initialValues={viewManage.value}
+        initialValues={event}
         validateOnChange={true}
         validate={(values) => {
           const errors: FormikErrors<TModelVibefireEvent> = {};
@@ -122,6 +124,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
               <ScrollViewSheetWithRef ref={formRef}>
                 <EditableEventForm
                   formik={formik}
+                  membership={membership ?? undefined}
                   isFormUpdated={isUpdated}
                   updateAccessLoading={
                     updateAccessMut.isPending ||

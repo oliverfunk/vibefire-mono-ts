@@ -36,7 +36,6 @@ export const userRouter = router({
       tbValidator(
         tb.Object({
           eventId: tb.String(),
-          report: tb.Boolean(),
         }),
       ),
     )
@@ -46,11 +45,11 @@ export const userRouter = router({
       }
       return true;
     }),
-  blockOrganiser: publicProcedure
+  blockAndReportOrganiser: publicProcedure
     .input(
       tbValidator(
         tb.Object({
-          eventid: tb.String(),
+          ownershipRefId: tb.String(),
         }),
       ),
     )

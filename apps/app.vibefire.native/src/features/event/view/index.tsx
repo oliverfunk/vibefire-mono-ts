@@ -1,20 +1,19 @@
-import { useMemo } from "react";
 import {
-  Dimensions,
-  Pressable,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { useAtom } from "jotai";
 
-import { type TModelVibefireEvent } from "@vibefire/models";
+import {
+  type TModelVibefireEvent,
+  type TModelVibefireMembership,
+} from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
@@ -24,39 +23,49 @@ import {
   EventInfoAddressBar,
   EventInfoTimesBar,
 } from "!/components/event/EventInfoBars";
-import { EventOrganiserBarView } from "!/components/event/EventOrganiserBar";
 import { VibefireImage } from "!/components/image/VibefireImage";
 import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
 import {
   LinearRedOrangeView,
   ScrollViewSheet,
-  ScrollViewSheetWithRef,
 } from "!/components/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/components/misc/SuspenseWithError";
-import { VibefireBottomLogo } from "!/components/VibefireBottomLogo";
-import { navEditEvent, navManageEvent } from "!/nav";
+import { OrganiserBarView } from "!/components/OrganiserBarView";
+import { userAtom } from "!/atoms";
+import { navEditEvent, navHomeWithCollapse, navHomeWithExpand } from "!/nav";
 
 import { EventDetailWidgetView } from "./EventDetailWidgetView";
 
 const ViewEventSheet = (props: {
   event: TModelVibefireEvent;
-  onEditEventPress: () => void;
-  onManageEventPress: () => void;
-  onOrganiserPress: () => void;
+  membership?: TModelVibefireMembership;
+  shareCode?: string;
 }) => {
-  const { event, onEditEventPress, onManageEventPress, onOrganiserPress } =
-    props;
+  const { event, membership, shareCode } = props;
+
+  const router = useRouter();
+
+  // muts
+  const blockAndReportOrganiserMut =
+    trpc.user.blockAndReportOrganiser.useMutation();
+  const hideEventMut = trpc.user.hideEvent.useMutation({});
+  const joinAccessMut = trpc.access.joinAccess.useMutation();
+  const leaveAccessMut = trpc.access.leaveAccess.useMutation();
+  const userMembershipQ = trpc.access.userMembership.useQuery({
+    accessId: event.accessRef.id,
+  });
+  // muts
 
   const { width, height } = useWindowDimensions();
 
-  const bannerImgKeys = useMemo(
-    () => event.images.bannerImgKeys,
-    [event.images],
-  );
+  const userMembership =
+    (userMembershipQ.data?.ok && userMembershipQ.data.value) || membership;
 
-  const details = useMemo(() => {
-    return event.details;
-  }, [event.details]);
+  const bannerImgKeys = event.images.bannerImgKeys;
+  const details = event.details;
+  const managedByUser = userMembership?.roleType === "manager";
+
+  console.log(JSON.stringify(userMembership, null, 2));
 
   return (
     <ScrollViewSheet>
@@ -81,7 +90,46 @@ const ViewEventSheet = (props: {
       </View>
 
       {/* black bars */}
-      <EventOrganiserBarView event={event} onPress={onOrganiserPress} />
+      <OrganiserBarView
+        ownerRef={event.ownerRef}
+        membership={userMembership}
+        onBlockAndReportOrganiserPress={() => {
+          blockAndReportOrganiserMut.mutate({
+            ownershipRefId: event.ownerRef.id,
+          });
+          navHomeWithCollapse(router);
+        }}
+        onHidePress={() => {
+          hideEventMut.mutate({
+            eventId: event.id,
+          });
+          navHomeWithCollapse(router);
+        }}
+        onOrganiserPress={() => {
+          if (event.ownerRef.ownerType === "group") {
+            console.log("todo: nav to group");
+          }
+        }}
+        onEditPress={() => {
+          navEditEvent(router, event.id);
+        }}
+        leaveJoinDisabled={managedByUser}
+        leaveJoinLoading={joinAccessMut.isPending || leaveAccessMut.isPending}
+        onJoinPress={async () => {
+          await joinAccessMut.mutateAsync({
+            accessId: event.accessRef.id,
+            shareCode,
+          });
+          await userMembershipQ.refetch();
+        }}
+        onLeavePress={async () => {
+          await leaveAccessMut.mutateAsync({
+            accessId: event.accessRef.id,
+          });
+          await userMembershipQ.refetch();
+          navHomeWithCollapse(router);
+        }}
+      />
       <EventActionsBar event={event} />
 
       {/* infos */}
@@ -126,25 +174,10 @@ const ViewEventSheet = (props: {
   );
 };
 
-const ViewEventSheetCommon = (props: { event: TModelVibefireEvent }) => {
-  const { event } = props;
-
-  const router = useRouter();
-
-  return (
-    <ViewEventSheet
-      event={event}
-      onEditEventPress={() => navEditEvent(router, event.id)}
-      onManageEventPress={() => {
-        navManageEvent(router, event.id);
-      }}
-      onOrganiserPress={() => {}}
-    />
-  );
-};
+type ViewEventProps = { eventId: string; shareCode?: string };
 
 export const ViewEventPreviewSheet = withSuspenseErrorBoundarySheet(
-  (props: { eventId: string }) => {
+  (props: ViewEventProps) => {
     const { eventId } = props;
 
     const [viewManage] = trpc.events.viewManage.useSuspenseQuery(
@@ -160,33 +193,20 @@ export const ViewEventPreviewSheet = withSuspenseErrorBoundarySheet(
       throw viewManage.error;
     }
 
-    return <ViewEventSheetCommon event={viewManage.value} />;
+    const { event, membership } = viewManage.value;
+
+    return (
+      <ViewEventSheet
+        event={event}
+        membership={membership ?? undefined}
+        shareCode={props.shareCode}
+      />
+    );
   },
 );
 
 export const ViewEventPublishedSheet = withSuspenseErrorBoundarySheet(
-  (props: { eventId: string }) => {
-    const { eventId } = props;
-
-    const [viewPublished] = trpc.events.viewPublished.useSuspenseQuery(
-      {
-        eventId,
-      },
-      {
-        gcTime: 1000,
-      },
-    );
-
-    if (!viewPublished.ok) {
-      throw viewPublished.error;
-    }
-
-    return <ViewEventSheetCommon event={viewPublished.value} />;
-  },
-);
-
-export const ViewEventViaLinkSheet = withSuspenseErrorBoundarySheet(
-  (props: { eventId: string }) => {
+  (props: ViewEventProps) => {
     const { eventId } = props;
 
     const [viewManage] = trpc.events.viewPublished.useSuspenseQuery(
@@ -202,6 +222,43 @@ export const ViewEventViaLinkSheet = withSuspenseErrorBoundarySheet(
       throw viewManage.error;
     }
 
-    return <ViewEventSheetCommon event={viewManage.value} />;
+    const { event, membership } = viewManage.value;
+
+    return (
+      <ViewEventSheet
+        event={event}
+        membership={membership ?? undefined}
+        shareCode={props.shareCode}
+      />
+    );
+  },
+);
+
+export const ViewEventViaLinkSheet = withSuspenseErrorBoundarySheet(
+  (props: ViewEventProps) => {
+    const { eventId } = props;
+
+    const [viewManage] = trpc.events.viewPublished.useSuspenseQuery(
+      {
+        eventId,
+      },
+      {
+        gcTime: 1000,
+      },
+    );
+
+    if (!viewManage.ok) {
+      throw viewManage.error;
+    }
+
+    const { event, membership } = viewManage.value;
+
+    return (
+      <ViewEventSheet
+        event={event}
+        membership={membership ?? undefined}
+        shareCode={props.shareCode}
+      />
+    );
   },
 );

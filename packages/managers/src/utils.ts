@@ -30,6 +30,7 @@ export const managerReturn = async <T>(
   return (await wrapToAsyncResult(fn)).map(
     (v) => v,
     (e) => {
+      console.error("managerReturn error", e);
       if (e instanceof ManagerErrorResponse) {
         return e;
       }
@@ -43,7 +44,6 @@ export const managerReturn = async <T>(
       if (e instanceof FaunaCallAborted && e.value.code !== "ise") {
         return new ManagerErrorResponse(e.value);
       }
-      console.error("managerReturn", e);
       return new ManagerErrorResponse({
         code: "ise",
         action: "manager",

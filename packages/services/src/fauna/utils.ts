@@ -3,6 +3,7 @@ import {
   NullDocument,
   QueryCheckError,
   QueryRuntimeError,
+  ServiceError,
   type Client,
   type Query,
   type QueryValue,
@@ -36,12 +37,7 @@ const runFaunaQuery = async <R extends QueryValue>(
 
     return qr.data;
   } catch (e) {
-    if (e instanceof QueryCheckError) {
-      e.message = `\n\n-----------\n${e.name} [${e.code}]:\n${e.message}\n${e.queryInfo?.summary}\n-----------\n`;
-    }
-    if (e instanceof QueryRuntimeError) {
-      e.message = `\n\n-----------\n${e.name} [${e.code}]:\n${e.message}\n${e.queryInfo?.summary}\n-----------\n`;
-    } else if (e instanceof AbortError) {
+    if (e instanceof ServiceError) {
       e.message = `\n\n-----------\n${e.name} [${e.code}]:\n${e.message}\n${e.queryInfo?.summary}\n-----------\n`;
     }
     throw e;

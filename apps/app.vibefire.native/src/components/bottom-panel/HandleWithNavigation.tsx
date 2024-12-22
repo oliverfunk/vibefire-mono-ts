@@ -36,7 +36,6 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
       if (router.canGoBack()) {
         router.dismissAll();
       } else if (pathname !== "/") {
-        // todo: this might cause issues when deeplinking
         router.replace("/");
       }
     }

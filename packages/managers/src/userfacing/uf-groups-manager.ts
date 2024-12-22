@@ -61,7 +61,7 @@ export class UFGroupsManger {
       const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
       // eslint-disable-next-line prefer-const
       accessRef = (
-        await this.repos.access.createAccess(p.accessType, p.userAid).result
+        await this.repos.access.create(p.accessType, p.userAid).result
       ).unwrap();
       // eslint-disable-next-line prefer-const
       ownerRef = u.ownershipRef;

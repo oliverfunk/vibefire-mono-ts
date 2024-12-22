@@ -1,7 +1,7 @@
 import { type Router } from "expo-router";
 
 type RouteingOpts = {
-  manner: "push" | "nav" | "replace" | "replace-all" | "dismiss-all";
+  manner: "push" | "nav" | "replace" | "replace-all" | "dismiss-to";
 };
 
 const route = (
@@ -10,26 +10,37 @@ const route = (
   opts?: RouteingOpts,
   queryParams?: Record<string, string>,
 ) => {
-  if (queryParams) {
-    const queryParamsString = new URLSearchParams(queryParams).toString();
-    path += `?${queryParamsString}`;
-  }
+  console.log(
+    "route",
+    JSON.stringify(
+      {
+        path,
+        queryParams,
+        opts,
+      },
+      null,
+      2,
+    ),
+  );
 
-  console.log("route", path, JSON.stringify(opts, null, 2));
+  const href = {
+    pathname: path,
+    params: queryParams,
+  };
 
   if (opts?.manner === "nav") {
-    router.navigate(path);
+    router.navigate(href);
   } else if (opts?.manner === "push") {
-    router.push(path);
+    router.push(href);
   } else if (opts?.manner === "replace") {
-    router.replace(path);
+    router.replace(href);
   } else if (opts?.manner === "replace-all") {
     router.dismissAll();
-    router.navigate(path);
-  } else if (opts?.manner === "dismiss-all") {
-    router.dismissAll();
+    router.replace(href);
+  } else if (opts?.manner === "dismiss-to") {
+    router.dismissTo(href);
   } else {
-    router.navigate(path);
+    router.navigate(href);
   }
 };
 
@@ -38,13 +49,13 @@ export const navProfile = (router: Router, opts?: RouteingOpts) => {
 };
 
 export const navHome = (router: Router) => {
-  route(router, "/", { manner: "dismiss-all" });
+  route(router, "/", { manner: "replace-all" });
 };
 export const navHomeWithCollapse = (router: Router) => {
   route(
     router,
     "/",
-    { manner: "dismiss-all" },
+    { manner: "replace-all" },
     { expand: "false", collapse: "true" },
   );
 };
@@ -52,7 +63,7 @@ export const navHomeWithExpand = (router: Router) => {
   route(
     router,
     "/",
-    { manner: "dismiss-all" },
+    { manner: "replace-all" },
     { expand: "true", collapse: "false" },
   );
 };
