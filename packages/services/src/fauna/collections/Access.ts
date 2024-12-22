@@ -6,6 +6,7 @@ import {
   type TModelVibefireMembership,
   type TModelVibefireOwnership,
 } from "@vibefire/models";
+import { randomAlphaNumeric, randomDigits } from "@vibefire/utils";
 
 import { type FaunaFunctions } from "!services/fauna//functions";
 import {
@@ -29,8 +30,12 @@ export class FaunaAccessRepository {
     );
   }
 
-  createAccess(accessType: TModelVibefireAccess["type"], userAid: string) {
-    return this.funcs.createNewAccess(accessType, userAid);
+  create(accessType: TModelVibefireAccess["type"], userAid: string) {
+    return this.funcs.createNewAccess(
+      accessType,
+      userAid,
+      randomAlphaNumeric(10),
+    );
   }
 
   makeAccessOpen(accessId: string, userAid: string) {
@@ -39,6 +44,45 @@ export class FaunaAccessRepository {
 
   makeAccessInvite(accessId: string, userAid: string) {
     return this.funcs.makeAccessInvite(accessId, userAid);
+  }
+
+  setManager(accessId: string, userAid: string, toSetUserAid: string) {
+    return this.funcs.setManagerForAccess(accessId, userAid, toSetUserAid);
+  }
+
+  joinAccess(accessId: string, userAid: string, shareCode?: string) {
+    return this.funcs.joinAccess(
+      accessId,
+      userAid,
+      shareCode ?? null,
+      randomAlphaNumeric(10),
+    );
+  }
+
+  leaveAccess(accessId: string, userAid: string) {
+    return this.funcs.leaveAccess(accessId, userAid);
+  }
+
+  /**
+   * Generates a share code for a user for a specific access.
+   * The user must be a member to successfully generate a share code.
+   *
+   * @param accessId - The ID of the access resource.
+   * @param userAid - The ID of the user for whom the share code is being generated.
+   * @param regenerate - A boolean indicating whether to regenerate the share code if it already exists.
+   * @returns A promise that resolves to the share code for the user.
+   */
+  generateShareCodeForUser(
+    accessId: string,
+    userAid: string,
+    regenerate: boolean,
+  ) {
+    return this.funcs.shareCodeOfAccessForUser(
+      accessId,
+      userAid,
+      crypto.randomUUID(),
+      regenerate,
+    );
   }
 
   // todo: move to Ownership file
@@ -62,19 +106,7 @@ export class FaunaAccessRepository {
     );
   }
 
-  // createOrGetAccess(accAct: AccessAction) {
-  //   if (accAct.action === "link") {
-  //     return faunaAbortableQuery<TModelVibefireAccess>(
-  //       this.faunaClient,
-  //       fql`
-  //         Access.byId(${accAct.accessId})
-  //       `,
-  //     );
-  //   } else {
-  //     return this.funcs.createNewAccess(accAct.access.type, accAct.userId);
-  //   }
-  // }
-
+  // todo: Move to Membership file
   membershipWithId(membershipId: string) {
     return faunaNullableQuery<TModelVibefireMembership>(
       this.faunaClient,
@@ -84,7 +116,7 @@ export class FaunaAccessRepository {
     );
   }
 
-  setManager(accessId: string, userAid: string, toSetUserAid: string) {
-    return this.funcs.setManagerForAccess(accessId, userAid, toSetUserAid);
+  membershipForUser(accessId: string, userAid?: string) {
+    return this.funcs.membershipOfAccessForUser(accessId, userAid);
   }
 }

@@ -10,12 +10,9 @@ export const ModelVibefireMembership = tb.Object({
   userRef: ModelVibefireUser,
   accessRef: ModelVibefireAccess,
 
-  role: tb.Union([
-    tb.Literal("manger"),
-    tb.Literal("member"),
-    tb.Literal("pending"),
-    tb.Literal("denied"),
-  ]),
+  roleType: tb.Union([tb.Literal("manager"), tb.Literal("member")]),
+  shareCode: tb.String({ default: undefined }),
+  invitedBy: tb.Optional(ModelVibefireUser),
 
   epochExpires: tb.Optional(tb.Number({ default: undefined })),
 

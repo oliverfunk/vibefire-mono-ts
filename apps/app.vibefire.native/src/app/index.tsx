@@ -25,9 +25,9 @@ const Screen = () => {
   // bettter to useBottomSheet() at the nav call site
   useLayoutEffect(() => {
     if (withCollapse === "true") {
+      console.log("collapsing");
       collapse();
-    }
-    if (withExpand === "true") {
+    } else if (withExpand === "true") {
       expand();
     }
   }, [withCollapse, withExpand, collapse, expand]);

@@ -2,11 +2,9 @@ import { DateTime } from "luxon";
 
 import {
   ModelEventUpdate,
-  ModelVibefireEvent,
   ModelVibefireEventData,
   newVibefireEvent,
   tbClean,
-  tbValidator,
   tbValidatorResult,
   type MapQueryT,
   type Pageable,
@@ -14,6 +12,7 @@ import {
   type TModelVibefireAccess,
   type TModelVibefireEvent,
   type TModelVibefireGroup,
+  type TModelVibefireMembership,
   type TModelVibefireOwnership,
 } from "@vibefire/models";
 import {
@@ -99,7 +98,7 @@ export class UFEventsManger {
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
         accessRef = (
-          await this.repos.access.createAccess(p.accessType, p.userAid).result
+          await this.repos.access.create(p.accessType, p.userAid).result
         ).unwrap();
         ownerRef = u.ownershipRef;
       }
@@ -125,7 +124,7 @@ export class UFEventsManger {
     previousEventId: string;
   }) {
     return managerReturn(async () => {
-      const event = (
+      const { event } = (
         await this.viewEvent({
           userAid: p.userAid,
           eventId: p.previousEventId,
@@ -149,8 +148,7 @@ export class UFEventsManger {
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
         accessRef = (
-          await this.repos.access.createAccess(event.accessRef.type, p.userAid)
-            .result
+          await this.repos.access.create(event.accessRef.type, p.userAid).result
         ).unwrap();
         ownerRef = u.ownershipRef;
       }
@@ -192,18 +190,25 @@ export class UFEventsManger {
     });
   }
 
-  eventsUserIsPart(p: {
+  eventsUserIsPartOf(p: {
     userAid: string;
+    scope: "manager" | "member";
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
-      const { data, after: afterKey } = await this.repos.event.allUserIsPart(
-        p.userAid,
-        10,
-      ).result;
+      const pageLimit = 10;
+
+      if (p.scope !== "manager" && p.scope !== "member") {
+        throw new Error(`Invalid scope: ${p.scope}`);
+      }
+      const { data, after: afterKey } =
+        p.scope === "manager"
+          ? await this.repos.event.allUserManagerOf(p.userAid, pageLimit).result
+          : await this.repos.event.allUserMemberOf(p.userAid, pageLimit).result;
+
       return {
         data,
         afterKey,
-        limit: 10,
+        limit: pageLimit,
       };
     });
   }
@@ -260,8 +265,12 @@ export class UFEventsManger {
   viewEvent(p: {
     userAid?: string;
     eventId: string; // taken to be the linkId when scope is "viaLink"
-    scope: "manage" | "published" | "viaLink";
-  }): ManagerAsyncResult<TModelVibefireEvent> {
+    scope: "manage" | "published";
+    shareCode?: string;
+  }): ManagerAsyncResult<{
+    event: TModelVibefireEvent;
+    membership: TModelVibefireMembership | null;
+  }> {
     return managerReturn(async () => {
       let event: TModelVibefireEvent;
       switch (p.scope) {
@@ -274,33 +283,22 @@ export class UFEventsManger {
           event = await this.repos.eventIfManager(p.eventId, p.userAid);
           break;
         case "published":
-          event = await this.repos.eventIfViewer(p.eventId, p.userAid);
-          // case "viaLink":
-          //   if (!isValidUuidV4(p.eventId)) {
-          //     throw new ManagerRuleViolation("Invalid event link id");
-          //   }
-          //   return (
-          //     await this.repos.event.withLinkIdIfUserCanView(p.eventId, p.userAid)
-          //       .result
-          //   ).unwrap();
+          event = await this.repos.eventIfViewer(
+            p.eventId,
+            p.userAid,
+            p.shareCode,
+          );
           break;
         default:
           throw new ManagerRuleViolation("Invalid scope");
       }
-      const ownerRef = await this.repos.access.ownershipWithId(
-        event.ownerRef.id,
-      ).result;
-      if (!ownerRef) {
-        throw new ManagerRuleViolation("Event owner not found");
-      }
-      const accessRef = await this.repos.access.withId(event.accessRef.id)
-        .result;
-      if (!accessRef) {
-        throw new ManagerRuleViolation("Event access not found");
-      }
-      event.ownerRef = ownerRef;
-      event.accessRef = accessRef;
-      return event;
+      event.ownerRef = await this.repos.getOwnershipRef(event.ownerRef.id);
+      event.accessRef = await this.repos.getAccessRef(event.accessRef.id);
+      const membership = (
+        await this.repos.access.membershipForUser(event.accessRef.id, p.userAid)
+          .result
+      ).unwrap();
+      return { event, membership };
     });
   }
 

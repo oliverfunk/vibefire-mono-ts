@@ -53,11 +53,33 @@ export class FaunaEventRepository {
     );
   }
 
-  allUserIsPart(userAid: string, limit = 0) {
+  withIdIfUserCanViewWithShareCode(eventId: string, shareCode: string) {
+    return this.funcs.entityIfUserCanViewWithShareCode<TModelVibefireEvent>(
+      eventId,
+      "event",
+      shareCode,
+    );
+  }
+
+  allUserManagerOf(userAid: string, limit = 0) {
     return faunaQuery<Page<TModelVibefireEvent>>(
       this.faunaClient,
       fql`
-        let q = ${this.funcs.entitiesUserIsPart("event", userAid).query}
+        let q = ${this.funcs.entitiesUserIsManagerOf<TModelVibefireEvent>("event", userAid).query}
+        if (${limit} != 0) {
+          q.pageSize(${limit})
+        } else {
+          q
+        }
+      `,
+    );
+  }
+
+  allUserMemberOf(userAid: string, limit = 0) {
+    return faunaQuery<Page<TModelVibefireEvent>>(
+      this.faunaClient,
+      fql`
+        let q = ${this.funcs.entitiesUserIsMemberOf<TModelVibefireEvent>("event", userAid).query}
         if (${limit} != 0) {
           q.pageSize(${limit})
         } else {

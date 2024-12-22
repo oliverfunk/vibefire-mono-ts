@@ -8,6 +8,7 @@ import {
   tbValidator,
   type Pageable,
   type TModelVibefireEvent,
+  type TModelVibefireMembership,
 } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
@@ -20,10 +21,12 @@ import { wrapManagerReturn, type ApiResponse } from "!api/utils";
 
 export const eventsRouter = router({
   // todo: listUserHighlightsToday
-  listSelfAll: authedProcedure.query(({ ctx }) =>
+
+  listSelfAllManage: authedProcedure.query(({ ctx }) =>
     wrapManagerReturn<Pageable<PartialDeep<TModelVibefireEvent>>>(() => {
-      return getUFEventsManager().eventsUserIsPart({
+      return getUFEventsManager().eventsUserIsPartOf({
         userAid: ctx.auth.userId,
+        scope: "manager",
       });
     }),
   ),
@@ -74,7 +77,10 @@ export const eventsRouter = router({
       ),
     )
     .query(({ ctx, input }) =>
-      wrapManagerReturn<TModelVibefireEvent>(() =>
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(() =>
         getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId ?? undefined,
           eventId: input.eventId,
@@ -92,7 +98,10 @@ export const eventsRouter = router({
       ),
     )
     .query(({ ctx, input }) =>
-      wrapManagerReturn<TModelVibefireEvent>(() =>
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(() =>
         getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,
           eventId: input.eventId,
@@ -112,7 +121,10 @@ export const eventsRouter = router({
       ),
     )
     .mutation(({ ctx, input }) =>
-      wrapManagerReturn<TModelVibefireEvent>(async () => {
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(async () => {
         let eventId: string;
         if (input.fromPreviousEventId) {
           eventId = (

@@ -56,7 +56,7 @@ export class FaunaFunctions {
     );
   }
 
-  entityIfUserCanViewViaShare<T extends QueryValue>(
+  entityIfUserCanViewWithShareCode<T extends QueryValue>(
     entityId: string,
     entityType: EntityType,
     shareCode: string,
@@ -64,30 +64,46 @@ export class FaunaFunctions {
     return faunaAbortableQuery<T>(
       this.faunaClient,
       fql`
-        EntityIfCanViewViaShare(${entityId}, ${entityType}, ${shareCode})
+        EntityIfCanViewWithShareCode(${entityId}, ${entityType}, ${shareCode})
       `,
     );
   }
 
-  entitiesUserIsPart<T extends QueryValue>(
+  entitiesUserIsManagerOf<T extends QueryValue>(
     entityType: EntityType,
     userAid: string,
   ) {
     return faunaAbortableQuery<T[]>(
       this.faunaClient,
       fql`
-        EntitiesUserIsPart(${entityType}, ${userAid})
+        EntitiesUserIsManagerOf(${entityType}, ${userAid})
+      `,
+    );
+  }
+
+  entitiesUserIsMemberOf<T extends QueryValue>(
+    entityType: EntityType,
+    userAid: string,
+  ) {
+    return faunaAbortableQuery<T[]>(
+      this.faunaClient,
+      fql`
+        EntitiesUserIsMemberOf(${entityType}, ${userAid})
       `,
     );
   }
 
   // access_management
 
-  createNewAccess(accessType: TModelVibefireAccess["type"], userAid: string) {
+  createNewAccess(
+    accessType: TModelVibefireAccess["type"],
+    userAid: string,
+    shareCode: string,
+  ) {
     return faunaAbortableQuery<TModelVibefireAccess>(
       this.faunaClient,
       fql`
-        CreateNewAccess(${accessType}, ${userAid})
+        CreateNewAccess(${accessType}, ${userAid}, ${shareCode})
       `,
     );
   }
@@ -133,6 +149,15 @@ export class FaunaFunctions {
     );
   }
 
+  membershipOfAccessForUser(accessId: string, userAid?: string) {
+    return faunaAbortableQuery<TModelVibefireMembership | null>(
+      this.faunaClient,
+      fql`
+        MembershipOfAccessForUser(${accessId}, ${userAid ?? null})
+      `,
+    );
+  }
+
   membershipsOfAccessIfUserCanManage(accessId: string, userAid: string) {
     return faunaAbortableQuery<TModelVibefireMembership[]>(
       this.faunaClient,
@@ -144,25 +169,51 @@ export class FaunaFunctions {
 
   // sharing_joining
 
-  joinAccessWithShareCode(shareCode: string, userAid: string) {
+  joinAccess(
+    accessId: string,
+    userAid: string,
+    shareCode: string | null,
+    newMemberShareCode: string,
+  ) {
+    console.log(
+      JSON.stringify(
+        {
+          accessId,
+          userAid,
+          shareCode,
+          newMemberShareCode,
+        },
+        null,
+        2,
+      ),
+    );
     return faunaAbortableQuery<TModelVibefireMembership>(
       this.faunaClient,
       fql`
-        JoinAccessWithShareCode(${shareCode}, ${userAid})
+        JoinAccessWithMaybeShareCode(${accessId}, ${userAid}, ${shareCode}, ${newMemberShareCode})
       `,
     );
   }
 
-  accessShareCodeForUser(
+  leaveAccess(accessId: string, userAid: string) {
+    return faunaAbortableQuery<null>(
+      this.faunaClient,
+      fql`
+        LeaveAccess(${accessId}, ${userAid})
+      `,
+    );
+  }
+
+  shareCodeOfAccessForUser(
     accessId: string,
     userAid: string,
     shareCode: string,
-    update: boolean,
+    overwrite: boolean,
   ) {
     return faunaAbortableQuery<string>(
       this.faunaClient,
       fql`
-        AccessShareCodeForUser(${accessId}, ${userAid}, ${shareCode}, ${update})
+        ShareCodeOfAccessForUser(${accessId}, ${userAid}, ${shareCode}, ${overwrite})
       `,
     );
   }

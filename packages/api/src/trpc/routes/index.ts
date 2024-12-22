@@ -1,5 +1,6 @@
 import { router } from "!api/trpc/trpc-router";
 
+import { accessRouter } from "./access-route";
 import { authRouter } from "./auth-route";
 import { eventsRouter } from "./events-route";
 import { groupsRouter } from "./groups-route";
@@ -9,6 +10,7 @@ import { userRouter } from "./user-routes";
 
 export const trpcRouter = router({
   auth: authRouter,
+  access: accessRouter,
   user: userRouter,
   events: eventsRouter,
   plans: plansRouter,

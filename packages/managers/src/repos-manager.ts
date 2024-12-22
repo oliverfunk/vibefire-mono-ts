@@ -41,7 +41,13 @@ export class ReposManager {
     ).unwrap();
   }
 
-  async eventIfViewer(eventId: string, userAid?: string) {
+  async eventIfViewer(eventId: string, userAid?: string, shareCode?: string) {
+    if (shareCode) {
+      return (
+        await this.event.withIdIfUserCanViewWithShareCode(eventId, shareCode)
+          .result
+      ).unwrap();
+    }
     return (
       await this.event.withIdIfUserCanView(eventId, userAid).result
     ).unwrap();
@@ -83,6 +89,15 @@ export class ReposManager {
       await nullablePromiseToRes(
         this.access.withId(accessId).result,
         "Access does not exist",
+      )
+    ).unwrap();
+  }
+
+  async getOwnershipRef(ownershipId: string) {
+    return (
+      await nullablePromiseToRes(
+        this.access.ownershipWithId(ownershipId).result,
+        "Ownership does not exist",
       )
     ).unwrap();
   }
