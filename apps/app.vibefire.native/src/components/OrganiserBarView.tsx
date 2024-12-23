@@ -25,9 +25,9 @@ const ThreeDotsMenuOption = (props: {
       className="flex-row items-center justify-stretch space-x-2 p-2"
       onPress={onPress}
     >
-      <Text className="text-base">{label}</Text>
-      <View className="flex-auto" />
       {icon}
+      <Text className="flex-auto text-base">{label}</Text>
+      {/* <View className="" /> */}
     </TouchableOpacity>
   );
 };
@@ -92,7 +92,10 @@ const ThreeDotsModalMenu = (props: ThreeDotsModalMenuProps) => {
                     size={24}
                   />
                 }
-                onPress={onEditPress}
+                onPress={() => {
+                  setMenuVisible(false);
+                  onEditPress?.();
+                }}
               />
             ) : (
               <>
@@ -105,7 +108,10 @@ const ThreeDotsModalMenu = (props: ThreeDotsModalMenuProps) => {
                       size={24}
                     />
                   }
-                  onPress={onHidePress}
+                  onPress={() => {
+                    setMenuVisible(false);
+                    onHidePress?.();
+                  }}
                 />
                 <View className="h-px bg-gray-200" />
                 <ThreeDotsMenuOption
@@ -117,7 +123,10 @@ const ThreeDotsModalMenu = (props: ThreeDotsModalMenuProps) => {
                       size={24}
                     />
                   }
-                  onPress={onBlockAndReportOrganiserPress}
+                  onPress={() => {
+                    setMenuVisible(false);
+                    onBlockAndReportOrganiserPress?.();
+                  }}
                 />
               </>
             )}
@@ -154,8 +163,7 @@ const LeaveJoinButton = (props: LeaveJoinButtonProps) => {
   return (
     <Pressable
       className={`rounded-full border ${leaveJoinDisabled ? "border-neutral-600" : isMember ? "border-white" : "border-red-500"} p-2 px-4`}
-      // onPress={isMember ? onLeavePress : onJoinPress}
-      onPress={isMember ? onJoinPress : onJoinPress}
+      onPress={isMember ? onLeavePress : onJoinPress}
       disabled={leaveJoinDisabled}
     >
       {leaveJoinLoading ? (

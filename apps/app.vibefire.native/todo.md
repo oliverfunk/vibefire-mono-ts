@@ -3,9 +3,7 @@
 * green and red edit icons for reqies fields
 
 * Shareing and joinning events
-  * Organiser bar -> backend for this
-  * Join button
-  * Share button (getting share link/disabled if invite only if memeber)
+  * add "this event is public/private ..." text to viewing events
 
 * making deep links work
 
@@ -14,3 +12,5 @@
 * maybe test static gradient background
 
 * select / cancel event location button on map
+
+* the profile screen!

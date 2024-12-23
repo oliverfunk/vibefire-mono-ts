@@ -14,12 +14,14 @@ const Screen = () => {
   // you need a route to have loaded before this can be called
   useNotificationsResponder();
 
-  const { expand, collapse } = useBottomSheet();
-
-  const { collapse: withCollapse, expand: withExpand } = useLocalSearchParams<{
+  const a = useLocalSearchParams<{
     collapse?: string;
     expand?: string;
   }>();
+  console.log("a", JSON.stringify(a, null, 2));
+  const { collapse: withCollapse, expand: withExpand } = a;
+
+  const { expand, collapse } = useBottomSheet();
 
   // this might be a bad idea,
   // bettter to useBottomSheet() at the nav call site

@@ -1,3 +1,5 @@
+import "!/global.css";
+
 import { useEffect, type ReactNode } from "react";
 import { StatusBar, View } from "react-native";
 import {
@@ -5,6 +7,7 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import * as Linking from "expo-linking";
+import * as Notifications from "expo-notifications";
 import {
   Stack,
   useGlobalSearchParams,
@@ -20,16 +23,11 @@ import {
 
 import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
 
-import AppProviders, { navigationIntegration } from "!/providers";
-
-import "!/global.css";
-
-import * as Notifications from "expo-notifications";
-
 import { GeoQueryMap } from "!/features/geo-query/GeoQueryMap";
 import { VfActionButton } from "!/features/vf-action-button";
 import { BottomPanel } from "!/components/bottom-panel/BottomPanel";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
+import AppProviders, { navigationIntegration } from "!/providers";
 
 // todo: make strict in the future
 configureReanimatedLogger({

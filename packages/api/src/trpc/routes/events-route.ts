@@ -73,6 +73,7 @@ export const eventsRouter = router({
       tbValidator(
         tb.Object({
           eventId: tb.String(),
+          shareCode: tb.Optional(tb.String()),
         }),
       ),
     )
@@ -85,6 +86,7 @@ export const eventsRouter = router({
           userAid: ctx.auth.userId ?? undefined,
           eventId: input.eventId,
           scope: "published",
+          shareCode: input.shareCode,
         }),
       ),
     ),
