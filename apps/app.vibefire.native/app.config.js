@@ -80,18 +80,18 @@ const expoConfig = ({ config }) => ({
     "expo-secure-store",
     // "./expo-plugins/with-modify-gradle.js",
     [
+      "expo-camera",
+      {
+        cameraPermission: "Allow $(PRODUCT_NAME) to access your camera",
+        microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone",
+        recordAudioAndroid: true,
+      },
+    ],
+    [
       "expo-image-picker",
       {
         photosPermission:
           "Allow $(PRODUCT_NAME) to accesses your photos. This allows you to upload photos from your library.",
-      },
-    ],
-    [
-      "react-native-vision-camera",
-      {
-        cameraPermissionText:
-          "$(PRODUCT_NAME) needs access to your Camera. This allows you to take photos and videos to upload to events and scan QR code.",
-        enableCodeScanner: true,
       },
     ],
     [

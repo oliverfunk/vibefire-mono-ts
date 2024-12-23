@@ -25,6 +25,46 @@ import {
 } from "./ui/EditInfoDisplay";
 import { SelectEventTimesButton } from "./ui/SelectEventTimesButton";
 
+// const DeleteConfirmationModal = (props: {
+//   showModal: boolean;
+//   hideModal: () => void;
+//   eventId?: string;
+// }) => {
+//   const { showModal, hideModal, eventId } = props;
+
+//   const utils = trpc.useUtils();
+
+//   const deleteEventMut = trpc.events.deleteEvent.useMutation();
+
+//   return (
+//     <Modal visible={showModal} transparent animationType="fade">
+//       <Pressable
+//         className="h-full w-full items-center justify-center bg-black/50 p-4"
+//         onPress={() => hideModal()}
+//       >
+//         <View className="flex-col space-y-4 overflow-hidden rounded bg-white p-4">
+//           <Text className="text-xl font-bold">Delete Event</Text>
+//           <Text className="text-base">
+//             {"Are you sure you want to delete the event?"}
+//           </Text>
+//           <View className="flex-col items-end space-y-2">
+//             <TouchableOpacity
+//               onPress={async () => {
+//                 if (!eventId) return;
+//                 await deleteEventMut.mutateAsync({ eventId });
+//                 await utils.invalidate();
+//                 hideModal();
+//               }}
+//             >
+//               <Text className="text-base font-bold text-red-500">Delete</Text>
+//             </TouchableOpacity>
+//           </View>
+//         </View>
+//       </Pressable>
+//     </Modal>
+//   );
+// };
+
 export const EditableEventForm = (
   props: {
     formik: FormikProps<TModelVibefireEvent>;
@@ -98,7 +138,7 @@ export const EditableEventForm = (
         threeDotsDisabled={true}
         leaveJoinDisabled={true}
       />
-      <EventActionsBar event={event} disabled={true} />
+      <EventActionsBar location={event.location} disabled={true} />
 
       <EditInfoDisplay event={event} {...props} />
 

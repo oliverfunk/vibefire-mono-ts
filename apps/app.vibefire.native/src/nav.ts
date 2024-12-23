@@ -1,7 +1,7 @@
 import { type Router } from "expo-router";
 
 type RouteingOpts = {
-  manner: "push" | "nav" | "replace" | "replace-all" | "dismiss-to";
+  manner: "push" | "nav" | "replace" | "replace-all" | "dismiss-to" | "href";
 };
 
 const route = (
@@ -39,9 +39,14 @@ const route = (
     router.replace(href);
   } else if (opts?.manner === "dismiss-to") {
     router.dismissTo(href);
+  } else if (opts?.manner === "href") {
+    // nop
   } else {
+    // idk if this pushes or replaces
     router.navigate(href);
   }
+
+  return href;
 };
 
 export const navProfile = (router: Router, opts?: RouteingOpts) => {
@@ -74,10 +79,6 @@ export const navBack = (router: Router) => {
   }
 };
 
-export const navEventsByOrganiser = (router: Router, opts?: RouteingOpts) => {
-  route(router, "/events-by-organiser", opts);
-};
-
 export const navCreateEvent = (router: Router, opts?: RouteingOpts) => {
   route(router, "/event/create", opts);
 };
@@ -91,9 +92,16 @@ export const navCreateEventFromPrevious = (
 export const navViewEvent = (
   router: Router,
   eventId: string,
+  shareCode?: string,
   opts?: RouteingOpts,
 ) => {
-  route(router, "/event/" + eventId + "/", opts);
+  return route(
+    router,
+    "/event/" + eventId + "/",
+    opts,
+
+    shareCode ? { shareCode } : undefined,
+  );
 };
 export const navViewEventPreview = (
   router: Router,

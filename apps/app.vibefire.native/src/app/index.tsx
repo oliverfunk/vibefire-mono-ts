@@ -1,10 +1,11 @@
 import { useLayoutEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
 
 import { GeoQueryListSheet } from "!/features/geo-query/GeoQueryList";
+import { navViewEvent } from "!/nav";
 
 const Screen = () => {
   // This isn't the best place for this
@@ -14,25 +15,45 @@ const Screen = () => {
   // you need a route to have loaded before this can be called
   useNotificationsResponder();
 
-  const a = useLocalSearchParams<{
+  const {
+    collapse: withCollapse,
+    expand: withExpand,
+    // deeep link params
+    s,
+    e,
+    g,
+    p,
+    t,
+  } = useLocalSearchParams<{
     collapse?: string;
     expand?: string;
+    s?: string;
+    e?: string;
+    g?: string;
+    p?: string;
+    t: string;
   }>();
-  console.log("a", JSON.stringify(a, null, 2));
-  const { collapse: withCollapse, expand: withExpand } = a;
+
+  const router = useRouter();
 
   const { expand, collapse } = useBottomSheet();
 
-  // this might be a bad idea,
-  // bettter to useBottomSheet() at the nav call site
   useLayoutEffect(() => {
     if (withCollapse === "true") {
-      console.log("collapsing");
       collapse();
     } else if (withExpand === "true") {
       expand();
     }
   }, [withCollapse, withExpand, collapse, expand]);
+
+  if (e) {
+    return (
+      <Redirect
+        href={navViewEvent(router, e, s, { manner: "href" })}
+        withAnchor={false}
+      />
+    );
+  }
 
   // const impersonating = true;
 

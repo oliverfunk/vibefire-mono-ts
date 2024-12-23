@@ -8,7 +8,6 @@ import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useAtom } from "jotai";
 
 import {
   type TModelVibefireEvent,
@@ -18,6 +17,7 @@ import {
 import { trpc } from "!/api/trpc-client";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
 
+import { AccessShareabilityText } from "!/components/AccessShareablityText";
 import { EventActionsBar } from "!/components/event/EventActionBar";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import {
@@ -27,6 +27,7 @@ import {
 import { VibefireImage } from "!/components/image/VibefireImage";
 import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
 import {
+  ErrorSheet,
   LinearRedOrangeView,
   ScrollViewSheet,
 } from "!/components/misc/sheet-utils";
@@ -139,6 +140,26 @@ const ViewEventSheet = (props: {
         }
         onShareEvent={onShareEvent}
       />
+      <View className="bg-black p-4">
+        <AccessShareabilityText accessRef={event.accessRef} />
+      </View>
+
+      {/* {!selectedDateDT.hasSame(
+          ntzToDateTime(event.times.ntzStart),
+          "day",
+        ) && (
+          <View className="items-center pt-2">
+            <TouchableOpacity
+              className="flex-col items-center justify-between rounded-lg bg-white px-4 py-2"
+              onPress={onGoToEvent}
+            >
+              <FontAwesome5 name="clock" size={20} color="black" />
+              <Text className="text-sm text-black">
+                Go to event time and place
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )} */}
 
       {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">
@@ -219,7 +240,7 @@ export const ViewEventPublishedSheet = withSuspenseErrorBoundarySheet(
   (props: ViewEventProps) => {
     const { eventId, shareCode } = props;
 
-    const [viewManage] = trpc.events.viewPublished.useSuspenseQuery(
+    const [viewPublished] = trpc.events.viewPublished.useSuspenseQuery(
       {
         eventId,
         shareCode,
@@ -229,11 +250,14 @@ export const ViewEventPublishedSheet = withSuspenseErrorBoundarySheet(
       },
     );
 
-    if (!viewManage.ok) {
-      throw viewManage.error;
+    if (!viewPublished.ok) {
+      if (viewPublished.error.code === "not_published") {
+        return <ErrorSheet message={viewPublished.error.message} />;
+      }
+      throw viewPublished.error;
     }
 
-    const { event, membership } = viewManage.value;
+    const { event, membership } = viewPublished.value;
 
     return (
       <ViewEventSheet

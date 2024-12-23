@@ -1,6 +1,8 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { useAtom } from "jotai";
 
+import { useExpandBottomSheet } from "!/hooks/useExpandBottomSheet";
+
 import {
   ViewEventPreviewSheet,
   ViewEventPublishedSheet,
@@ -15,6 +17,8 @@ const Screen = () => {
   }>();
 
   const [user] = useAtom(userAtom);
+
+  useExpandBottomSheet(500);
 
   if (preview === "true") {
     if (user.state !== "authenticated") {

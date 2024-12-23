@@ -7,7 +7,7 @@
   "build": {
     "base": {
       "node": "20.9.0",
-      "pnpm": "8.6.11",
+      "bun": "1.1.26",
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_YWR2YW5jZWQtYnVmZmFsby02LmNsZXJrLmFjY291bnRzLmRldiQ",
         "EXPO_PUBLIC_CF_IMAGES_ACC_HASH": "EQ-RiL2Ok8Bm4bYUlkk2qw",
