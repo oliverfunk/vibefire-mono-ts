@@ -5,6 +5,8 @@ import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { type TModelVibefireEvent } from "@vibefire/models";
 import { isCoordZeroZero } from "@vibefire/utils";
 
+import { AccessShareabilityText } from "!/components/AccessShareablityText";
+
 export type TEventManageHandles = {
   onMakeOpenPress: () => void;
   onMakeInviteOnlyPress: () => void;
@@ -65,28 +67,11 @@ export const EditInfoDisplay = (
       <View className="h-[1] w-full bg-white" />
 
       <View className="flex-col space-y-2">
-        <Text className="text-base text-white">
-          This event is{" "}
-          <Text className="text-green-400">
-            {isPublic ? "public" : "private"}
-          </Text>
-          {!isPublic && " and "}
-          {!isPublic && (
-            <Text className="text-green-400">
-              {isOpen ? "open" : "invite only"}
-            </Text>
-          )}
-          {".\n"}
-          {isPublic
-            ? "Anyone can share, and invite others to join."
-            : isOpen
-              ? "Anyone that has joined can share, and invite others to join."
-              : "Only managers can share, and invite others to join."}
-        </Text>
+        <AccessShareabilityText accessRef={event.accessRef} />
         {isGroupOwned && (
           <Text className="text-base text-white">
             This is the same as the group that organises this event. To change
-            it you need to change the setting for the group.
+            it, you need to change the setting for the group.
           </Text>
         )}
         {!isGroupOwned && !isPublic && (
