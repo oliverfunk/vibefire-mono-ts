@@ -16,6 +16,7 @@ import {
 } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
+import { useShareEventLink } from "!/hooks/useShareEventLink";
 
 import { EventActionsBar } from "!/components/event/EventActionBar";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
@@ -56,6 +57,8 @@ const ViewEventSheet = (props: {
   });
   // muts
 
+  const onShareEvent = useShareEventLink(event.id, membership?.shareCode);
+
   const { width, height } = useWindowDimensions();
 
   const userMembership =
@@ -64,8 +67,6 @@ const ViewEventSheet = (props: {
   const bannerImgKeys = event.images.bannerImgKeys;
   const details = event.details;
   const managedByUser = userMembership?.roleType === "manager";
-
-  console.log(JSON.stringify(userMembership, null, 2));
 
   return (
     <ScrollViewSheet>
@@ -130,7 +131,14 @@ const ViewEventSheet = (props: {
           navHomeWithCollapse(router);
         }}
       />
-      <EventActionsBar event={event} />
+      <EventActionsBar
+        location={event.location}
+        hideShareButton={
+          event.accessRef.type === "invite" &&
+          membership?.roleType !== "manager"
+        }
+        onShareEvent={onShareEvent}
+      />
 
       {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">
@@ -176,6 +184,8 @@ const ViewEventSheet = (props: {
 
 type ViewEventProps = { eventId: string; shareCode?: string };
 
+// should merge em I think
+
 export const ViewEventPreviewSheet = withSuspenseErrorBoundarySheet(
   (props: ViewEventProps) => {
     const { eventId } = props;
@@ -207,40 +217,12 @@ export const ViewEventPreviewSheet = withSuspenseErrorBoundarySheet(
 
 export const ViewEventPublishedSheet = withSuspenseErrorBoundarySheet(
   (props: ViewEventProps) => {
-    const { eventId } = props;
+    const { eventId, shareCode } = props;
 
     const [viewManage] = trpc.events.viewPublished.useSuspenseQuery(
       {
         eventId,
-      },
-      {
-        gcTime: 1000,
-      },
-    );
-
-    if (!viewManage.ok) {
-      throw viewManage.error;
-    }
-
-    const { event, membership } = viewManage.value;
-
-    return (
-      <ViewEventSheet
-        event={event}
-        membership={membership ?? undefined}
-        shareCode={props.shareCode}
-      />
-    );
-  },
-);
-
-export const ViewEventViaLinkSheet = withSuspenseErrorBoundarySheet(
-  (props: ViewEventProps) => {
-    const { eventId } = props;
-
-    const [viewManage] = trpc.events.viewPublished.useSuspenseQuery(
-      {
-        eventId,
+        shareCode,
       },
       {
         gcTime: 1000,

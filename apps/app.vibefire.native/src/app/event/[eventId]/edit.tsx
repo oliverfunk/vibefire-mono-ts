@@ -13,7 +13,7 @@ const Screen = () => {
   useOnFocusUserNotAuthedRedirect();
 
   return (
-    <EditEventWysiwygSheet eventId={eventId} createNew={create === "true"} />
+    <EditEventWysiwygSheet eventId={eventId} isCreateNew={create === "true"} />
   );
 };
 export default Screen;

@@ -10,9 +10,11 @@ import {
 } from "react-native";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 
-import { type TModelVibefireEvent } from "@vibefire/models";
-
-import { useShareEventLink } from "!/hooks/useShareEventLink";
+import {
+  type TModelVibefireAccess,
+  type TModelVibefireEvent,
+  type TModelVibefireMembership,
+} from "@vibefire/models";
 
 import {
   appleMapsOpenEventLocationURL,
@@ -21,10 +23,10 @@ import {
 } from "!utils/urls";
 
 const MapsModalMenu = (props: {
-  event: TModelVibefireEvent;
+  location?: TModelVibefireEvent["location"];
   disabled: boolean;
 }) => {
-  const { event, disabled } = props;
+  const { location, disabled } = props;
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -33,24 +35,30 @@ const MapsModalMenu = (props: {
   };
 
   const onOpenInGoogleMaps = useCallback(async () => {
-    const url = googleMapsOpenEventLocationURL(event);
+    if (!location) {
+      return;
+    }
+    const url = googleMapsOpenEventLocationURL(location);
     try {
       await Linking.openURL(url);
       setMenuVisible(false);
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
-  }, [event]);
+  }, [location]);
 
   const onOpenInAppleMaps = useCallback(async () => {
-    const url = appleMapsOpenEventLocationURL(event);
+    if (!location) {
+      return;
+    }
+    const url = appleMapsOpenEventLocationURL(location);
     try {
       await Linking.openURL(url);
       setMenuVisible(false);
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
-  }, [event]);
+  }, [location]);
 
   return (
     <TouchableOpacity
@@ -94,34 +102,46 @@ const MapsModalMenu = (props: {
           size={20}
           color={disabled ? "grey" : "white"}
         />
-        <Text className="text-sm text-white">Maps</Text>
+        <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
+          Maps
+        </Text>
       </View>
     </TouchableOpacity>
   );
 };
 
 export const EventActionsBar = (props: {
-  event: TModelVibefireEvent;
+  location?: TModelVibefireEvent["location"];
+  onShareEvent?: () => void;
   disabled?: boolean;
+  hideShareButton?: boolean;
 }) => {
-  const { event, disabled = false } = props;
+  const {
+    onShareEvent,
+    location,
+    disabled = false,
+    hideShareButton = false,
+  } = props;
 
-  const onShareEvent = useShareEventLink(event);
+  console.log();
 
   const onGetToEvent = useCallback(async () => {
+    if (!location) {
+      return;
+    }
     const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
-    const url = uberClientRequestToEventLocationURL(uberClientID, event);
+    const url = uberClientRequestToEventLocationURL(uberClientID, location);
 
     try {
       await Linking.openURL(url);
     } catch (error: unknown) {
       console.warn(JSON.stringify(error, null, 2));
     }
-  }, [event]);
+  }, [location]);
 
   return (
     <View className="flex-row justify-around bg-black p-1">
-      <MapsModalMenu event={event} disabled={disabled} />
+      <MapsModalMenu location={location} disabled={disabled} />
 
       <TouchableOpacity
         className="flex-col items-center justify-between"
@@ -133,21 +153,27 @@ export const EventActionsBar = (props: {
           size={20}
           color={disabled ? "grey" : "white"}
         />
-        <Text className="text-white">Get there</Text>
+        <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
+          Get there
+        </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        className="flex-col items-center justify-between"
-        disabled={disabled}
-        onPress={onShareEvent}
-      >
-        <Entypo
-          name="share-alternative"
-          size={20}
-          color={disabled ? "grey" : "white"}
-        />
-        <Text className="text-white">Share</Text>
-      </TouchableOpacity>
+      {!hideShareButton && (
+        <TouchableOpacity
+          className="flex-col items-center justify-between"
+          disabled={disabled}
+          onPress={onShareEvent}
+        >
+          <Entypo
+            name="share-alternative"
+            size={20}
+            color={disabled ? "grey" : "white"}
+          />
+          <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
+            Share
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
