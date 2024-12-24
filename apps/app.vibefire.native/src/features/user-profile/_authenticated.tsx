@@ -17,7 +17,7 @@ import { DeleteAccount } from "!/c/auth/DeleteAccount";
 import { SignOut } from "!/c/auth/SignOut";
 import { ScrollViewSheet } from "!/c/misc/sheet-utils";
 import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
-import { navEditEvent } from "!/nav";
+import { navCreateEvent, navEditEvent } from "!/nav";
 
 const UsersEventsManageSummary = () => {
   const router = useRouter();
@@ -74,7 +74,7 @@ const UsersEventsManageSummary = () => {
       <SummaryComponent
         headerTitle="Your Events"
         onHeaderButtonPress={() => {
-          router.navigate("/event/create");
+          navCreateEvent(router);
         }}
       >
         <EventsListSuspense />

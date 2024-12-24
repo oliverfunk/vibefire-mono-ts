@@ -15,6 +15,7 @@ import {
   type TModelVibefireEvent,
   type TModelVibefireMembership,
 } from "@vibefire/models";
+import { PartialDeep } from "@vibefire/utils";
 
 import {
   appleMapsOpenEventLocationURL,
@@ -111,7 +112,7 @@ const MapsModalMenu = (props: {
 };
 
 export const EventActionsBar = (props: {
-  location?: TModelVibefireEvent["location"];
+  location?: PartialDeep<TModelVibefireEvent["location"]>;
   onShareEvent?: () => void;
   disabled?: boolean;
   hideShareButton?: boolean;

@@ -101,8 +101,8 @@ export const eventsRouter = router({
     )
     .query(({ ctx, input }) =>
       wrapManagerReturn<{
-        event: TModelVibefireEvent;
-        membership: TModelVibefireMembership | null;
+        event: PartialDeep<TModelVibefireEvent>;
+        membership: TModelVibefireMembership;
       }>(() =>
         getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,

@@ -4,17 +4,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import { type FormikProps } from "formik";
 
 import {
+  type CoordT,
   type TModelVibefireEvent,
   type TModelVibefireMembership,
 } from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
-import { OrganiserBarView } from "!/components/OrganiserBarView";
 import { EventActionsBar } from "!/c/event/EventActionBar";
 import { EventInfoAddressBarEditable } from "!/c/event/EventInfoBars";
 import { ImageCarousel } from "!/c/image/ImageCarousel";
 import { UploadableVibefireImage } from "!/c/image/UploadableVibefireImage";
+import { VibefireImage } from "!/c/image/VibefireImage";
 import { LocationSelectionMap } from "!/c/map/LocationSelectionMap";
 import { LinearRedOrangeView } from "!/c/misc/sheet-utils";
+import { OrganiserBarView } from "!/c/OrganiserBarView";
 
 import { AddEventDetailWidgetButton } from "./ui/AddEventDetailWidgetButton";
 import { EditableEventDetailWidget } from "./ui/EditableEventDetailWidget";
@@ -67,8 +70,8 @@ import { SelectEventTimesButton } from "./ui/SelectEventTimesButton";
 
 export const EditableEventForm = (
   props: {
-    formik: FormikProps<TModelVibefireEvent>;
-    membership?: TModelVibefireMembership;
+    formik: FormikProps<PartialDeep<TModelVibefireEvent>>;
+    membership: TModelVibefireMembership;
   } & TEventManageHandles,
 ) => {
   const { formik, membership } = props;
@@ -77,13 +80,11 @@ export const EditableEventForm = (
   const { width } = useWindowDimensions();
 
   const bannerImgKeys = useMemo(() => {
-    const keys = event.images.bannerImgKeys || [""];
+    const keys = event?.images?.bannerImgKeys || [""];
     return keys.length < 5 ? [...keys, ""] : keys;
-  }, [event.images.bannerImgKeys]);
+  }, [event?.images?.bannerImgKeys]);
 
-  const details = useMemo(() => {
-    return event.details;
-  }, [event.details]);
+  const details = event.details;
 
   return (
     <>
@@ -93,6 +94,9 @@ export const EditableEventForm = (
           width={width}
           imgIdKeys={bannerImgKeys}
           renderItem={({ index, item }) => {
+            if (!event.id) {
+              return <VibefireImage />;
+            }
             return (
               <UploadableVibefireImage
                 eventId={event.id}
@@ -134,11 +138,12 @@ export const EditableEventForm = (
       {/* black bars */}
       <OrganiserBarView
         ownerRef={event.ownerRef}
+        showLeaveJoin={false}
         membership={membership}
         threeDotsDisabled={true}
         leaveJoinDisabled={true}
       />
-      <EventActionsBar location={event.location} disabled={true} />
+      <EventActionsBar location={event?.location} disabled={true} />
 
       <EditInfoDisplay event={event} {...props} />
 
@@ -171,7 +176,7 @@ export const EditableEventForm = (
                 placeholder="(Set a location description)"
                 onChangeText={handleChange("location.addressDescription")}
                 onBlur={handleBlur("location.addressDescription")}
-                value={event.location.addressDescription}
+                value={event.location?.addressDescription}
               />
             </EditableIconWrapper>
           </View>
@@ -185,7 +190,7 @@ export const EditableEventForm = (
         </Text>
         <View className="aspect-[4/4]">
           <LocationSelectionMap
-            initialPosition={event.location?.position}
+            initialPosition={event.location?.position as CoordT | undefined}
             onPositionSelected={async (position) => {
               await setFieldValue("location.position", position);
             }}
@@ -206,21 +211,25 @@ export const EditableEventForm = (
 
       {/* details */}
       <View className="flex-col space-y-4 p-4">
-        {details.map((detail, index) => (
-          <View key={index}>
-            <EditableEventDetailWidget
-              formik={formik}
-              n={index}
-              nDetails={details.length}
-              detail={detail}
-              detailsPath={`details`}
-            />
-          </View>
-        ))}
+        {details &&
+          details.map((detail, index) => (
+            <View key={index}>
+              <EditableEventDetailWidget
+                formik={formik}
+                n={index}
+                nDetails={details.length}
+                detail={detail}
+                detailsPath={`details`}
+              />
+            </View>
+          ))}
         <View>
           <AddEventDetailWidgetButton
             onAdd={async (detail) => {
-              await formik.setFieldValue("details", [...details, detail]);
+              await formik.setFieldValue("details", [
+                ...(details ?? []),
+                detail,
+              ]);
             }}
           />
         </View>
