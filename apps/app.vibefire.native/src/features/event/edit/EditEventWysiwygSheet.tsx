@@ -7,13 +7,13 @@ import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
 import { Formik, type FormikErrors, type FormikProps } from "formik";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { ntzToDateTime } from "@vibefire/utils";
+import { ntzToDateTime, type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
 import { ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
-import { navManageEvent, navViewEventPreview } from "!/nav";
+import { navViewEventPreview } from "!/nav";
 
 import { EditableEventForm } from "./EditableEventForm";
 
@@ -36,7 +36,8 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
     const updateAccessMut = trpc.events.updateAccess.useMutation();
 
     const formRef = useRef<BottomSheetScrollViewMethods>(null);
-    const formikRef = useRef<FormikProps<TModelVibefireEvent>>(null);
+    const formikRef =
+      useRef<FormikProps<PartialDeep<TModelVibefireEvent>>>(null);
 
     if (!viewManage.ok) {
       throw viewManage.error;
@@ -58,10 +59,10 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
         validate={(values) => {
           const errors: FormikErrors<TModelVibefireEvent> = {};
 
-          const startDT = values.times.ntzStart
+          const startDT = values?.times?.ntzStart
             ? ntzToDateTime(values.times.ntzStart)
             : undefined;
-          const endDT = values.times.ntzEnd
+          const endDT = values?.times?.ntzEnd
             ? ntzToDateTime(values.times.ntzEnd)
             : undefined;
 
@@ -78,11 +79,11 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
             const res = await updateMut.mutateAsync({
               eventId,
               update: {
-                name: values.name,
-                details: values.details,
-                images: values.images,
-                location: values.location,
-                times: values.times,
+                name: values?.name,
+                details: values?.details,
+                images: values?.images,
+                location: values?.location,
+                times: values?.times,
               },
             });
             if (res.ok) {
@@ -137,6 +138,9 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                     viewManageCtl.isPending
                   }
                   onHidePress={async () => {
+                    if (!eventId) {
+                      return;
+                    }
                     await updateVisibilityMut.mutateAsync({
                       eventId,
                       update: "hide",
@@ -144,6 +148,9 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                     await viewManageCtl.refetch();
                   }}
                   onPublishPress={async () => {
+                    if (!eventId) {
+                      return;
+                    }
                     if (noErrorsNotSubmitting) {
                       await updateVisibilityMut.mutateAsync({
                         eventId,
@@ -153,6 +160,9 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                     }
                   }}
                   onMakeInviteOnlyPress={async () => {
+                    if (!eventId) {
+                      return;
+                    }
                     await updateAccessMut.mutateAsync({
                       eventId,
                       update: "invite",
@@ -160,6 +170,9 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                     await viewManageCtl.refetch();
                   }}
                   onMakeOpenPress={() => {
+                    if (!eventId) {
+                      return;
+                    }
                     updateAccessMut.mutate(
                       {
                         eventId,
@@ -173,6 +186,9 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                     );
                   }}
                   onPreviewPress={() => {
+                    if (!eventId) {
+                      return;
+                    }
                     navViewEventPreview(router, eventId);
                   }}
                 />

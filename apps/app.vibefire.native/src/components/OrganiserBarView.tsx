@@ -182,11 +182,12 @@ const LeaveJoinButton = (props: LeaveJoinButtonProps) => {
 export const OrganiserBarView = (
   props: {
     ownerRef: TModelVibefireOwnership;
+    showLeaveJoin?: boolean;
     onOrganiserPress?: () => void;
   } & ThreeDotsModalMenuProps &
     LeaveJoinButtonProps,
 ) => {
-  const { ownerRef, onOrganiserPress } = props;
+  const { ownerRef, showLeaveJoin = true, onOrganiserPress } = props;
 
   return (
     <View className="flex-row items-center space-x-2 bg-black p-4">
@@ -210,9 +211,11 @@ export const OrganiserBarView = (
           {ownerRef.ownerName}
         </Text>
       </Pressable>
-      <View>
-        <LeaveJoinButton {...props} />
-      </View>
+      {showLeaveJoin && (
+        <View>
+          <LeaveJoinButton {...props} />
+        </View>
+      )}
       <ThreeDotsModalMenu {...props} />
     </View>
   );

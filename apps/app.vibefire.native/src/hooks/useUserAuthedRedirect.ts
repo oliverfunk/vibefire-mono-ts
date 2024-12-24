@@ -10,7 +10,7 @@ export const useOnFocusUserNotAuthedRedirect = () => {
 
   useFocusEffect(() => {
     if (user.state !== "authenticated") {
-      navProfile(router);
+      navProfile(router, { manner: "replace" });
     }
   });
 };

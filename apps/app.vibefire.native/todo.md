@@ -2,9 +2,6 @@
 
 * green and red edit icons for reqies fields
 
-* Shareing and joinning events
-  * add "this event is public/private ..." text to viewing events
-
 * Move away from create event and straight to new event
 
 * maybe test static gradient background

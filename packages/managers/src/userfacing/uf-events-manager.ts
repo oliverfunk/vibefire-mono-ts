@@ -264,6 +264,23 @@ export class UFEventsManger {
 
   viewEvent(p: {
     userAid?: string;
+    eventId: string;
+    scope: "published";
+    shareCode?: string;
+  }): ManagerAsyncResult<{
+    event: TModelVibefireEvent;
+    membership: TModelVibefireMembership;
+  }>;
+  viewEvent(p: {
+    userAid?: string;
+    eventId: string;
+    scope: "manage";
+  }): ManagerAsyncResult<{
+    event: TModelVibefireEvent;
+    membership: TModelVibefireMembership;
+  }>;
+  viewEvent(p: {
+    userAid?: string;
     eventId: string; // taken to be the linkId when scope is "viaLink"
     scope: "manage" | "published";
     shareCode?: string;
