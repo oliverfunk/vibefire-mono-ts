@@ -88,6 +88,8 @@ export const EditableEventForm = (
 
   return (
     <>
+      <EditInfoDisplay event={event} {...props} />
+
       {/* header */}
       <View className="relative">
         <ImageCarousel
@@ -145,11 +147,9 @@ export const EditableEventForm = (
       />
       <EventActionsBar location={event?.location} disabled={true} />
 
-      <EditInfoDisplay event={event} {...props} />
-
       {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">
-        <View className="flex-col space-y-4 rounded-md bg-neutral-900 p-3.5">
+        <View className="flex-col space-y-4 rounded-md bg-black p-3.5">
           <View>
             <EditableIconWrapper>
               <SelectEventTimesButton

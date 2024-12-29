@@ -54,7 +54,7 @@ export const EditInfoDisplay = (
   const isPublished = event.state === 1;
 
   return (
-    <View className="flex-col space-y-4 bg-black p-4 pt-2">
+    <View className="flex-col space-y-4 bg-black p-4">
       <View className="flex-col space-y-2">
         <Text className="text-2xl font-bold text-white">Edit your event</Text>
         <Text className="text-base text-white">

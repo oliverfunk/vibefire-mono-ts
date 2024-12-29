@@ -26,6 +26,7 @@ import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
 import { GeoQueryMap } from "!/features/geo-query/GeoQueryMap";
 import { VfActionButton } from "!/features/vf-action-button";
 import { BottomPanel } from "!/components/bottom-panel/BottomPanel";
+import { LinearRedOrangeView } from "!/components/misc/sheet-utils";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
 import AppProviders, { navigationIntegration } from "!/providers";
 
@@ -115,7 +116,7 @@ export default function HomeLayout() {
             <Stack
               screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: "#171717", paddingTop: 5 },
+                contentStyle: { backgroundColor: "black" },
               }}
             />
           </BottomPanel>

@@ -11,6 +11,7 @@ import { SimpleList } from "!/c/list/SimpleList";
 import { useItemSeparator } from "!/c/misc/ItemSeparator";
 import { FlashListViewSheet } from "!/c/misc/sheet-utils";
 
+import { VibefireLogoName } from "../VibefireBottomLogo";
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
 
@@ -62,8 +63,20 @@ const useEventCardRenderer = (
 const useNoEventsText = (noEventsMessage?: string) => {
   return useMemo(() => {
     return (
-      <View className="items-center justify-center pt-10">
-        <Text className="text-lg font-bold text-white">
+      <View className="items-center justify-center rounded-xl bg-black py-[50%]">
+        <Text className="text-center text-lg font-bold text-white">
+          {noEventsMessage ? noEventsMessage : "No events here yet"}
+        </Text>
+      </View>
+    );
+  }, [noEventsMessage]);
+};
+
+const useNoEventsTextSmall = (noEventsMessage?: string) => {
+  return useMemo(() => {
+    return (
+      <View className="items-center justify-center rounded-xl bg-black py-4">
+        <Text className="text-center text-lg font-bold text-white">
           {noEventsMessage ? noEventsMessage : "No events here yet"}
         </Text>
       </View>
@@ -85,6 +98,7 @@ type EventsListProps = {
   noEventsMessage?: string;
   showStatusBanner?: boolean;
   sortAsc?: boolean;
+  vibefireFooter?: boolean;
 };
 
 export const EventsFlashListSheet = ({
@@ -95,6 +109,7 @@ export const EventsFlashListSheet = ({
   noEventsMessage,
   showStatusBanner = false,
   sortAsc = true,
+  vibefireFooter = false,
 }: EventsListProps) => {
   const sortedEvents = useSortedEvents(events, { sortAsc });
 
@@ -103,9 +118,9 @@ export const EventsFlashListSheet = ({
     onEventCrossPress,
     showStatusBanner,
   );
-  const noEventsText = useNoEventsText(noEventsMessage);
+  const NoEventsText = useNoEventsText(noEventsMessage);
 
-  const header = useMemo(() => {
+  const Header = useMemo(() => {
     return <Text className="text-2xl font-bold">{listTitle}</Text>;
   }, [listTitle]);
 
@@ -113,12 +128,19 @@ export const EventsFlashListSheet = ({
 
   return (
     <FlashListViewSheet
-      ListEmptyComponent={noEventsText}
-      ListHeaderComponent={listTitle ? header : undefined}
+      ListEmptyComponent={NoEventsText}
+      ListFooterComponent={
+        vibefireFooter ? (
+          <View className="p-4">
+            <VibefireLogoName />
+          </View>
+        ) : undefined
+      }
+      ListHeaderComponent={listTitle ? Header : undefined}
       ItemSeparatorComponent={itemSep}
       data={sortedEvents}
       estimatedItemSize={200}
-      contentContainerStyle={{ padding: 5 }}
+      contentContainerStyle={{ padding: 10 }}
       renderItem={renderItem}
       keyExtractor={(item: PartialDeep<TModelVibefireEvent>) => item.id!}
     />
@@ -202,7 +224,7 @@ type EventsListSimpleChipViewProps = {
   onChipPress: (event: PartialDeep<TModelVibefireEvent>) => void;
   noEventsMessage?: string;
   latestFirst?: boolean;
-  limit?: number;
+  limit: number;
 };
 
 export const EventsListSimpleChipView = ({
@@ -210,22 +232,18 @@ export const EventsListSimpleChipView = ({
   onChipPress,
   noEventsMessage,
   latestFirst = true,
-  limit = 4,
+  limit,
 }: EventsListSimpleChipViewProps) => {
   const sortedEvents = useSortedEvents(events, {
     sortAsc: !latestFirst,
     sliceCount: limit,
   });
 
-  const noEventsText = useNoEventsText(noEventsMessage);
-
-  const renderEventChip = useEventChipRenderer(onChipPress);
-
   return (
     <SimpleList
       items={sortedEvents}
-      itemRenderer={renderEventChip}
-      noItemsComponent={noEventsText}
+      itemRenderer={useEventChipRenderer(onChipPress)}
+      noItemsComponent={useNoEventsTextSmall(noEventsMessage)}
       styleOpts={{ separatorHeight: 4 }}
     />
   );

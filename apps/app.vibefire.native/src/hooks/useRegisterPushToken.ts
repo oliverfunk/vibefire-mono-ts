@@ -6,6 +6,7 @@ import * as Notifications from "expo-notifications";
 import { atom, useAtom, useAtomValue } from "jotai";
 
 import { trpc } from "!/api/trpc-client";
+
 import { userAuthStateAtom, userInfoAtom } from "!/atoms";
 
 // TODO: this should be refactored
@@ -26,7 +27,7 @@ const requestNotificationsPermissions = async () => {
       allowAlert: true,
       allowBadge: true,
       allowSound: true,
-      allowAnnouncements: true,
+      allowProvisional: true,
     },
   });
   return settings.granted;

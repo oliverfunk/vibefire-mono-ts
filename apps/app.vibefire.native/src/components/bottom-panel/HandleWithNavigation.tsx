@@ -47,7 +47,7 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
     // The pt-1 is to adjust for the the padding applied to the bp content
     // otherwise it looks too squashed to the top
     <View
-      className="flex-row items-center justify-center rounded-t-xl bg-neutral-900 px-3 pt-1"
+      className="flex-row items-center justify-center rounded-t-xl bg-black px-3 pt-1"
       style={{ height: HANDLE_HEIGHT }}
     >
       <View className="flex-1">

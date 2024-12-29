@@ -1,4 +1,5 @@
 import { Text } from "react-native";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
 import {
@@ -39,7 +40,13 @@ export const EventChip = (props: EventChipProps) => {
           </Text>
         </>
       }
-      rightComponent={<Text className="text-white">{event.state}</Text>}
+      rightComponent={
+        event.state === 1 ? (
+          <FontAwesome6 name="eye" size={15} color="white" />
+        ) : (
+          <FontAwesome6 name="eye-slash" size={15} color="red" />
+        )
+      }
       onPress={() => onPress?.(event)}
     />
   );

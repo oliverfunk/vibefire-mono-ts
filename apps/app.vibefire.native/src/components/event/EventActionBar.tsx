@@ -15,7 +15,7 @@ import {
   type TModelVibefireEvent,
   type TModelVibefireMembership,
 } from "@vibefire/models";
-import { PartialDeep } from "@vibefire/utils";
+import { type PartialDeep } from "@vibefire/utils";
 
 import {
   appleMapsOpenEventLocationURL,
@@ -124,14 +124,15 @@ export const EventActionsBar = (props: {
     hideShareButton = false,
   } = props;
 
-  console.log();
-
   const onGetToEvent = useCallback(async () => {
     if (!location) {
       return;
     }
     const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
-    const url = uberClientRequestToEventLocationURL(uberClientID, location);
+    const url = uberClientRequestToEventLocationURL(
+      uberClientID,
+      location as TModelVibefireEvent["location"],
+    );
 
     try {
       await Linking.openURL(url);
@@ -142,7 +143,10 @@ export const EventActionsBar = (props: {
 
   return (
     <View className="flex-row justify-around bg-black p-1">
-      <MapsModalMenu location={location} disabled={disabled} />
+      <MapsModalMenu
+        location={location as TModelVibefireEvent["location"]}
+        disabled={disabled}
+      />
 
       <TouchableOpacity
         className="flex-col items-center justify-between"

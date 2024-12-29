@@ -36,7 +36,7 @@ export const CreateEventSheet = () => {
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="flex-col items-center space-y-4 rounded-lg bg-neutral-900 p-4">
+        <View className="flex-col items-center space-y-4 rounded-lg bg-black p-4">
           <Text className="text-xl font-bold text-white">Create an event</Text>
           <Text className="text-md text-white">
             Set the event title to get started creating your event.
