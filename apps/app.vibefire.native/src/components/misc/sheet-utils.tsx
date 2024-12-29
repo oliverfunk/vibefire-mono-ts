@@ -27,6 +27,7 @@ import {
 import { type BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
 import {
   type BottomSheetFlatListProps,
+  type BottomSheetScrollViewProps,
   type BottomSheetSectionListProps,
 } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/types";
 import { type BottomSheetViewProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetView/types";
@@ -200,7 +201,7 @@ export const FlashListViewSheet = <T,>(props: BottomSheetFlashListProps<T>) => (
 );
 
 export const ScrollViewSheet = (
-  props: { children: React.ReactNode },
+  props: { children: React.ReactNode } & BottomSheetScrollViewProps,
   ref?: React.Ref<BottomSheetScrollViewMethods>,
 ) => (
   <BottomSheetScrollView
@@ -209,6 +210,7 @@ export const ScrollViewSheet = (
     keyboardShouldPersistTaps={"never"}
     keyboardDismissMode={"on-drag"}
     focusHook={useFocusEffect}
+    {...props}
   >
     {props.children}
   </BottomSheetScrollView>

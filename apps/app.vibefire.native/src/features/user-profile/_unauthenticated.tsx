@@ -9,9 +9,9 @@ import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulV
 export const UserProfileUnauthenticatedSheet = () => {
   return (
     <SheetBasicColourfulVF>
-      <View className="flex-col items-center space-y-5 rounded-lg bg-neutral-900 p-5">
+      <View className="flex-col items-center space-y-5 rounded-lg bg-black p-4">
         <FontAwesome5 name="user-alt" size={50} color="white" />
-        <Text className="text-md text-white">
+        <Text className="text-white">
           Sign in to create private events, get invites and share events with
           friends, filter and follow events and organisers and more.
         </Text>

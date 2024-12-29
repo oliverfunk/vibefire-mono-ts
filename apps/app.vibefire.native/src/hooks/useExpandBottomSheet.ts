@@ -6,9 +6,7 @@ export const useExpandBottomSheet = (delay?: number) => {
 
   useLayoutEffect(() => {
     if (delay && delay > 0) {
-      console.log("delaying");
       setTimeout(() => {
-        console.log("expanding");
         expand();
       }, delay);
     } else {

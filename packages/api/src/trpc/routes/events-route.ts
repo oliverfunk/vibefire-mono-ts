@@ -22,14 +22,17 @@ import { wrapManagerReturn, type ApiResponse } from "!api/utils";
 export const eventsRouter = router({
   // todo: listUserHighlightsToday
 
-  listSelfAllManage: authedProcedure.query(({ ctx }) =>
-    wrapManagerReturn<Pageable<PartialDeep<TModelVibefireEvent>>>(() => {
-      return getUFEventsManager().eventsUserIsPartOf({
-        userAid: ctx.auth.userId,
-        scope: "manager",
-      });
-    }),
-  ),
+  listSelfAllManage: authedProcedure
+    .input(tbValidator(tb.Object({ pageLimit: tb.Optional(tb.Number()) })))
+    .query(({ ctx, input }) =>
+      wrapManagerReturn<Pageable<PartialDeep<TModelVibefireEvent>>>(() => {
+        return getUFEventsManager().eventsUserIsPartOf({
+          userAid: ctx.auth.userId,
+          scope: "manager",
+          pageLimit: input.pageLimit,
+        });
+      }),
+    ),
 
   listGroupAll: authedProcedure
     .input(tbValidator(tb.Object({ groupId: tb.String() })))

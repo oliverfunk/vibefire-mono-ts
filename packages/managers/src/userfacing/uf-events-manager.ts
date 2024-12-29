@@ -193,9 +193,10 @@ export class UFEventsManger {
   eventsUserIsPartOf(p: {
     userAid: string;
     scope: "manager" | "member";
+    pageLimit?: number;
   }): ManagerAsyncResult<Pageable<PartialDeep<TModelVibefireEvent>>> {
     return managerReturn<Pageable<TModelVibefireEvent>>(async () => {
-      const pageLimit = 10;
+      const pageLimit = p.pageLimit ?? 10;
 
       if (p.scope !== "manager" && p.scope !== "member") {
         throw new Error(`Invalid scope: ${p.scope}`);

@@ -1,9 +1,9 @@
 import { Pressable, View } from "react-native";
 
 export type ChipComponentProps = {
-  leftComponent: React.ReactNode;
+  leftComponent?: React.ReactNode;
   centerComponent: React.ReactNode;
-  rightComponent: React.ReactNode;
+  rightComponent?: React.ReactNode;
   onPress?: () => void;
 };
 

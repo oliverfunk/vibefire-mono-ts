@@ -10,7 +10,7 @@ export const UserProfileErrorSheet = () => {
 
   return (
     <SheetBasicColourfulVF>
-      <View className="flex-col items-center space-y-4 rounded-lg bg-neutral-900 p-4">
+      <View className="flex-col items-center space-y-4 rounded-lg bg-black p-4">
         <FontAwesome5 name="user-alt" size={50} color="red" />
         <Text className="text-md text-white">
           There was an issue loading your profile

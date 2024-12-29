@@ -29,7 +29,7 @@ const FloatingActionBar = (props: { isExpandedState: boolean }) => {
 
   return (
     <Animated.View entering={FadeIn} className="items-center justify-center">
-      <View className="flex-row items-center justify-center rounded-full bg-neutral-900 px-3 py-2 pl-5">
+      <View className="flex-row items-center justify-center rounded-full bg-black px-3 py-2 pl-5">
         <DatePickerButton />
         <View className="px-1" />
         <TimeOfDayPicker width={max([width / 3, 150])!} height={30} />
@@ -66,7 +66,7 @@ const FloatingActionButton = (props: {
         onPress={onPress}
         className="flex-row items-center justify-end space-x-1"
       >
-        <View className="items-center justify-center rounded-lg border bg-neutral-900 px-2 py-1">
+        <View className="items-center justify-center rounded-lg border bg-black px-2 py-1">
           <Text className="text-white">{label}</Text>
         </View>
         <View className="items-center justify-center rounded-full bg-red-500 p-2">
@@ -164,7 +164,7 @@ export const VfActionButton = () => {
         label="Create Group"
         icon={<FontAwesome6 name="user-group" size={15} color="orange" />}
         onPress={() => {
-          console.log("Create plan");
+          console.log("Create group");
         }}
       />
     </View>

@@ -1,5 +1,11 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, type ViewProps } from "react-native";
 import { useRouter } from "expo-router";
+import {
+  FontAwesome5,
+  FontAwesome6,
+  MaterialCommunityIcons,
+  SimpleLineIcons,
+} from "@expo/vector-icons";
 import { capitalize } from "lodash";
 
 import { type AppUserAuthenticated } from "@vibefire/models";
@@ -13,40 +19,48 @@ import {
   withSuspenseErrorBoundary,
 } from "!/components/misc/SuspenseWithError";
 import { SummaryComponent } from "!/components/structural/SummaryComponent";
+import { VibefireLogoName } from "!/components/VibefireBottomLogo";
 import { DeleteAccount } from "!/c/auth/DeleteAccount";
 import { SignOut } from "!/c/auth/SignOut";
-import { ScrollViewSheet } from "!/c/misc/sheet-utils";
-import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
+import { LinearRedOrangeView, ScrollViewSheet } from "!/c/misc/sheet-utils";
 import { navCreateEvent, navEditEvent } from "!/nav";
 
-const UsersEventsManageSummary = () => {
+const UsersEventsManageSummary = (props: ViewProps) => {
   const router = useRouter();
 
   const EventsListSuspense = withSuspenseErrorBoundary(
     () => {
-      const [eventsByUser] = trpc.events.listSelfAllManage.useSuspenseQuery();
+      const [eventsByUser] = trpc.events.listSelfAllManage.useSuspenseQuery({
+        pageLimit: 5,
+      });
 
       if (!eventsByUser.ok) {
         throw eventsByUser.error;
       }
+      const events = eventsByUser.value.data;
+      // const events = [];
 
       return (
-        <View className="flex-col pb-10">
+        <View className="flex-col space-y-2">
           <EventsListSimpleChipView
-            events={eventsByUser.value.data}
-            noEventsMessage="You have no events"
+            events={events}
+            limit={4}
+            noEventsMessage="Create your first event"
             onChipPress={(e) => {
               navEditEvent(router, e.id!);
             }}
           />
-          {/* <View className="items-start py-4">
-            <IconButton onPress={() => {}} useOpacity={true} size={1}>
-              <View className="flex-row items-center justify-center rounded-sm bg-white/10 px-4 py-2">
-                <FontAwesome name="eye" size={20} color="white" />
-                <Text className="text-white"> View all</Text>
-              </View>
-            </IconButton>
-          </View> */}
+          {events.length > 4 && (
+            <TouchableOpacity
+              //todo!!!
+              onPress={() => {}}
+              className="self-center rounded-full border-2 border-white p-2 px-4"
+            >
+              <Text className="text-center text-base text-white">
+                <FontAwesome6 name="list" size={15} /> View all
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       );
     },
@@ -70,16 +84,15 @@ const UsersEventsManageSummary = () => {
   );
 
   return (
-    <View className="bg-black px-2">
-      <SummaryComponent
-        headerTitle="Your Events"
-        onHeaderButtonPress={() => {
-          navCreateEvent(router);
-        }}
-      >
-        <EventsListSuspense />
-      </SummaryComponent>
-    </View>
+    <SummaryComponent
+      headerTitle="Your Events"
+      headerButtonText="New"
+      onHeaderButtonPress={() => {
+        navCreateEvent(router);
+      }}
+    >
+      <EventsListSuspense />
+    </SummaryComponent>
   );
 };
 
@@ -91,77 +104,52 @@ export const UserProfileAuthenticatedSheet = (props: {
   const userInfo = user.userInfo;
 
   return (
-    <ScrollViewSheet>
-      <View className="mt-1 flex-col space-y-5 py-5">
-        {/* Name */}
-        <View className="flex-col items-center justify-center space-y-2">
-          <View className="rounded-lg bg-black p-4">
-            <Text className="text-2xl text-white">
-              {capitalize(userInfo.name)}
-            </Text>
-          </View>
-        </View>
-
-        <View className="flex-col items-center space-y-2 px-2">
-          <View className="w-full flex-col">
-            <Text className="ml-4">Email</Text>
-            <View className="rounded-lg bg-slate-200 py-2">
+    <LinearRedOrangeView className="h-full">
+      <ScrollViewSheet
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "space-between",
+        }}
+        className="space-y-4 p-2"
+      >
+        {/* main content */}
+        <View className="flex-col space-y-4">
+          <View className="flex-row items-center justify-center rounded-2xl bg-black p-4">
+            {/* <SimpleLineIcons name="fire" size={50} color="orange" /> */}
+            {/* <Text className="text-4xl">🕺</Text> */}
+            {/* <Text className="text-4xl">🔥</Text> */}
+            <View className="flex-col items-center space-y-2">
+              <Text className="text-center text-2xl text-white">
+                Hey, {capitalize(userInfo.name)}!{"\n"}Welcome to Vibefire
+              </Text>
               {userInfo.email ? (
-                <Text className="ml-4">{userInfo.email}</Text>
+                <Text className="text-base text-white">{userInfo.email}</Text>
               ) : (
                 <TouchableOpacity onPress={async () => {}}>
-                  <Text className="ml-4">Tap to add email</Text>
+                  <Text className="text-base text-white">Tap to add email</Text>
                 </TouchableOpacity>
               )}
             </View>
+            {/* <Text className="text-4xl">💃</Text> */}
+            {/* <Text className="text-4xl">🔥</Text> */}
+            {/* <MaterialCommunityIcons name="firework" size={50} color="red" /> */}
+            {/* <SimpleLineIcons name="fire" size={50} color="orange" /> */}
           </View>
 
-          {/* <View className="w-full flex-col">
-                <Text className="ml-4">Phone number</Text>
-                <View className="rounded-lg bg-slate-200 py-2">
-                  {userInfo.phoneNumber ? (
-                    <Text className="ml-4">{userInfo.phoneNumber}</Text>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        console.log("prepareSecondFactor");
-                        // Prepare the second factor verification by
-                        // specifying the phone code strategy. An SMS
-                        // message with a one-time code will be sent
-                        // to the user's verified phone number.
-                      }}
-                    >
-                      <Text className="ml-4">Tap to add phone number</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View> */}
-        </View>
-
-        <View>
-          <View className="py-10">
+          <View className="rounded-2xl bg-black p-4">
             <UsersEventsManageSummary />
           </View>
-          {/* <UsersGroupsSummary /> */}
         </View>
 
-        {/* <View className="w-full px-2">
-              <FeedbackCard />
-            </View> */}
-
-        {/* <View className="w-full px-2">
-              <FeedbackCard />
-            </View> */}
-
-        <View>
-          <VibefireIconImage />
+        {/* footer */}
+        <View className="flex-col space-y-4 pb-2">
+          <View className="flex-row justify-evenly rounded-2xl bg-black p-4">
+            <SignOut />
+            <DeleteAccount />
+          </View>
+          <VibefireLogoName />
         </View>
-
-        <View className="flex-row justify-evenly">
-          <SignOut />
-          <DeleteAccount />
-        </View>
-      </View>
-    </ScrollViewSheet>
+      </ScrollViewSheet>
+    </LinearRedOrangeView>
   );
 };

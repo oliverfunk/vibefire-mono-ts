@@ -163,7 +163,7 @@ const ViewEventSheet = (props: {
 
       {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">
-        <View className="flex-col space-y-4 rounded-md bg-neutral-900 p-3.5">
+        <View className="flex-col space-y-4 rounded-md bg-black p-3.5">
           <View>
             <EventInfoTimesBar noStartTimeText="(start time)" event={event} />
           </View>

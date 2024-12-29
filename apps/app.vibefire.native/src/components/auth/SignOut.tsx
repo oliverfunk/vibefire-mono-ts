@@ -1,17 +1,21 @@
-import { Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
+import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+
+import { PillTouchableOpacity } from "../button/PillTouchableOpacity";
 
 export const SignOut = () => {
   const { signOut } = useAuth();
 
   return (
-    <TouchableOpacity
-      className="rounded-lg bg-black px-4 py-2"
+    <PillTouchableOpacity
       onPress={async () => {
         await signOut();
       }}
     >
-      <Text className="text-white">Sign out</Text>
-    </TouchableOpacity>
+      <Text className="text-center text-white">
+        <FontAwesome5 name="sign-out-alt" size={15} /> Sign out
+      </Text>
+    </PillTouchableOpacity>
   );
 };

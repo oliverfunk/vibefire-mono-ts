@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 import { trpc } from "!/api/trpc-client";
+
+import { PillTouchableOpacity } from "../button/PillTouchableOpacity";
 
 const DeleteConfirmationModal = (props: {
   showModal: boolean;
@@ -70,14 +73,16 @@ export const DeleteAccount = () => {
         hideModal={() => setShowModal(false)}
       />
 
-      <TouchableOpacity
-        className="rounded-lg bg-[#ff0000] px-4 py-2"
+      <PillTouchableOpacity
+        className="border-[#ff0000]"
         onPress={() => {
           setShowModal(true);
         }}
       >
-        <Text className="text-white">Delete Account</Text>
-      </TouchableOpacity>
+        <Text className="text-red-500">
+          <FontAwesome6 name="trash" size={15} /> Delete Account
+        </Text>
+      </PillTouchableOpacity>
     </>
   );
 };
