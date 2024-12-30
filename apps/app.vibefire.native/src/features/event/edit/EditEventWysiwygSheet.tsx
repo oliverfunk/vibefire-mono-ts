@@ -13,7 +13,7 @@ import { trpc } from "!/api/trpc-client";
 
 import { ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
-import { navViewEventPreview } from "!/nav";
+import { navHome, navViewEventPreview } from "!/nav";
 
 import { EditableEventForm } from "./EditableEventForm";
 
@@ -33,6 +33,7 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
     );
     const updateMut = trpc.events.update.useMutation();
     const updateVisibilityMut = trpc.events.updateVisibility.useMutation();
+    const deleteMut = trpc.events.delete.useMutation();
     const updateAccessMut = trpc.events.updateAccess.useMutation();
 
     const formRef = useRef<BottomSheetScrollViewMethods>(null);
@@ -128,15 +129,12 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                   membership={membership ?? undefined}
                   isFormUpdated={isUpdated}
                   updateAccessLoading={
-                    updateAccessMut.isPending ||
-                    viewManageCtl.isFetching ||
-                    viewManageCtl.isPending
+                    updateAccessMut.isPending || viewManageCtl.isFetching
                   }
                   updateVisibilityLoading={
-                    updateVisibilityMut.isPending ||
-                    viewManageCtl.isFetching ||
-                    viewManageCtl.isPending
+                    updateVisibilityMut.isPending || viewManageCtl.isFetching
                   }
+                  deleteLoading={deleteMut.isPending}
                   onHidePress={async () => {
                     if (!eventId) {
                       return;
@@ -184,6 +182,15 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
                         },
                       },
                     );
+                  }}
+                  onDeletePress={async () => {
+                    if (!eventId) {
+                      return;
+                    }
+                    await deleteMut.mutateAsync({
+                      eventId,
+                    });
+                    navHome(router);
                   }}
                   onPreviewPress={() => {
                     if (!eventId) {

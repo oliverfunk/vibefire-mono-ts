@@ -445,12 +445,7 @@ export class UFEventsManger {
   deleteEvent(p: { userAid: string; eventId: string }) {
     return managerReturn(async () => {
       await this.repos.eventIfManager(p.eventId, p.userAid);
-
-      const update: Partial<TModelVibefireEvent> = {
-        state: 3, // deleted
-      };
-
-      await this.repos.event.update(p.eventId, update).result;
+      await this.repos.event.delete(p.eventId).result;
     });
   }
 

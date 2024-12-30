@@ -137,6 +137,16 @@ export class FaunaEventRepository {
     );
   }
 
+  delete(eventId: string) {
+    return faunaQuery<null>(
+      this.faunaClient,
+      fql`
+        let event = ${this.withId(eventId).query}
+        event?.delete()
+      `,
+    );
+  }
+
   geoPeriodQueryForUser(
     minLat: number,
     minLon: number,
