@@ -5,6 +5,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { type CoordT } from "@vibefire/models";
 
 import { defaultCameraForPosition } from "!/utils/constants";
+import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLocationSetter";
 
 import { EventIcon } from "!/c/SvgIcon";
 
@@ -13,12 +14,24 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
 
   const mvRef = useRef<MapView>(null);
 
+  const userLocationOnce = useUserLocationWithMapCameraSetter(
+    mvRef,
+    markerPosition,
+  );
+
   return (
     <View pointerEvents="none">
       <MapView
         ref={mvRef}
         className="h-full w-full"
-        initialCamera={defaultCameraForPosition(markerPosition)}
+        initialCamera={
+          userLocationOnce
+            ? defaultCameraForPosition({
+                lat: userLocationOnce.coords.latitude,
+                lng: userLocationOnce.coords.longitude,
+              })
+            : undefined
+        }
         // provider={PROVIDER_GOOGLE}
         pointerEvents={"none"}
         zoomEnabled={false}

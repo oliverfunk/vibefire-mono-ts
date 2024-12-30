@@ -1,8 +1,7 @@
 import { type Camera } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
-
-import { zoomLevelToAltitude } from "!utils/math";
+import { zoomLevelToAltitude } from "@vibefire/utils";
 
 export const INITIAL_ZOOM_LEVEL = 16;
 

@@ -27,6 +27,7 @@ const ModelEventImages = tb.Object({
 const ModelEventTimes = tb.Object({
   ntzStart: tb.String({ default: undefined }),
   ntzEnd: clearable(tb.String()),
+  epochStart: tb.Number({ default: undefined }),
   datePeriods: tb.Array(DatePeriodSchema, { default: [] }),
   timezone: tb.Optional(tb.String()),
   offsetSeconds: tb.Optional(tb.Number()),
@@ -63,7 +64,7 @@ export const ModelVibefireEvent = tb.Object({
   accessRef: ModelVibefireAccess,
   ownerRef: ModelVibefireOwnership,
 
-  // links to a 'Timeline' type event
+  // links to a 'Timeline' type doc
   timeline: clearable(tb.String()),
 
   state: tb.Union(

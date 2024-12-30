@@ -1,8 +1,5 @@
-import { type DateTime } from "luxon";
-
 import { resourceLocator } from "@vibefire/utils";
 
-import { ManagerRuleViolation } from "!managers/errors";
 import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
@@ -15,7 +12,7 @@ export const getAccessManager = () =>
 export class UFAccessManager {
   constructor(private readonly repos: ReposManager) {}
 
-  addManagerToEntity(p: {
+  addManagerToAccess(p: {
     accessId: string;
     userAid: string;
     userToMakeManagerId: string;

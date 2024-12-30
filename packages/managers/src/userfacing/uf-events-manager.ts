@@ -27,6 +27,7 @@ import {
   dateIndexesFor,
   isPositionEqual,
   ntzToDateTime,
+  ntzToTZEpochSecs,
   resourceLocator,
   trimAndCropText,
   type PartialDeep,
@@ -41,7 +42,6 @@ import { managerReturn } from "!managers/utils";
 // todo: groups!
 // clean results from fauna servies
 
-// maybe think about updates (look at events, plans, groups etc.)
 // groups should maybe follow the same array widget structure as events
 
 export const ufEventsManagerSymbol = Symbol("ufEventsManagerSymbol");
@@ -329,53 +329,56 @@ export class UFEventsManger {
       const e = await this.repos.eventIfManager(p.eventId, p.userAid);
       // const eManage = await this.repos.event.eventManagement(p.eventId);
 
-      const update = tbClean(ModelEventUpdate, p.update);
+      const next = tbClean(ModelVibefireEventData, { ...e, ...p.update });
 
       if (
-        update.location?.position &&
-        !isPositionEqual(update.location?.position, e.location?.position)
+        next.location?.position &&
+        !isPositionEqual(next.location.position, e.location?.position)
       ) {
         const tzInfo = await this.googleMaps.getTimezoneInfo(
-          update.location.position,
+          next.location.position,
           DateTime.now().toUnixInteger(),
         );
-        update.times ??= {};
-        update.times.timezone = tzInfo.timeZoneId;
-        update.times.offsetSeconds = tzInfo.rawOffset;
+        next.times.timezone = tzInfo.timeZoneId;
+        next.times.offsetSeconds = tzInfo.rawOffset;
       }
 
-      if (
-        update.times?.ntzStart &&
-        update.times.ntzStart !== e.times?.ntzStart
-      ) {
-        update.times.datePeriods = dateIndexesFor(
-          ntzToDateTime(update.times.ntzStart),
+      if (next.times?.ntzStart && next.times.ntzStart !== e.times?.ntzStart) {
+        next.times.datePeriods = dateIndexesFor(
+          ntzToDateTime(next.times.ntzStart),
           0, // will come from management at some point
         );
       }
 
-      const nextStart = update.times?.ntzStart ?? e.times.ntzStart;
-      const nextEnd = update.times?.ntzEnd ?? e.times.ntzEnd;
-      if (nextStart && nextEnd) {
-        if (ntzToDateTime(nextStart) > ntzToDateTime(nextEnd)) {
+      if (next.times.timezone && next.times.ntzStart) {
+        next.times.epochStart = ntzToTZEpochSecs(
+          next.times.ntzStart,
+          next.times.timezone,
+        );
+      }
+      if (next.times.ntzStart && next.times.ntzEnd) {
+        if (
+          ntzToDateTime(next.times.ntzStart) > ntzToDateTime(next.times.ntzEnd)
+        ) {
           throw new ManagerRuleViolation("Start time must be before end time");
         }
       }
 
       // todo !
-      if (update.images?.bannerImgKeys !== e.images?.bannerImgKeys) {
+      if (next.images?.bannerImgKeys !== e.images?.bannerImgKeys) {
         // changes images, you could perpahs add outdated image to a dlete q
         // but only the keys are proviede here,
         // the actual upload must be hanlded by the client or elsewhere
         // could check the image exististststs to
       }
 
-      const valdRes = tbValidatorResult(ModelVibefireEventData)(update);
+      const valdRes = tbValidatorResult(ModelVibefireEventData)(next);
       if (e.state === 1 && valdRes.isErr) {
+        console.error(valdRes.error);
         throw new ManagerRuleViolation(`Missing required fields in event`);
       }
 
-      return (await this.repos.event.update(p.eventId, update)
+      return (await this.repos.event.update(p.eventId, next)
         .result) as TModelVibefireEvent;
     });
   }
@@ -394,6 +397,7 @@ export class UFEventsManger {
       } else if (p.update === "publish") {
         const valdRes = tbValidatorResult(ModelVibefireEventData)(e);
         if (valdRes.isErr) {
+          console.error(valdRes.error);
           throw new ManagerRuleViolation(`Missing required fields in event`);
         }
         await this.repos.event.update(p.eventId, {
