@@ -1,7 +1,7 @@
 import { type Router } from "expo-router";
 
 type RouteingOpts = {
-  manner: "push" | "nav" | "replace" | "replace-all" | "dismiss-to" | "href";
+  manner: "push" | "nav" | "replace" | "dismiss-to" | "href";
 };
 
 const route = (
@@ -23,27 +23,31 @@ const route = (
     ),
   );
 
+  const manner = opts?.manner || "nav";
+
   const href = {
     pathname: path,
     params: queryParams,
   };
 
-  if (opts?.manner === "nav") {
-    router.navigate(href);
-  } else if (opts?.manner === "push") {
-    router.push(href);
-  } else if (opts?.manner === "replace") {
-    router.replace(href);
-  } else if (opts?.manner === "replace-all") {
-    router.dismissAll();
-    router.replace(href);
-  } else if (opts?.manner === "dismiss-to") {
-    router.dismissTo(href);
-  } else if (opts?.manner === "href") {
-    // nop
-  } else {
-    // idk if this pushes or replaces
-    router.navigate(href);
+  switch (manner) {
+    case "nav":
+      router.navigate(href);
+      break;
+    case "push":
+      router.push(href);
+      break;
+    case "replace":
+      router.replace(href);
+      break;
+    case "dismiss-to":
+      router.dismissTo(href);
+      break;
+    case "href":
+      // nop
+      break;
+    default:
+      throw new Error("Unknown route manner: " + manner);
   }
 
   return href;
@@ -54,13 +58,13 @@ export const navProfile = (router: Router, opts?: RouteingOpts) => {
 };
 
 export const navHome = (router: Router) => {
-  route(router, "/", { manner: "replace-all" });
+  route(router, "/", { manner: "dismiss-to" });
 };
 export const navHomeWithCollapse = (router: Router) => {
   route(
     router,
     "/",
-    { manner: "replace-all" },
+    { manner: "dismiss-to" },
     { expand: "false", collapse: "true" },
   );
 };
@@ -68,7 +72,7 @@ export const navHomeWithExpand = (router: Router) => {
   route(
     router,
     "/",
-    { manner: "replace-all" },
+    { manner: "dismiss-to" },
     { expand: "true", collapse: "false" },
   );
 };

@@ -1,11 +1,12 @@
 import React from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { ActivityIndicator, Text, View } from "react-native";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
 import { isCoordZeroZero } from "@vibefire/utils";
 
 import { AccessShareabilityText } from "!/components/AccessShareablityText";
+import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
 
 export type TEventManageHandles = {
   onMakeOpenPress: () => void;
@@ -13,8 +14,10 @@ export type TEventManageHandles = {
   onPreviewPress: () => void;
   onPublishPress: () => void;
   onHidePress: () => void;
+  onDeletePress: () => void;
   updateAccessLoading: boolean;
   updateVisibilityLoading: boolean;
+  deleteLoading: boolean;
   isFormUpdated: boolean;
 };
 
@@ -30,8 +33,10 @@ export const EditInfoDisplay = (
     onPreviewPress,
     onPublishPress,
     onHidePress,
+    onDeletePress,
     updateAccessLoading,
     updateVisibilityLoading,
+    deleteLoading,
     isFormUpdated,
   } = props;
 
@@ -75,9 +80,9 @@ export const EditInfoDisplay = (
           </Text>
         )}
         {!isGroupOwned && !isPublic && (
-          <TouchableOpacity
+          <PillTouchableOpacity
             disabled={updateAccessLoading || updateVisibilityLoading}
-            className="self-center rounded-full border-2 border-white p-2 px-4"
+            className="self-center"
             onPress={() => {
               if (isOpen) {
                 onMakeInviteOnlyPress();
@@ -94,8 +99,27 @@ export const EditInfoDisplay = (
                 {isOpen ? "invite only" : "open"}
               </Text>
             )}
-          </TouchableOpacity>
+          </PillTouchableOpacity>
         )}
+      </View>
+
+      <View className="h-[1] w-full bg-white" />
+
+      <View className="flex-col space-y-2">
+        <Text className="text-base text-white">Delete this event.</Text>
+        <PillTouchableOpacity
+          disabled={updateAccessLoading || updateVisibilityLoading}
+          onPress={onDeletePress}
+          className="self-center border-[#ff0000]"
+        >
+          {deleteLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-center text-base text-white">
+              <FontAwesome6 name="trash" size={15} /> Delete
+            </Text>
+          )}
+        </PillTouchableOpacity>
       </View>
 
       <View className="h-[1] w-full bg-white" />
@@ -135,7 +159,7 @@ export const EditInfoDisplay = (
         </View>
         {/* Publish, preview buttons */}
         <View className="flex-row justify-evenly space-x-4">
-          <TouchableOpacity
+          <PillTouchableOpacity
             disabled={
               !isReady ||
               isFormUpdated ||
@@ -149,7 +173,7 @@ export const EditInfoDisplay = (
                 onPublishPress();
               }
             }}
-            className={`flex-1 rounded-full border-2 ${isPublished ? "border-red-500" : isReady && !isFormUpdated ? "border-green-500" : "border-neutral-600"} p-2 px-4`}
+            className={`flex-1 ${isPublished ? "border-red-500" : isReady && !isFormUpdated ? "border-green-500" : "border-neutral-600"}`}
           >
             {updateVisibilityLoading ? (
               <ActivityIndicator color="white" />
@@ -164,15 +188,15 @@ export const EditInfoDisplay = (
                 <FontAwesome6 name="eye" size={15} /> Publish
               </Text>
             )}
-          </TouchableOpacity>
-          <TouchableOpacity
+          </PillTouchableOpacity>
+          <PillTouchableOpacity
             onPress={onPreviewPress}
-            className="flex-1 rounded-full border-2 border-blue-500 p-2 px-4"
+            className="border-blue-500"
           >
             <Text className="text-center text-base text-white">
-              <FontAwesome5 name="arrow-right" size={15} /> Preview event
+              <FontAwesome6 name="arrow-right" size={15} /> Preview event
             </Text>
-          </TouchableOpacity>
+          </PillTouchableOpacity>
         </View>
       </View>
     </View>

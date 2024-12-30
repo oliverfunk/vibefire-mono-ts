@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
-import { usePathname, useRootNavigationState, useRouter } from "expo-router";
+import { useRootNavigationState, useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   useBottomSheet,
@@ -11,6 +11,7 @@ import { useAtom } from "jotai";
 import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 
 import { bottomSheetCollapsedAtom } from "!/atoms";
+import { navHome } from "!/nav";
 
 export const HANDLE_HEIGHT = 40;
 
@@ -21,11 +22,10 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
   const [mapEventsInfo] = useAtom(mapDisplayableEventsInfoAtom);
   const [firstRun, setFirstRun] = useState(false);
 
-  const pathname = usePathname();
-
   const router = useRouter();
   // refreshes this component when the navigation state changes
-  useRootNavigationState();
+  const ns = useRootNavigationState();
+  // console.log(JSON.stringify(ns, null, 2));
 
   useEffect(() => {
     if (!firstRun) {
@@ -33,11 +33,7 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
       return;
     }
     if (bottomSheetCollapsed) {
-      if (router.canGoBack()) {
-        router.dismissAll();
-      } else if (pathname !== "/") {
-        router.replace("/");
-      }
+      navHome(router);
     }
     // specifically ignore firstRun
     // eslint-disable-next-line react-hooks/exhaustive-deps

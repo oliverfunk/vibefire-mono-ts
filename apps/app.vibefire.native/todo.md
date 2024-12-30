@@ -8,4 +8,6 @@
 
 * show ur events screen, to select for copy "from previous"
 
-* events: delete
+* unify screens layouts -> use gradient scroll view, pill btn
+
+* all things are nullable from fauna
