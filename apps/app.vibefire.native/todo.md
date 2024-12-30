@@ -11,3 +11,9 @@
 * unify screens layouts -> use gradient scroll view, pill btn
 
 * all things are nullable from fauna
+
+* fix updating event whilst published !!
+
+* add epochStart and epochEnd to event
+
+* use google maps?

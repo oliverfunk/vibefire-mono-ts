@@ -5,7 +5,7 @@ import { type CoordT } from "@vibefire/models";
 
 import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
-import { useLocationOnce } from "!/hooks/useLocation";
+import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLocationSetter";
 
 import { isCoordZeroZero } from "!utils/general";
 
@@ -20,43 +20,14 @@ export const LocationSelectionMap = (props: {
 
   const mvRef = useRef<MapView>(null);
 
-  const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
+  const userLocationOnce = useUserLocationWithMapCameraSetter(
+    mvRef,
     initialPosition,
   );
 
-  const { location: locationOnce, locPermDeniedMsg } = useLocationOnce();
-
-  useEffect(() => {
-    if (mvRef.current === null) {
-      return;
-    }
-    if (initialPosition && !isCoordZeroZero(initialPosition)) {
-      mvRef.current.setCamera(defaultCameraForPosition(initialPosition));
-      return;
-    }
-    if (!locationOnce) {
-      return;
-    }
-    mvRef.current.setCamera(
-      defaultCameraForPosition({
-        lat: locationOnce.coords.latitude,
-        lng: locationOnce.coords.longitude,
-      }),
-    );
-  }, [initialPosition, locationOnce]);
-
-  // todo: standardise
-  // useEffect(() => {
-  //   if (locPermDeniedMsg !== null) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Could not get your location",
-  //       text2: locPermDeniedMsg,
-  //       position: "bottom",
-  //       bottomOffset: 100,
-  //     });
-  //   }
-  // }, [locPermDeniedMsg]);
+  const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
+    initialPosition,
+  );
 
   const positionAddressInfoMut =
     trpc.services.positionAddressInfo.useMutation();
@@ -93,10 +64,10 @@ export const LocationSelectionMap = (props: {
       className="h-full w-full"
       // provider={PROVIDER_GOOGLE}
       initialCamera={
-        locationOnce
+        userLocationOnce
           ? defaultCameraForPosition({
-              lat: locationOnce.coords.latitude,
-              lng: locationOnce.coords.longitude,
+              lat: userLocationOnce.coords.latitude,
+              lng: userLocationOnce.coords.longitude,
             })
           : undefined
       }
