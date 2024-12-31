@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  type ViewProps,
 } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
@@ -13,6 +14,8 @@ import {
   type TModelVibefireMembership,
   type TModelVibefireOwnership,
 } from "@vibefire/models";
+
+import { TextB, TextL } from "./atomic/text";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
@@ -183,14 +186,21 @@ export const OrganiserBarView = (
   props: {
     ownerRef: TModelVibefireOwnership;
     showLeaveJoin?: boolean;
+    showThreeDots?: boolean;
     onOrganiserPress?: () => void;
   } & ThreeDotsModalMenuProps &
-    LeaveJoinButtonProps,
+    LeaveJoinButtonProps &
+    ViewProps,
 ) => {
-  const { ownerRef, showLeaveJoin = true, onOrganiserPress } = props;
+  const {
+    ownerRef,
+    showLeaveJoin = true,
+    showThreeDots = true,
+    onOrganiserPress,
+  } = props;
 
   return (
-    <View className="flex-row items-center space-x-2 bg-black p-4">
+    <View className="flex-row items-center space-x-2" {...props}>
       <Pressable onPress={onOrganiserPress}>
         <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black">
           <Text className="text-lg text-white">
@@ -198,25 +208,23 @@ export const OrganiserBarView = (
           </Text>
         </View>
       </Pressable>
+
       <Pressable
         className="flex-1 flex-col justify-center"
         onPress={onOrganiserPress}
       >
         <Text className="text-xs text-white">Organised by</Text>
-        <Text
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          className="text-lg font-bold text-white"
-        >
+        <TextL numberOfLines={1} ellipsizeMode="tail" className="font-bold">
           {ownerRef.ownerName}
-        </Text>
+        </TextL>
       </Pressable>
+
       {showLeaveJoin && (
         <View>
           <LeaveJoinButton {...props} />
         </View>
       )}
-      <ThreeDotsModalMenu {...props} />
+      {showThreeDots && <ThreeDotsModalMenu {...props} />}
     </View>
   );
 };

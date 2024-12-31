@@ -149,7 +149,7 @@ export const VfActionButton = () => {
           navCreateEvent(router);
         }}
       />
-      <FloatingActionButton
+      {/* <FloatingActionButton
         index={3}
         isExpandedState={isExpandedState}
         label="Create Plan"
@@ -166,7 +166,7 @@ export const VfActionButton = () => {
         onPress={() => {
           console.log("Create group");
         }}
-      />
+      /> */}
     </View>
   );
 };

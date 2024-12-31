@@ -24,7 +24,7 @@ export const VibefireImage = (props: {
 
   return (
     <StandardImage
-      cn={`aspect-[4/4] w-full ${rounded ? "rounded-xl" : ""}`}
+      cn={`aspect-[4/4] w-full ${rounded ? "rounded-2xl" : ""}`}
       contentFit="cover"
       source={imgSourceUrl}
       alt={alt}

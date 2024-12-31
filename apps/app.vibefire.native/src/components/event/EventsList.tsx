@@ -1,62 +1,34 @@
 import { useCallback, useMemo } from "react";
 import { Text, View } from "react-native";
+import { BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
 import { type ListRenderItemInfo } from "@shopify/flash-list";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { ntzToDateTime, type PartialDeep } from "@vibefire/utils";
+import { type PartialDeep } from "@vibefire/utils";
 
 import { useSortedEvents } from "!/hooks/useSortedByTime";
 
 import { SimpleList } from "!/c/list/SimpleList";
-import { useItemSeparator } from "!/c/misc/ItemSeparator";
-import { FlashListViewSheet } from "!/c/misc/sheet-utils";
 
-import { VibefireLogoName } from "../VibefireBottomLogo";
+import { FlashListViewSheet } from "../misc/sheet-utils";
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
 
 const useEventCardRenderer = (
-  onEventPress: (
-    eventId: string,
-    event: PartialDeep<TModelVibefireEvent>,
-  ) => void,
-  onEventCrossPress?: (
-    eventId: string,
-    event: PartialDeep<TModelVibefireEvent>,
-  ) => void,
-  showStatusBanner?: boolean,
+  onEventPress: (event: PartialDeep<TModelVibefireEvent>) => void,
+  showState?: boolean,
 ) => {
   return useCallback(
-    ({ item: event }: ListRenderItemInfo<PartialDeep<TModelVibefireEvent>>) => (
+    (event: PartialDeep<TModelVibefireEvent>) => (
       <EventCard
-        state={event.state}
-        eventInfo={{
-          bannerImgKey: event.images?.bannerImgKeys?.[0] ?? undefined,
-          title: event.name!,
-          ownerType: event.ownerRef!.ownerType!,
-          ownerName: event.ownerRef!.ownerName!,
-          addressDescription: event?.location?.addressDescription ?? undefined,
-          timeStart: event.times?.ntzStart
-            ? ntzToDateTime(event.times?.ntzStart)
-            : undefined,
-          timeEnd: event.times?.ntzEnd
-            ? ntzToDateTime(event.times?.ntzEnd)
-            : undefined,
-        }}
+        event={event}
+        showStatus={showState}
         onPress={() => {
-          onEventPress(event.id!, event);
+          onEventPress(event);
         }}
-        onCrossPress={
-          onEventCrossPress
-            ? () => {
-                onEventCrossPress(event.id!, event);
-              }
-            : undefined
-        }
-        showStatusBanner={showStatusBanner}
       />
     ),
-    [onEventCrossPress, onEventPress, showStatusBanner],
+    [onEventPress],
   );
 };
 
@@ -86,63 +58,52 @@ const useNoEventsTextSmall = (noEventsMessage?: string) => {
 
 type EventsListProps = {
   events: PartialDeep<TModelVibefireEvent>[];
-  onEventPress: (
-    eventId: string,
-    event: PartialDeep<TModelVibefireEvent>,
-  ) => void;
-  onEventCrossPress?: (
-    eventId: string,
-    event: PartialDeep<TModelVibefireEvent>,
-  ) => void;
+  onEventPress: (event: PartialDeep<TModelVibefireEvent>) => void;
   listTitle?: string;
   noEventsMessage?: string;
   showStatusBanner?: boolean;
   sortAsc?: boolean;
-  vibefireFooter?: boolean;
+  showStatus?: boolean;
 };
 
-export const EventsFlashListSheet = ({
-  events,
-  onEventPress,
-  onEventCrossPress,
-  listTitle,
-  noEventsMessage,
-  showStatusBanner = false,
-  sortAsc = true,
-  vibefireFooter = false,
-}: EventsListProps) => {
+export const EventCardFlashListViewSheet = (
+  props: EventsListProps &
+    Omit<
+      BottomSheetFlashListProps<PartialDeep<TModelVibefireEvent>>,
+      "data" | "renderItem"
+    >,
+) => {
+  const {
+    events,
+    onEventPress,
+    listTitle,
+    noEventsMessage,
+    sortAsc = true,
+    showStatus = false,
+  } = props;
+
   const sortedEvents = useSortedEvents(events, { sortAsc });
 
-  const renderItem = useEventCardRenderer(
-    onEventPress,
-    onEventCrossPress,
-    showStatusBanner,
-  );
+  const renderItem = useEventCardRenderer(onEventPress, showStatus);
   const NoEventsText = useNoEventsText(noEventsMessage);
 
   const Header = useMemo(() => {
     return <Text className="text-2xl font-bold">{listTitle}</Text>;
   }, [listTitle]);
 
-  const itemSep = useItemSeparator();
-
   return (
     <FlashListViewSheet
       ListEmptyComponent={NoEventsText}
-      ListFooterComponent={
-        vibefireFooter ? (
-          <View className="p-4">
-            <VibefireLogoName />
-          </View>
-        ) : undefined
-      }
       ListHeaderComponent={listTitle ? Header : undefined}
-      ItemSeparatorComponent={itemSep}
       data={sortedEvents}
       estimatedItemSize={200}
-      contentContainerStyle={{ padding: 10 }}
-      renderItem={renderItem}
+      renderItem={({
+        item,
+      }: ListRenderItemInfo<PartialDeep<TModelVibefireEvent>>) =>
+        renderItem(item)
+      }
       keyExtractor={(item: PartialDeep<TModelVibefireEvent>) => item.id!}
+      {...props}
     />
   );
 };
@@ -219,21 +180,21 @@ const useEventChipRenderer = (
   );
 };
 
-type EventsListSimpleChipViewProps = {
+type EventsSimpleListProps = {
   events: PartialDeep<TModelVibefireEvent>[];
-  onChipPress: (event: PartialDeep<TModelVibefireEvent>) => void;
+  onItemPress: (event: PartialDeep<TModelVibefireEvent>) => void;
   noEventsMessage?: string;
   latestFirst?: boolean;
   limit: number;
 };
 
-export const EventsListSimpleChipView = ({
+export const EventsSimpleListChipView = ({
   events,
-  onChipPress,
+  onItemPress: onChipPress,
   noEventsMessage,
   latestFirst = true,
   limit,
-}: EventsListSimpleChipViewProps) => {
+}: EventsSimpleListProps) => {
   const sortedEvents = useSortedEvents(events, {
     sortAsc: !latestFirst,
     sliceCount: limit,
@@ -244,6 +205,28 @@ export const EventsListSimpleChipView = ({
       items={sortedEvents}
       itemRenderer={useEventChipRenderer(onChipPress)}
       noItemsComponent={useNoEventsTextSmall(noEventsMessage)}
+      styleOpts={{ separatorHeight: 4 }}
+    />
+  );
+};
+
+export const EventsSimpleListCardView = ({
+  events,
+  onItemPress,
+  noEventsMessage,
+  latestFirst = true,
+  limit,
+}: { showStatus: boolean } & EventsSimpleListProps) => {
+  const sortedEvents = useSortedEvents(events, {
+    sortAsc: !latestFirst,
+    sliceCount: limit,
+  });
+
+  return (
+    <SimpleList
+      items={sortedEvents}
+      itemRenderer={useEventCardRenderer(onItemPress)}
+      noItemsComponent={useNoEventsText(noEventsMessage)}
       styleOpts={{ separatorHeight: 4 }}
     />
   );

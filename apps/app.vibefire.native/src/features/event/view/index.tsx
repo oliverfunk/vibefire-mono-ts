@@ -21,7 +21,7 @@ import { AccessShareabilityText } from "!/components/AccessShareablityText";
 import { EventActionsBar } from "!/components/event/EventActionBar";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import {
-  EventInfoAddressBar,
+  EventInfoAddressDescBar,
   EventInfoTimesBar,
 } from "!/components/event/EventInfoBars";
 import { VibefireImage } from "!/components/image/VibefireImage";
@@ -92,58 +92,57 @@ const ViewEventSheet = (props: {
       </View>
 
       {/* black bars */}
-      <OrganiserBarView
-        ownerRef={event.ownerRef}
-        membership={userMembership}
-        onBlockAndReportOrganiserPress={() => {
-          blockAndReportOrganiserMut.mutate({
-            ownershipRefId: event.ownerRef.id,
-          });
-          navHomeWithCollapse(router);
-        }}
-        onHidePress={() => {
-          hideEventMut.mutate({
-            eventId: event.id,
-          });
-          navHomeWithCollapse(router);
-        }}
-        onOrganiserPress={() => {
-          if (event.ownerRef.ownerType === "group") {
-            console.log("todo: nav to group");
+      <View className="flex-col space-y-4 bg-black p-4">
+        <OrganiserBarView
+          ownerRef={event.ownerRef}
+          membership={userMembership}
+          onBlockAndReportOrganiserPress={() => {
+            blockAndReportOrganiserMut.mutate({
+              ownershipRefId: event.ownerRef.id,
+            });
+            navHomeWithCollapse(router);
+          }}
+          onHidePress={() => {
+            hideEventMut.mutate({
+              eventId: event.id,
+            });
+            navHomeWithCollapse(router);
+          }}
+          onOrganiserPress={() => {
+            if (event.ownerRef.ownerType === "group") {
+              console.log("todo: nav to group");
+            }
+          }}
+          onEditPress={() => {
+            navEditEvent(router, event.id);
+          }}
+          leaveJoinDisabled={managedByUser}
+          leaveJoinLoading={joinAccessMut.isPending || leaveAccessMut.isPending}
+          onJoinPress={async () => {
+            await joinAccessMut.mutateAsync({
+              accessId: event.accessRef.id,
+              shareCode,
+            });
+            await userMembershipQ.refetch();
+          }}
+          onLeavePress={async () => {
+            await leaveAccessMut.mutateAsync({
+              accessId: event.accessRef.id,
+            });
+            await userMembershipQ.refetch();
+            navHomeWithCollapse(router);
+          }}
+        />
+        <EventActionsBar
+          location={event.location}
+          hideShareButton={
+            event.accessRef.type === "invite" &&
+            membership?.roleType !== "manager"
           }
-        }}
-        onEditPress={() => {
-          navEditEvent(router, event.id);
-        }}
-        leaveJoinDisabled={managedByUser}
-        leaveJoinLoading={joinAccessMut.isPending || leaveAccessMut.isPending}
-        onJoinPress={async () => {
-          await joinAccessMut.mutateAsync({
-            accessId: event.accessRef.id,
-            shareCode,
-          });
-          await userMembershipQ.refetch();
-        }}
-        onLeavePress={async () => {
-          await leaveAccessMut.mutateAsync({
-            accessId: event.accessRef.id,
-          });
-          await userMembershipQ.refetch();
-          navHomeWithCollapse(router);
-        }}
-      />
-      <EventActionsBar
-        location={event.location}
-        hideShareButton={
-          event.accessRef.type === "invite" &&
-          membership?.roleType !== "manager"
-        }
-        onShareEvent={onShareEvent}
-      />
-      <View className="bg-black p-4">
+          onShareEvent={onShareEvent}
+        />
         <AccessShareabilityText accessRef={event.accessRef} />
       </View>
-
       {/* {!selectedDateDT.hasSame(
           ntzToDateTime(event.times.ntzStart),
           "day",
@@ -179,7 +178,10 @@ const ViewEventSheet = (props: {
               });
             }}
           >
-            <EventInfoAddressBar event={event} noAddressText="(location)" />
+            <EventInfoAddressDescBar
+              event={event}
+              noAddressDescText="(location)"
+            />
           </TouchableOpacity>
         </View>
       </LinearRedOrangeView>

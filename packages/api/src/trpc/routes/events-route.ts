@@ -120,7 +120,6 @@ export const eventsRouter = router({
       tbValidator(
         tb.Object({
           name: tb.String(),
-          fromPreviousEventId: tb.Optional(tb.String()),
           accessType: ModelVibefireAccess.properties.type,
         }),
       ),
@@ -130,23 +129,23 @@ export const eventsRouter = router({
         event: TModelVibefireEvent;
         membership: TModelVibefireMembership | null;
       }>(async () => {
-        let eventId: string;
-        if (input.fromPreviousEventId) {
-          eventId = (
-            await getUFEventsManager().createEventFromPrevious({
-              userAid: ctx.auth.userId,
-              previousEventId: input.fromPreviousEventId,
-            })
-          ).unwrap();
-        } else {
-          eventId = (
-            await getUFEventsManager().createNewEvent({
-              userAid: ctx.auth.userId,
-              name: input.name,
-              accessType: input.accessType,
-            })
-          ).unwrap();
-        }
+        const eventId = (
+          await getUFEventsManager().createNewEvent({
+            userAid: ctx.auth.userId,
+            name: input.name,
+            accessType: input.accessType,
+          })
+        ).unwrap();
+        // if (input.fromPreviousEventId) {
+        //   eventId = (
+        //     await getUFEventsManager().createEventFromPrevious({
+        //       userAid: ctx.auth.userId,
+        //       previousEventId: input.fromPreviousEventId,
+        //     })
+        //   ).unwrap();
+        // } else {
+        //   eventId =
+        // }
         return await getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,
           eventId,
@@ -188,6 +187,33 @@ export const eventsRouter = router({
             })
           ).unwrap();
         }
+        return await getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId,
+          eventId,
+          scope: "manage",
+        });
+      }),
+    ),
+
+  createFromPrevious: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          fromPreviousEventId: tb.String(),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(async () => {
+        const eventId = (
+          await getUFEventsManager().createEventFromPrevious({
+            userAid: ctx.auth.userId,
+            previousEventId: input.fromPreviousEventId,
+          })
+        ).unwrap();
         return await getUFEventsManager().viewEvent({
           userAid: ctx.auth.userId,
           eventId,
