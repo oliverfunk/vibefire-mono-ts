@@ -7,6 +7,8 @@ import {
   CreateEventFromPreviousSheet,
   CreateEventSheet,
 } from "!/features/event/create";
+import { ErrorSheet, LoadingSheet } from "!/components/misc/sheet-utils";
+import { SuspenseWithError } from "!/components/misc/SuspenseWithError";
 
 const Screen = () => {
   const { fromPrevious } = useLocalSearchParams<{
@@ -16,10 +18,15 @@ const Screen = () => {
   useOnFocusUserNotAuthedRedirect();
   useExpandBottomSheet();
 
-  if (fromPrevious) {
-    return <CreateEventFromPreviousSheet />;
-  }
-
-  return <CreateEventSheet />;
+  return (
+    <SuspenseWithError
+      LoadingFallback={<LoadingSheet />}
+      ErrorFallback={({ error, resetErrorBoundary }) => (
+        <ErrorSheet retryCallback={resetErrorBoundary} />
+      )}
+    >
+      {fromPrevious ? <CreateEventFromPreviousSheet /> : <CreateEventSheet />}
+    </SuspenseWithError>
+  );
 };
 export default Screen;

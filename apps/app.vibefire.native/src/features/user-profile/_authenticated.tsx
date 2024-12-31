@@ -1,29 +1,26 @@
-import { Text, TouchableOpacity, View, type ViewProps } from "react-native";
+import { TouchableOpacity, View, type ViewProps } from "react-native";
 import { useRouter } from "expo-router";
-import {
-  FontAwesome5,
-  FontAwesome6,
-  MaterialCommunityIcons,
-  SimpleLineIcons,
-} from "@expo/vector-icons";
+import { FontAwesome6 } from "@expo/vector-icons";
 import { capitalize } from "lodash";
 
 import { type AppUserAuthenticated } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
-import { EventsListSimpleChipView } from "!/components/event/EventsList";
+import { TextB, TextLL } from "!/components/atomic/text";
+import { BContC, BContN, BContR } from "!/components/atomic/view";
+import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
+import { SummaryComponent } from "!/components/structural/SummaryComponent";
+import { DeleteAccount } from "!/c/auth/DeleteAccount";
+import { SignOut } from "!/c/auth/SignOut";
+import { EventsSimpleListChipView } from "!/c/event/EventsList";
+import { SheetScrollViewGradientVF } from "!/c/layouts/SheetScrollViewGradientVF";
 import {
   ErrorDisplay,
   LoadingDisplay,
   withSuspenseErrorBoundary,
-} from "!/components/misc/SuspenseWithError";
-import { SummaryComponent } from "!/components/structural/SummaryComponent";
-import { VibefireLogoName } from "!/components/VibefireBottomLogo";
-import { DeleteAccount } from "!/c/auth/DeleteAccount";
-import { SignOut } from "!/c/auth/SignOut";
-import { LinearRedOrangeView, ScrollViewSheet } from "!/c/misc/sheet-utils";
-import { navCreateEvent, navEditEvent } from "!/nav";
+} from "!/c/misc/SuspenseWithError";
+import { navCreateEvent, navEditEvent, navViewUserManagedEvents } from "!/nav";
 
 const UsersEventsManageSummary = (props: ViewProps) => {
   const router = useRouter();
@@ -38,28 +35,28 @@ const UsersEventsManageSummary = (props: ViewProps) => {
         throw eventsByUser.error;
       }
       const events = eventsByUser.value.data;
-      // const events = [];
 
       return (
         <View className="flex-col space-y-2">
-          <EventsListSimpleChipView
+          <EventsSimpleListChipView
             events={events}
             limit={4}
             noEventsMessage="Create your first event"
-            onChipPress={(e) => {
+            onItemPress={(e) => {
               navEditEvent(router, e.id!);
             }}
           />
           {events.length > 4 && (
-            <TouchableOpacity
-              //todo!!!
-              onPress={() => {}}
-              className="self-center rounded-full border-2 border-white p-2 px-4"
+            <PillTouchableOpacity
+              className="self-center"
+              onPress={() => {
+                navViewUserManagedEvents(router);
+              }}
             >
-              <Text className="text-center text-base text-white">
+              <TextB className="text-center">
                 <FontAwesome6 name="list" size={15} /> View all
-              </Text>
-            </TouchableOpacity>
+              </TextB>
+            </PillTouchableOpacity>
           )}
         </View>
       );
@@ -99,57 +96,35 @@ const UsersEventsManageSummary = (props: ViewProps) => {
 export const UserProfileAuthenticatedSheet = (props: {
   appUser: AppUserAuthenticated;
 }) => {
-  const { appUser: user } = props;
+  const { appUser } = props;
 
-  const userInfo = user.userInfo;
+  const userInfo = appUser.userInfo;
 
   return (
-    <LinearRedOrangeView className="h-full">
-      <ScrollViewSheet
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "space-between",
-        }}
-        className="space-y-4 p-2"
-      >
-        {/* main content */}
-        <View className="flex-col space-y-4">
-          <View className="flex-row items-center justify-center rounded-2xl bg-black p-4">
-            {/* <SimpleLineIcons name="fire" size={50} color="orange" /> */}
-            {/* <Text className="text-4xl">🕺</Text> */}
-            {/* <Text className="text-4xl">🔥</Text> */}
-            <View className="flex-col items-center space-y-2">
-              <Text className="text-center text-2xl text-white">
-                Hey, {capitalize(userInfo.name)}!{"\n"}Welcome to Vibefire
-              </Text>
-              {userInfo.email ? (
-                <Text className="text-base text-white">{userInfo.email}</Text>
-              ) : (
-                <TouchableOpacity onPress={async () => {}}>
-                  <Text className="text-base text-white">Tap to add email</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-            {/* <Text className="text-4xl">💃</Text> */}
-            {/* <Text className="text-4xl">🔥</Text> */}
-            {/* <MaterialCommunityIcons name="firework" size={50} color="red" /> */}
-            {/* <SimpleLineIcons name="fire" size={50} color="orange" /> */}
-          </View>
+    <SheetScrollViewGradientVF
+      footer={
+        <BContR className="justify-evenly">
+          <SignOut />
+          <DeleteAccount />
+        </BContR>
+      }
+    >
+      <BContC>
+        <TextLL className="text-center">
+          Hey, {capitalize(userInfo.name)}!{"\n"}Welcome to Vibefire
+        </TextLL>
+        {userInfo.email ? (
+          <TextB>{userInfo.email}</TextB>
+        ) : (
+          <TouchableOpacity onPress={async () => {}}>
+            <TextB>Tap to add email</TextB>
+          </TouchableOpacity>
+        )}
+      </BContC>
 
-          <View className="rounded-2xl bg-black p-4">
-            <UsersEventsManageSummary />
-          </View>
-        </View>
-
-        {/* footer */}
-        <View className="flex-col space-y-4 pb-2">
-          <View className="flex-row justify-evenly rounded-2xl bg-black p-4">
-            <SignOut />
-            <DeleteAccount />
-          </View>
-          <VibefireLogoName />
-        </View>
-      </ScrollViewSheet>
-    </LinearRedOrangeView>
+      <BContN>
+        <UsersEventsManageSummary />
+      </BContN>
+    </SheetScrollViewGradientVF>
   );
 };

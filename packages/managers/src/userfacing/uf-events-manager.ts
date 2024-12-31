@@ -310,8 +310,6 @@ export class UFEventsManger {
         default:
           throw new ManagerRuleViolation("Invalid scope");
       }
-      event.ownerRef = await this.repos.getOwnershipRef(event.ownerRef.id);
-      event.accessRef = await this.repos.getAccessRef(event.accessRef.id);
       const membership = (
         await this.repos.access.membershipForUser(event.accessRef.id, p.userAid)
           .result

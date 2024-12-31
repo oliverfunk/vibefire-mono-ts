@@ -10,6 +10,7 @@ import {
 } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
+import { AccessShareabilityText } from "!/components/AccessShareablityText";
 import { EventActionsBar } from "!/c/event/EventActionBar";
 import { EventInfoAddressBarEditable } from "!/c/event/EventInfoBars";
 import { ImageCarousel } from "!/c/image/ImageCarousel";
@@ -138,14 +139,19 @@ export const EditableEventForm = (
       </View>
 
       {/* black bars */}
-      <OrganiserBarView
-        ownerRef={event.ownerRef}
-        showLeaveJoin={false}
-        membership={membership}
-        threeDotsDisabled={true}
-        leaveJoinDisabled={true}
-      />
-      <EventActionsBar location={event?.location} disabled={true} />
+      <View className="flex-col space-y-4 bg-black p-4">
+        <OrganiserBarView
+          ownerRef={event.ownerRef}
+          showLeaveJoin={false}
+          membership={membership}
+          threeDotsDisabled={true}
+          leaveJoinDisabled={true}
+        />
+
+        <EventActionsBar location={event?.location} disabled={true} />
+
+        <AccessShareabilityText accessRef={event.accessRef} />
+      </View>
 
       {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">

@@ -47,7 +47,7 @@ const route = (
       // nop
       break;
     default:
-      throw new Error("Unknown route manner: " + manner);
+      throw new Error(`Unknown route manner: ${manner}`);
   }
 
   return href;
@@ -129,8 +129,14 @@ export const navEditEvent = (
 ) => {
   route(router, "/event/" + eventId + "/edit", opts);
 };
-// /event/413667586913337550/manage
-// /event/413667586913337550/edit
+
+export const navViewUserManagedEvents = (
+  router: Router,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/managed", opts);
+};
+
 // export const navGroupUserManaged = (router: Router, opts?: RouteingOpts) => {
 //   routerNav("/group/manage");
 // };

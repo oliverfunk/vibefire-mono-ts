@@ -12,9 +12,9 @@ import { SheetScrollViewGradientVF } from "!/components/layouts/SheetScrollViewG
 import { useItemSeparator } from "!/components/misc/ItemSeparator";
 import { navEditEvent } from "!/nav";
 
-export const CreateEventFromPreviousSheet = () => {
+export const ManagedByUserSheet = () => {
   const [managedByUser] = trpc.events.listSelfAllManage.useSuspenseQuery({});
-  const createFromPreviousMut = trpc.events.createFromPrevious.useMutation();
+
   const router = useRouter();
 
   const itemSep = useItemSeparator(4);
@@ -28,36 +28,15 @@ export const CreateEventFromPreviousSheet = () => {
   return (
     <SheetScrollViewGradientVF>
       <BContN>
-        <TextB>Select an event to create a new event from.</TextB>
+        <TextB>These are the events you manage.</TextB>
       </BContN>
       <View>
         <EventCardFlashListViewSheet
           events={events}
           ItemSeparatorComponent={itemSep}
           showStatus={true}
-          onEventPress={async (event) => {
-            try {
-              const res = await createFromPreviousMut.mutateAsync({
-                fromPreviousEventId: event.id!,
-              });
-              if (res.ok) {
-                navEditEvent(router, res.value.event.id, {
-                  manner: "replace",
-                });
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: res.error.message,
-                  position: "bottom",
-                  bottomOffset: 50,
-                  visibilityTime: 4000,
-                });
-              }
-            } finally {
-              setTimeout(() => {
-                createFromPreviousMut.reset();
-              }, 3000);
-            }
+          onEventPress={(event) => {
+            navEditEvent(router, event.id!);
           }}
         />
       </View>

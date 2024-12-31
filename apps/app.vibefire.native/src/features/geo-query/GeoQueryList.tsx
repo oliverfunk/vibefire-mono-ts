@@ -4,38 +4,28 @@ import { useAtom } from "jotai";
 
 import { mapDisplayableEventsAtom } from "@vibefire/shared-state";
 
-import { EventsFlashListSheet } from "!/components/event/EventsList";
-import { VibefireLogoName } from "!/components/VibefireBottomLogo";
+import { EventCardFlashListViewSheet } from "!/components/event/EventsList";
+import { SheetScrollViewGradientVF } from "!/components/layouts/SheetScrollViewGradientVF";
+import { useItemSeparator } from "!/components/misc/ItemSeparator";
 import { navViewEvent } from "!/nav";
 
 export const GeoQueryListSheet = () => {
   const [mapDisplayableEvents] = useAtom(mapDisplayableEventsAtom);
   const router = useRouter();
 
-  if (mapDisplayableEvents.length > 1) {
-    return (
-      <EventsFlashListSheet
-        events={mapDisplayableEvents}
-        vibefireFooter={true}
-        onEventPress={(_eventId, event) => {
-          navViewEvent(router, event.id!);
-        }}
-      />
-    );
-  }
+  const itemSep = useItemSeparator(4);
 
   return (
-    <>
-      <EventsFlashListSheet
-        events={mapDisplayableEvents}
-        noEventsMessage="No events in this area"
-        onEventPress={(_eventId, event) => {
-          navViewEvent(router, event.id!);
-        }}
-      />
-      <View className="p-4">
-        <VibefireLogoName />
+    <SheetScrollViewGradientVF>
+      <View>
+        <EventCardFlashListViewSheet
+          events={mapDisplayableEvents}
+          ItemSeparatorComponent={itemSep}
+          onEventPress={(event) => {
+            navViewEvent(router, event.id!);
+          }}
+        />
       </View>
-    </>
+    </SheetScrollViewGradientVF>
   );
 };

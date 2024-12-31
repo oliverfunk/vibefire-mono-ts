@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 
 import {
@@ -111,12 +112,14 @@ const MapsModalMenu = (props: {
   );
 };
 
-export const EventActionsBar = (props: {
-  location?: PartialDeep<TModelVibefireEvent["location"]>;
-  onShareEvent?: () => void;
-  disabled?: boolean;
-  hideShareButton?: boolean;
-}) => {
+export const EventActionsBar = (
+  props: {
+    location?: PartialDeep<TModelVibefireEvent["location"]>;
+    onShareEvent?: () => void;
+    disabled?: boolean;
+    hideShareButton?: boolean;
+  } & ViewProps,
+) => {
   const {
     onShareEvent,
     location,
@@ -142,7 +145,7 @@ export const EventActionsBar = (props: {
   }, [location]);
 
   return (
-    <View className="flex-row justify-around bg-black p-1">
+    <View className="flex-row justify-around" {...props}>
       <MapsModalMenu
         location={location as TModelVibefireEvent["location"]}
         disabled={disabled}
