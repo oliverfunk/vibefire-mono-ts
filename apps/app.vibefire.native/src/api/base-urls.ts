@@ -3,6 +3,7 @@ import Constants from "expo-constants";
 export const trpcApiUrl = () => {
   const env = process.env.EXPO_PUBLIC_ENVIRONMENT;
   console.log("env", env);
+  return "https://api.vibefire.app";
   if (env !== "local") {
     return "https://api.vibefire.app";
   }

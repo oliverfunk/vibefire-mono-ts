@@ -8,6 +8,9 @@ const expoConfig = ({ config }) => ({
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+  runtimeVersion: {
+    policy: "appVersion",
+  },
   splash: {
     image: "./assets/icons/appicon-ios.png",
     resizeMode: "contain",
@@ -15,6 +18,7 @@ const expoConfig = ({ config }) => ({
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/8ea03d1b-020b-4c3c-afd3-30f36bb961fe",
   },
   assetBundlePatterns: ["**/*"],
   web: {

@@ -35,3 +35,7 @@ Follow the instructions.
 - Or use the web UI
 
 ## Tailing logs
+
+```bash
+bunx wrangler tail vibefire-webhooks-handler
+```

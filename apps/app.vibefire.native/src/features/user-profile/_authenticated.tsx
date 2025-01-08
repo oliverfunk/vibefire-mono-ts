@@ -10,6 +10,7 @@ import { trpc } from "!/api/trpc-client";
 import { TextB, TextLL } from "!/components/atomic/text";
 import { BContC, BContN, BContR } from "!/components/atomic/view";
 import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
+import { useItemSeparator } from "!/components/misc/ItemSeparator";
 import { SummaryComponent } from "!/components/structural/SummaryComponent";
 import { DeleteAccount } from "!/c/auth/DeleteAccount";
 import { SignOut } from "!/c/auth/SignOut";
@@ -24,6 +25,7 @@ import { navCreateEvent, navEditEvent, navViewUserManagedEvents } from "!/nav";
 
 const UsersEventsManageSummary = (props: ViewProps) => {
   const router = useRouter();
+  const itemSep = useItemSeparator(2);
 
   const EventsListSuspense = withSuspenseErrorBoundary(
     () => {
@@ -45,6 +47,7 @@ const UsersEventsManageSummary = (props: ViewProps) => {
             onItemPress={(e) => {
               navEditEvent(router, e.id!);
             }}
+            ItemSeparatorComponent={itemSep}
           />
           {events.length > 4 && (
             <PillTouchableOpacity

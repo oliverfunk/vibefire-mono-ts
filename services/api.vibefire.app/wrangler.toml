@@ -1,6 +1,6 @@
 name = "vibefire-api-worker"
 main = "src/worker.ts"
-compatibility_date = "2023-05-18"
+compatibility_date = "2025-01-01"
 workers_dev = false
 
 routes = [{ pattern = "api.vibefire.app", custom_domain = true }]
