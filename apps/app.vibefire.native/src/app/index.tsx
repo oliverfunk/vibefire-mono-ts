@@ -74,10 +74,6 @@ const Screen = () => {
   //     });
   // }
 
-  return (
-    <LinearRedOrangeView className="h-full">
-      <GeoQueryListSheet />
-    </LinearRedOrangeView>
-  );
+  return <GeoQueryListSheet />;
 };
 export default Screen;

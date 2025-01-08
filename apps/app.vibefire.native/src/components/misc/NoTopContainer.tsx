@@ -11,11 +11,10 @@ const SafeAreaViewNoTopComponent = ({ children }: PropsWithChildren) => {
         paddingLeft: insets.left,
         paddingRight: insets.right,
       }}
-      className="flex-1 items-center justify-center bg-neutral-950"
+      className="flex-1 items-center justify-center bg-black"
     >
       {children}
     </View>
   );
 };
-const NoTopContainer = memo(SafeAreaViewNoTopComponent);
-export { NoTopContainer };
+export const NoTopContainer = memo(SafeAreaViewNoTopComponent);

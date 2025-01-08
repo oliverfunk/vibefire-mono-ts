@@ -26,3 +26,13 @@ export const SheetScrollViewGradientVF = ({
     </LinearRedOrangeView>
   );
 };
+
+export const SheetScrollViewGradient = ({ children }: PropsWithChildren) => {
+  return (
+    <LinearRedOrangeView className="h-full">
+      <ScrollViewSheet>
+        <View className="space-y-4 p-2">{children}</View>
+      </ScrollViewSheet>
+    </LinearRedOrangeView>
+  );
+};

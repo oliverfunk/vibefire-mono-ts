@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Text, View } from "react-native";
-import { BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
+import { type BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
 import { type ListRenderItemInfo } from "@shopify/flash-list";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
@@ -9,8 +9,8 @@ import { type PartialDeep } from "@vibefire/utils";
 import { useSortedEvents } from "!/hooks/useSortedByTime";
 
 import { SimpleList } from "!/c/list/SimpleList";
+import { FlashListViewSheet } from "!/c/misc/sheet-utils";
 
-import { FlashListViewSheet } from "../misc/sheet-utils";
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
 
@@ -186,6 +186,7 @@ type EventsSimpleListProps = {
   noEventsMessage?: string;
   latestFirst?: boolean;
   limit: number;
+  ItemSeparatorComponent?: React.ComponentType;
 };
 
 export const EventsSimpleListChipView = ({
@@ -194,6 +195,7 @@ export const EventsSimpleListChipView = ({
   noEventsMessage,
   latestFirst = true,
   limit,
+  ItemSeparatorComponent,
 }: EventsSimpleListProps) => {
   const sortedEvents = useSortedEvents(events, {
     sortAsc: !latestFirst,
@@ -205,7 +207,7 @@ export const EventsSimpleListChipView = ({
       items={sortedEvents}
       itemRenderer={useEventChipRenderer(onChipPress)}
       noItemsComponent={useNoEventsTextSmall(noEventsMessage)}
-      styleOpts={{ separatorHeight: 4 }}
+      ItemSeparatorComponent={ItemSeparatorComponent}
     />
   );
 };
@@ -216,6 +218,7 @@ export const EventsSimpleListCardView = ({
   noEventsMessage,
   latestFirst = true,
   limit,
+  ItemSeparatorComponent,
 }: { showStatus: boolean } & EventsSimpleListProps) => {
   const sortedEvents = useSortedEvents(events, {
     sortAsc: !latestFirst,
@@ -227,7 +230,7 @@ export const EventsSimpleListCardView = ({
       items={sortedEvents}
       itemRenderer={useEventCardRenderer(onItemPress)}
       noItemsComponent={useNoEventsText(noEventsMessage)}
-      styleOpts={{ separatorHeight: 4 }}
+      ItemSeparatorComponent={ItemSeparatorComponent}
     />
   );
 };

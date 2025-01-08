@@ -7,33 +7,33 @@ export type SimpleListProps<T extends object> = {
   items: T[];
   itemRenderer: (item: T) => React.ReactNode;
   noItemsComponent?: React.ReactNode;
-  styleOpts: {
-    separatorHeight: number | undefined;
-  };
+  ItemSeparatorComponent?: React.ComponentType;
 };
 
 const useListItemRenderer = <T extends object>(
   itemRenderer: SimpleListProps<T>["itemRenderer"],
-  separatorHeight: SimpleListProps<T>["styleOpts"]["separatorHeight"],
+  ItemSeparatorComponent?: React.ComponentType,
 ) => {
-  const ItemSeparator = useItemSeparator(separatorHeight);
   return useCallback(
     ({ item, index, length }: { item: T; index: number; length: number }) => (
       <View key={index}>
-        {index !== 0 && index < length && separatorHeight && <ItemSeparator />}
+        {index !== 0 && index < length && ItemSeparatorComponent && (
+          <ItemSeparatorComponent />
+        )}
         {itemRenderer(item)}
       </View>
     ),
-    [ItemSeparator, itemRenderer, separatorHeight],
+    [ItemSeparatorComponent, itemRenderer],
   );
 };
 
 export const SimpleList = <T extends object>(props: SimpleListProps<T>) => {
-  const { items, itemRenderer, noItemsComponent, styleOpts: options } = props;
+  const { items, itemRenderer, noItemsComponent, ItemSeparatorComponent } =
+    props;
 
   const listItemRenderer = useListItemRenderer(
     itemRenderer,
-    options.separatorHeight,
+    ItemSeparatorComponent,
   );
 
   const renderedItems = useMemo(() => {
