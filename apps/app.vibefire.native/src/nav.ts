@@ -23,7 +23,7 @@ const route = (
     ),
   );
 
-  const manner = opts?.manner || "nav";
+  const manner = opts?.manner || "push";
 
   const href = {
     pathname: path,

@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, {
-  FadeIn,
-  PinwheelIn,
-  PinwheelOut,
-} from "react-native-reanimated";
+import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useRouter } from "expo-router";
-import { FontAwesome6, SimpleLineIcons } from "@expo/vector-icons";
+import { FontAwesome6 } from "@expo/vector-icons";
 import { max } from "lodash";
 
-import { IconButton } from "!/c//button/IconButton";
+import { TextS } from "!/components/atomic/text";
+import { LinearRedOrangeView } from "!/components/misc/sheet-utils";
+import { VibefireIconImage } from "!/components/misc/VibefireIconImage";
 import { navCreateEvent, navProfile } from "!/nav";
 
 import { DatePickerButton } from "./DatePickerButton";
@@ -29,10 +27,9 @@ const FloatingActionBar = (props: { isExpandedState: boolean }) => {
 
   return (
     <Animated.View entering={FadeIn} className="items-center justify-center">
-      <View className="flex-row items-center justify-center rounded-full bg-black px-3 py-2 pl-5">
+      <View className="flex-row items-center justify-center space-x-2 rounded-full bg-black px-3 py-2 pl-5">
         <DatePickerButton />
-        <View className="px-1" />
-        <TimeOfDayPicker width={max([width / 3, 150])!} height={30} />
+        <TimeOfDayPicker pickerWidth={max([width / 3, 150])!} />
       </View>
     </Animated.View>
   );
@@ -64,12 +61,12 @@ const FloatingActionButton = (props: {
     >
       <Pressable
         onPress={onPress}
-        className="flex-row items-center justify-end space-x-1"
+        className="flex-row items-center justify-end space-x-2"
       >
         <View className="items-center justify-center rounded-lg border bg-black px-2 py-1">
-          <Text className="text-white">{label}</Text>
+          <TextS>{label}</TextS>
         </View>
-        <View className="items-center justify-center rounded-full bg-red-500 p-2">
+        <View className="items-center justify-center rounded-full bg-orange-400 p-3">
           {icon}
         </View>
       </Pressable>
@@ -87,69 +84,59 @@ export const VfActionButton = () => {
   };
 
   return (
-    <View className="items-end">
-      {/* To make the entire tappable, to dismiss the action */}
+    <View className="android:bottom-[55] ios:bottom-[90] absolute right-2 z-0">
+      <Modal visible={isExpandedState} transparent>
+        <Pressable className="h-full w-full" onPress={handlePress}>
+          {/* Replicate the button position and style in the modal */}
+          <View className="android:bottom-[55] ios:bottom-[90] absolute right-2 w-full flex-col items-end">
+            <View className="flex-row space-x-4">
+              <FloatingActionBar isExpandedState={isExpandedState} />
 
-      {/* <Modal visible={isExpandedState} transparent>
-        <Pressable className="h-full w-full" onPress={handlePress} />
-      </Modal> */}
+              <Pressable
+                onPress={handlePress}
+                style={{
+                  elevation: 8, // Shadow for Android
+                  shadowColor: "#000", // Shadow for iOS
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.8,
+                  shadowRadius: 2,
+                }}
+                className="h-16 w-16"
+              >
+                {isExpandedState && (
+                  <Animated.View key={"outFade"} entering={FadeIn}>
+                    <LinearRedOrangeView className="h-full w-full items-center justify-center rounded-full pt-1">
+                      <VibefireIconImage
+                        variant="logo-vf-black"
+                        scaleFactor={0.05}
+                      />
+                    </LinearRedOrangeView>
+                  </Animated.View>
+                )}
+              </Pressable>
+            </View>
 
-      <View className="flex-row space-x-4">
-        <FloatingActionBar isExpandedState={isExpandedState} />
-
-        <IconButton
-          size={14}
-          onPress={handlePress}
-          style={{
-            elevation: 8, // Shadow for Android
-            shadowColor: "#000", // Shadow for iOS
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.8,
-            shadowRadius: 2,
-          }}
-          cn="bg-red-500 z-10"
-        >
-          {isExpandedState ? (
-            <Animated.View
-              key={"outFade"}
-              entering={PinwheelIn}
-              exiting={PinwheelOut}
-            >
-              <FontAwesome6 name="fire-flame-curved" size={30} color="orange" />
-            </Animated.View>
-          ) : (
-            <Animated.View
-              key={"inFade"}
-              entering={FadeIn}
-              exiting={PinwheelOut}
-            >
-              <FontAwesome6 name="fire" size={30} color="white" />
-            </Animated.View>
-          )}
-        </IconButton>
-      </View>
-
-      <FloatingActionButton
-        index={1}
-        isExpandedState={isExpandedState}
-        label="Profile"
-        icon={<FontAwesome6 name="user" size={15} color="orange" />}
-        onPress={() => {
-          handlePress();
-          navProfile(router);
-        }}
-      />
-      <FloatingActionButton
-        index={2}
-        isExpandedState={isExpandedState}
-        label="Create Event"
-        icon={<FontAwesome6 name="plus" size={15} color="orange" />}
-        onPress={() => {
-          handlePress();
-          navCreateEvent(router);
-        }}
-      />
-      {/* <FloatingActionButton
+            <FloatingActionButton
+              index={1}
+              isExpandedState={isExpandedState}
+              label="Profile"
+              icon={<FontAwesome6 name="user" size={15} color="black" />}
+              onPress={() => {
+                handlePress();
+                navProfile(router);
+              }}
+            />
+            <FloatingActionButton
+              index={2}
+              isExpandedState={isExpandedState}
+              label="Create Event"
+              icon={<FontAwesome6 name="plus" size={15} color="black" />}
+              onPress={() => {
+                handlePress();
+                navCreateEvent(router);
+              }}
+            />
+            {/* <FloatingActionButton
         index={3}
         isExpandedState={isExpandedState}
         label="Create Plan"
@@ -167,6 +154,29 @@ export const VfActionButton = () => {
           console.log("Create group");
         }}
       /> */}
+          </View>
+        </Pressable>
+      </Modal>
+
+      <Pressable
+        onPress={handlePress}
+        style={{
+          elevation: 8, // Shadow for Android
+          shadowColor: "#000", // Shadow for iOS
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.8,
+          shadowRadius: 2,
+        }}
+        className="h-16 w-16"
+      >
+        {!isExpandedState && (
+          <Animated.View key={"inFade"} exiting={FadeOut}>
+            <View className="h-full w-full items-center justify-center rounded-full bg-red-500 pt-1">
+              <VibefireIconImage variant="logo-vf-white" scaleFactor={0.05} />
+            </View>
+          </Animated.View>
+        )}
+      </Pressable>
     </View>
   );
 };

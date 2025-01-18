@@ -2,6 +2,28 @@ import { Text, type TextProps } from "react-native";
 
 type TextBProps = { disabled?: boolean } & TextProps;
 
+export const TextSS = (props: TextBProps) => {
+  return (
+    <Text
+      className={`text-xs ${props.disabled ? "text-[#909090FF]" : "text-white"}`}
+      {...props}
+    >
+      {props.children}
+    </Text>
+  );
+};
+
+export const TextS = (props: TextBProps) => {
+  return (
+    <Text
+      className={`text-sm ${props.disabled ? "text-[#909090FF]" : "text-white"}`}
+      {...props}
+    >
+      {props.children}
+    </Text>
+  );
+};
+
 export const TextB = (props: TextBProps) => {
   return (
     <Text
@@ -27,7 +49,7 @@ export const TextL = (props: TextProps) => {
 export const TextLL = (props: TextProps) => {
   return (
     <Text
-      className={`text-2xl ${props.disabled ? "text-[#909090FF]" : "text-white"}`}
+      className={`text-2xl font-bold ${props.disabled ? "text-[#909090FF]" : "text-white"}`}
       {...props}
     >
       {props.children}

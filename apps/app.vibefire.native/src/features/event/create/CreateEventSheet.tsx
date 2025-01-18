@@ -1,19 +1,15 @@
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-// import { ScrollView } from "react-native-gesture-handler";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 import { trpc } from "!/api/trpc-client";
 
-import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulVF";
+import { TextB, TextL, TextLL } from "!/components/atomic/text";
+import { BContC, DivLineH } from "!/components/atomic/view";
+import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
+import { SheetScrollViewGradientVF } from "!/components/layouts/SheetScrollViewGradientVF";
 import { FormTextInput } from "!/c/misc/sheet-utils";
 import { navCreateEventFromPrevious, navEditEvent } from "!/nav";
 
@@ -31,26 +27,23 @@ export const CreateEventSheet = () => {
   const router = useRouter();
 
   return (
-    <SheetBasicColourfulVF>
-      <ScrollView
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="flex-col items-center space-y-4 rounded-lg bg-black p-4">
-          <Text className="text-xl font-bold text-white">Create an event</Text>
-          <Text className="text-md text-white">
+    <SheetScrollViewGradientVF>
+      <BContC>
+        <View className="w-full space-y-4">
+          <TextLL className="self-center font-bold">Create an event</TextLL>
+          <TextB className="w-full">
             Set the event title to get started creating your event.
-            {"\n\n"}This will create a draft which you can edit and come back to
+            {"\n"}This will create a draft which you can edit and come back to
             anytime.
-          </Text>
+          </TextB>
           <View className="w-full flex-row space-x-2">
             <FormTextInput
               placeholder="Event title"
               onChangeText={(text) => setCreateEventState({ title: text })}
               value={createEventState.title}
             />
-            <TouchableOpacity
-              className="rounded-lg border bg-green-500 px-4 py-2"
+            <PillTouchableOpacity
+              className="border-green-500 bg-green-500 px-4"
               onPress={async () => {
                 if (!createEventState.title) {
                   return;
@@ -93,25 +86,23 @@ export const CreateEventSheet = () => {
               ) : (
                 <FontAwesome5 name="arrow-right" size={20} color="white" />
               )}
-            </TouchableOpacity>
+            </PillTouchableOpacity>
           </View>
 
-          {/* dividing line */}
-          <View className="h-[1] w-full bg-white" />
+          <DivLineH />
 
-          <Text className="text-md text-white">
+          <TextB>
             To create a new event using a previous one, tap the button below.
-          </Text>
-          <TouchableOpacity
-            className="rounded-lg bg-white px-4 py-2"
+          </TextB>
+          <PillTouchableOpacity
             onPress={() => {
               navCreateEventFromPrevious(router);
             }}
           >
-            <Text className="text-center text-black">+ From previous</Text>
-          </TouchableOpacity>
+            <TextB>+ From previous</TextB>
+          </PillTouchableOpacity>
         </View>
-      </ScrollView>
-    </SheetBasicColourfulVF>
+      </BContC>
+    </SheetScrollViewGradientVF>
   );
 };

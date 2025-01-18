@@ -1,11 +1,10 @@
 import { useLayoutEffect } from "react";
-import { Redirect, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 
 import { useNotificationsResponder } from "!/hooks/useNotificationsResponder";
 
 import { GeoQueryListSheet } from "!/features/geo-query/GeoQueryList";
-import { LinearRedOrangeView } from "!/components/misc/sheet-utils";
 import { navViewEvent } from "!/nav";
 
 const Screen = () => {

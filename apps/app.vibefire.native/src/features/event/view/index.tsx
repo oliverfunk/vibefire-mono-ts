@@ -33,8 +33,7 @@ import {
 } from "!/components/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/components/misc/SuspenseWithError";
 import { OrganiserBarView } from "!/components/OrganiserBarView";
-import { userAtom } from "!/atoms";
-import { navEditEvent, navHomeWithCollapse, navHomeWithExpand } from "!/nav";
+import { navEditEvent, navHomeWithCollapse } from "!/nav";
 
 import { EventDetailWidgetView } from "./EventDetailWidgetView";
 
@@ -195,7 +194,7 @@ const ViewEventSheet = (props: {
       {details.length != 0 && (
         <View className="flex-col space-y-4 p-4">
           {details.map((detail, index) => (
-            <View key={index}>
+            <View key={index} className="">
               <EventDetailWidgetView detail={detail} />
             </View>
           ))}

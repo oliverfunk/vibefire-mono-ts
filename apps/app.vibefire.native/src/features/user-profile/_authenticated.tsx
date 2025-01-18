@@ -1,14 +1,15 @@
 import { TouchableOpacity, View, type ViewProps } from "react-native";
 import { useRouter } from "expo-router";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { capitalize } from "lodash";
 
 import { type AppUserAuthenticated } from "@vibefire/models";
 
 import { trpc } from "!/api/trpc-client";
 
-import { TextB, TextLL } from "!/components/atomic/text";
-import { BContC, BContN, BContR } from "!/components/atomic/view";
+import { TextB, TextL, TextLL, TextS, TextSS } from "!/components/atomic/text";
+import { BContC, BContN, BContR, ContC } from "!/components/atomic/view";
 import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
 import { useItemSeparator } from "!/components/misc/ItemSeparator";
 import { SummaryComponent } from "!/components/structural/SummaryComponent";
@@ -23,14 +24,19 @@ import {
 } from "!/c/misc/SuspenseWithError";
 import { navCreateEvent, navEditEvent, navViewUserManagedEvents } from "!/nav";
 
+const numberOPublishedEventsAtom = atom(0);
+
 const UsersEventsManageSummary = (props: ViewProps) => {
   const router = useRouter();
   const itemSep = useItemSeparator(2);
+  const [numberOPublishedEvents, setNumberOfPublishedEventsAtom] = useAtom(
+    numberOPublishedEventsAtom,
+  );
 
   const EventsListSuspense = withSuspenseErrorBoundary(
     () => {
       const [eventsByUser] = trpc.events.listSelfAllManage.useSuspenseQuery({
-        pageLimit: 5,
+        pageLimit: 0,
       });
 
       if (!eventsByUser.ok) {
@@ -38,18 +44,20 @@ const UsersEventsManageSummary = (props: ViewProps) => {
       }
       const events = eventsByUser.value.data;
 
+      setNumberOfPublishedEventsAtom(events.filter((e) => e.state == 1).length);
+
       return (
-        <View className="flex-col space-y-2">
+        <ContC>
           <EventsSimpleListChipView
             events={events}
-            limit={4}
+            limit={5}
             noEventsMessage="Create your first event"
             onItemPress={(e) => {
               navEditEvent(router, e.id!);
             }}
             ItemSeparatorComponent={itemSep}
           />
-          {events.length > 4 && (
+          {events.length > 5 && (
             <PillTouchableOpacity
               className="self-center"
               onPress={() => {
@@ -61,12 +69,12 @@ const UsersEventsManageSummary = (props: ViewProps) => {
               </TextB>
             </PillTouchableOpacity>
           )}
-        </View>
+        </ContC>
       );
     },
     {
       ErrorFallback: ({ error, resetErrorBoundary }) => (
-        <View className="p-5">
+        <View className="p-4">
           <ErrorDisplay
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             error={error}
@@ -76,7 +84,7 @@ const UsersEventsManageSummary = (props: ViewProps) => {
         </View>
       ),
       LoadingFallback: (
-        <View className="p-5">
+        <View className="p-4">
           <LoadingDisplay loadingWhite={true} />
         </View>
       ),
@@ -84,15 +92,29 @@ const UsersEventsManageSummary = (props: ViewProps) => {
   );
 
   return (
-    <SummaryComponent
-      headerTitle="Your Events"
-      headerButtonText="New"
-      onHeaderButtonPress={() => {
-        navCreateEvent(router);
-      }}
-    >
-      <EventsListSuspense />
-    </SummaryComponent>
+    <View {...props}>
+      <SummaryComponent
+        // headerMainComponent={`Your Events: ${numberOfManagedEvents}`}
+        headerMainComponent={
+          <View className="flex-1 flex-row items-center space-x-4">
+            <TextL className="font-bold">Your Events</TextL>
+            {/* <TextSS className="rounded-full border  border-green-500 px-2 py-1 font-bold">
+              <FontAwesome6 name="eye" size={12} color="white" />
+              {`  ${numberOPublishedEvents}`}
+            </TextSS> */}
+            <TextSS className="rounded-full border  border-green-500 px-2 py-1 font-bold">
+              {`Published: ${numberOPublishedEvents}`}
+            </TextSS>
+          </View>
+        }
+        headerButtonText="New"
+        onHeaderButtonPress={() => {
+          navCreateEvent(router);
+        }}
+      >
+        <EventsListSuspense />
+      </SummaryComponent>
+    </View>
   );
 };
 

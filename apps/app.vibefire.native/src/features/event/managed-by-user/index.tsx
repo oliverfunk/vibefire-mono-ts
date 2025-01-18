@@ -1,19 +1,27 @@
 import React from "react";
 import { View } from "react-native";
-import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 
 import { trpc } from "!/api/trpc-client";
 
 import { TextB } from "!/components/atomic/text";
 import { BContN } from "!/components/atomic/view";
-import { EventCardFlashListViewSheet } from "!/components/event/EventsList";
-import { SheetScrollViewGradientVF } from "!/components/layouts/SheetScrollViewGradientVF";
+import {
+  EventCardFlashListViewSheet,
+  EventsSimpleListCardView,
+} from "!/components/event/EventsList";
+import {
+  SheetScrollViewGradient,
+  SheetScrollViewGradientVF,
+} from "!/components/layouts/SheetScrollViewGradientVF";
 import { useItemSeparator } from "!/components/misc/ItemSeparator";
+import { VibefireLogoName } from "!/components/VibefireBottomLogo";
 import { navEditEvent } from "!/nav";
 
 export const ManagedByUserSheet = () => {
-  const [managedByUser] = trpc.events.listSelfAllManage.useSuspenseQuery({});
+  const [managedByUser] = trpc.events.listSelfAllManage.useSuspenseQuery({
+    pageLimit: 0,
+  });
 
   const router = useRouter();
 
@@ -25,8 +33,27 @@ export const ManagedByUserSheet = () => {
 
   const events = managedByUser.value.data;
 
+  if (events.length <= 3) {
+    return (
+      <SheetScrollViewGradientVF>
+        <BContN>
+          <TextB>These are the events you manage.</TextB>
+        </BContN>
+        <EventsSimpleListCardView
+          showStatus={true}
+          events={events}
+          limit={4}
+          onItemPress={(event) => {
+            navEditEvent(router, event.id!);
+          }}
+          ItemSeparatorComponent={itemSep}
+        />
+      </SheetScrollViewGradientVF>
+    );
+  }
+
   return (
-    <SheetScrollViewGradientVF>
+    <SheetScrollViewGradient>
       <BContN>
         <TextB>These are the events you manage.</TextB>
       </BContN>
@@ -38,8 +65,13 @@ export const ManagedByUserSheet = () => {
           onEventPress={(event) => {
             navEditEvent(router, event.id!);
           }}
+          ListFooterComponent={
+            <View className="pt-4">
+              <VibefireLogoName />
+            </View>
+          }
         />
       </View>
-    </SheetScrollViewGradientVF>
+    </SheetScrollViewGradient>
   );
 };

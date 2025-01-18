@@ -20,7 +20,7 @@ export const GeoQueryListSheet = () => {
   const [mapDisplayableEvents] = useAtom(mapDisplayableEventsAtom);
   const router = useRouter();
 
-  const itemSep = useItemSeparator(4);
+  const itemSep = useItemSeparator(2);
 
   if (mapDisplayableEvents.length <= 3) {
     return (

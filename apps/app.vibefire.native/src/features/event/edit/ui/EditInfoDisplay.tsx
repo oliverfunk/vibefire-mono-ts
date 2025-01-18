@@ -6,6 +6,8 @@ import { type TModelVibefireEvent } from "@vibefire/models";
 import { isCoordZeroZero } from "@vibefire/utils";
 
 import { AccessShareabilityText } from "!/components/AccessShareablityText";
+import { TextB, TextLL } from "!/components/atomic/text";
+import { DivLineH } from "!/components/atomic/view";
 import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
 
 export type TEventManageHandles = {
@@ -61,68 +63,16 @@ export const EditInfoDisplay = (
   return (
     <View className="flex-col space-y-4 bg-black p-4">
       <View className="flex-col space-y-2">
-        <Text className="text-2xl font-bold text-white">Edit your event</Text>
-        <Text className="text-base text-white">
-          Add details and more info to your event.{"\n"}
+        <TextLL>Edit your event</TextLL>
+
+        <TextB>Add details and more info to your event.</TextB>
+        <TextB>
           <FontAwesome6 name="edit" size={15} color="white" /> shows values you
           can edit by tapping on them.
-        </Text>
+        </TextB>
       </View>
 
-      <View className="h-[1] w-full bg-white" />
-
-      <View className="flex-col space-y-2">
-        <AccessShareabilityText accessRef={event.accessRef} />
-        {isGroupOwned && (
-          <Text className="text-base text-white">
-            This is the same as the group that organises this event. To change
-            it, you need to change the setting for the group.
-          </Text>
-        )}
-        {!isGroupOwned && !isPublic && (
-          <PillTouchableOpacity
-            disabled={updateAccessLoading || updateVisibilityLoading}
-            className="self-center"
-            onPress={() => {
-              if (isOpen) {
-                onMakeInviteOnlyPress();
-              } else {
-                onMakeOpenPress();
-              }
-            }}
-          >
-            {updateAccessLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-center text-base text-white">
-                <FontAwesome6 name="gear" size={15} /> Make{" "}
-                {isOpen ? "invite only" : "open"}
-              </Text>
-            )}
-          </PillTouchableOpacity>
-        )}
-      </View>
-
-      <View className="h-[1] w-full bg-white" />
-
-      <View className="flex-col space-y-2">
-        <Text className="text-base text-white">Delete this event.</Text>
-        <PillTouchableOpacity
-          disabled={updateAccessLoading || updateVisibilityLoading}
-          onPress={onDeletePress}
-          className="self-center border-[#ff0000]"
-        >
-          {deleteLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-center text-base text-white">
-              <FontAwesome6 name="trash" size={15} /> Delete
-            </Text>
-          )}
-        </PillTouchableOpacity>
-      </View>
-
-      <View className="h-[1] w-full bg-white" />
+      <DivLineH />
 
       <View className="flex-col space-y-2">
         {/* Readiness/published text */}
@@ -198,6 +148,59 @@ export const EditInfoDisplay = (
             </Text>
           </PillTouchableOpacity>
         </View>
+      </View>
+
+      <DivLineH />
+
+      <View className="flex-col space-y-2">
+        <AccessShareabilityText accessRef={event.accessRef} />
+        {isGroupOwned && (
+          <Text className="text-base text-white">
+            This is the same as the group that organises this event. To change
+            it, you need to change the setting for the group.
+          </Text>
+        )}
+        {!isGroupOwned && !isPublic && (
+          <PillTouchableOpacity
+            disabled={updateAccessLoading || updateVisibilityLoading}
+            className="self-center"
+            onPress={() => {
+              if (isOpen) {
+                onMakeInviteOnlyPress();
+              } else {
+                onMakeOpenPress();
+              }
+            }}
+          >
+            {updateAccessLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-center text-base text-white">
+                <FontAwesome6 name="gear" size={15} /> Make{" "}
+                {isOpen ? "invite only" : "open"}
+              </Text>
+            )}
+          </PillTouchableOpacity>
+        )}
+      </View>
+
+      <DivLineH />
+
+      <View className="flex-col space-y-2">
+        <Text className="text-base text-white">Delete this event.</Text>
+        <PillTouchableOpacity
+          disabled={updateAccessLoading || updateVisibilityLoading}
+          onPress={onDeletePress}
+          className="self-center border-[#ff0000]"
+        >
+          {deleteLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-center text-base text-white">
+              <FontAwesome6 name="trash" size={15} /> Delete
+            </Text>
+          )}
+        </PillTouchableOpacity>
       </View>
     </View>
   );

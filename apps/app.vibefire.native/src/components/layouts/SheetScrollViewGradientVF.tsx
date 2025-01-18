@@ -15,10 +15,12 @@ export const SheetScrollViewGradientVF = ({
           flexGrow: 1,
           justifyContent: "space-between",
         }}
-        className="space-y-4 p-2"
+        // pb-0 for annoyingness for when content is long enough to scroll
+        // the padding does not apply to the bottom
+        className="space-y-2 p-2 pb-0"
       >
-        <View className="flex-col space-y-4">{children}</View>
-        <View className="flex-col space-y-4 pb-2">
+        <View className="flex-col space-y-2">{children}</View>
+        <View className="flex-col space-y-2 pb-2">
           {footer}
           <VibefireLogoName />
         </View>
@@ -31,7 +33,7 @@ export const SheetScrollViewGradient = ({ children }: PropsWithChildren) => {
   return (
     <LinearRedOrangeView className="h-full">
       <ScrollViewSheet>
-        <View className="space-y-4 p-2">{children}</View>
+        <View className="space-y-2 p-2">{children}</View>
       </ScrollViewSheet>
     </LinearRedOrangeView>
   );
