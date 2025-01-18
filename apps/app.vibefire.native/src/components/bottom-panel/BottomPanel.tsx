@@ -37,7 +37,7 @@ export const BottomPanel = (props: { children?: React.ReactNode }) => {
       bottomInset={insets.bottom}
       onChange={setBottomSheetIndex}
       backgroundStyle={{
-        backgroundColor: "#171717",
+        backgroundColor: "#000000",
       }}
       handleComponent={HandleWithNavigation}
     >

@@ -26,11 +26,10 @@ import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
 import { GeoQueryMap } from "!/features/geo-query/GeoQueryMap";
 import { VfActionButton } from "!/features/vf-action-button";
 import { BottomPanel } from "!/components/bottom-panel/BottomPanel";
-import { LinearRedOrangeView } from "!/components/misc/sheet-utils";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
 import AppProviders, { navigationIntegration } from "!/providers";
 
-// todo: make strict in the future
+// strict warning messages coming from tod picker/carousel
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false,
@@ -46,6 +45,12 @@ Notifications.setNotificationHandler({
 });
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
 
 const PostProviders = (props: { children: ReactNode }) => {
   const { children } = props;
@@ -109,9 +114,9 @@ export default function HomeLayout() {
         <NoTopContainer>
           <GeoQueryMap />
           {/* Cannot dyn. set the bottom's, 2*handle height + 10 for ios, +15 for and */}
-          <View className="android:bottom-[55] ios:bottom-[90] absolute z-0 w-full px-3">
-            <VfActionButton />
-          </View>
+
+          <VfActionButton />
+
           <BottomPanel>
             <Stack
               screenOptions={{

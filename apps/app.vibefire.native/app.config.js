@@ -11,11 +11,6 @@ const expoConfig = ({ config }) => ({
   runtimeVersion: {
     policy: "appVersion",
   },
-  splash: {
-    image: "./assets/icons/appicon-ios.png",
-    resizeMode: "contain",
-    backgroundColor: "#010101",
-  },
   updates: {
     fallbackToCacheTimeout: 0,
     url: "https://u.expo.dev/8ea03d1b-020b-4c3c-afd3-30f36bb961fe",
@@ -29,7 +24,7 @@ const expoConfig = ({ config }) => ({
     supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",
     associatedDomains: ["applinks:vifr.io"],
-    icon: "./assets/icons/appicon-ios.png",
+    icon: "./assets/app-icon/app-icon-ios.png",
     config: { googleMapsApiKey: "***REMOVED***" },
     entitlements: {
       "com.apple.developer.applesignin": ["Default"],
@@ -45,6 +40,11 @@ const expoConfig = ({ config }) => ({
         },
       ],
     },
+    splash: {
+      image: "./assets/splash/splash-ios.png",
+      resizeMode: "contain",
+      backgroundColor: "#000000",
+    },
   },
   android: {
     package: "app.vibefire.and",
@@ -55,8 +55,8 @@ const expoConfig = ({ config }) => ({
       },
     },
     adaptiveIcon: {
-      foregroundImage: "./assets/icons/appicon-and.png",
-      backgroundColor: "#010101",
+      foregroundImage: "./assets/app-icon/app-icon-and.png",
+      backgroundColor: "#000000",
     },
     intentFilters: [
       {
@@ -72,6 +72,11 @@ const expoConfig = ({ config }) => ({
         category: ["BROWSABLE", "DEFAULT"],
       },
     ],
+    splash: {
+      image: "./assets/splash/splash-and.png",
+      resizeMode: "contain",
+      backgroundColor: "#000000",
+    },
   },
   extra: {
     eas: {
@@ -82,7 +87,6 @@ const expoConfig = ({ config }) => ({
     "expo-router",
     "expo-font",
     "expo-secure-store",
-    // "./expo-plugins/with-modify-gradle.js",
     [
       "expo-camera",
       {

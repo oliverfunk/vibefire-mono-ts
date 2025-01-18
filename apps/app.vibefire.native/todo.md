@@ -1,10 +1,6 @@
 # To dos for MLP
 
-* Use SimpleList when items <2> --> abstarct and apply to managed and create from prev
-
-* logo, icon
-
-* unify screens layouts -> use gradient scroll view, pill btn -- create event sceen
+* unify screens layouts -> use gradient scroll view, pill btn
 
 [GTD] -> Good to do
 

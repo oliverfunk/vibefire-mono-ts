@@ -1,13 +1,16 @@
-import { Text, View } from "react-native";
-import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { View } from "react-native";
+import { type ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
+
+import { VibefireIconImage } from "./misc/VibefireIconImage";
 
 export const VibefireLogoName = (props: ViewProps) => {
   return (
-    <View className="self-center rounded-full bg-black p-2 px-6" {...props}>
-      <Text className="text-center text-4xl text-white">
-        <FontAwesome5 name="fire" size={30} color="white" /> Vibefire
-      </Text>
+    <View
+      className="flex-row items-center self-center rounded-full bg-black p-2 px-6 pt-3"
+      {...props}
+    >
+      <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
+      {/* <Text className="text-center text-4xl text-white"> Vibefire</Text> */}
     </View>
   );
 };

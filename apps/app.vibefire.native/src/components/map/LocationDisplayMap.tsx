@@ -7,7 +7,7 @@ import { type CoordT } from "@vibefire/models";
 import { defaultCameraForPosition } from "!/utils/constants";
 import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLocationSetter";
 
-import { EventIcon } from "!/c/SvgIcon";
+import { EventMapMarker } from "!/c/event/EventMapMarker";
 
 export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
   const { markerPosition } = props;
@@ -54,7 +54,7 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
             longitude: markerPosition.lng,
           }}
         >
-          <EventIcon vibeIndex={0} />
+          <EventMapMarker vibeRating={0} />
         </Marker>
       </MapView>
     </View>

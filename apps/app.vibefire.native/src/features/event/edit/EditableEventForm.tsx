@@ -11,6 +11,8 @@ import {
 import { type PartialDeep } from "@vibefire/utils";
 
 import { AccessShareabilityText } from "!/components/AccessShareablityText";
+import { TextS } from "!/components/atomic/text";
+import { ContC } from "!/components/atomic/view";
 import { EventActionsBar } from "!/c/event/EventActionBar";
 import { EventInfoAddressBarEditable } from "!/c/event/EventInfoBars";
 import { ImageCarousel } from "!/c/image/ImageCarousel";
@@ -191,9 +193,9 @@ export const EditableEventForm = (
 
       {/* map */}
       <View>
-        <Text className="p-2 text-center text-white">
+        <TextS className="p-2 text-center">
           (Tap the map to set a location)
-        </Text>
+        </TextS>
         <View className="aspect-[4/4]">
           <LocationSelectionMap
             initialPosition={event.location?.position as CoordT | undefined}
@@ -216,7 +218,7 @@ export const EditableEventForm = (
       */}
 
       {/* details */}
-      <View className="flex-col space-y-4 p-4">
+      <ContC className="p-4">
         {details &&
           details.map((detail, index) => (
             <View key={index}>
@@ -239,7 +241,7 @@ export const EditableEventForm = (
             }}
           />
         </View>
-      </View>
+      </ContC>
     </>
   );
 };

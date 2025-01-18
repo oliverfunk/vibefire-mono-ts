@@ -36,7 +36,7 @@ export const EventStartTimeLocationBar = (props: {
     : event.location!.addressDescription;
 
   return (
-    <ContR>
+    <ContR className="items-center">
       <TextB numberOfLines={2} disabled={!startDT}>
         {startDT ? toMonthDateTimeStr(startDT) : noStartTimeText}
       </TextB>
@@ -73,7 +73,7 @@ export const EventInfoTimesBar = (
   const isNoTimeText = event?.times?.ntzEnd || noEndTimeText;
 
   return (
-    <ContR {...props}>
+    <ContR className="items-center" {...props}>
       <FontAwesome6 name="clock" size={props.iconSize ?? 20} color="white" />
       <View className="flex-col">
         <Text
@@ -113,7 +113,7 @@ export const EventInfoAddressDescBar = (
     : event.location!.addressDescription;
 
   return (
-    <ContR {...props}>
+    <ContR className="items-center" {...props}>
       <FontAwesome6
         name="location-dot"
         size={props.iconSize ?? 20}
@@ -133,7 +133,7 @@ export const EventInfoAddressBarEditable = (
   props: ViewProps & TextInputProps,
 ) => {
   return (
-    <ContR {...props}>
+    <ContR className="items-center" {...props}>
       <FontAwesome6 name="location-dot" size={20} color="white" />
       <TextInput
         numberOfLines={2}

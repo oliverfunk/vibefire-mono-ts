@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import MapView, { Marker, type Region } from "react-native-maps";
+import MapView, {
+  Marker,
+  PROVIDER_GOOGLE,
+  type Region,
+} from "react-native-maps";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
@@ -12,8 +16,8 @@ import { useLocationOnce } from "!/hooks/useLocation";
 import { useMapDisplayableEvents } from "!/hooks/useMapQuery";
 
 import { HANDLE_HEIGHT } from "!/components/bottom-panel/HandleWithNavigation";
+import { EventMapMarker } from "!/components/event/EventMapMarker";
 import { eventMapMapRefAtom } from "!/atoms";
-import { EventIcon } from "!/c/SvgIcon";
 import { navViewEvent } from "!/nav";
 import { altitudeToZoomLevel } from "!utils/math";
 
@@ -136,6 +140,8 @@ export const GeoQueryMap = () => {
               longitude: event.location.position.lng,
             }}
             anchor={{ x: 0.5, y: 1 }} // bottom center
+            // 750 is marker height, 0.06 is the scale
+            centerOffset={{ x: 0, y: -((750 * 0.06) / 2) }}
             onPress={() => {
               navViewEvent(router, event.id);
               mvRef.current?.animateCamera({
@@ -146,17 +152,7 @@ export const GeoQueryMap = () => {
               });
             }}
           >
-            {/* <Callout
-                tooltip={true}
-                onPress={() => {
-                  navViewEvent(event.id);
-                }}
-              >
-                <View className="h-28 w-56 rounded-md bg-black p-2">
-                  <View className="h-full w-full bg-white" />
-                </View>
-              </Callout> */}
-            <EventIcon vibeIndex={event.map.vibe} />
+            <EventMapMarker vibeRating={event.map.vibe ?? 0} />
           </Marker>
         ))}
     </MapView>

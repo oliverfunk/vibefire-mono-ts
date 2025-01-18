@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, type ViewProps } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
@@ -8,8 +8,8 @@ import _ from "lodash";
 import { type TimeOfDayT } from "@vibefire/models";
 import { selectedTimeOfDayAtom } from "@vibefire/shared-state";
 
-export const TimeOfDayPicker = (props: { width: number; height: number }) => {
-  const { width, height } = props;
+export const TimeOfDayPicker = (props: { pickerWidth: number } & ViewProps) => {
+  const { pickerWidth } = props;
 
   const [selectedTod, setSelectedTod] = useAtom(selectedTimeOfDayAtom);
 
@@ -30,10 +30,10 @@ export const TimeOfDayPicker = (props: { width: number; height: number }) => {
   });
 
   return (
-    <View>
+    <View {...props}>
       <Carousel
         // height={height}
-        width={width}
+        width={pickerWidth}
         defaultIndex={todToIndexMapping[selectedTod]}
         loop={true}
         overscrollEnabled={false}

@@ -24,8 +24,9 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
 
   const router = useRouter();
   // refreshes this component when the navigation state changes
-  const ns = useRootNavigationState();
-  // console.log(JSON.stringify(ns, null, 2));
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const _ns = useRootNavigationState();
+  // console.log(JSON.stringify(_ns, null, 2));
 
   useEffect(() => {
     if (!firstRun) {

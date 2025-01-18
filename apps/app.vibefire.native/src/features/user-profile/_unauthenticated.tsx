@@ -1,22 +1,24 @@
-import { Platform, Text, View } from "react-native";
+import { Platform, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
+import { TextB } from "!/components/atomic/text";
+import { BContC, ContC } from "!/components/atomic/view";
 import { ContinueWithApple } from "!/components/auth/ContinueWithApple";
 import { ContinueWithFacebook } from "!/components/auth/ContinueWithFacebook";
 import { ContinueWithGoogle } from "!/components/auth/ContinueWithGoogle";
-import { SheetBasicColourfulVF } from "!/components/layouts/SheetBasicColourfulVF";
+import { SheetScrollViewGradientVF } from "!/components/layouts/SheetScrollViewGradientVF";
 
 export const UserProfileUnauthenticatedSheet = () => {
   return (
-    <SheetBasicColourfulVF>
-      <View className="flex-col items-center space-y-5 rounded-lg bg-black p-4">
+    <SheetScrollViewGradientVF>
+      <BContC>
         <FontAwesome5 name="user-alt" size={50} color="white" />
-        <Text className="text-white">
+        <TextB className="text-center">
           Sign in to create private events, get invites and share events with
           friends, filter and follow events and organisers and more.
-        </Text>
-      </View>
-      <View className="flex-1 flex-col justify-center space-y-5 self-center">
+        </TextB>
+      </BContC>
+      <ContC className="self-center pt-10">
         <View>
           <ContinueWithGoogle />
         </View>
@@ -28,7 +30,7 @@ export const UserProfileUnauthenticatedSheet = () => {
             <ContinueWithApple />
           </View>
         )}
-      </View>
-    </SheetBasicColourfulVF>
+      </ContC>
+    </SheetScrollViewGradientVF>
   );
 };

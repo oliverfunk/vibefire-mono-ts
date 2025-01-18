@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity, type TouchableOpacityProps } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useAtom } from "jotai";
@@ -7,13 +7,16 @@ import { DateTime } from "luxon";
 
 import { selectedDateDTAtom } from "@vibefire/shared-state";
 
-export const DatePickerButton = () => {
+import { TextB } from "!/components/atomic/text";
+
+export const DatePickerButton = (props: TouchableOpacityProps) => {
   const [selectedDate, setSelectedDate] = useAtom(selectedDateDTAtom);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   return (
     <TouchableOpacity
+      {...props}
       className="flex-row items-center justify-center space-x-1"
       onPress={() => {
         setShowDatePicker(true);
@@ -38,7 +41,7 @@ export const DatePickerButton = () => {
         minimumDate={new Date(2020, 1, 1)}
       />
       <MaterialIcons name="event" size={18} color="white" />
-      <Text className="text-base text-white">{selectedDate.toFormat("d")}</Text>
+      <TextB>{selectedDate.toFormat("d")}</TextB>
     </TouchableOpacity>
   );
 };
