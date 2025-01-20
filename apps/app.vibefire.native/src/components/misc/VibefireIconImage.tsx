@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Image } from "expo-image";
+import { View } from "react-native";
+import { ImageBackground } from "expo-image";
 
 export type VibefireIconImageVarient =
   | "logo-vf"
@@ -51,7 +52,9 @@ export const VibefireIconImage = (props: {
   const { variant, scaleFactor = 1 } = props;
   const { width, height, imp } = VibefireIconImageVariantConfig(variant);
   return (
-    <Image
+    <ImageBackground
+      contentFit="contain"
+      contentPosition={"center"}
       alt=""
       style={{ width: width * scaleFactor, height: height * scaleFactor }}
       source={imp}

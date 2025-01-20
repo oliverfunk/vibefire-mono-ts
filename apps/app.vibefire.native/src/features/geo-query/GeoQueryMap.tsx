@@ -117,7 +117,7 @@ export const GeoQueryMap = () => {
         bottom: HANDLE_HEIGHT,
         left: 0,
       }}
-      // provider={PROVIDER_GOOGLE}
+      provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
       showsMyLocationButton={false}
       pitchEnabled={false}
@@ -131,30 +131,30 @@ export const GeoQueryMap = () => {
       maxZoomLevel={20}
       minZoomLevel={3}
     >
-      {displayEvents.length > 0 &&
-        displayEvents.map((event, _index) => (
-          <Marker
-            key={event.id}
-            coordinate={{
-              latitude: event.location.position.lat,
-              longitude: event.location.position.lng,
-            }}
-            anchor={{ x: 0.5, y: 1 }} // bottom center
-            // 750 is marker height, 0.06 is the scale
-            centerOffset={{ x: 0, y: -((750 * 0.06) / 2) }}
-            onPress={() => {
-              navViewEvent(router, event.id);
-              mvRef.current?.animateCamera({
-                center: {
-                  latitude: event.location.position.lat,
-                  longitude: event.location.position.lng,
-                },
-              });
-            }}
-          >
-            <EventMapMarker vibeRating={event.map.vibe ?? 0} />
-          </Marker>
-        ))}
+      {displayEvents.map((event, _index) => (
+        <Marker
+          key={`${event.id}`}
+          identifier={event.id}
+          coordinate={{
+            latitude: event.location.position.lat,
+            longitude: event.location.position.lng,
+          }}
+          // 750 is marker height, 0.06 is the scale
+          // for apple maps only
+          centerOffset={{ x: 0, y: -((750 * 0.06) / 2) }}
+          onPress={() => {
+            navViewEvent(router, event.id);
+            mvRef.current?.animateCamera({
+              center: {
+                latitude: event.location.position.lat,
+                longitude: event.location.position.lng,
+              },
+            });
+          }}
+        >
+          <EventMapMarker vibeRating={event.map.vibe ?? 0} />
+        </Marker>
+      ))}
     </MapView>
   );
 };

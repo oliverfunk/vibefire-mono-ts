@@ -9,8 +9,11 @@ import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLoca
 
 import { EventMapMarker } from "!/c/event/EventMapMarker";
 
-export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
-  const { markerPosition } = props;
+export const LocationDisplayMap = (props: {
+  eventId: string;
+  markerPosition: CoordT;
+}) => {
+  const { eventId, markerPosition } = props;
 
   const mvRef = useRef<MapView>(null);
 
@@ -32,7 +35,7 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
               })
             : undefined
         }
-        // provider={PROVIDER_GOOGLE}
+        provider={PROVIDER_GOOGLE}
         pointerEvents={"none"}
         zoomEnabled={false}
         loadingEnabled={true}
@@ -49,6 +52,8 @@ export const LocationDisplayMap = (props: { markerPosition: CoordT }) => {
         minZoomLevel={3}
       >
         <Marker
+          key={eventId}
+          identifier={eventId}
           coordinate={{
             latitude: markerPosition.lat,
             longitude: markerPosition.lng,

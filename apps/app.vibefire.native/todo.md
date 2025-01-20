@@ -2,6 +2,10 @@
 
 * unify screens layouts -> use gradient scroll view, pill btn
 
+* change map marker
+* do local filtering of events/on scrren or not
+* markers don't load on event data data coming in
+
 [GTD] -> Good to do
 
 * all things are nullable from fauna
