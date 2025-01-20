@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { type UseTRPCQueryResult } from "@trpc/react-query/dist/shared";
 import { useAtom, useSetAtom } from "jotai";
 
+import { type MapPositionInfoT } from "@vibefire/models";
 import {
   mapDisplayableEventsAtom,
   mapDisplayableEventsInfoAtom,
@@ -34,43 +36,52 @@ const useGeoPeriodQuery = () => {
         },
     { enabled: mapPos !== null },
   );
-  return mapQuery;
+  return { mapQuery, mapPos };
 };
 
 export const useMapDisplayableEvents = () => {
-  const geoPeriodQuery = useGeoPeriodQuery();
+  const { mapQuery, mapPos } = useGeoPeriodQuery();
 
   const setMapDisplayEventsInfo = useSetAtom(mapDisplayableEventsInfoAtom);
   const [mapDisplayableEvents, setMapDisplayableEvents] = useAtom(
     mapDisplayableEventsAtom,
   );
   useEffect(() => {
-    if (geoPeriodQuery.isLoading) {
+    if (mapQuery.isLoading) {
       setMapDisplayEventsInfo((v) => ({
         numberOfEvents: v.numberOfEvents,
         queryStatus: "loading",
       }));
       return;
     }
-    if (geoPeriodQuery.isError) {
+    if (mapQuery.isError) {
       setMapDisplayEventsInfo((v) => ({
         numberOfEvents: v.numberOfEvents,
         queryStatus: "done",
       }));
       return;
     }
-    if (geoPeriodQuery.isSuccess) {
-      const d = geoPeriodQuery.data;
-      if (d.ok) {
-        setMapDisplayableEvents(d.value);
+    if (mapQuery.isSuccess) {
+      const d = mapQuery.data;
+      if (d.ok && mapPos) {
+        const visible = d.value.filter((e) => {
+          const expansionFactor = 1.1;
+          return (
+            e.location.position.lat >= mapPos.southWest.lat &&
+            e.location.position.lat <= mapPos.northEast.lat &&
+            e.location.position.lng <= mapPos.northEast.lng &&
+            e.location.position.lng >= mapPos.southWest.lng
+          );
+        });
+        setMapDisplayableEvents(visible);
         setMapDisplayEventsInfo({
-          numberOfEvents: d.value.length,
+          numberOfEvents: visible.length,
           queryStatus: "done",
         });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [geoPeriodQuery.status]);
+  }, [mapQuery.status]);
 
   return mapDisplayableEvents;
 };

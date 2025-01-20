@@ -10,7 +10,6 @@ export const VibefireLogoName = (props: ViewProps) => {
       {...props}
     >
       <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
-      {/* <Text className="text-center text-4xl text-white"> Vibefire</Text> */}
     </View>
   );
 };

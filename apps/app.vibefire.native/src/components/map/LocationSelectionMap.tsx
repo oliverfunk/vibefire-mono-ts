@@ -62,7 +62,7 @@ export const LocationSelectionMap = (props: {
     <MapView
       ref={mvRef}
       className="h-full w-full"
-      // provider={PROVIDER_GOOGLE}
+      provider={PROVIDER_GOOGLE}
       initialCamera={
         userLocationOnce
           ? defaultCameraForPosition({

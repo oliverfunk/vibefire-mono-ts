@@ -187,7 +187,10 @@ const ViewEventSheet = (props: {
 
       {/* map */}
       <View className="aspect-[4/4] pt-1">
-        <LocationDisplayMap markerPosition={event.location.position} />
+        <LocationDisplayMap
+          eventId={event.id}
+          markerPosition={event.location.position}
+        />
       </View>
 
       {/* details */}

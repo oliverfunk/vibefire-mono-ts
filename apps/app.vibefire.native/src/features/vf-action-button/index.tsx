@@ -108,7 +108,7 @@ export const VfActionButton = () => {
                     <LinearRedOrangeView className="h-full w-full items-center justify-center rounded-full pt-1">
                       <VibefireIconImage
                         variant="logo-vf-black"
-                        scaleFactor={0.05}
+                        scaleFactor={0.06}
                       />
                     </LinearRedOrangeView>
                   </Animated.View>
@@ -172,7 +172,7 @@ export const VfActionButton = () => {
         {!isExpandedState && (
           <Animated.View key={"inFade"} exiting={FadeOut}>
             <View className="h-full w-full items-center justify-center rounded-full bg-red-500 pt-1">
-              <VibefireIconImage variant="logo-vf-white" scaleFactor={0.05} />
+              <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
             </View>
           </Animated.View>
         )}
