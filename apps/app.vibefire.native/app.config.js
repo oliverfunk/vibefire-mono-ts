@@ -7,7 +7,6 @@ const expoConfig = ({ config }) => ({
   version: "0.2.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
-  newArchEnabled: true,
   runtimeVersion: {
     policy: "appVersion",
   },
@@ -21,8 +20,9 @@ const expoConfig = ({ config }) => ({
   },
   notification: {},
   ios: {
-    supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",
+    newArchEnabled: true,
+    supportsTablet: true,
     associatedDomains: ["applinks:vifr.io"],
     icon: "./assets/app-icon/app-icon-ios.png",
     config: { googleMapsApiKey: "***REMOVED***" },
@@ -48,6 +48,7 @@ const expoConfig = ({ config }) => ({
   },
   android: {
     package: "app.vibefire.and",
+    newArchEnabled: false,
     googleServicesFile: "./google-services.json",
     config: {
       googleMaps: {

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
-import { Text, TextInput, useWindowDimensions, View } from "react-native";
+import { TextInput, useWindowDimensions, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { type FormikProps } from "formik";
 
 import {
@@ -11,8 +12,10 @@ import {
 import { type PartialDeep } from "@vibefire/utils";
 
 import { AccessShareabilityText } from "!/components/AccessShareablityText";
-import { TextS } from "!/components/atomic/text";
+import { TextB, TextL, TextS } from "!/components/atomic/text";
 import { ContC } from "!/components/atomic/view";
+import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
+import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
 import { EventActionsBar } from "!/c/event/EventActionBar";
 import { EventInfoAddressBarEditable } from "!/c/event/EventInfoBars";
 import { ImageCarousel } from "!/c/image/ImageCarousel";
@@ -21,6 +24,7 @@ import { VibefireImage } from "!/c/image/VibefireImage";
 import { LocationSelectionMap } from "!/c/map/LocationSelectionMap";
 import { LinearRedOrangeView } from "!/c/misc/sheet-utils";
 import { OrganiserBarView } from "!/c/OrganiserBarView";
+import { navEditEventLocation } from "!/nav";
 
 import { AddEventDetailWidgetButton } from "./ui/AddEventDetailWidgetButton";
 import { EditableEventDetailWidget } from "./ui/EditableEventDetailWidget";
@@ -71,7 +75,7 @@ import { SelectEventTimesButton } from "./ui/SelectEventTimesButton";
 //   );
 // };
 
-export const EditableEventForm = (
+export const EventEditWysiwygForm = (
   props: {
     formik: FormikProps<PartialDeep<TModelVibefireEvent>>;
     membership: TModelVibefireMembership;
@@ -81,6 +85,8 @@ export const EditableEventForm = (
   const { values: event, handleBlur, handleChange, setFieldValue } = formik;
 
   const { width } = useWindowDimensions();
+
+  const router = useRouter();
 
   const bannerImgKeys = useMemo(() => {
     const keys = event?.images?.bannerImgKeys || [""];
@@ -149,10 +155,7 @@ export const EditableEventForm = (
           threeDotsDisabled={true}
           leaveJoinDisabled={true}
         />
-
         <EventActionsBar location={event?.location} disabled={true} />
-
-        <AccessShareabilityText accessRef={event.accessRef} />
       </View>
 
       {/* infos */}
@@ -192,23 +195,22 @@ export const EditableEventForm = (
       </LinearRedOrangeView>
 
       {/* map */}
-      <View>
-        <TextS className="p-2 text-center">
-          (Tap the map to set a location)
-        </TextS>
+      <View className="relative">
         <View className="aspect-[4/4]">
-          <LocationSelectionMap
-            initialPosition={event.location?.position as CoordT | undefined}
-            onPositionSelected={async (position) => {
-              await setFieldValue("location.position", position);
-            }}
-            onAddressDescription={async (addressDescription) => {
-              await setFieldValue(
-                "location.addressDescription",
-                addressDescription,
-              );
-            }}
+          <LocationDisplayMap
+            eventId={event.id!}
+            markerPosition={event.location?.position as CoordT | undefined}
           />
+          <View className="absolute bottom-2/3 w-full items-center">
+            <PillTouchableOpacity
+              className="border-orange-400 bg-black"
+              onPress={() => {
+                navEditEventLocation(router, event.id!);
+              }}
+            >
+              <TextL>Tap here to select a location</TextL>
+            </PillTouchableOpacity>
+          </View>
         </View>
       </View>
 

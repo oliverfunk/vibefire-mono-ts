@@ -11,7 +11,7 @@ import { EventMapMarker } from "!/c/event/EventMapMarker";
 
 export const LocationDisplayMap = (props: {
   eventId: string;
-  markerPosition: CoordT;
+  markerPosition?: CoordT;
 }) => {
   const { eventId, markerPosition } = props;
 
@@ -51,16 +51,18 @@ export const LocationDisplayMap = (props: {
         maxZoomLevel={20}
         minZoomLevel={3}
       >
-        <Marker
-          key={eventId}
-          identifier={eventId}
-          coordinate={{
-            latitude: markerPosition.lat,
-            longitude: markerPosition.lng,
-          }}
-        >
-          <EventMapMarker vibeRating={0} />
-        </Marker>
+        {markerPosition && (
+          <Marker
+            key={eventId}
+            identifier={eventId}
+            coordinate={{
+              latitude: markerPosition.lat,
+              longitude: markerPosition.lng,
+            }}
+          >
+            <EventMapMarker vibeRating={0} />
+          </Marker>
+        )}
       </MapView>
     </View>
   );
