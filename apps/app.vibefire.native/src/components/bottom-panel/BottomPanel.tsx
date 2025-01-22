@@ -33,7 +33,7 @@ export const BottomPanel = (props: { children?: React.ReactNode }) => {
       backdropComponent={BottomPanelBackdrop}
       enablePanDownToClose={false}
       enableDynamicSizing={false}
-      snapPoints={[HANDLE_HEIGHT, "80%"]}
+      snapPoints={[HANDLE_HEIGHT, "90%"]}
       bottomInset={insets.bottom}
       onChange={setBottomSheetIndex}
       backgroundStyle={{

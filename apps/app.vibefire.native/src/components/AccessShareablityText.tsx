@@ -2,6 +2,8 @@ import { Text, TextProps } from "react-native";
 
 import { type TModelVibefireAccess } from "@vibefire/models";
 
+import { TextB } from "./atomic/text";
+
 // todo: make work for all access types
 export const AccessShareabilityText = (
   props: {
@@ -15,27 +17,27 @@ export const AccessShareabilityText = (
 
   if (isPublic) {
     return (
-      <Text className="text-base text-white" {...props}>
+      <TextB {...props}>
         This event is <Text className="text-green-400">public</Text>.{"\n"}
-      </Text>
+      </TextB>
     );
   }
 
   if (isOpen) {
     return (
-      <Text className="text-base text-white" {...props}>
+      <TextB {...props}>
         This event is <Text className="text-green-400">private</Text> and{" "}
         <Text className="text-green-400">open</Text>.{"\n"}
         Anyone that has joined can share.
-      </Text>
+      </TextB>
     );
   }
 
   return (
-    <Text className="text-base text-white" {...props}>
+    <TextB {...props}>
       This event is <Text className="text-green-400">private</Text> and{" "}
       <Text className="text-green-400">invite only</Text>.{"\n"}
       Only managers can share.
-    </Text>
+    </TextB>
   );
 };

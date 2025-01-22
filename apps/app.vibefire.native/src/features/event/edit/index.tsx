@@ -1,1 +1,1 @@
-export { EditEventWysiwygSheet } from "./EditEventWysiwygSheet";
+export { EditEventSheet } from "./EditEventSheet";

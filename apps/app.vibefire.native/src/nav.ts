@@ -129,6 +129,15 @@ export const navEditEvent = (
 ) => {
   route(router, "/event/" + eventId + "/edit", opts);
 };
+export const navEditEventLocation = (
+  router: Router,
+  eventId: string,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/" + eventId + "/edit", opts, {
+    selectLocation: "true",
+  });
+};
 
 export const navViewUserManagedEvents = (
   router: Router,

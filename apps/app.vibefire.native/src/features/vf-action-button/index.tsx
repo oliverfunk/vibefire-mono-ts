@@ -92,20 +92,19 @@ export const VfActionButton = () => {
             <View className="flex-row space-x-4">
               <FloatingActionBar isExpandedState={isExpandedState} />
 
-              <Pressable
-                onPress={handlePress}
-                style={{
-                  elevation: 8, // Shadow for Android
-                  shadowColor: "#000", // Shadow for iOS
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.8,
-                  shadowRadius: 2,
-                }}
-                className="h-16 w-16"
-              >
+              <Pressable onPress={handlePress} className="h-16 w-16">
                 {isExpandedState && (
                   <Animated.View key={"outFade"} entering={FadeIn}>
-                    <LinearRedOrangeView className="h-full w-full items-center justify-center rounded-full pt-1">
+                    <LinearRedOrangeView
+                      // style={{
+                      //   elevation: 3, // Shadow for Android
+                      //   shadowColor: "#000", // Shadow for iOS
+                      //   shadowOffset: { width: 0, height: 2 },
+                      //   shadowOpacity: 0.8,
+                      //   shadowRadius: 2,
+                      // }}
+                      className="h-full w-full items-center justify-center rounded-full pt-1"
+                    >
                       <VibefireIconImage
                         variant="logo-vf-black"
                         scaleFactor={0.06}
@@ -158,20 +157,18 @@ export const VfActionButton = () => {
         </Pressable>
       </Modal>
 
-      <Pressable
-        onPress={handlePress}
-        style={{
-          elevation: 8, // Shadow for Android
-          shadowColor: "#000", // Shadow for iOS
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.8,
-          shadowRadius: 2,
-        }}
-        className="h-16 w-16"
-      >
+      <Pressable onPress={handlePress} className="h-16 w-16">
         {!isExpandedState && (
           <Animated.View key={"inFade"} exiting={FadeOut}>
-            <View className="h-full w-full items-center justify-center rounded-full bg-red-500 pt-1">
+            <View
+              style={{
+                shadowColor: "#000", // Shadow for iOS
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
+              }}
+              className="android:border android:border-black/20 h-full w-full items-center justify-center rounded-full bg-red-500 pt-1"
+            >
               <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
             </View>
           </Animated.View>

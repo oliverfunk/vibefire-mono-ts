@@ -159,7 +159,12 @@ const AppProviders = Sentry.wrap((props: { children: ReactNode }) => {
           <UserSessionProvider>
             <ClerkLoaded>
               <ActionSheetProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
+                <GestureHandlerRootView
+                  style={{
+                    flex: 1,
+                    pointerEvents: "box-none",
+                  }}
+                >
                   <BottomSheetModalProvider>
                     {children}
                   </BottomSheetModalProvider>

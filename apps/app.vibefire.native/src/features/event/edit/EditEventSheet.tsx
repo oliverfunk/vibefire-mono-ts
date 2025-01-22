@@ -11,15 +11,26 @@ import { ntzToDateTime, type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
-import { ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
+import { BasicViewSheet, ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
-import { navHome, navViewEventPreview } from "!/nav";
+import {
+  navBack,
+  navEditEvent,
+  navHome,
+  navViewEvent,
+  navViewEventPreview,
+} from "!/nav";
 
-import { EditableEventForm } from "./EditableEventForm";
+import { EventEditWysiwygForm } from "./EventEditWysiwygForm";
+import { EventSelectLocationForm } from "./EventSelectLocationForm";
 
-export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
-  (props: { eventId: string; isCreateNew: boolean }) => {
-    const { eventId, isCreateNew } = props;
+export const EditEventSheet = withSuspenseErrorBoundarySheet(
+  (props: {
+    eventId: string;
+    isCreateNew: boolean;
+    isSelectingLocation: boolean;
+  }) => {
+    const { eventId, isCreateNew, isSelectingLocation } = props;
 
     const router = useRouter();
 
@@ -89,6 +100,11 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
             });
             if (res.ok) {
               await viewManageCtl.refetch();
+              if (isSelectingLocation) {
+                navEditEvent(router, eventId, {
+                  manner: "dismiss-to",
+                });
+              }
             } else {
               Toast.show({
                 type: "error",
@@ -123,89 +139,94 @@ export const EditEventWysiwygSheet = withSuspenseErrorBoundarySheet(
           const noErrorsNotSubmitting = !hasErrors && !isSubmitting;
           return (
             <>
-              <ScrollViewSheetWithRef ref={formRef}>
-                <EditableEventForm
-                  formik={formik}
-                  membership={membership ?? undefined}
-                  isFormUpdated={isUpdated}
-                  updateAccessLoading={
-                    updateAccessMut.isPending || viewManageCtl.isFetching
-                  }
-                  updateVisibilityLoading={
-                    updateVisibilityMut.isPending || viewManageCtl.isFetching
-                  }
-                  deleteLoading={deleteMut.isPending}
-                  onHidePress={async () => {
-                    if (!eventId) {
-                      return;
+              {isSelectingLocation ? (
+                <EventSelectLocationForm formik={formik} />
+              ) : (
+                <ScrollViewSheetWithRef ref={formRef}>
+                  <EventEditWysiwygForm
+                    formik={formik}
+                    membership={membership ?? undefined}
+                    isFormUpdated={isUpdated}
+                    updateAccessLoading={
+                      updateAccessMut.isPending || viewManageCtl.isFetching
                     }
-                    await updateVisibilityMut.mutateAsync({
-                      eventId,
-                      update: "hide",
-                    });
-                    await viewManageCtl.refetch();
-                  }}
-                  onPublishPress={async () => {
-                    if (!eventId) {
-                      return;
+                    updateVisibilityLoading={
+                      updateVisibilityMut.isPending || viewManageCtl.isFetching
                     }
-                    if (noErrorsNotSubmitting) {
+                    deleteLoading={deleteMut.isPending}
+                    onHidePress={async () => {
+                      if (!eventId) {
+                        return;
+                      }
                       await updateVisibilityMut.mutateAsync({
                         eventId,
-                        update: "publish",
+                        update: "hide",
                       });
                       await viewManageCtl.refetch();
-                    }
-                  }}
-                  onMakeInviteOnlyPress={async () => {
-                    if (!eventId) {
-                      return;
-                    }
-                    await updateAccessMut.mutateAsync({
-                      eventId,
-                      update: "invite",
-                    });
-                    await viewManageCtl.refetch();
-                  }}
-                  onMakeOpenPress={() => {
-                    if (!eventId) {
-                      return;
-                    }
-                    updateAccessMut.mutate(
-                      {
+                    }}
+                    onPublishPress={async () => {
+                      if (!eventId) {
+                        return;
+                      }
+                      if (noErrorsNotSubmitting) {
+                        await updateVisibilityMut.mutateAsync({
+                          eventId,
+                          update: "publish",
+                        });
+                        await viewManageCtl.refetch();
+                        navViewEvent(router, eventId);
+                      }
+                    }}
+                    onMakeInviteOnlyPress={async () => {
+                      if (!eventId) {
+                        return;
+                      }
+                      await updateAccessMut.mutateAsync({
                         eventId,
-                        update: "open",
-                      },
-                      {
-                        onSuccess: () => {
-                          void viewManageCtl.refetch();
+                        update: "invite",
+                      });
+                      await viewManageCtl.refetch();
+                    }}
+                    onMakeOpenPress={() => {
+                      if (!eventId) {
+                        return;
+                      }
+                      updateAccessMut.mutate(
+                        {
+                          eventId,
+                          update: "open",
                         },
-                      },
-                    );
-                  }}
-                  onDeletePress={async () => {
-                    if (!eventId) {
-                      return;
-                    }
-                    await deleteMut.mutateAsync({
-                      eventId,
-                    });
-                    navHome(router);
-                  }}
-                  onPreviewPress={() => {
-                    if (!eventId) {
-                      return;
-                    }
-                    navViewEventPreview(router, eventId);
-                  }}
-                />
+                        {
+                          onSuccess: () => {
+                            void viewManageCtl.refetch();
+                          },
+                        },
+                      );
+                    }}
+                    onDeletePress={async () => {
+                      if (!eventId) {
+                        return;
+                      }
+                      await deleteMut.mutateAsync({
+                        eventId,
+                      });
+                      navHome(router);
+                    }}
+                    onPreviewPress={() => {
+                      if (!eventId) {
+                        return;
+                      }
+                      navViewEventPreview(router, eventId);
+                    }}
+                  />
 
-                {/* For the form btns */}
-                <View className="h-16" />
-              </ScrollViewSheetWithRef>
+                  {/* For the form btns */}
+                  <View className="h-16" />
+                </ScrollViewSheetWithRef>
+              )}
 
               {/* form btns */}
-              <View className="absolute bottom-0 h-14 w-full flex-row items-end justify-evenly bg-black/90">
+              <View className="absolute bottom-0 w-full flex-row items-end justify-evenly bg-black/90 py-2">
                 <View className="flex-1" />
                 <TouchableOpacity
                   disabled={!isActive}

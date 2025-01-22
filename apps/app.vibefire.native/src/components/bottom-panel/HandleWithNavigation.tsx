@@ -11,6 +11,7 @@ import { useAtom } from "jotai";
 import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 
 import { bottomSheetCollapsedAtom } from "!/atoms";
+import { TextS } from "!/c/atomic/text";
 import { navHome } from "!/nav";
 
 export const HANDLE_HEIGHT = 40;
@@ -73,10 +74,10 @@ export const HandleWithNavigation = (props: BottomSheetHandleProps) => {
               color="white"
             />
             <Text className="text-md text-white">Pull</Text>
-            <View className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
-              <Text className="text-center text-sm text-white">
+            <View className="flex items-center justify-center rounded-full bg-red-500">
+              <TextS className="px-[5] text-center">
                 {mapEventsInfo.numberOfEvents}
-              </Text>
+              </TextS>
             </View>
           </Pressable>
         ) : (
