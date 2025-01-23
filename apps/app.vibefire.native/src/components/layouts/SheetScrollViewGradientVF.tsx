@@ -1,5 +1,6 @@
-import { type PropsWithChildren, type ReactNode } from "react";
+import { forwardRef, type PropsWithChildren, type ReactNode } from "react";
 import { View } from "react-native";
+import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
 
 import { LinearRedOrangeView, ScrollViewSheet } from "!/c/misc/sheet-utils";
 import { VibefireLogoName } from "!/c/VibefireBottomLogo";
@@ -28,12 +29,27 @@ export const SheetScrollViewGradientVF = ({
   );
 };
 
-export const SheetScrollViewGradient = ({ children }: PropsWithChildren) => {
+export const SheetScrollViewGradient = (
+  { children }: PropsWithChildren,
+  ref?: React.Ref<BottomSheetScrollViewMethods>,
+) => {
   return (
     <LinearRedOrangeView className="h-full">
-      <ScrollViewSheet>
+      <ScrollViewSheet ref={ref}>
         <View className="space-y-2 p-2">{children}</View>
       </ScrollViewSheet>
+    </LinearRedOrangeView>
+  );
+};
+
+export const SheetScrollViewGradientWithRef = forwardRef(
+  SheetScrollViewGradient,
+);
+
+export const LinearRedOrangeContainer = ({ children }: PropsWithChildren) => {
+  return (
+    <LinearRedOrangeView className="space-y-2 p-2">
+      {children}
     </LinearRedOrangeView>
   );
 };

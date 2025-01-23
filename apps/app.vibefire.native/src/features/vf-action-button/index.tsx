@@ -1,9 +1,18 @@
 import React, { useState } from "react";
-import { Dimensions, Modal, Pressable, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Modal,
+  Pressable,
+  View,
+} from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { useAtom } from "jotai";
 import { max } from "lodash";
+
+import { mapDisplayableEventsInfoAtom } from "@vibefire/shared-state";
 
 import { TextS } from "!/components/atomic/text";
 import { LinearRedOrangeView } from "!/components/misc/sheet-utils";
@@ -51,12 +60,13 @@ const FloatingActionButton = (props: {
   return (
     <Animated.View
       entering={FadeIn}
-      style={[
-        styles.shadow,
-        {
-          transform: [{ translateY: -(ACTION_BUTTON_OFFSET * index + 10) }],
-        },
-      ]}
+      style={{
+        shadowColor: "#171717",
+        shadowOffset: { width: -0.5, height: 3.5 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        transform: [{ translateY: -(ACTION_BUTTON_OFFSET * index + 10) }],
+      }}
       className="absolute"
     >
       <Pressable
@@ -78,6 +88,8 @@ export const VfActionButton = () => {
   const [isExpandedState, setIsExpandedState] = useState(false);
 
   const router = useRouter();
+
+  const [mapQueryStatus] = useAtom(mapDisplayableEventsInfoAtom);
 
   const handlePress = () => {
     setIsExpandedState(!isExpandedState);
@@ -169,7 +181,11 @@ export const VfActionButton = () => {
               }}
               className="android:border android:border-black/20 h-full w-full items-center justify-center rounded-full bg-red-500 pt-1"
             >
-              <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
+              {mapQueryStatus.queryStatus === "loading" ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
+              )}
             </View>
           </Animated.View>
         )}
@@ -177,42 +193,3 @@ export const VfActionButton = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    position: "relative",
-    height: 260,
-    width: "100%",
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  button: {
-    width: 40,
-    height: 40,
-    backgroundColor: "#82cab2",
-    position: "absolute",
-    borderRadius: 100,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: -2,
-    flexDirection: "row",
-  },
-  buttonContainer: {
-    position: "absolute",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  shadow: {
-    shadowColor: "#171717",
-    shadowOffset: { width: -0.5, height: 3.5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-  content: {
-    color: "#171717",
-    fontWeight: 500,
-  },
-});

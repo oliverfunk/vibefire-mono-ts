@@ -47,7 +47,6 @@ export const EditEventSheet = withSuspenseErrorBoundarySheet(
     const deleteMut = trpc.events.delete.useMutation();
     const updateAccessMut = trpc.events.updateAccess.useMutation();
 
-    const formRef = useRef<BottomSheetScrollViewMethods>(null);
     const formikRef =
       useRef<FormikProps<PartialDeep<TModelVibefireEvent>>>(null);
 
@@ -142,88 +141,86 @@ export const EditEventSheet = withSuspenseErrorBoundarySheet(
               {isSelectingLocation ? (
                 <EventSelectLocationForm formik={formik} />
               ) : (
-                <ScrollViewSheetWithRef ref={formRef}>
-                  <EventEditWysiwygForm
-                    formik={formik}
-                    membership={membership ?? undefined}
-                    isFormUpdated={isUpdated}
-                    updateAccessLoading={
-                      updateAccessMut.isPending || viewManageCtl.isFetching
+                <EventEditWysiwygForm
+                  formik={formik}
+                  membership={membership ?? undefined}
+                  isFormUpdated={isUpdated}
+                  updateAccessLoading={
+                    updateAccessMut.isPending || viewManageCtl.isFetching
+                  }
+                  updateVisibilityLoading={
+                    updateVisibilityMut.isPending || viewManageCtl.isFetching
+                  }
+                  deleteLoading={deleteMut.isPending}
+                  onHidePress={async () => {
+                    if (!eventId) {
+                      return;
                     }
-                    updateVisibilityLoading={
-                      updateVisibilityMut.isPending || viewManageCtl.isFetching
+                    await updateVisibilityMut.mutateAsync({
+                      eventId,
+                      update: "hide",
+                    });
+                    await viewManageCtl.refetch();
+                  }}
+                  onPublishPress={async () => {
+                    if (!eventId) {
+                      return;
                     }
-                    deleteLoading={deleteMut.isPending}
-                    onHidePress={async () => {
-                      if (!eventId) {
-                        return;
-                      }
+                    if (noErrorsNotSubmitting) {
                       await updateVisibilityMut.mutateAsync({
                         eventId,
-                        update: "hide",
+                        update: "publish",
                       });
                       await viewManageCtl.refetch();
-                    }}
-                    onPublishPress={async () => {
-                      if (!eventId) {
-                        return;
-                      }
-                      if (noErrorsNotSubmitting) {
-                        await updateVisibilityMut.mutateAsync({
-                          eventId,
-                          update: "publish",
-                        });
-                        await viewManageCtl.refetch();
-                        navViewEvent(router, eventId);
-                      }
-                    }}
-                    onMakeInviteOnlyPress={async () => {
-                      if (!eventId) {
-                        return;
-                      }
-                      await updateAccessMut.mutateAsync({
+                      navViewEvent(router, eventId);
+                    }
+                  }}
+                  onMakeInviteOnlyPress={async () => {
+                    if (!eventId) {
+                      return;
+                    }
+                    await updateAccessMut.mutateAsync({
+                      eventId,
+                      update: "invite",
+                    });
+                    await viewManageCtl.refetch();
+                  }}
+                  onMakeOpenPress={() => {
+                    if (!eventId) {
+                      return;
+                    }
+                    updateAccessMut.mutate(
+                      {
                         eventId,
-                        update: "invite",
-                      });
-                      await viewManageCtl.refetch();
-                    }}
-                    onMakeOpenPress={() => {
-                      if (!eventId) {
-                        return;
-                      }
-                      updateAccessMut.mutate(
-                        {
-                          eventId,
-                          update: "open",
+                        update: "open",
+                      },
+                      {
+                        onSuccess: () => {
+                          void viewManageCtl.refetch();
                         },
-                        {
-                          onSuccess: () => {
-                            void viewManageCtl.refetch();
-                          },
-                        },
-                      );
-                    }}
-                    onDeletePress={async () => {
-                      if (!eventId) {
-                        return;
-                      }
-                      await deleteMut.mutateAsync({
-                        eventId,
-                      });
-                      navHome(router);
-                    }}
-                    onPreviewPress={() => {
-                      if (!eventId) {
-                        return;
-                      }
-                      navViewEventPreview(router, eventId);
-                    }}
-                  />
-
-                  {/* For the form btns */}
-                  <View className="h-16" />
-                </ScrollViewSheetWithRef>
+                      },
+                    );
+                  }}
+                  onDeletePress={async () => {
+                    if (!eventId) {
+                      return;
+                    }
+                    await deleteMut.mutateAsync({
+                      eventId,
+                    });
+                    navHome(router);
+                  }}
+                  onPreviewPress={() => {
+                    if (!eventId) {
+                      return;
+                    }
+                    navViewEventPreview(router, eventId);
+                  }}
+                />
               )}
+
+              {/* For the form btns */}
+              <View className="h-16" />
 
               {/* form btns */}
               <View className="absolute bottom-0 w-full flex-row items-end justify-evenly bg-black/90 py-2">

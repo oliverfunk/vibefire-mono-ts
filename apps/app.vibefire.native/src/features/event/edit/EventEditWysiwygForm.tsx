@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
-import { TextInput, useWindowDimensions, View } from "react-native";
+import React, { useMemo, useRef } from "react";
+import { Pressable, TextInput, useWindowDimensions, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
 import { type FormikProps } from "formik";
 
 import {
@@ -11,18 +12,19 @@ import {
 } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
-import { AccessShareabilityText } from "!/components/AccessShareablityText";
-import { TextB, TextL, TextS } from "!/components/atomic/text";
+import { TextL } from "!/components/atomic/text";
 import { ContC } from "!/components/atomic/view";
-import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
+import { PillPressable } from "!/components/button/PillTouchableOpacity";
 import { LocationDisplayMap } from "!/components/map/LocationDisplayMap";
 import { EventActionsBar } from "!/c/event/EventActionBar";
 import { EventInfoAddressBarEditable } from "!/c/event/EventInfoBars";
 import { ImageCarousel } from "!/c/image/ImageCarousel";
 import { UploadableVibefireImage } from "!/c/image/UploadableVibefireImage";
 import { VibefireImage } from "!/c/image/VibefireImage";
-import { LocationSelectionMap } from "!/c/map/LocationSelectionMap";
-import { LinearRedOrangeView } from "!/c/misc/sheet-utils";
+import {
+  LinearRedOrangeView,
+  ScrollViewSheetWithRef,
+} from "!/c/misc/sheet-utils";
 import { OrganiserBarView } from "!/c/OrganiserBarView";
 import { navEditEventLocation } from "!/nav";
 
@@ -84,6 +86,8 @@ export const EventEditWysiwygForm = (
   const { formik, membership } = props;
   const { values: event, handleBlur, handleChange, setFieldValue } = formik;
 
+  const formRef = useRef<BottomSheetScrollViewMethods>(null);
+
   const { width } = useWindowDimensions();
 
   const router = useRouter();
@@ -96,7 +100,7 @@ export const EventEditWysiwygForm = (
   const details = event.details;
 
   return (
-    <>
+    <ScrollViewSheetWithRef ref={formRef}>
       <EditInfoDisplay event={event} {...props} />
 
       {/* header */}
@@ -196,21 +200,26 @@ export const EventEditWysiwygForm = (
 
       {/* map */}
       <View className="relative">
-        <View className="aspect-[4/4]">
+        <Pressable
+          className="aspect-[4/4]"
+          onPress={() => {
+            navEditEventLocation(router, event.id!);
+          }}
+        >
           <LocationDisplayMap
             eventId={event.id!}
             markerPosition={event.location?.position as CoordT | undefined}
           />
-          <View className="absolute bottom-2/3 w-full items-center">
-            <PillTouchableOpacity
-              className="border-orange-400 bg-black"
-              onPress={() => {
-                navEditEventLocation(router, event.id!);
-              }}
-            >
-              <TextL>Tap here to select a location</TextL>
-            </PillTouchableOpacity>
-          </View>
+        </Pressable>
+        <View className="absolute bottom-2/3 w-full items-center">
+          <PillPressable
+            className="border-orange-400 bg-black"
+            onPress={() => {
+              navEditEventLocation(router, event.id!);
+            }}
+          >
+            <TextL>Tap to select a location</TextL>
+          </PillPressable>
         </View>
       </View>
 
@@ -244,6 +253,6 @@ export const EventEditWysiwygForm = (
           />
         </View>
       </ContC>
-    </>
+    </ScrollViewSheetWithRef>
   );
 };
