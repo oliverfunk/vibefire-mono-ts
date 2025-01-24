@@ -159,7 +159,7 @@ export const UploadableVibefireImage = (
   if (!imgIdKey) {
     return (
       <Pressable
-        className="aspect-[4/4] w-full flex-col items-center justify-center bg-neutral-500"
+        className="aspect-[4/4] w-full flex-col items-center justify-center bg-neutral-700"
         onPress={async () => {
           const pickedImage = await selectImage();
           if (!pickedImage) {

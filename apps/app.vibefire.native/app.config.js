@@ -122,6 +122,14 @@ const expoConfig = ({ config }) => ({
         project: "vibefire-native",
       },
     ],
+    [
+      "expo-build-properties",
+      {
+        android: {
+          minSdkVersion: 34,
+        },
+      },
+    ],
   ],
 });
 export default expoConfig;

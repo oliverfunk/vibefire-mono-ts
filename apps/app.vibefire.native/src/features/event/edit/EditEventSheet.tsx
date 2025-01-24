@@ -3,7 +3,6 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
-import { type BottomSheetScrollViewMethods } from "@gorhom/bottom-sheet";
 import { Formik, type FormikErrors, type FormikProps } from "formik";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
@@ -11,10 +10,8 @@ import { ntzToDateTime, type PartialDeep } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
-import { BasicViewSheet, ScrollViewSheetWithRef } from "!/c/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
 import {
-  navBack,
   navEditEvent,
   navHome,
   navViewEvent,

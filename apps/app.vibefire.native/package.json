@@ -15,7 +15,13 @@
   "trustedDependencies": [
     "@sentry/cli"
   ],
-  "expo": {},
+  "expo": {
+    "install": {
+      "exclude": [
+        "react-native-maps"
+      ]
+    }
+  },
   "dependencies": {
     "@clerk/clerk-expo": "^2.2.30",
     "@expo-google-fonts/inter": "^0.2.3",
@@ -37,7 +43,8 @@
     "expo": "~52.0.26",
     "expo-application": "~6.0.2",
     "expo-auth-session": "~6.0.2",
-    "expo-camera": "~16.0.13",
+    "expo-build-properties": "~0.13.2",
+    "expo-camera": "~16.0.14",
     "expo-clipboard": "~7.0.1",
     "expo-constants": "~17.0.4",
     "expo-crypto": "~14.0.2",
@@ -66,7 +73,7 @@
     "react-error-boundary": "^4.0.13",
     "react-native": "0.76.6",
     "react-native-gesture-handler": "~2.20.2",
-    "react-native-maps": "1.18.0",
+    "react-native-maps": "1.20.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-popup-menu": "^0.16.1",
     "react-native-reanimated": "~3.16.1",
