@@ -36,7 +36,7 @@ export const LocationDisplayMap = (props: {
             : undefined
         }
         provider={PROVIDER_GOOGLE}
-        pointerEvents={"none"}
+        pointerEvents="none"
         zoomEnabled={false}
         loadingEnabled={true}
         scrollEnabled={false}

@@ -7,6 +7,7 @@ import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
 import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLocationSetter";
 
+import { EventMapMarker } from "!/c/event/EventMapMarker";
 import { isCoordZeroZero } from "!utils/general";
 
 export const LocationSelectionMap = (props: {
@@ -71,6 +72,10 @@ export const LocationSelectionMap = (props: {
             })
           : undefined
       }
+      onStartShouldSetResponderCapture={() => true}
+      onStartShouldSetResponder={() => true}
+      onMoveShouldSetResponder={() => true}
+      onMoveShouldSetResponderCapture={() => true}
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
@@ -117,7 +122,9 @@ export const LocationSelectionMap = (props: {
             latitude: selectedPosition.lat,
             longitude: selectedPosition.lng,
           }}
-        />
+        >
+          <EventMapMarker vibeRating={0} />
+        </Marker>
       )}
     </MapView>
   );

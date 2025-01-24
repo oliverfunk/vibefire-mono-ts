@@ -15,9 +15,9 @@ export const StandardImage = (props: {
 
   return (
     <Image
-      className={cn}
       source={source}
       alt={alt}
+      className={cn}
       cachePolicy={"memory"}
       placeholder={blurhash}
       onLoadStart={() => {

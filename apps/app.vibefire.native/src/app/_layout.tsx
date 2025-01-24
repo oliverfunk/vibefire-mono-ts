@@ -110,7 +110,7 @@ export default function HomeLayout() {
   return (
     <AppProviders>
       <PostProviders>
-        <StatusBar barStyle={"dark-content"} />
+        <StatusBar barStyle={"light-content"} />
         <NoTopContainer>
           <GeoQueryMap />
           {/* Cannot dyn. set the bottom's, 2*handle height + 10 for ios, +15 for and */}

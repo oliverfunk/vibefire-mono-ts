@@ -24,7 +24,8 @@ import { TimeOfDayPicker } from "./TimeOfDayPicker";
 
 // https://docs.swmansion.com/react-native-reanimated/examples/floatingactionbutton
 
-const ACTION_BUTTON_OFFSET = 50;
+const ACTION_BUTTON_OFFSET = 60;
+const ACTION_BUTTON_INITAL_OFFSET = 70;
 
 const FloatingActionBar = (props: { isExpandedState: boolean }) => {
   const { isExpandedState } = props;
@@ -61,11 +62,14 @@ const FloatingActionButton = (props: {
     <Animated.View
       entering={FadeIn}
       style={{
-        shadowColor: "#171717",
-        shadowOffset: { width: -0.5, height: 3.5 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        transform: [{ translateY: -(ACTION_BUTTON_OFFSET * index + 10) }],
+        transform: [
+          {
+            translateY: -(
+              ACTION_BUTTON_INITAL_OFFSET +
+              ACTION_BUTTON_OFFSET * index
+            ),
+          },
+        ],
       }}
       className="absolute"
     >
@@ -73,10 +77,10 @@ const FloatingActionButton = (props: {
         onPress={onPress}
         className="flex-row items-center justify-end space-x-2"
       >
-        <View className="items-center justify-center rounded-lg border bg-black px-2 py-1">
+        <View className="items-center justify-center rounded-lg bg-black p-2 px-3">
           <TextS>{label}</TextS>
         </View>
-        <View className="items-center justify-center rounded-full bg-orange-400 p-3">
+        <View className="h-9 w-9 items-center justify-center rounded-full border bg-orange-400">
           {icon}
         </View>
       </Pressable>
@@ -128,7 +132,7 @@ export const VfActionButton = () => {
             </View>
 
             <FloatingActionButton
-              index={1}
+              index={0}
               isExpandedState={isExpandedState}
               label="Profile"
               icon={<FontAwesome6 name="user" size={15} color="black" />}
@@ -138,7 +142,7 @@ export const VfActionButton = () => {
               }}
             />
             <FloatingActionButton
-              index={2}
+              index={1}
               isExpandedState={isExpandedState}
               label="Create Event"
               icon={<FontAwesome6 name="plus" size={15} color="black" />}
@@ -170,25 +174,21 @@ export const VfActionButton = () => {
       </Modal>
 
       <Pressable onPress={handlePress} className="h-16 w-16">
-        {!isExpandedState && (
-          <Animated.View key={"inFade"} exiting={FadeOut}>
-            <View
-              style={{
-                shadowColor: "#000", // Shadow for iOS
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-              }}
-              className="android:border android:border-black/20 h-full w-full items-center justify-center rounded-full bg-red-500 pt-1"
-            >
-              {mapQueryStatus.queryStatus === "loading" ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
-              )}
-            </View>
-          </Animated.View>
-        )}
+        <View
+          style={{
+            shadowColor: "#000", // Shadow for iOS
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.8,
+            shadowRadius: 2,
+          }}
+          className="android:border android:border-black/20 h-full w-full items-center justify-center rounded-full bg-red-500 pt-1"
+        >
+          {mapQueryStatus.queryStatus === "loading" ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <VibefireIconImage variant="logo-vf-white" scaleFactor={0.06} />
+          )}
+        </View>
       </Pressable>
     </View>
   );

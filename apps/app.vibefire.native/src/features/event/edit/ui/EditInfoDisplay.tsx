@@ -6,7 +6,7 @@ import { type TModelVibefireEvent } from "@vibefire/models";
 import { isCoordZeroZero } from "@vibefire/utils";
 
 import { AccessShareabilityText } from "!/components/AccessShareablityText";
-import { TextB, TextL, TextLL } from "!/components/atomic/text";
+import { TextB, TextLL } from "!/components/atomic/text";
 import { BContC, ContR, DivLineH } from "!/components/atomic/view";
 import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
 import { LinearRedOrangeContainer } from "!/components/layouts/SheetScrollViewGradientVF";
@@ -68,56 +68,6 @@ export const EditInfoDisplay = (
 
         <DivLineH />
 
-        <AccessShareabilityText accessRef={event.accessRef} />
-
-        {isGroupOwned && (
-          <TextB>
-            This is the same as the group that organises this event. To change
-            it, you need to change the setting for the group.
-          </TextB>
-        )}
-        <ContR className="w-full">
-          {!isGroupOwned && !isPublic && (
-            <PillTouchableOpacity
-              className="flex-1"
-              disabled={updateAccessLoading || updateVisibilityLoading}
-              onPress={() => {
-                if (isOpen) {
-                  onMakeInviteOnlyPress();
-                } else {
-                  onMakeOpenPress();
-                }
-              }}
-            >
-              {updateAccessLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <TextB className="text-center">
-                  <FontAwesome6 name="gear" size={15} /> Make{" "}
-                  <Text className="text-green-400">
-                    {isOpen ? "invite only" : "open"}
-                  </Text>
-                </TextB>
-              )}
-            </PillTouchableOpacity>
-          )}
-          <PillTouchableOpacity
-            disabled={updateAccessLoading || updateVisibilityLoading}
-            onPress={onDeletePress}
-            className="border-[#ff0000]"
-          >
-            {deleteLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <TextB className="text-center">
-                <FontAwesome6 name="trash" size={15} /> Delete
-              </TextB>
-            )}
-          </PillTouchableOpacity>
-        </ContR>
-      </BContC>
-
-      <BContC className="items-start">
         {/* Readiness/published text */}
         <View className="w-full flex-col">
           {/* Readiness text */}
@@ -127,26 +77,30 @@ export const EditInfoDisplay = (
               : isReady
                 ? isFormUpdated
                   ? "Update your event before you publish it."
-                  : "Your event is hidden, publish it to put it on the map!"
+                  : "Publish your event to put it on the map!"
                 : "Your event still needs the following:"}
           </TextB>
-          <View className="h-2" />
           {!isReady && (
             <>
+              <View className="h-2" />
+
+              <TextB className="text-center font-bold">
+                <FontAwesome6 name="arrow-down" size={15} /> (scroll down to
+                complete)
+              </TextB>
+
+              <View className="h-2" />
+
               {!hasBanner && <TextB> - An image</TextB>}
               {!hasStart && <TextB> - A starting time</TextB>}
               {!(hasLocation || hasLocationDesc) && (
                 <TextB> - A location and address description</TextB>
               )}
-              <View className="h-2" />
-              <TextB className="text-center font-bold">
-                <FontAwesome6 name="arrow-down" size={15} /> (scroll down)
-              </TextB>
+
               <View className="h-4" />
+
               <TextB>
-                {
-                  "Come back here and tap this button when you're ready to publish!"
-                }
+                Come back here after completing and tap this button to publish!
               </TextB>
             </>
           )}
@@ -195,7 +149,56 @@ export const EditInfoDisplay = (
             </PillTouchableOpacity>
           )}
         </ContR>
+
+        <AccessShareabilityText accessRef={event.accessRef} />
+
+        {isGroupOwned && (
+          <TextB>
+            This is the same as the group that organises this event. To change
+            it, you need to change the setting for the group.
+          </TextB>
+        )}
+        {!isGroupOwned && !isPublic && (
+          <PillTouchableOpacity
+            className="w-full"
+            disabled={updateAccessLoading || updateVisibilityLoading}
+            onPress={() => {
+              if (isOpen) {
+                onMakeInviteOnlyPress();
+              } else {
+                onMakeOpenPress();
+              }
+            }}
+          >
+            {updateAccessLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <TextB className="text-center">
+                <FontAwesome6 name="gear" size={15} /> Make{" "}
+                <Text className="text-green-400">
+                  {isOpen ? "invite only" : "open"}
+                </Text>
+              </TextB>
+            )}
+          </PillTouchableOpacity>
+        )}
+
+        <PillTouchableOpacity
+          disabled={updateAccessLoading || updateVisibilityLoading}
+          onPress={onDeletePress}
+          className="w-full border-[#ff0000]"
+        >
+          {deleteLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <TextB className="text-center">
+              <FontAwesome6 name="trash" size={15} /> Delete
+            </TextB>
+          )}
+        </PillTouchableOpacity>
       </BContC>
+
+      {/* <BContC className="items-start"></BContC> */}
     </LinearRedOrangeContainer>
   );
 };
