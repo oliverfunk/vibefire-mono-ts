@@ -81,9 +81,10 @@ export const EventEditWysiwygForm = (
   props: {
     formik: FormikProps<PartialDeep<TModelVibefireEvent>>;
     membership: TModelVibefireMembership;
+    onSelectLocationPress: () => void;
   } & TEventManageHandles,
 ) => {
-  const { formik, membership } = props;
+  const { formik, membership, onSelectLocationPress } = props;
   const { values: event, handleBlur, handleChange, setFieldValue } = formik;
 
   const formRef = useRef<BottomSheetScrollViewMethods>(null);
@@ -153,7 +154,7 @@ export const EventEditWysiwygForm = (
       {/* black bars */}
       <View className="flex-col space-y-4 bg-black p-4">
         <OrganiserBarView
-          ownerRef={event.ownerRef}
+          ownerRef={event.accessRef?.ownerRef}
           showLeaveJoin={false}
           membership={membership}
           threeDotsDisabled={true}
@@ -200,12 +201,7 @@ export const EventEditWysiwygForm = (
 
       {/* map */}
       <View className="relative">
-        <Pressable
-          className="aspect-[4/4]"
-          onPress={() => {
-            navEditEventLocation(router, event.id!);
-          }}
-        >
+        <Pressable className="aspect-[4/4]" onPress={onSelectLocationPress}>
           <LocationDisplayMap
             eventId={event.id!}
             markerPosition={event.location?.position as CoordT | undefined}
@@ -214,9 +210,7 @@ export const EventEditWysiwygForm = (
         <View className="absolute bottom-2/3 w-full items-center">
           <PillPressable
             className="border-orange-400 bg-black"
-            onPress={() => {
-              navEditEventLocation(router, event.id!);
-            }}
+            onPress={onSelectLocationPress}
           >
             <TextL>Tap to select a location</TextL>
           </PillPressable>

@@ -45,6 +45,7 @@ const EventsListSuspense = withSuspenseErrorBoundary(
 
     useLayoutEffect(() => {
       setNumberOfPublishedEventsAtom(events.filter((e) => e.state == 1).length);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [events]);
 
     return (

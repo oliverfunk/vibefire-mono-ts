@@ -7,15 +7,11 @@ import {
   Text,
   TouchableOpacity,
   View,
+  type ViewProps,
 } from "react-native";
-import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 
-import {
-  type TModelVibefireAccess,
-  type TModelVibefireEvent,
-  type TModelVibefireMembership,
-} from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 import { type PartialDeep } from "@vibefire/utils";
 
 import {

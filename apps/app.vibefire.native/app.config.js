@@ -4,7 +4,7 @@ const expoConfig = ({ config }) => ({
   owner: "vibefire",
   slug: "vibefire-native",
   scheme: "vifr",
-  version: "0.2.0",
+  version: "0.4.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   runtimeVersion: {

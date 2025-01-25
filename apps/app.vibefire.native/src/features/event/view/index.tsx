@@ -93,11 +93,11 @@ const ViewEventSheet = (props: {
       {/* black bars */}
       <View className="flex-col space-y-4 bg-black p-4">
         <OrganiserBarView
-          ownerRef={event.ownerRef}
+          ownerRef={event.accessRef.ownerRef}
           membership={userMembership}
           onBlockAndReportOrganiserPress={() => {
             blockAndReportOrganiserMut.mutate({
-              ownershipRefId: event.ownerRef.id,
+              ownershipRefId: event.accessRef.ownerRef.id,
             });
             navHomeWithCollapse(router);
           }}
@@ -108,7 +108,7 @@ const ViewEventSheet = (props: {
             navHomeWithCollapse(router);
           }}
           onOrganiserPress={() => {
-            if (event.ownerRef.ownerType === "group") {
+            if (event.accessRef.ownerRef.ownerType === "group") {
               console.log("todo: nav to group");
             }
           }}
@@ -135,7 +135,7 @@ const ViewEventSheet = (props: {
         <EventActionsBar
           location={event.location}
           hideShareButton={
-            event.accessRef.type === "invite" &&
+            event.accessRef.accessType === "invite" &&
             membership?.roleType !== "manager"
           }
           onShareEvent={onShareEvent}

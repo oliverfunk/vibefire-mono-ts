@@ -58,7 +58,6 @@ export const ModelVibefireGroup = tb.Object({
   ownershipRef: ModelVibefireOwnership,
 
   accessRef: ModelVibefireAccess,
-  ownerRef: ModelVibefireOwnership,
 
   name: tb.String({ default: undefined }),
   description: tb.String({ default: undefined }),
@@ -74,14 +73,12 @@ export const ModelVibefireGroup = tb.Object({
 
 export const newVibefireGroup = (p: {
   ownershipRef: TModelVibefireGroup["ownershipRef"];
-  ownerRef: TModelVibefireGroup["ownerRef"];
   accessRef: TModelVibefireGroup["accessRef"];
   name: TModelVibefireGroup["name"];
   description: TModelVibefireGroup["description"];
   epochCreated: TModelVibefireGroup["epochCreated"];
 }): TModelVibefireGroup => {
   const d = Value.Create(ModelVibefireGroup);
-  d.ownerRef = p.ownerRef;
   d.accessRef = p.accessRef;
   d.name = p.name;
   d.description = p.description;

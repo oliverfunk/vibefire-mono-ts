@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 
 import {
-  ModelEventUpdate,
   ModelVibefireEventData,
   newVibefireEvent,
   tbClean,
@@ -13,7 +12,6 @@ import {
   type TModelVibefireEvent,
   type TModelVibefireGroup,
   type TModelVibefireMembership,
-  type TModelVibefireOwnership,
 } from "@vibefire/models";
 import {
   getCloudFlareImagesService,
@@ -65,7 +63,7 @@ export class UFEventsManger {
     userAid: string;
     forGroupId?: string;
     name: string;
-    accessType: TModelVibefireAccess["type"];
+    accessType: TModelVibefireAccess["accessType"];
   }): ManagerAsyncResult<string> {
     return managerReturn(async () => {
       const eventIsPublicType = p.accessType === "public";
@@ -82,25 +80,26 @@ export class UFEventsManger {
       ).unwrap();
 
       let accessRef: TModelVibefireAccess;
-      let ownerRef: TModelVibefireOwnership;
       if (p.forGroupId) {
         const g = (
           await this.repos.group.withIdIfUserCanManage(p.forGroupId, p.userAid)
             .result
         ).unwrap();
-        if (g.accessRef.type !== "public" && eventIsPublicType) {
+        if (g.accessRef.accessType !== "public" && eventIsPublicType) {
           throw new ManagerRuleViolation(
             "This group is private and cannot make public events",
           );
         }
         accessRef = g.accessRef;
-        ownerRef = g.ownershipRef;
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
         accessRef = (
-          await this.repos.access.create(p.accessType, p.userAid).result
+          await this.repos.access.create(
+            p.accessType,
+            u.ownershipRef,
+            p.userAid,
+          ).result
         ).unwrap();
-        ownerRef = u.ownershipRef;
       }
 
       const name = trimAndCropText(p.name, 100);
@@ -108,7 +107,6 @@ export class UFEventsManger {
       const newEvent = newVibefireEvent({
         name,
         accessRef,
-        ownerRef,
         epochCreated: DateTime.utc().toMillis(),
       });
 
@@ -136,31 +134,39 @@ export class UFEventsManger {
         await this.repos.checkHasReachedCreationLimit(p.userAid, p.forGroupId)
       ).unwrap();
 
-      let ownerRef: TModelVibefireOwnership;
       let accessRef: TModelVibefireAccess;
       if (p.forGroupId) {
         const g: TModelVibefireGroup = await this.repos.groupIfManager(
           p.forGroupId,
           p.userAid,
         );
+
         accessRef = g.accessRef;
-        ownerRef = g.ownershipRef;
+
+        if (event.accessRef.ownerRef.id !== accessRef.ownerRef.id) {
+          throw new ManagerRuleViolation(
+            "You cannot copy this event as the group does not own it",
+          );
+        }
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
-        accessRef = (
-          await this.repos.access.create(event.accessRef.type, p.userAid).result
-        ).unwrap();
-        ownerRef = u.ownershipRef;
-      }
 
-      if (event.ownerRef.id !== ownerRef.id) {
-        throw new ManagerRuleViolation(
-          "You cannot copy an event you do not own",
-        );
+        if (event.accessRef.ownerRef.id !== u.ownershipRef.id) {
+          throw new ManagerRuleViolation(
+            "You cannot copy this event you do not own it",
+          );
+        }
+
+        accessRef = (
+          await this.repos.access.create(
+            event.accessRef.accessType,
+            u.ownershipRef,
+            p.userAid,
+          ).result
+        ).unwrap();
       }
 
       const newEvent = newVibefireEvent({
-        ownerRef,
         accessRef,
         name: event.name,
         epochCreated: DateTime.utc().toMillis(),
@@ -416,7 +422,7 @@ export class UFEventsManger {
       const e = await this.repos.eventIfManager(p.eventId, p.userAid);
       const acc = await this.repos.getAccessRef(e.accessRef.id);
 
-      if (acc.type === p.update) {
+      if (acc.accessType === p.update) {
         return;
       }
 
@@ -437,7 +443,7 @@ export class UFEventsManger {
       return await this.cfImages.getUploadUrl({
         metadata: {
           eventId: p.eventId,
-          ownershipId: e.ownerRef.id,
+          ownershipId: e.accessRef.ownerRef.id,
           uploaderUserAid: p.userAid,
         },
       });

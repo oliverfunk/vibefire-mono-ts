@@ -44,11 +44,11 @@ export const EditInfoDisplay = (
   } = props;
 
   // owner
-  const isGroupOwned = event.ownerRef.ownerType === "group";
+  const isGroupOwned = event.accessRef.ownerRef.ownerType === "group";
 
   // access
-  const isPublic = event.accessRef.type == "public";
-  const isOpen = event.accessRef.type == "open";
+  const isPublic = event.accessRef.accessType == "public";
+  const isOpen = event.accessRef.accessType == "open";
 
   // needs checks
   const hasBanner = event.images.bannerImgKeys.length > 0;
@@ -73,11 +73,11 @@ export const EditInfoDisplay = (
           {/* Readiness text */}
           <TextB className="font-bold">
             {isPublished
-              ? "Your event is published 🔥"
+              ? isFormUpdated
+                ? "Your event is published 🔥\nTap update to save your changes!"
+                : "Your event is published 🔥"
               : isReady
-                ? isFormUpdated
-                  ? "Update your event before you publish it."
-                  : "Publish your event to put it on the map!"
+                ? "Publish your event to put it on the map!"
                 : "Your event still needs the following:"}
           </TextB>
           {!isReady && (
@@ -93,7 +93,7 @@ export const EditInfoDisplay = (
 
               {!hasBanner && <TextB> - An image</TextB>}
               {!hasStart && <TextB> - A starting time</TextB>}
-              {!(hasLocation || hasLocationDesc) && (
+              {(!hasLocation || !hasLocationDesc) && (
                 <TextB> - A location and address description</TextB>
               )}
 
@@ -109,10 +109,7 @@ export const EditInfoDisplay = (
         <ContR className="justify-evenly">
           <PillTouchableOpacity
             disabled={
-              !isReady ||
-              isFormUpdated ||
-              updateAccessLoading ||
-              updateVisibilityLoading
+              !isReady || updateAccessLoading || updateVisibilityLoading
             }
             onPress={() => {
               if (isPublished) {
@@ -121,7 +118,7 @@ export const EditInfoDisplay = (
                 onPublishPress();
               }
             }}
-            className={`flex-1 ${isPublished ? "border-red-500" : isReady && !isFormUpdated ? "border-green-500" : "border-neutral-600"}`}
+            className={`flex-1 ${isPublished ? "border-red-500" : isReady ? "border-green-500" : "border-neutral-600"}`}
           >
             {updateVisibilityLoading ? (
               <ActivityIndicator color="white" />
@@ -130,14 +127,12 @@ export const EditInfoDisplay = (
                 <FontAwesome6 name="eye-slash" size={15} /> Hide
               </TextB>
             ) : (
-              <TextB
-                className="text-center"
-                disabled={!isReady || isFormUpdated}
-              >
+              <TextB className="text-center" disabled={!isReady}>
                 <FontAwesome6 name="eye" size={15} /> Publish
               </TextB>
             )}
           </PillTouchableOpacity>
+
           {isPublished && (
             <PillTouchableOpacity
               onPress={onPreviewPress}
@@ -151,13 +146,13 @@ export const EditInfoDisplay = (
         </ContR>
 
         <AccessShareabilityText accessRef={event.accessRef} />
-
         {isGroupOwned && (
           <TextB>
             This is the same as the group that organises this event. To change
             it, you need to change the setting for the group.
           </TextB>
         )}
+
         {!isGroupOwned && !isPublic && (
           <PillTouchableOpacity
             className="w-full"

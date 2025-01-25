@@ -51,54 +51,54 @@ export class FaunaGroupRepository {
     );
   }
 
-  // todo: not sure about pageing here
+  // // todo: not sure about pageing here
 
-  allUserOwned(userAid: string) {
-    return faunaQuery<TModelVibefireGroup[]>(
-      this.faunaClient,
-      fql`
-        Group.byOwnerWithType(${userAid}, "user")
-      `,
-    );
-  }
-
-  allUserOwnedWithAccessType(
-    userAid: string,
-    accessType: TModelVibefireAccess["type"],
-  ) {
-    return faunaQuery<TModelVibefireGroup[]>(
-      this.faunaClient,
-      fql`
-        let userOwned = ${this.allUserOwned(userAid).query}
-        userOwned.where(.accessRef.type == ${accessType})
-      `,
-    );
-  }
-
-  // allUserBelongsTo(userAid: string) {
-  //   return this.funcs.userMemberships(userAid);
+  // allUserOwned(userAid: string) {
+  //   return faunaQuery<TModelVibefireGroup[]>(
+  //     this.faunaClient,
+  //     fql`
+  //       Group.byOwnerWithType(${userAid}, "user")
+  //     `,
+  //   );
   // }
 
-  // async allUserIsManager(userAid: string) {
-  //   const memsRes = await this.funcs.userMemberships(userAid).result;
-  //   return memsRes.map((mems) => mems.filter((mem) => mem.role === "manager"));
+  // allUserOwnedWithAccessType(
+  //   userAid: string,
+  //   accessType: TModelVibefireAccess["accessType"],
+  // ) {
+  //   return faunaQuery<TModelVibefireGroup[]>(
+  //     this.faunaClient,
+  //     fql`
+  //       let userOwned = ${this.allUserOwned(userAid).query}
+  //       userOwned.where(.accessRef.accessType == ${accessType})
+  //     `,
+  //   );
   // }
 
-  // allUserIsPart(userAid: string) {
-  //   return this.funcs.groupsUserIsPart(userAid);
-  // }
+  // // allUserBelongsTo(userAid: string) {
+  // //   return this.funcs.userMemberships(userAid);
+  // // }
 
-  allUserIsPart(userAid: string, limit = 0) {
-    return faunaQuery<Page<TModelVibefireGroup>>(
-      this.faunaClient,
-      fql`
-        let q = ${this.funcs.entitiesUserIsPart("group", userAid).query}
-        if (${limit} != 0) {
-          q.pageSize(${limit})
-        } else {
-          q
-        }
-      `,
-    );
-  }
+  // // async allUserIsManager(userAid: string) {
+  // //   const memsRes = await this.funcs.userMemberships(userAid).result;
+  // //   return memsRes.map((mems) => mems.filter((mem) => mem.role === "manager"));
+  // // }
+
+  // // allUserIsPart(userAid: string) {
+  // //   return this.funcs.groupsUserIsPart(userAid);
+  // // }
+
+  // allUserIsPart(userAid: string, limit = 0) {
+  //   return faunaQuery<Page<TModelVibefireGroup>>(
+  //     this.faunaClient,
+  //     fql`
+  //       let q = ${this.funcs.entitiesUserIsManagerOf("group", userAid).query}
+  //       if (${limit} != 0) {
+  //         q.pageSize(${limit})
+  //       } else {
+  //         q
+  //       }
+  //     `,
+  //   );
+  // }
 }

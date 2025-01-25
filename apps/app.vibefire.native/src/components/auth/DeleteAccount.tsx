@@ -5,7 +5,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 
 import { trpc } from "!/api/trpc-client";
 
-import { PillTouchableOpacity } from "../button/PillTouchableOpacity";
+import { PillTouchableOpacity } from "!/c/button/PillTouchableOpacity";
 
 const DeleteConfirmationModal = (props: {
   showModal: boolean;

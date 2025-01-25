@@ -96,14 +96,15 @@ export class FaunaFunctions {
   // access_management
 
   createNewAccess(
-    accessType: TModelVibefireAccess["type"],
+    accessType: TModelVibefireAccess["accessType"],
+    ownership: TModelVibefireOwnership,
     userAid: string,
     shareCode: string,
   ) {
     return faunaAbortableQuery<TModelVibefireAccess>(
       this.faunaClient,
       fql`
-        CreateNewAccess(${accessType}, ${userAid}, ${shareCode})
+        CreateNewAccess(${accessType}, ${ownership}, ${userAid}, ${shareCode})
       `,
     );
   }

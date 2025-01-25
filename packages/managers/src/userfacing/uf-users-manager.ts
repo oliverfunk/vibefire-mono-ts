@@ -33,6 +33,11 @@ export class UFUsersManager {
       throw new Error("aid is required");
     }
 
+    const maybeUser = await this.repos.user.withAid(aid).result;
+    if (maybeUser) {
+      return { id: maybeUser.id };
+    }
+
     if (firstName && firstName.length < 2) {
       firstName = trimAndCropText(firstName, 100);
       throw new Error("firstName must be at least 2 characters long");

@@ -3,7 +3,6 @@ import { fql, type Client, type Page } from "fauna";
 import {
   ModelVibefirePlan,
   tbClean,
-  type AccessAction,
   type TModelPlanItem,
   type TModelVibefirePlan,
 } from "@vibefire/models";

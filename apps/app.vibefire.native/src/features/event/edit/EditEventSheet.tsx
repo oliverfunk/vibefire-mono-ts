@@ -13,7 +13,8 @@ import { trpc } from "!/api/trpc-client";
 import { withSuspenseErrorBoundarySheet } from "!/c/misc/SuspenseWithError";
 import {
   navEditEvent,
-  navHome,
+  navEditEventLocation,
+  navProfile,
   navViewEvent,
   navViewEventPreview,
 } from "!/nav";
@@ -146,9 +147,15 @@ export const EditEventSheet = withSuspenseErrorBoundarySheet(
                     updateAccessMut.isPending || viewManageCtl.isFetching
                   }
                   updateVisibilityLoading={
-                    updateVisibilityMut.isPending || viewManageCtl.isFetching
+                    isSubmitting ||
+                    updateVisibilityMut.isPending ||
+                    viewManageCtl.isFetching
                   }
                   deleteLoading={deleteMut.isPending}
+                  onSelectLocationPress={() => {
+                    formik.handleSubmit();
+                    navEditEventLocation(router, event.id!);
+                  }}
                   onHidePress={async () => {
                     if (!eventId) {
                       return;
@@ -162,6 +169,9 @@ export const EditEventSheet = withSuspenseErrorBoundarySheet(
                   onPublishPress={async () => {
                     if (!eventId) {
                       return;
+                    }
+                    if (isUpdated) {
+                      await formik.submitForm();
                     }
                     if (noErrorsNotSubmitting) {
                       await updateVisibilityMut.mutateAsync({
@@ -205,7 +215,7 @@ export const EditEventSheet = withSuspenseErrorBoundarySheet(
                     await deleteMut.mutateAsync({
                       eventId,
                     });
-                    navHome(router);
+                    navProfile(router, { manner: "dismiss-to" });
                   }}
                   onPreviewPress={() => {
                     if (!eventId) {

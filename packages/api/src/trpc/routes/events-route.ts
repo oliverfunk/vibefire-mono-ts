@@ -120,7 +120,7 @@ export const eventsRouter = router({
       tbValidator(
         tb.Object({
           name: tb.String(),
-          accessType: ModelVibefireAccess.properties.type,
+          accessType: ModelVibefireAccess.properties.accessType,
         }),
       ),
     )
@@ -160,7 +160,7 @@ export const eventsRouter = router({
         tb.Object({
           name: tb.String(),
           groupId: tb.String(),
-          accessType: ModelVibefireAccess.properties.type,
+          accessType: ModelVibefireAccess.properties.accessType,
           fromPreviousEventId: tb.Optional(tb.String()),
         }),
       ),

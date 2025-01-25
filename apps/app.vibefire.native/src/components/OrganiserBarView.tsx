@@ -66,7 +66,8 @@ const ThreeDotsModalMenu = (props: ThreeDotsModalMenuProps) => {
     setMenuVisible(true);
   };
 
-  const managedByUser = membership?.roleType === "manager";
+  const managedByUser =
+    membership?.roleType === "manager" || membership?.roleType === "owner";
 
   return (
     <Pressable
@@ -224,6 +225,7 @@ export const OrganiserBarView = (
           <LeaveJoinButton {...props} />
         </View>
       )}
+
       {showThreeDots && <ThreeDotsModalMenu {...props} />}
     </View>
   );

@@ -100,10 +100,10 @@ export type FormTextInputProps = {
 
 export const FormTextInput = (props: FormTextInputProps) => {
   return (
-    <View className="flex-1 justify-center rounded-lg bg-slate-200">
+    <View className="flex-1 rounded-lg bg-slate-200 p-2">
       <TextInput
-        className="p-3 text-base"
-        style={{ fontSize: props.fontSize ?? 18 }}
+        style={{ fontSize: 20 }}
+        className="py-2"
         placeholderTextColor={"#909090FF"}
         {...props}
       />

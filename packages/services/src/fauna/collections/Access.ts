@@ -1,7 +1,6 @@
 import { fql, type Client, type Page } from "fauna";
 
 import {
-  type AccessAction,
   type TModelVibefireAccess,
   type TModelVibefireMembership,
   type TModelVibefireOwnership,
@@ -30,9 +29,14 @@ export class FaunaAccessRepository {
     );
   }
 
-  create(accessType: TModelVibefireAccess["type"], userAid: string) {
+  create(
+    accessType: TModelVibefireAccess["accessType"],
+    accessOwner: TModelVibefireAccess["ownerRef"],
+    userAid: string,
+  ) {
     return this.funcs.createNewAccess(
       accessType,
+      accessOwner,
       userAid,
       randomAlphaNumeric(10),
     );

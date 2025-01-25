@@ -1,4 +1,4 @@
-import { Text, TextProps } from "react-native";
+import { Text, type TextProps } from "react-native";
 
 import { type TModelVibefireAccess } from "@vibefire/models";
 
@@ -12,8 +12,8 @@ export const AccessShareabilityText = (
 ) => {
   const { accessRef } = props;
 
-  const isPublic = accessRef.type == "public";
-  const isOpen = accessRef.type == "open";
+  const isPublic = accessRef.accessType == "public";
+  const isOpen = accessRef.accessType == "open";
 
   if (isPublic) {
     return (

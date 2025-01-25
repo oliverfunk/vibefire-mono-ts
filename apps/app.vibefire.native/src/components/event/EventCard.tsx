@@ -37,7 +37,7 @@ export const EventCard = (props: {
       >
         <View className="flex-1">
           <OrganiserBarView
-            ownerRef={event.ownerRef as TModelVibefireOwnership}
+            ownerRef={event.accessRef?.ownerRef}
             showLeaveJoin={false}
             showThreeDots={false}
           />

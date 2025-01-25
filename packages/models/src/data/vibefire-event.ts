@@ -4,7 +4,6 @@ import { clearable, tb, Value, type Static } from "!models/modelling";
 import { EventDetail } from "./event-models/event-detail";
 import { EventInfoModel } from "./event-models/event-info";
 import { ModelVibefireAccess } from "./vibefire-access";
-import { ModelVibefireOwnership } from "./vibefire-ownership";
 
 const ModelEventDetails = tb.Array(EventDetail, {
   default: [],
@@ -62,7 +61,6 @@ export const ModelVibefireEvent = tb.Object({
   id: tb.String({ default: undefined }),
 
   accessRef: ModelVibefireAccess,
-  ownerRef: ModelVibefireOwnership,
 
   // links to a 'Timeline' type doc
   timeline: clearable(tb.String()),
@@ -94,13 +92,11 @@ export const ModelVibefireEvent = tb.Object({
 });
 export const newVibefireEvent = (p: {
   accessRef: TModelVibefireEvent["accessRef"];
-  ownerRef: TModelVibefireEvent["ownerRef"];
   name: TModelVibefireEvent["name"];
   epochCreated: TModelVibefireEvent["epochCreated"];
 }): TModelVibefireEventNoId => {
   const d = Value.Create(ModelVibefireEvent);
   d.accessRef = p.accessRef;
-  d.ownerRef = p.ownerRef;
   d.name = p.name;
   d.epochCreated = p.epochCreated;
   return d;
