@@ -10,6 +10,8 @@ export * from "!models/data/vibefire-membership";
 //
 export * from "!models/general";
 //
+export * from "!models/state/manager-return";
+//
 export * from "!models/state/app-user-state";
 export * from "!models/state/result-return";
 export * from "!models/state/pageable";

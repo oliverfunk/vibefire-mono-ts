@@ -1,11 +1,12 @@
-import { Result, wrapToAsyncResult } from "@vibefire/models";
+import {
+  ManagerErrorResponse,
+  Result,
+  wrapToAsyncResult,
+  type ManagerAsyncResult,
+} from "@vibefire/models";
 import { FaunaCallAborted } from "@vibefire/services/fauna";
 
 import { ManagerRuleViolation } from "./errors";
-import {
-  ManagerErrorResponse,
-  type ManagerAsyncResult,
-} from "./manager-result";
 
 export const nullablePromiseToRes = async <T>(
   value: Promise<T | null | undefined>,

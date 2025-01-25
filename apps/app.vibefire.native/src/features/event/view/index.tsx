@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -18,7 +19,10 @@ import { trpc } from "!/api/trpc-client";
 import { useShareEventLink } from "!/hooks/useShareEventLink";
 
 import { AccessShareabilityText } from "!/components/AccessShareablityText";
-import { EventActionsBar } from "!/components/event/EventActionBar";
+import {
+  EventActionsBar,
+  OpenInMapsModalMenu,
+} from "!/components/event/EventActionBar";
 import { EventImageCarousel } from "!/components/event/EventImageCarousel";
 import {
   EventInfoAddressDescBar,
@@ -42,7 +46,9 @@ const ViewEventSheet = (props: {
   membership?: TModelVibefireMembership;
   shareCode?: string;
 }) => {
-  const { event, membership, shareCode } = props;
+  const { event: eventIn, membership, shareCode } = props;
+
+  const event = useMemo(() => eventIn, [eventIn]);
 
   const router = useRouter();
 
@@ -129,11 +135,11 @@ const ViewEventSheet = (props: {
               accessId: event.accessRef.id,
             });
             await userMembershipQ.refetch();
-            navHomeWithCollapse(router);
           }}
         />
         <EventActionsBar
           location={event.location}
+          times={event.times}
           hideShareButton={
             event.accessRef.accessType === "invite" &&
             membership?.roleType !== "manager"
@@ -186,12 +192,14 @@ const ViewEventSheet = (props: {
       </LinearRedOrangeView>
 
       {/* map */}
-      <View className="aspect-[4/4] py-1">
-        <LocationDisplayMap
-          eventId={event.id}
-          markerPosition={event.location.position}
-        />
-      </View>
+      <OpenInMapsModalMenu location={event.location} times={event.times}>
+        <View className="aspect-[4/4] py-1">
+          <LocationDisplayMap
+            eventId={event.id}
+            markerPosition={event.location.position}
+          />
+        </View>
+      </OpenInMapsModalMenu>
 
       {/* details */}
       {details.length != 0 && (

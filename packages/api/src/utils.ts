@@ -1,5 +1,4 @@
-import { type ManagerAsyncResult } from "@vibefire/managers/result";
-import { type ResultReturn } from "@vibefire/models";
+import { type ManagerAsyncResult, type ResultReturn } from "@vibefire/models";
 
 export type ApiResponse<T> = ResultReturn<T>;
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, type PropsWithChildren } from "react";
 import {
   Linking,
   Modal,
@@ -9,23 +9,37 @@ import {
   View,
   type ViewProps,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { useAtom, useSetAtom } from "jotai";
 
 import { type TModelVibefireEvent } from "@vibefire/models";
-import { type PartialDeep } from "@vibefire/utils";
+import { selectedDateDTAtom } from "@vibefire/shared-state";
+import { ntzToDateTime, type PartialDeep } from "@vibefire/utils";
 
+import { eventMapMapRefAtom } from "!/atoms";
+import { TextB, TextL } from "!/c/atomic/text";
+import { ContC } from "!/c/atomic/view";
+import { navHomeWithCollapse } from "!/nav";
 import {
   appleMapsOpenEventLocationURL,
   googleMapsOpenEventLocationURL,
   uberClientRequestToEventLocationURL,
 } from "!utils/urls";
 
-const MapsModalMenu = (props: {
-  location?: TModelVibefireEvent["location"];
-  disabled: boolean;
-}) => {
-  const { location, disabled } = props;
+export const OpenInMapsModalMenu = (
+  props: PropsWithChildren<{
+    location?: TModelVibefireEvent["location"];
+    times?: PartialDeep<TModelVibefireEvent["times"]>;
+    disabled?: boolean;
+  }>,
+) => {
+  const { location, times, disabled = false } = props;
 
+  const router = useRouter();
+
+  const [eventMapMapRef] = useAtom(eventMapMapRefAtom);
+  const setSelectedDate = useSetAtom(selectedDateDTAtom);
   const [menuVisible, setMenuVisible] = useState(false);
 
   const openDropdown = (): void => {
@@ -58,13 +72,24 @@ const MapsModalMenu = (props: {
     }
   }, [location]);
 
+  const onOpenInEventMap = useCallback(() => {
+    if (!location || !times || !times.ntzStart) {
+      return;
+    }
+    navHomeWithCollapse(router);
+    setSelectedDate(ntzToDateTime(times.ntzStart));
+    eventMapMapRef?.animateCamera({
+      center: {
+        latitude: location.position.lat,
+        longitude: location.position.lng,
+      },
+    });
+    setMenuVisible(false);
+  }, [eventMapMapRef, location, router, setSelectedDate, times]);
+
   return (
-    <TouchableOpacity
-      onPress={async () => {
-        if (Platform.OS === "android") {
-          await onOpenInGoogleMaps();
-          return;
-        }
+    <Pressable
+      onPress={() => {
         menuVisible ? setMenuVisible(false) : openDropdown();
       }}
       disabled={disabled}
@@ -75,42 +100,40 @@ const MapsModalMenu = (props: {
           onPress={() => setMenuVisible(false)}
         >
           <View className="flex-col space-y-4 overflow-hidden rounded bg-white p-4">
-            <Text className="text-xl font-bold">Open in maps</Text>
-            <Text className="text-base">
+            <TextL className="font-bold text-black">Open in maps</TextL>
+            <TextB className="text-black ">
               {"Open the event's location in another app"}
-            </Text>
-            <View className="flex-col items-end space-y-2">
+            </TextB>
+            <ContC className="items-end">
               <TouchableOpacity onPress={onOpenInGoogleMaps}>
-                <Text className="text-base font-bold text-gray-500">
-                  Google Maps
-                </Text>
+                <TextB className="font-bold text-black">Google Maps</TextB>
               </TouchableOpacity>
-              <TouchableOpacity onPress={onOpenInAppleMaps}>
-                <Text className="text-base font-bold text-gray-500">
-                  Apple Maps
-                </Text>
+              {Platform.OS === "ios" && (
+                <TouchableOpacity onPress={onOpenInAppleMaps}>
+                  <TextB className="font-bold text-black">Apple Maps</TextB>
+                </TouchableOpacity>
+              )}
+            </ContC>
+            <TextB className="text-black ">
+              {"Or go to the event's time and location on the event map"}
+            </TextB>
+            <ContC className="items-end">
+              <TouchableOpacity onPress={onOpenInEventMap}>
+                <TextB className="font-bold text-black">Event map</TextB>
               </TouchableOpacity>
-            </View>
+            </ContC>
           </View>
         </Pressable>
       </Modal>
-      <View className="flex-col items-center justify-between">
-        <FontAwesome5
-          name="map"
-          size={20}
-          color={disabled ? "grey" : "white"}
-        />
-        <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
-          Maps
-        </Text>
-      </View>
-    </TouchableOpacity>
+      {props.children}
+    </Pressable>
   );
 };
 
 export const EventActionsBar = (
   props: {
     location?: PartialDeep<TModelVibefireEvent["location"]>;
+    times?: PartialDeep<TModelVibefireEvent["times"]>;
     onShareEvent?: () => void;
     disabled?: boolean;
     hideShareButton?: boolean;
@@ -127,7 +150,7 @@ export const EventActionsBar = (
     if (!location) {
       return;
     }
-    const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID!;
+    const uberClientID = process.env.EXPO_PUBLIC_UBER_CLIENT_ID! as string;
     const url = uberClientRequestToEventLocationURL(
       uberClientID,
       location as TModelVibefireEvent["location"],
@@ -142,12 +165,23 @@ export const EventActionsBar = (
 
   return (
     <View className="flex-row justify-around" {...props}>
-      <MapsModalMenu
+      <OpenInMapsModalMenu
         location={location as TModelVibefireEvent["location"]}
         disabled={disabled}
-      />
+      >
+        <View className="flex-col items-center justify-between">
+          <FontAwesome5
+            name="map"
+            size={20}
+            color={disabled ? "grey" : "white"}
+          />
+          <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
+            Maps
+          </Text>
+        </View>
+      </OpenInMapsModalMenu>
 
-      <TouchableOpacity
+      <Pressable
         className="flex-col items-center justify-between"
         disabled={disabled}
         onPress={onGetToEvent}
@@ -160,10 +194,10 @@ export const EventActionsBar = (
         <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
           Get there
         </Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {!hideShareButton && (
-        <TouchableOpacity
+        <Pressable
           className="flex-col items-center justify-between"
           disabled={disabled}
           onPress={onShareEvent}
@@ -176,7 +210,7 @@ export const EventActionsBar = (
           <Text className={`${disabled ? "text-neutral-600" : "text-white"}`}>
             Share
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       )}
     </View>
   );

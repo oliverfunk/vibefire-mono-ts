@@ -160,7 +160,7 @@ export const EventEditWysiwygForm = (
           threeDotsDisabled={true}
           leaveJoinDisabled={true}
         />
-        <EventActionsBar location={event?.location} disabled={true} />
+        <EventActionsBar disabled={true} />
       </View>
 
       {/* infos */}

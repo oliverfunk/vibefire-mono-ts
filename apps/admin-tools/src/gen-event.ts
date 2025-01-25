@@ -2,19 +2,9 @@ import { DateTime } from "luxon";
 
 import "dotenv/config";
 
-import { setManagersContext } from "@vibefire/managers/context";
-import { getFaunaUserManager } from "@vibefire/managers/fauna-user";
-import { type ClerkSignedInAuthContext } from "@vibefire/services/clerk";
+import { getUFEventsManager } from "@vibefire/managers/userfacing";
 
 export const genEvent = async () => {
-  setManagersContext({
-    faunaClientKey: process.env.FAUNA_SECRET,
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-  });
-
-  const faunaUserManager = getFaunaUserManager();
-
   function getRandomItem<T>(array: T[]): T {
     const randomIndex = Math.floor(Math.random() * array.length);
     return array[randomIndex];
@@ -26,8 +16,7 @@ export const genEvent = async () => {
     const randomImageIds: string[] = [];
 
     for (let i = 0; i < randomLength; i++) {
-      const randomIndex = Math.floor(Math.random() * array.length);
-      randomImageIds.push(array[randomIndex]);
+      randomImageIds.push(getRandomItem(array));
     }
 
     return randomImageIds;
@@ -178,24 +167,44 @@ export const genEvent = async () => {
     lng: -0.311068,
   };
 
-  const timeStart = getRandomDate(new Date(2024, 0, 1), new Date(2024, 0, 3));
-  const timeEnd = getRandomDate(timeStart, new Date(2024, 0, 5));
+  const timeStart = getRandomDate(new Date(2025, 0, 1), new Date(2025, 0, 3));
+  const timeEnd = getRandomDate(timeStart, new Date(2025, 0, 5));
 
-  const fauxAuth = {
-    userId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-  } as ClerkSignedInAuthContext;
-  const { linkId, id } = await faunaUserManager.eventCreate(fauxAuth, rndTitle);
+  const eventId = (
+    await getUFEventsManager().createNewEvent({
+      userAid: process.env.TEST_USER_AID!,
+      accessType: "public",
+      name: rndTitle,
+      forGroupId: process.env.TEST_GROUP_ID!,
+    })
+  ).unwrap();
 
-  await faunaUserManager.eventUpdate(fauxAuth, id, {
-    description: rndDesc,
-    bannerImageId: getRandomItem(imgIds),
-    additionalImageIds: getNRandomItems(imgIds),
-    position: getRandomLocation(northEastStart, southWestStart),
-    addressDescription: "London, UK",
-    timeStartIsoNTZ: timeStart.toISOString(),
-    timeEndIsoNTZ:
-      Math.round(Math.random()) === 1 ? timeEnd.toISOString() : undefined,
+  await getUFEventsManager().updateEvent({
+    eventId,
+    userAid: process.env.TEST_USER_AID!,
+    update: {
+      location: {
+        addressDescription: "London, UK",
+        position: getRandomLocation(northEastStart, southWestStart),
+      },
+      times: {
+        ntzStart: timeStart.toISOString(),
+        ntzEnd:
+          Math.round(Math.random()) === 1 ? timeEnd.toISOString() : undefined,
+      },
+      details: [
+        { type: "description", value: rndDesc, blockTitle: "Description" },
+      ],
+      images: {
+        bannerImgKeys: getNRandomItems(imgIds, 3),
+      },
+    },
   });
-  await faunaUserManager.eventSetVisibility(fauxAuth, id, "public");
-  await faunaUserManager.eventSetPublished(fauxAuth, id);
+  await getUFEventsManager().updateEventVisibility({
+    eventId,
+    userAid: process.env.TEST_USER_AID!,
+    update: "publish",
+  });
+
+  console.log(`Event "${rndTitle}" created with ID: ${eventId}`);
 };

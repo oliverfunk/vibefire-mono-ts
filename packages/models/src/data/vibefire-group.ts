@@ -48,7 +48,7 @@ import { ModelVibefireOwnership } from "./vibefire-ownership";
 // });
 
 const ModelGroupImages = tb.Object({
-  banners: tb.Array(tb.String(), { default: [] }),
+  bannerImgKeys: tb.Array(tb.String(), { default: [] }),
 });
 
 export type TModelVibefireGroup = Static<typeof ModelVibefireGroup>;
@@ -65,7 +65,9 @@ export const ModelVibefireGroup = tb.Object({
 
   socials: SocialLinksModel,
 
-  location: tb.Optional(VibefireLocationSchema),
+  location: VibefireLocationSchema,
+
+  // partOfOrgId: tb.Optional(tb.String()),
 
   // meta
   epochCreated: tb.Number({ default: undefined }),
@@ -79,6 +81,7 @@ export const newVibefireGroup = (p: {
   epochCreated: TModelVibefireGroup["epochCreated"];
 }): TModelVibefireGroup => {
   const d = Value.Create(ModelVibefireGroup);
+  d.ownershipRef = p.ownershipRef;
   d.accessRef = p.accessRef;
   d.name = p.name;
   d.description = p.description;

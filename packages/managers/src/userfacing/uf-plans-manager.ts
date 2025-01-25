@@ -14,7 +14,6 @@ import {
 } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
-import { type ManagerAsyncResult } from "!managers/manager-result";
 import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 

@@ -5,6 +5,7 @@ import {
   newVibefireEvent,
   tbClean,
   tbValidatorResult,
+  type ManagerAsyncResult,
   type MapQueryT,
   type Pageable,
   type TModelEventUpdate,
@@ -32,7 +33,6 @@ import {
 } from "@vibefire/utils";
 
 import { ManagerRuleViolation } from "!managers/errors";
-import { type ManagerAsyncResult } from "!managers/manager-result";
 import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
@@ -90,7 +90,7 @@ export class UFEventsManger {
             "This group is private and cannot make public events",
           );
         }
-        accessRef = g.accessRef;
+        accessRef = (await this.repos.access.withId(g.accessRef.id).result)!;
       } else {
         const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
         accessRef = (

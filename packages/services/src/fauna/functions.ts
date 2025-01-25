@@ -16,10 +16,7 @@ export class FaunaFunctions {
 
   // ownership
 
-  ownershipByOwnerIdAndType(
-    ownerId: string,
-    ownerType: "user" | "group" | "organisation",
-  ) {
+  ownershipByOwnerIdAndType(ownerId: string, ownerType: "user" | "group") {
     return faunaAbortableQuery<TModelVibefireOwnership>(
       this.faunaClient,
       fql`

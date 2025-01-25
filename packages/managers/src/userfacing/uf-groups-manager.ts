@@ -2,19 +2,11 @@ import { DateTime } from "luxon";
 
 import {
   newVibefireGroup,
-  type Pageable,
   type TModelVibefireAccess,
   type TModelVibefireGroup,
-  type TModelVibefireOwnership,
 } from "@vibefire/models";
-import {
-  resourceLocator,
-  trimAndCropText,
-  type PartialDeep,
-} from "@vibefire/utils";
+import { resourceLocator, trimAndCropText } from "@vibefire/utils";
 
-import { ManagerRuleViolation } from "!managers/errors";
-import { type ManagerAsyncResult } from "!managers/manager-result";
 import { getReposManager, type ReposManager } from "!managers/repos-manager";
 import { managerReturn } from "!managers/utils";
 
@@ -36,40 +28,34 @@ export class UFGroupsManger {
   }) {
     return managerReturn(async () => {
       const forOrg = !!p.forOrgId;
+      const groupIsPublicType = p.accessType === "public";
 
-      // if (forOrg) {
-      //   const org = (
-      //     await this.repos.org.withIdIfUserCanManage(p.forOrgId, p.userAid)
-      //       .result
-      //   ).unwrap();
-      //   accAct = { action: "link", accessId: org.accessRef.id };
-      // }
-      let accessRef: TModelVibefireAccess;
-      let ownerRef: TModelVibefireOwnership;
-      // if (forOrg) {
-      // }
-      // check if the user already owns a public group
-      // can only make one
-      // const userOwnedPublicGroups =
-      //   await this.repos.group.allUserOwnedWithAccessType(p.userAid, "public")
-      //     .result;
-      // if (userOwnedPublicGroups.length > 0) {
-      //   throw new ManagerRuleViolation(
-      //     "You can only own one public group at a time",
-      //   );
-      // }
-      const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
-      // eslint-disable-next-line prefer-const
-      accessRef = (
-        await this.repos.access.create(p.accessType, u.ownershipRef, p.userAid)
-          .result
-      ).unwrap();
-      // eslint-disable-next-line prefer-const
+      if (!forOrg && groupIsPublicType) {
+        // todo: check if the user is already an owner of a public group
+      }
 
       const ownershipRef = await this.repos.access.createOwnership(
         "group",
         p.name,
       ).result;
+
+      // let accessRef: TModelVibefireAccess;
+      // if (forOrg) {
+      // } else {
+      //   const u = (await this.repos.getUserProfile(p.userAid)).unwrap();
+      //   accessRef = (
+      //     await this.repos.access.create(
+      //       p.accessType,
+      //       u.ownershipRef,
+      //       p.userAid,
+      //     ).result
+      //   ).unwrap();
+      // }
+
+      const accessRef = (
+        await this.repos.access.create(p.accessType, ownershipRef, p.userAid)
+          .result
+      ).unwrap();
 
       const name = trimAndCropText(p.name, 100);
       const description = trimAndCropText(p.description, 500);

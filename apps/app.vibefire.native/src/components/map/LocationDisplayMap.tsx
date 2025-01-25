@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
@@ -12,8 +12,9 @@ import { EventMapMarker } from "!/c/event/EventMapMarker";
 export const LocationDisplayMap = (props: {
   eventId: string;
   markerPosition?: CoordT;
+  onPress?: () => void;
 }) => {
-  const { eventId, markerPosition } = props;
+  const { eventId, markerPosition, onPress } = props;
 
   const mvRef = useRef<MapView>(null);
 

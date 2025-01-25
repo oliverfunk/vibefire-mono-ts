@@ -4,7 +4,6 @@ import { type TModelVibefireAccess } from "@vibefire/models";
 
 import { TextB } from "./atomic/text";
 
-// todo: make work for all access types
 export const AccessShareabilityText = (
   props: {
     accessRef: TModelVibefireAccess;
@@ -18,7 +17,7 @@ export const AccessShareabilityText = (
   if (isPublic) {
     return (
       <TextB {...props}>
-        This event is <Text className="text-green-400">public</Text>.{"\n"}
+        This event is <Text className="text-green-400">public</Text>.
       </TextB>
     );
   }

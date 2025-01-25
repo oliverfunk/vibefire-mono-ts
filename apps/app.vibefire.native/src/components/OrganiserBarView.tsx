@@ -163,18 +163,20 @@ const LeaveJoinButton = (props: LeaveJoinButtonProps) => {
   } = props;
 
   const isMember = !!membership;
+  const isDisabled =
+    leaveJoinDisabled || (isMember && membership?.roleType === "owner");
 
   return (
     <Pressable
-      className={`rounded-full border ${leaveJoinDisabled ? "border-neutral-600" : isMember ? "border-white" : "border-red-500"} p-2 px-4`}
+      className={`rounded-full border ${isDisabled ? "border-neutral-600" : isMember ? "border-white" : "border-red-500"} p-2 px-4`}
       onPress={isMember ? onLeavePress : onJoinPress}
-      disabled={leaveJoinDisabled}
+      disabled={isDisabled}
     >
       {leaveJoinLoading ? (
         <ActivityIndicator size="small" color="white" />
       ) : (
         <Text
-          className={`text-sm font-bold  ${leaveJoinDisabled ? "text-neutral-600" : "text-white"}`}
+          className={`text-sm font-bold  ${isDisabled ? "text-neutral-600" : "text-white"}`}
         >
           {isMember ? "Leave" : "Join"}
         </Text>

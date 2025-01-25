@@ -98,7 +98,8 @@ export class FaunaEventRepository {
       this.faunaClient,
       fql`
         let ownerOwnership = ${this.funcs.ownershipByOwnerIdAndType(ownerId, ownerType).query}
-        let q = Event.byOwner(ownerOwnership)
+        let accs = Access.byOwner(ownerOwnership)
+        let q = accs.flatMap((acc) => Event.byAccess(acc))
         if (${limit} != 0) {
           q.pageSize(${limit})
         } else {

@@ -1,15 +1,18 @@
 {
-    "compilerOptions": {
-        "target": "ES2022",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
-        "esModuleInterop": true,
-        "strict": true,
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "strict": true,
+    "paths": {
+      "!api/*": ["../../packages/api/src/*"],
+      "!models/*": ["../../packages/models/src/*"],
+      "!managers/*": ["../../packages/managers/src/*"],
+      "!utils/*": ["../../packages/utils/src/*"],
+      "!services/*": ["../../packages/services/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
