@@ -1,28 +1,29 @@
 import { Text } from "react-native";
+import { FontAwesome6 } from "@expo/vector-icons";
 
-import { type VibefireEventT } from "@vibefire/models";
-import { isoNTZToUTCDateTime, toMonthDateTimeStr } from "@vibefire/utils";
+import { type TModelVibefireEvent } from "@vibefire/models";
+import {
+  ntzToDateTime,
+  toMonthDateTimeStr,
+  type PartialDeep,
+} from "@vibefire/utils";
 
 import { VibefireImage } from "!/c/image/VibefireImage";
 import { ChipComponent } from "!/c/structural/ChipComponent";
 
 type EventChipProps = {
-  eventLinkId: string;
-  eventInfo: {
-    title: VibefireEventT["title"];
-    bannerImgKey?: VibefireEventT["images"]["banner"];
-    timeStartIsoNTZ?: VibefireEventT["timeStartIsoNTZ"];
-    state: VibefireEventT["state"];
-  };
-  onPress?: (eventLinkId: string) => void;
+  event: PartialDeep<TModelVibefireEvent>;
+  onPress?: (event: PartialDeep<TModelVibefireEvent>) => void;
 };
 
 export const EventChip = (props: EventChipProps) => {
-  const { eventLinkId, eventInfo, onPress } = props;
+  const { event, onPress } = props;
 
   return (
     <ChipComponent
-      leftComponent={<VibefireImage imgIdKey={eventInfo.bannerImgKey} />}
+      leftComponent={
+        <VibefireImage imgIdKey={event?.images?.bannerImgKeys?.[0]} />
+      }
       centerComponent={
         <>
           <Text
@@ -30,19 +31,23 @@ export const EventChip = (props: EventChipProps) => {
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {eventInfo.title}
+            {event.name}
           </Text>
           <Text className="text-neutral-400">
-            {eventInfo.timeStartIsoNTZ
-              ? toMonthDateTimeStr(
-                  isoNTZToUTCDateTime(eventInfo.timeStartIsoNTZ),
-                )
+            {event.times?.ntzStart
+              ? toMonthDateTimeStr(ntzToDateTime(event.times?.ntzStart))
               : "<Start Time>"}
           </Text>
         </>
       }
-      rightComponent={<Text className="text-white">{eventInfo.state}</Text>}
-      onPress={onPress ? () => onPress(eventLinkId) : undefined}
+      rightComponent={
+        event.state === 1 ? (
+          <FontAwesome6 name="eye" size={15} color="white" />
+        ) : (
+          <FontAwesome6 name="eye-slash" size={15} color="red" />
+        )
+      }
+      onPress={() => onPress?.(event)}
     />
   );
 };

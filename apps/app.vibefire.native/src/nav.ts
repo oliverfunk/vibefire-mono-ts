@@ -1,78 +1,175 @@
-import { router } from "expo-router";
+import { type Router } from "expo-router";
 
-import { type EditEventFormSectionT } from "./types";
-
-const routerNav = (path: string, params: Record<string, string> = {}) => {
-  params.ts = new Date().getTime().toString();
-  router.navigate(path);
-  router.setParams(params);
+type RouteingOpts = {
+  manner: "push" | "nav" | "replace" | "dismiss-to" | "href";
 };
 
-const routerReplace = (path: string, params: Record<string, string> = {}) => {
-  params.ts = new Date().getTime().toString();
-  router.replace(path);
-  router.setParams(params);
+const route = (
+  router: Router,
+  path: string,
+  opts?: RouteingOpts,
+  queryParams?: Record<string, string>,
+) => {
+  console.log(
+    "route",
+    JSON.stringify(
+      {
+        path,
+        queryParams,
+        opts,
+      },
+      null,
+      2,
+    ),
+  );
+
+  const manner = opts?.manner || "push";
+
+  const href = {
+    pathname: path,
+    params: queryParams,
+  };
+
+  switch (manner) {
+    case "nav":
+      router.navigate(href);
+      break;
+    case "push":
+      router.push(href);
+      break;
+    case "replace":
+      router.replace(href);
+      break;
+    case "dismiss-to":
+      router.dismissTo(href);
+      break;
+    case "href":
+      // nop
+      break;
+    default:
+      throw new Error(`Unknown route manner: ${manner}`);
+  }
+
+  return href;
 };
 
-export const navHomeWithProfileSelected = ({
-  profileSelected,
-}: {
-  profileSelected?: boolean;
-}) => {
-  routerNav("/", profileSelected ? { profileSelected: "true" } : {});
-};
-export const navHomeWithMinimise = () => {
-  routerNav("/", { minimise: "true" + Math.random() });
-};
-export const navReplaceHomeWithMinimise = () => {
-  routerReplace("/");
-  router.setParams({ minimise: "true" + Math.random() });
+export const navProfile = (router: Router, opts?: RouteingOpts) => {
+  route(router, "/profile", opts);
 };
 
-export const navPop = () => {
+export const navHome = (router: Router) => {
+  route(router, "/", { manner: "dismiss-to" });
+};
+export const navHomeWithCollapse = (router: Router) => {
+  route(
+    router,
+    "/",
+    { manner: "dismiss-to" },
+    { expand: "false", collapse: "true" },
+  );
+};
+export const navHomeWithExpand = (router: Router) => {
+  route(
+    router,
+    "/",
+    { manner: "dismiss-to" },
+    { expand: "true", collapse: "false" },
+  );
+};
+
+export const navBack = (router: Router) => {
   if (router.canGoBack()) {
     router.back();
   }
 };
 
-export const navOwnEventsByOrganiser = () => {
-  routerNav("/events-by-organiser");
+export const navCreateEvent = (router: Router, opts?: RouteingOpts) => {
+  route(router, "/event/create", opts);
+};
+export const navCreateEventFromPrevious = (
+  router: Router,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/create", opts, { fromPrevious: "true" });
 };
 
-export const navCreateEvent = () => {
-  routerNav("/event/create");
+export const navViewEvent = (
+  router: Router,
+  eventId: string,
+  shareCode?: string,
+  opts?: RouteingOpts,
+) => {
+  return route(
+    router,
+    "/event/" + eventId + "/",
+    opts,
+
+    shareCode ? { shareCode } : undefined,
+  );
 };
-export const navCreateEventFromPrevious = () => {
-  routerNav("/event/create", { fromPrevious: "true" });
-};
-export const navViewEvent = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId);
-};
-export const navViewEventPreview = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId, { preview: "true" });
-};
-export const navManageEvent = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId + "/manage");
-};
-export const navEditEvent = (eventLinkId: string) => {
-  routerNav("/event/" + eventLinkId + "/edit");
-};
-export const navEditEventSetSection = (section: EditEventFormSectionT) => {
-  router.setParams({ section });
+export const navViewEventPreview = (
+  router: Router,
+  eventId: string,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/" + eventId + "/", opts, { preview: "true" });
 };
 
-export const navGroupUserManaged = () => {
-  routerNav("/group/manage");
+export const navManageEvent = (
+  router: Router,
+  eventId: string,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/" + eventId + "/manage", opts);
 };
-export const navCreateGroup = () => {
-  routerNav("/group/create");
+export const navEditEvent = (
+  router: Router,
+  eventId: string,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/" + eventId + "/edit", opts);
 };
-export const navViewGroup = (groupLinkId: string) => {
-  routerNav("/group/" + groupLinkId);
+export const navEditEventLocation = (
+  router: Router,
+  eventId: string,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/" + eventId + "/edit", opts, {
+    selectLocation: "true",
+  });
 };
-export const navManageGroup = (groupLinkId: string) => {
-  routerNav("/group/" + groupLinkId + "/manage");
+
+export const navViewUserManagedEvents = (
+  router: Router,
+  opts?: RouteingOpts,
+) => {
+  route(router, "/event/managed", opts);
 };
-export const navEditGroup = (groupLinkId: string) => {
-  routerNav("/group/" + groupLinkId + "/edit");
-};
+
+// export const navGroupUserManaged = (router: Router, opts?: RouteingOpts) => {
+//   routerNav("/group/manage");
+// };
+// export const navCreateGroup = (router: Router, opts?: RouteingOpts) => {
+//   routerNav("/group/create");
+// };
+// export const navViewGroup = (
+//   router: Router,
+//   groupId: string,
+//   opts?: RouteingOpts,
+// ) => {
+//   routerNav("/group/" + groupId);
+// };
+// export const navManageGroup = (
+//   router: Router,
+//   groupId: string,
+//   opts?: RouteingOpts,
+// ) => {
+//   routerNav("/group/" + groupId + "/manage");
+// };
+// export const navEditGroup = (
+//   router: Router,
+//   groupId: string,
+//   opts?: RouteingOpts,
+// ) => {
+//   routerNav("/group/" + groupId + "/edit");
+// };

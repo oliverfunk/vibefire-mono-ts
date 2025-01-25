@@ -1,3 +1,4 @@
+import { getUFUsersManager } from "@vibefire/managers/userfacing";
 import { type AppUserState } from "@vibefire/models";
 
 import {
@@ -8,14 +9,18 @@ import {
 
 export const authRouter = router({
   getSession: publicProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.auth.userId;
     let session: AppUserState;
-    if (!ctx.auth.userId) {
+    if (!userId) {
       session = {
         state: "unauthenticated",
-        anonId: "anon",
+        anonId: crypto.randomUUID(),
       };
     } else {
-      const userInfo = await ctx.fauna.getUserInfo(ctx.auth);
+      const userInfo = await getUFUsersManager().getUserProfileWithRetry(
+        userId,
+        3,
+      );
       session = {
         state: "authenticated",
         userId: ctx.auth.userId,
@@ -25,6 +30,6 @@ export const authRouter = router({
     return session;
   }),
   deleteAccount: authedProcedure.mutation(async ({ ctx }) => {
-    await ctx.fauna.deleteUserAccount(ctx.auth);
+    await getUFUsersManager().deleteUserAccount(ctx.auth.userId);
   }),
 });

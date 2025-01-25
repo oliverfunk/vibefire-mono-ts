@@ -7,12 +7,14 @@ import React, {
 } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import { isRunningInExpoGo } from "expo";
 import {
   ClerkLoaded,
   ClerkProvider,
   useAuth,
   useUser,
 } from "@clerk/clerk-expo";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,25 +23,20 @@ import { createStore, Provider, useAtomValue, useSetAtom } from "jotai";
 import { debounce } from "lodash";
 import superjson from "superjson";
 
-import { type VibefireUserT } from "@vibefire/models";
-
 import { tokenCache } from "!/utils/sec-store-cache";
 import { trpc, trpcUrl } from "!/api/trpc-client";
 
 import { userAtom, userSessionRetryAtom } from "!/atoms";
 
-export const routingInstrumentation =
-  new Sentry.ReactNavigationInstrumentation();
+export const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+});
 
 Sentry.init({
   enabled: !__DEV__,
   dsn: "https://959cd563f46e2574f10469f5b03e8d6e@o4506169650315264.ingest.sentry.io/4506169652412416",
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      routingInstrumentation,
-      // enableUserInteractionTracing: true,
-    }),
-  ],
+  integrations: [navigationIntegration],
+  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
 });
 
 const myAtomStore = createStore();
@@ -83,17 +80,17 @@ const UserSessionProvider = (props: { children: ReactNode }) => {
       case "success":
         const d = getSession.data;
         if (d.state === "authenticated") {
-          const userInfo = d.userInfo as VibefireUserT;
+          const userInfo = d.userInfo;
           Sentry.setUser({
             id: userInfo.id,
-            email: userInfo.contactEmail,
+            email: userInfo.email,
           });
         } else {
           Sentry.setUser({
             id: d.anonId,
           });
         }
-        setUser(getSession.data);
+        setUser(d);
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,10 +158,19 @@ const AppProviders = Sentry.wrap((props: { children: ReactNode }) => {
         <TrpcProvider>
           <UserSessionProvider>
             <ClerkLoaded>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
-              </GestureHandlerRootView>
-              <Toast />
+              <ActionSheetProvider>
+                <GestureHandlerRootView
+                  style={{
+                    flex: 1,
+                    pointerEvents: "box-none",
+                  }}
+                >
+                  <BottomSheetModalProvider>
+                    {children}
+                  </BottomSheetModalProvider>
+                  <Toast />
+                </GestureHandlerRootView>
+              </ActionSheetProvider>
             </ClerkLoaded>
           </UserSessionProvider>
         </TrpcProvider>

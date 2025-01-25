@@ -1,65 +1,50 @@
 import { type PropsWithChildren } from "react";
-import { Text, View } from "react-native";
+import { TouchableOpacity, View, type ViewProps } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
-import { type TwPadding } from "!/utils/tw-spacing";
-
-import { IconButton } from "!/c/button/IconButton";
+import { TextL, TextS } from "!/c/atomic/text";
+import { ContC } from "!/c/atomic/view";
 
 type SummaryHeaderProps = {
-  headerTitle: string;
+  headerMainComponent?: React.ReactNode;
+  headerTitle?: string;
   headerButtonText?: string;
   onHeaderButtonPress: () => void;
 };
 
-type SummaryStyleOptions = {
-  styleOpts?: {
-    headerTextColor?: ["white" | "black"];
-    headerPadding?: TwPadding;
-  };
-};
-
-const HeaderRow = ({
-  headerTitle,
-  headerButtonText = "New",
-  onHeaderButtonPress,
-  styleOpts,
-}: SummaryHeaderProps & SummaryStyleOptions) => {
+const HeaderRow = (props: SummaryHeaderProps & ViewProps) => {
+  const {
+    headerMainComponent,
+    headerTitle,
+    headerButtonText = "Add",
+    onHeaderButtonPress,
+  } = props;
   return (
-    <View className={`flex-row items-center py-5`}>
-      <Text className="text-xl font-bold text-white">{headerTitle}</Text>
-      <View className="grow" />
-      <IconButton onPress={onHeaderButtonPress} useOpacity={true} size={20}>
-        <View className="flex-col items-center">
+    <View className="flex-row items-center" {...props}>
+      {headerMainComponent ? (
+        headerMainComponent
+      ) : (
+        <TextL className="flex-1 font-bold">{headerTitle}</TextL>
+      )}
+      <TouchableOpacity onPress={onHeaderButtonPress}>
+        <TextS className="text-center font-bold">
           <FontAwesome name="plus" size={15} color="white" />
-          <Text className="text-sm font-bold text-white">
-            {headerButtonText}
-          </Text>
-        </View>
-      </IconButton>
+          {"\n"}
+          {headerButtonText}
+        </TextS>
+      </TouchableOpacity>
     </View>
   );
 };
 
-export type SummaryCompStructureProps = SummaryHeaderProps &
-  SummaryStyleOptions;
-
-export const SummaryComponent = ({
-  headerTitle,
-  headerButtonText,
-  onHeaderButtonPress,
-  styleOpts,
-  children,
-}: PropsWithChildren<SummaryCompStructureProps>) => {
+export const SummaryComponent = (
+  props: PropsWithChildren<SummaryHeaderProps>,
+) => {
+  const { children } = props;
   return (
-    <View className="flex-col">
-      <HeaderRow
-        headerTitle={headerTitle}
-        headerButtonText={headerButtonText}
-        onHeaderButtonPress={onHeaderButtonPress}
-        styleOpts={styleOpts}
-      />
-      {children}
-    </View>
+    <ContC>
+      <HeaderRow {...props} />
+      <View>{children}</View>
+    </ContC>
   );
 };

@@ -7,13 +7,12 @@ const expoConfig = ({ config }) => ({
   version: "0.2.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
-  splash: {
-    image: "./assets/icons/appicon-ios.png",
-    resizeMode: "contain",
-    backgroundColor: "#010101",
+  runtimeVersion: {
+    policy: "appVersion",
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/8ea03d1b-020b-4c3c-afd3-30f36bb961fe",
   },
   assetBundlePatterns: ["**/*"],
   web: {
@@ -21,10 +20,11 @@ const expoConfig = ({ config }) => ({
   },
   notification: {},
   ios: {
-    supportsTablet: true,
     bundleIdentifier: "app.vibefire.ios",
+    newArchEnabled: true,
+    supportsTablet: true,
     associatedDomains: ["applinks:vifr.io"],
-    icon: "./assets/icons/appicon-ios.png",
+    icon: "./assets/app-icon/app-icon-ios.png",
     config: { googleMapsApiKey: "***REMOVED***" },
     entitlements: {
       "com.apple.developer.applesignin": ["Default"],
@@ -40,9 +40,15 @@ const expoConfig = ({ config }) => ({
         },
       ],
     },
+    splash: {
+      image: "./assets/splash/splash-ios.png",
+      resizeMode: "contain",
+      backgroundColor: "#000000",
+    },
   },
   android: {
     package: "app.vibefire.and",
+    newArchEnabled: false,
     googleServicesFile: "./google-services.json",
     config: {
       googleMaps: {
@@ -50,8 +56,8 @@ const expoConfig = ({ config }) => ({
       },
     },
     adaptiveIcon: {
-      foregroundImage: "./assets/icons/appicon-and.png",
-      backgroundColor: "#010101",
+      foregroundImage: "./assets/app-icon/app-icon-and.png",
+      backgroundColor: "#000000",
     },
     intentFilters: [
       {
@@ -67,6 +73,11 @@ const expoConfig = ({ config }) => ({
         category: ["BROWSABLE", "DEFAULT"],
       },
     ],
+    splash: {
+      image: "./assets/splash/splash-and.png",
+      resizeMode: "contain",
+      backgroundColor: "#000000",
+    },
   },
   extra: {
     eas: {
@@ -76,20 +87,20 @@ const expoConfig = ({ config }) => ({
   plugins: [
     "expo-router",
     "expo-font",
-    // "./expo-plugins/with-modify-gradle.js",
+    "expo-secure-store",
+    [
+      "expo-camera",
+      {
+        cameraPermission: "Allow $(PRODUCT_NAME) to access your camera",
+        microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone",
+        recordAudioAndroid: true,
+      },
+    ],
     [
       "expo-image-picker",
       {
         photosPermission:
           "Allow $(PRODUCT_NAME) to accesses your photos. This allows you to upload photos from your library.",
-      },
-    ],
-    [
-      "react-native-vision-camera",
-      {
-        cameraPermissionText:
-          "$(PRODUCT_NAME) needs access to your Camera. This allows you to take photos and videos to upload to events and scan QR code.",
-        enableCodeScanner: true,
       },
     ],
     [
@@ -109,6 +120,14 @@ const expoConfig = ({ config }) => ({
         url: "https://sentry.io/",
         organization: "vibefire",
         project: "vibefire-native",
+      },
+    ],
+    [
+      "expo-build-properties",
+      {
+        android: {
+          minSdkVersion: 34,
+        },
       },
     ],
   ],

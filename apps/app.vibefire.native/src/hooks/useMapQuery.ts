@@ -1,36 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { type UseTRPCQueryResult } from "@trpc/react-query/dist/shared";
 import { useAtom, useSetAtom } from "jotai";
 
-import { type VibefireEventT } from "@vibefire/models";
+import { type MapPositionInfoT } from "@vibefire/models";
 import {
-  displayEventsInfoAtom,
-  mapPositionDateEventsQueryResultAtom as mapPositionDateEventsAtom,
+  mapDisplayableEventsAtom,
+  mapDisplayableEventsInfoAtom,
   mapPositionInfoAtom,
   selectedDateDTAtom,
-  todayDTAtom,
-  upcomingEventsQueryResultAtom,
 } from "@vibefire/shared-state";
 import { toDateStr } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
-const useUpcomingEventsQuery = () => {
-  const [todayDT] = useAtom(todayDTAtom);
-  const [selectedDateDT] = useAtom(selectedDateDTAtom);
-  const upcomingEvents = trpc.events.starredOwnedEvents.useQuery({
-    onDateIsoNTZ: selectedDateDT.toISO()!,
-    isUpcoming: selectedDateDT.hasSame(todayDT, "day"),
-  });
-  return upcomingEvents;
-};
-
-const useMapPositionDateEventsQuery = () => {
+const useGeoPeriodQuery = () => {
   const [mapPos] = useAtom(mapPositionInfoAtom);
   const [selectedDateDT] = useAtom(selectedDateDTAtom);
-  const mapQuery = trpc.events.mapPositionDatePublicEvents.useQuery(
+  const mapQuery = trpc.events.queryGeoPeriods.useQuery(
     mapPos === null
       ? {
-          timePeriod: "",
+          fromDate: toDateStr(selectedDateDT),
           northEast: {
             lat: 0,
             lng: 0,
@@ -39,81 +28,60 @@ const useMapPositionDateEventsQuery = () => {
             lat: 0,
             lng: 0,
           },
-          zoomLevel: 0,
         }
       : {
-          timePeriod: toDateStr(selectedDateDT),
+          fromDate: toDateStr(selectedDateDT),
           northEast: mapPos.northEast,
           southWest: mapPos.southWest,
-          zoomLevel: mapPos.zoomLevel,
         },
     { enabled: mapPos !== null },
   );
-  return mapQuery;
+  return { mapQuery, mapPos };
 };
 
-export const useDisplayEvents = () => {
-  const upcomingEventsQuery = useUpcomingEventsQuery();
-  const mapPositionDateEventsQuery = useMapPositionDateEventsQuery();
+export const useMapDisplayableEvents = () => {
+  const { mapQuery, mapPos } = useGeoPeriodQuery();
 
-  const setUpcomingEvents = useSetAtom(upcomingEventsQueryResultAtom);
-  const setMapPositionDateEvents = useSetAtom(mapPositionDateEventsAtom);
-
-  const setMapDisplayEventsInfo = useSetAtom(displayEventsInfoAtom);
-
-  const [mapDisplayEvents, setMapDisplayEvents] = useState<VibefireEventT[]>(
-    [],
+  const setMapDisplayEventsInfo = useSetAtom(mapDisplayableEventsInfoAtom);
+  const [mapDisplayableEvents, setMapDisplayableEvents] = useAtom(
+    mapDisplayableEventsAtom,
   );
-
   useEffect(() => {
-    const areLoading =
-      mapPositionDateEventsQuery.isLoading || upcomingEventsQuery.isLoading;
-    const areError =
-      mapPositionDateEventsQuery.isError || upcomingEventsQuery.isError;
-    const bothSuccess =
-      mapPositionDateEventsQuery.isSuccess && upcomingEventsQuery.isSuccess;
-
-    if (areLoading) {
+    if (mapQuery.isLoading) {
       setMapDisplayEventsInfo((v) => ({
         numberOfEvents: v.numberOfEvents,
         queryStatus: "loading",
       }));
       return;
     }
-    if (areError) {
+    if (mapQuery.isError) {
       setMapDisplayEventsInfo((v) => ({
         numberOfEvents: v.numberOfEvents,
         queryStatus: "done",
       }));
       return;
     }
-    if (bothSuccess) {
-      const upcomingEvents = upcomingEventsQuery.data;
-      const mapPositionDateEvents = mapPositionDateEventsQuery.data.filter(
-        (v) => upcomingEvents.findIndex((t) => t.id === v.id) === -1,
-      );
-
-      setUpcomingEvents(upcomingEvents);
-      setMapPositionDateEvents(mapPositionDateEvents);
-
-      const displayEvents = [...upcomingEvents, ...mapPositionDateEvents];
-
-      setMapDisplayEvents(displayEvents);
-      setMapDisplayEventsInfo({
-        numberOfEvents: displayEvents.length,
-        queryStatus: "done",
-      });
+    if (mapQuery.isSuccess) {
+      const d = mapQuery.data;
+      if (d.ok && mapPos) {
+        const visible = d.value.filter((e) => {
+          const expansionFactor = 1.1;
+          return (
+            e.location.position.lat >= mapPos.southWest.lat &&
+            e.location.position.lat <= mapPos.northEast.lat &&
+            e.location.position.lng <= mapPos.northEast.lng &&
+            e.location.position.lng >= mapPos.southWest.lng
+          );
+        });
+        setMapDisplayableEvents(visible);
+        setMapDisplayEventsInfo({
+          numberOfEvents: visible.length,
+          queryStatus: "done",
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    mapPositionDateEventsQuery.status,
-    mapPositionDateEventsQuery.data?.length,
-    upcomingEventsQuery.status,
-    upcomingEventsQuery.data?.length,
-    setMapDisplayEventsInfo,
-    setMapPositionDateEvents,
-    setUpcomingEvents,
-  ]);
+  }, [mapQuery.status]);
 
-  return mapDisplayEvents;
+  return mapDisplayableEvents;
 };

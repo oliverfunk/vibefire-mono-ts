@@ -1,27 +1,54 @@
-import { type ClerkSignedInAuthContext } from "@vibefire/services/clerk";
+import { Result, wrapToAsyncResult } from "@vibefire/models";
+import { FaunaCallAborted } from "@vibefire/services/fauna";
 
-export const safeGet = async <T>(
-  getter: Promise<T>,
-  errorMessage = "Not found",
-) => {
-  const res = await getter;
-  if (res === null) {
-    throw new Error(errorMessage);
+import { ManagerRuleViolation } from "./errors";
+import {
+  ManagerErrorResponse,
+  type ManagerAsyncResult,
+} from "./manager-result";
+
+export const nullablePromiseToRes = async <T>(
+  value: Promise<T | null | undefined>,
+  message: string,
+): ManagerAsyncResult<T> => {
+  const t = await value;
+  if (!!t) {
+    return Result.ok(t);
   }
-  return res;
+  return Result.err(
+    new ManagerErrorResponse({
+      code: "does_not_exist",
+      action: "",
+      message,
+    }),
+  );
 };
 
-export const checkUserIsPartOfOrg = (
-  userAc: ClerkSignedInAuthContext,
-  organisationId?: string,
-) => {
-  if (organisationId !== undefined) {
-    if (userAc.organization === undefined) {
-      throw new Error("User is not part of an organization");
-    }
-    if (organisationId !== userAc.organization.id) {
-      throw new Error("User is not part of that organization");
-    }
-    // check if the user has a role that is able to create events for the organization
-  }
+export const managerReturn = async <T>(
+  fn: () => Promise<T>,
+): ManagerAsyncResult<T> => {
+  return (await wrapToAsyncResult(fn)).map(
+    (v) => v,
+    (e) => {
+      console.error("managerReturn error", e);
+      if (e instanceof ManagerErrorResponse) {
+        return e;
+      }
+      if (e instanceof ManagerRuleViolation) {
+        return new ManagerErrorResponse({
+          code: "rule_violation",
+          action: "",
+          message: e.message,
+        });
+      }
+      if (e instanceof FaunaCallAborted && e.value.code !== "ise") {
+        return new ManagerErrorResponse(e.value);
+      }
+      return new ManagerErrorResponse({
+        code: "ise",
+        action: "manager",
+        message: "Something went wrong, we're looking into it. :(",
+      });
+    },
+  );
 };

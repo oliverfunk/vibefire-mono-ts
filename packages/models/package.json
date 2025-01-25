@@ -7,9 +7,6 @@
     "update": "pnpm update",
     "update-latest": "pnpm update --latest"
   },
-  "dependencies": {
-    "@sinclair/typebox": "0.32.30"
-  },
   "devDependencies": {
     "@vibefire/config": "0.1.0"
   }

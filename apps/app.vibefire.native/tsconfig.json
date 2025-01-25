@@ -10,7 +10,11 @@
       "#/*": ["./assets/*"],
       "!/*": ["./src/*"],
       "!/c/*": ["./src/components/*"],
-      "!api/*": ["../../packages/api/src/*"]
+      "!api/*": ["../../packages/api/src/*"],
+      "!models/*": ["../../packages/models/src/*"],
+      "!managers/*": ["../../packages/managers/src/*"],
+      "!utils/*": ["../../packages/utils/src/*"],
+      "!services/*": ["../../packages/services/src/*"]
     },
     "types": ["@types/jest", "nativewind/types", "webpack-env"]
   },

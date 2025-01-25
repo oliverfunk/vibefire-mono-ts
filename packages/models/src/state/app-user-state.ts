@@ -1,4 +1,4 @@
-import { type VibefireUserT } from "~/vibefire-user";
+import { type TModelVibefireUser } from "!models/data/vibefire-user";
 
 export type AppUserLoading = {
   state: "loading";
@@ -14,7 +14,7 @@ export type AppUserUnauthenticated = {
 export type AppUserAuthenticated = {
   state: "authenticated";
   userId: string;
-  userInfo: VibefireUserT;
+  userInfo: TModelVibefireUser;
 };
 export type AppUserState =
   | AppUserLoading

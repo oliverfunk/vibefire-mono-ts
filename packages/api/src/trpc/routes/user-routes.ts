@@ -1,6 +1,5 @@
-import { Type as t } from "@sinclair/typebox";
-
-import { tbValidator } from "@vibefire/utils";
+import { getUFUsersManager } from "@vibefire/managers/userfacing";
+import { tb, tbValidator } from "@vibefire/models";
 
 import {
   authedProcedure,
@@ -11,67 +10,67 @@ import {
 // These are public becuase you can view an event without being logged in
 // not the best
 // todo: idk how to fix it but should be fixed
+
 export const userRouter = router({
-  starEvent: publicProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          starIt: t.Boolean(),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.userId) {
-        return;
-      }
-      return await ctx.fauna.setStarEventForUser(
-        ctx.auth,
-        input.eventId,
-        input.starIt,
-      );
-    }),
+  // starEvent: publicProcedure
+  //   .input(
+  //     tbValidator(
+  //       tb.Object({
+  //         eventId: tb.String(),
+  //         starIt: tb.Boolean(),
+  //       }),
+  //     ),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     if (!ctx.auth.userId) {
+  //       return;
+  //     }
+  //     return await getUFUsersManager().setStarEventForUser(
+  //       ctx.auth,
+  //       input.eventId,
+  //       input.starIt,
+  //     );
+  //   }),
   hideEvent: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          report: t.Boolean(),
+        tb.Object({
+          eventId: tb.String(),
         }),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       if (!ctx.auth.userId) {
         return;
       }
-      return await ctx.fauna.hideEventForUser(ctx.auth, input.eventId);
+      return true;
     }),
-  blockOrganiser: publicProcedure
+  blockAndReportOrganiser: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          organiserId: t.String(),
+        tb.Object({
+          ownershipRefId: tb.String(),
         }),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       if (!ctx.auth.userId) {
         return;
       }
-      return await ctx.fauna.blockOrganiserForUser(ctx.auth, input.organiserId);
+      return true;
     }),
-  registerToken: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          token: t.String(),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.userRegisterPushToken(ctx.auth, input.token);
-    }),
-  unregisterToken: authedProcedure.mutation(async ({ ctx }) => {
-    return await ctx.fauna.userUnregisterPushToken(ctx.auth);
-  }),
+  // registerToken: authedProcedure
+  //   .input(
+  //     tbValidator(
+  //       tb.Object({
+  //         token: tb.String(),
+  //       }),
+  //     ),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     return await ctx.fauna.userRegisterPushToken(ctx.auth, input.token);
+  //   }),
+  // unregisterToken: authedProcedure.mutation(async ({ ctx }) => {
+  //   return await ctx.fauna.userUnregisterPushToken(ctx.auth);
+  // }),
 });

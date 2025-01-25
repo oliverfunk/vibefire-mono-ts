@@ -10,6 +10,7 @@ const config = {
   plugins: ["no-relative-import-paths"],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
+    "turbo/no-undeclared-env-vars": "off",
     "no-relative-import-paths/no-relative-import-paths": [
       "warn",
       { allowSameFolder: true },

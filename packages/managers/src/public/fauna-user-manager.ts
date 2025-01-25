@@ -1,19 +1,18 @@
 import { Value } from "@sinclair/typebox/value";
 import { Client } from "fauna";
 import { DateTime } from "luxon";
-import type { PartialDeep } from "type-fest";
 
 import {
+  ModelVibefireUser,
+  TModelVibefireEventimelineElementSchema,
   VibefireEventManagementSchema,
   VibefireEventSchema,
-  VibefireEventTimelineElementSchema,
-  VibefireUserSchema,
   type MapQueryT,
+  type TModelVibefireEvent,
+  type TModelVibefireEventimelineElementT,
+  type TModelVibefireGroup,
   type VibefireEventImagesT,
   type VibefireEventLocationT,
-  type VibefireEventT,
-  type VibefireEventTimelineElementT,
-  type VibefireGroupT,
   type VibefireUserInfoT,
 } from "@vibefire/models";
 import {
@@ -42,13 +41,14 @@ import {
   updateEvent,
   updateUserInfo,
 } from "@vibefire/services/fauna";
+import type { PartialDeep } from "@vibefire/utils";
 import {
   displayPeriodsBetween,
   displayPeriodsFor,
   h3ToH3Parents,
-  isoNTZToTZEpochSecs,
   latLngPositionToH3,
   nowAtUTC,
+  ntzToTZEpochSecs,
   removeUndef,
   tbValidator,
   trimAndCropText,
@@ -167,7 +167,7 @@ export class FaunaUserManager {
 
   async eventCreate(
     userAc: ClerkSignedInAuthContext,
-    title: VibefireEventT["title"],
+    title: TModelVibefireEvent["title"],
     organisationId?: string,
   ) {
     checkUserIsPartOfOrg(userAc, organisationId);
@@ -237,7 +237,7 @@ export class FaunaUserManager {
 
     const newEvent = Value.Create(
       VibefireEventSchema,
-    ) as PartialDeep<VibefireEventT>;
+    ) as PartialDeep<TModelVibefireEvent>;
 
     newEvent.state = "draft";
     newEvent.published = false;
@@ -281,9 +281,9 @@ export class FaunaUserManager {
     userAc: ClerkSignedInAuthContext,
     eventId: string,
     update: {
-      title?: VibefireEventT["title"];
-      description?: VibefireEventT["description"];
-      tags?: VibefireEventT["tags"];
+      title?: TModelVibefireEvent["title"];
+      description?: TModelVibefireEvent["description"];
+      tags?: TModelVibefireEvent["tags"];
       timeStartIsoNTZ?: string;
       timeEndIsoNTZ?: string | null;
       position?: VibefireEventLocationT["position"];
@@ -306,7 +306,7 @@ export class FaunaUserManager {
       "Event not found",
     );
 
-    const updateData: PartialDeep<VibefireEventT> = {
+    const updateData: PartialDeep<TModelVibefireEvent> = {
       timeZone: dbEvent.timeZone,
       timeStartIsoNTZ: dbEvent.timeStartIsoNTZ,
       timeEndIsoNTZ: dbEvent.timeEndIsoNTZ,
@@ -357,7 +357,7 @@ export class FaunaUserManager {
           VibefireEventSchema.properties.timeStartIsoNTZ,
         )(timeStartIsoNTZ);
         updateData.timeStartIsoNTZ = timeStartIsoNTZ;
-        updateData.timeStart = isoNTZToTZEpochSecs(timeStartIsoNTZ, tz);
+        updateData.timeStart = ntzToTZEpochSecs(timeStartIsoNTZ, tz);
       }
 
       if (timeEndIsoNTZ !== undefined) {
@@ -369,7 +369,7 @@ export class FaunaUserManager {
             VibefireEventSchema.properties.timeEndIsoNTZ,
           )(timeEndIsoNTZ);
           updateData.timeEndIsoNTZ = timeEndIsoNTZ;
-          updateData.timeEnd = isoNTZToTZEpochSecs(timeEndIsoNTZ!, tz);
+          updateData.timeEnd = ntzToTZEpochSecs(timeEndIsoNTZ!, tz);
         }
       }
 
@@ -422,14 +422,14 @@ export class FaunaUserManager {
         );
 
         if (updateData.timeStartIsoNTZ) {
-          updateData.timeStart = isoNTZToTZEpochSecs(
+          updateData.timeStart = ntzToTZEpochSecs(
             updateData.timeStartIsoNTZ,
             posTZ,
           );
         }
 
         if (updateData.timeEndIsoNTZ) {
-          updateData.timeEnd = isoNTZToTZEpochSecs(
+          updateData.timeEnd = ntzToTZEpochSecs(
             updateData.timeEndIsoNTZ,
             posTZ,
           );
@@ -466,13 +466,13 @@ export class FaunaUserManager {
 
     // timeline
     if (setTimeline.length > 0) {
-      const updateTimeline: VibefireEventTimelineElementT[] = [];
+      const updateTimeline: TModelVibefireEventimelineElementT[] = [];
       for (const el of setTimeline) {
-        let tle = Value.Create(VibefireEventTimelineElementSchema);
+        let tle = Value.Create(TModelVibefireEventimelineElementSchema);
         tle.id = el.id;
         tle.timeIsoNTZ = el.timeIsoNTZ;
         tle.message = trimAndCropText(el.message, 500);
-        tle = tbValidator(VibefireEventTimelineElementSchema)(tle);
+        tle = tbValidator(TModelVibefireEventimelineElementSchema)(tle);
         updateTimeline.push(tle);
       }
       updateData.timeline = updateTimeline;
@@ -500,7 +500,7 @@ export class FaunaUserManager {
 
   async _setEventReadyIfPossible(
     organiserId: string,
-    e: PartialDeep<VibefireEventT>,
+    e: PartialDeep<TModelVibefireEvent>,
     publish = false,
   ) {
     let event;
@@ -529,7 +529,7 @@ export class FaunaUserManager {
 
     await createEventManagement(this.faunaClient, em);
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       state: "ready",
     };
     if (publish) {
@@ -584,7 +584,7 @@ export class FaunaUserManager {
       throw new Error("Cannot publish, event is not 'ready'");
     }
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       published: true,
     };
 
@@ -601,7 +601,7 @@ export class FaunaUserManager {
     checkUserIsPartOfOrg(userAc, organisationId);
     const organiserId = organisationId || userAc.userId;
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       published: false,
     };
 
@@ -613,7 +613,7 @@ export class FaunaUserManager {
   async eventSetVisibility(
     userAc: ClerkSignedInAuthContext,
     eventId: string,
-    visibility: VibefireEventT["visibility"],
+    visibility: TModelVibefireEvent["visibility"],
     organisationId?: string,
   ): Promise<void> {
     checkUserIsPartOfOrg(userAc, organisationId);
@@ -627,7 +627,7 @@ export class FaunaUserManager {
       );
     }
 
-    const updateData: Partial<VibefireEventT> = {
+    const updateData: Partial<TModelVibefireEvent> = {
       visibility,
     };
 
@@ -661,7 +661,7 @@ export class FaunaUserManager {
   }
 
   async eventsFromMapQuery(userAc: ClerkAuthContext, query: MapQueryT) {
-    const { northEast, southWest, timePeriod, zoomLevel } = query;
+    const { northEast, southWest, datePeriod: timePeriod, zoomLevel } = query;
 
     // console.log();
     // console.log("timePeriod", timePeriod);
@@ -754,7 +754,7 @@ export class FaunaUserManager {
         dateCreatedUTC: "2021-09-01T00:00:00.000Z",
         dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
         ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-        ownerType: "user",
+        groupOwnerType: "user",
         managerIds: [],
         type: "public",
         socials: {
@@ -772,11 +772,11 @@ export class FaunaUserManager {
         dateCreatedUTC: "2021-09-01T00:00:00.000Z",
         dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
         ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-        ownerType: "user",
+        groupOwnerType: "user",
         managerIds: [],
         type: "public",
       },
-    ] as VibefireGroupT[];
+    ] as TModelVibefireGroup[];
     return res;
   }
 
@@ -790,147 +790,12 @@ export class FaunaUserManager {
       dateCreatedUTC: "2021-09-01T00:00:00.000Z",
       dateUpdatedUTC: "2021-09-01T00:00:00.000Z",
       ownerId: "user_2ZD8UpF0NxOoT6BJ08vX5DRvbLZ",
-      ownerType: "user",
+      groupOwnerType: "user",
       managerIds: [],
       type: "public",
-    } as VibefireGroupT;
+    } as TModelVibefireGroup;
     return res;
   }
 
-  // #endregion
-
-  // #region User
-
-  async userCreate(
-    aid: string,
-    firstName: string,
-    primaryEmail: string | undefined,
-    primaryPhone: string | undefined,
-    birthdayISO: string | undefined,
-  ) {
-    if (!aid) {
-      throw new Error("aid is required");
-    }
-    if (firstName.length < 2) {
-      throw new Error("firstName must be at least 2 characters long");
-    }
-
-    firstName = trimAndCropText(firstName, 100);
-
-    if (primaryEmail) {
-      primaryEmail = tbValidator(VibefireUserSchema.properties.contactEmail)(
-        trimAndCropText(primaryEmail, 500),
-      );
-    }
-    if (primaryPhone) {
-      primaryPhone = tbValidator(VibefireUserSchema.properties.phoneNumber)(
-        trimAndCropText(primaryPhone, 100),
-      );
-    }
-
-    const dateOfBirth = birthdayISO
-      ? DateTime.fromISO(birthdayISO).toISODate() ?? undefined
-      : undefined;
-
-    const u = Value.Create(VibefireUserSchema);
-
-    u.aid = aid;
-    u.name = firstName;
-    u.contactEmail = primaryEmail;
-    u.phoneNumber = primaryPhone;
-    u.dateOfBirth = dateOfBirth;
-
-    removeUndef(u);
-
-    const res = await createUser(this.faunaClient, u);
-    return res;
-  }
-
-  async getUserInfo(userAc: ClerkSignedInAuthContext) {
-    const retries = 3;
-    const retryTimeout = 2000;
-
-    let res = await getUserByAid(this.faunaClient, userAc.userId);
-    if (!res) {
-      for (let i = 0; i < retries; i++) {
-        await new Promise((resolve) => setTimeout(resolve, retryTimeout));
-        res = await getUserByAid(this.faunaClient, userAc.userId);
-      }
-    }
-
-    if (!res) {
-      throw new Error("User not found");
-    }
-
-    res = tbValidator(VibefireUserSchema)(res);
-    return res;
-  }
-
-  async updateUserInfo(
-    userAc: ClerkSignedInAuthContext,
-    userInfo: Partial<VibefireUserInfoT>,
-  ) {
-    const res = await updateUserInfo(this.faunaClient, userAc.userId, userInfo);
-    return res;
-  }
-
-  async deleteUserAccount(userAc: ClerkSignedInAuthContext) {
-    const userAid = userAc.userId;
-    // todo: will take too long, need another way
-
-    // todo: This is a potential security issue, as it allows users to
-    // delete their accounts, and then create new ones, and then
-    // delete them again, etc.! Need to add a cooldown period
-    // before a user's account will actually be deleted.
-
-    // const userEvents = await this.eventsByUser(userAc);
-    // if (userEvents.length > 0) {
-    //   for (const event of userEvents) {
-    //     await this.eventDelete(userAc, event.id!);
-    //   }
-    // }
-    console.log("deleting user", JSON.stringify(userAid, null, 2));
-    await getClerkManager().userDeleteProfile(userAid);
-    await deleteUser(this.faunaClient, userAc.userId);
-  }
-
-  async setStarEventForUser(
-    userAc: ClerkSignedInAuthContext,
-    eventId: string,
-    starIt: boolean,
-  ) {
-    if (starIt) {
-      await starEvent(this.faunaClient, userAc.userId, eventId);
-    } else {
-      await unstarEvent(this.faunaClient, userAc.userId, eventId);
-    }
-  }
-
-  async hideEventForUser(userAc: ClerkSignedInAuthContext, eventId: string) {
-    await hideEvent(this.faunaClient, userAc.userId, eventId);
-  }
-
-  async blockOrganiserForUser(
-    userAc: ClerkSignedInAuthContext,
-    organiserId: string,
-  ) {
-    if (organiserId === userAc.userId) {
-      throw new Error("Cannot block yourself");
-    }
-    await blockOrganiser(this.faunaClient, userAc.userId, organiserId);
-  }
-
-  async userRegisterPushToken(
-    userAc: ClerkSignedInAuthContext,
-    token: string,
-  ): Promise<void> {
-    await setUserPushToken(this.faunaClient, userAc.userId, token);
-  }
-
-  async userUnregisterPushToken(
-    userAc: ClerkSignedInAuthContext,
-  ): Promise<void> {
-    await clearUserPushToken(this.faunaClient, userAc.userId);
-  }
   // #endregion
 }

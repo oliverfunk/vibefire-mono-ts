@@ -1,28 +1,32 @@
-import { Platform } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import { useTsQueryParam } from "!/hooks/useTs";
+import { useExpandBottomSheet } from "!/hooks/useExpandBottomSheet";
+import { useOnFocusUserNotAuthedRedirect } from "!/hooks/useUserAuthedRedirect";
 
-import { BottomPanelModal } from "!/c/bottom-panel/BottomPanelModal";
-import { CreateEvent } from "!/c/bottom-panel/create-event/CreateEvent";
+import {
+  CreateEventFromPreviousSheet,
+  CreateEventSheet,
+} from "!/features/event/create";
+import { ErrorSheet, LoadingSheet } from "!/components/misc/sheet-utils";
+import { SuspenseWithError } from "!/components/misc/SuspenseWithError";
 
 const Screen = () => {
   const { fromPrevious } = useLocalSearchParams<{
     fromPrevious?: string;
   }>();
 
-  const ts = useTsQueryParam();
+  useOnFocusUserNotAuthedRedirect();
+  useExpandBottomSheet();
 
   return (
-    <BottomPanelModal
-      modalPath="event/create"
-      headerText={"Create Event"}
-      enablePanDownToClose={Platform.OS === "android" ? false : true}
-      snapPoints={["80%"]}
-      ts={ts}
+    <SuspenseWithError
+      LoadingFallback={<LoadingSheet />}
+      ErrorFallback={({ error, resetErrorBoundary }) => (
+        <ErrorSheet retryCallback={resetErrorBoundary} />
+      )}
     >
-      <CreateEvent fromPrevious={!!fromPrevious} />
-    </BottomPanelModal>
+      {fromPrevious ? <CreateEventFromPreviousSheet /> : <CreateEventSheet />}
+    </SuspenseWithError>
   );
 };
 export default Screen;

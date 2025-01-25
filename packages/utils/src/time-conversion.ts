@@ -1,12 +1,12 @@
 import { DateTime } from "luxon";
 
-export const MONTH_DATE_TIME_FORMAT = "LLL d, T";
-export const MONTH_DATE_TIME_LB_FORMAT = "LLL d\nT";
+export const DOW_MONTH_DATE_TIME_FORMAT = "ccc dd LLL h:mm a";
+// export const DOW_MONTH_DATE_TIME_FORMAT = "ccc ff";
 export const DATE_STR_FORMAT = "yyyyMMdd";
 
 export const toDateStr = (dt: DateTime) => dt.toFormat(DATE_STR_FORMAT);
 export const toMonthDateTimeStr = (dt: DateTime) =>
-  dt.toFormat(MONTH_DATE_TIME_FORMAT);
+  dt.toFormat(DOW_MONTH_DATE_TIME_FORMAT);
 
 export const nowAtUTC = () => DateTime.now().setZone("utc");
 
@@ -16,18 +16,21 @@ export const nowAsUTC = () =>
 export const nowAsUTCNoTime = () =>
   nowAsUTC().set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
-export const isoNTZToUTCDateTime = (isoStr: string) => {
+export const nowAsUTCNoMins = () =>
+  nowAsUTC().set({ minute: 0, second: 0, millisecond: 0 });
+
+export const ntzToDateTime = (isoStr: string) => {
   return DateTime.fromISO(isoStr, { zone: "utc" });
 };
 
-export const isoNTZToTZDateTime = (isoStr: string, timeZone: string) => {
-  return isoNTZToUTCDateTime(isoStr).setZone(timeZone, {
+export const ntzToTZDateTime = (isoStr: string, timeZone: string) => {
+  return ntzToDateTime(isoStr).setZone(timeZone, {
     keepLocalTime: true,
   });
 };
 
-export const isoNTZToTZEpochSecs = (isoStr: string, timeZone: string) => {
-  return isoNTZToTZDateTime(isoStr, timeZone).toUnixInteger();
+export const ntzToTZEpochSecs = (isoStr: string, timeZone: string) => {
+  return ntzToTZDateTime(isoStr, timeZone).toUnixInteger();
 };
 
 export const displayPeriodsBetween = (
@@ -35,8 +38,8 @@ export const displayPeriodsBetween = (
   endIsoStr?: string | null,
   hardLimit = 20,
 ) => {
-  const start = isoNTZToUTCDateTime(startIsoStr);
-  const end = endIsoStr ? isoNTZToUTCDateTime(endIsoStr) : undefined;
+  const start = ntzToDateTime(startIsoStr);
+  const end = endIsoStr ? ntzToDateTime(endIsoStr) : undefined;
 
   const periods = [];
 
@@ -58,7 +61,7 @@ export const displayPeriodsFor = (
   startIsoStr: string,
   numberOfDays: number,
 ) => {
-  const start = isoNTZToUTCDateTime(startIsoStr);
+  const start = ntzToDateTime(startIsoStr);
 
   const periods = [];
 
@@ -69,4 +72,15 @@ export const displayPeriodsFor = (
   } while (periods.length < numberOfDays);
 
   return periods;
+};
+
+export const dateIndexesFor = (
+  dt: DateTime,
+  numberOfDays: number,
+): number[] => {
+  const indexes = [parseInt(toDateStr(dt))];
+  for (let i = 0; i < numberOfDays; i++) {
+    indexes.push(dt.plus({ day: i }).toUnixInteger());
+  }
+  return indexes;
 };

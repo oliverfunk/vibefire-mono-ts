@@ -1,7 +1,10 @@
 import { useMemo } from "react";
-import { type PartialDeep } from "type-fest";
 
-import { type VibefireEventT, type VibefireGroupT } from "@vibefire/models";
+import {
+  type TModelVibefireEvent,
+  type TModelVibefireGroup,
+} from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
 export const useSortByTime = <T extends object>(
   data: T[],
@@ -38,7 +41,7 @@ export const useSortByTime = <T extends object>(
 };
 
 export const useSortedEvents = (
-  events: PartialDeep<VibefireEventT>[],
+  events: PartialDeep<TModelVibefireEvent>[],
   p: {
     sortAsc?: boolean;
     sliceCount?: number;
@@ -46,21 +49,20 @@ export const useSortedEvents = (
 ) => {
   return useSortByTime(events, {
     extract: (e) =>
-      e?.timeStartIsoNTZ ? new Date(e.timeStartIsoNTZ) : undefined,
+      e.times?.ntzStart ? new Date(e.times?.ntzStart) : undefined,
     ...p,
   });
 };
 
 export const useSortedGroupsByUpdated = (
-  events: VibefireGroupT[],
+  events: TModelVibefireGroup[],
   p: {
     sortAsc?: boolean;
     sliceCount?: number;
   },
 ) => {
   return useSortByTime(events, {
-    extract: (g) =>
-      g?.dateUpdatedUTC ? new Date(g.dateUpdatedUTC) : undefined,
+    extract: (g) => undefined,
     ...p,
   });
 };

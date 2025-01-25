@@ -3,8 +3,12 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
 
+import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
-import { useLocationOnce } from "!/hooks/useLocation";
+import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLocationSetter";
+
+import { EventMapMarker } from "!/c/event/EventMapMarker";
+import { isCoordZeroZero } from "!utils/general";
 
 export const LocationSelectionMap = (props: {
   initialPosition?: CoordT;
@@ -16,57 +20,18 @@ export const LocationSelectionMap = (props: {
     props;
 
   const mvRef = useRef<MapView>(null);
-  const [mapReady, setMapReady] = useState(false);
+
+  const userLocationOnce = useUserLocationWithMapCameraSetter(
+    mvRef,
+    initialPosition,
+  );
 
   const [selectedPosition, setSelectedPosition] = useState<CoordT | undefined>(
     initialPosition,
   );
 
-  const { location, locPermDeniedMsg } = useLocationOnce();
-  useEffect(() => {
-    if (!mapReady) {
-      return;
-    }
-
-    if (mvRef.current === null) {
-      return;
-    }
-
-    if (initialPosition) {
-      mvRef.current.setCamera({
-        center: {
-          latitude: initialPosition.lat,
-          longitude: initialPosition.lng,
-        },
-        zoom: 16,
-      });
-    } else {
-      if (!location) {
-        return;
-      }
-      mvRef.current.setCamera({
-        center: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
-        zoom: 16,
-      });
-    }
-  }, [initialPosition, location, mapReady]);
-
-  // useEffect(() => {
-  //   if (locPermDeniedMsg !== null) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Could not get your location",
-  //       text2: locPermDeniedMsg,
-  //       position: "bottom",
-  //       bottomOffset: 100,
-  //     });
-  //   }
-  // }, [locPermDeniedMsg]);
-
-  const positionAddressInfoMut = trpc.events.positionAddressInfo.useMutation();
+  const positionAddressInfoMut =
+    trpc.services.positionAddressInfo.useMutation();
   useEffect(() => {
     if (!onAddressDescription) {
       return;
@@ -82,12 +47,16 @@ export const LocationSelectionMap = (props: {
         position: selectedPosition,
       })
       .then((res) => {
-        onAddressDescription(res);
+        if (!res.ok) {
+          console.log("could not get address description");
+          return;
+        }
+        onAddressDescription(res.value);
       })
       .catch((err) => {
-        console.error(JSON.stringify(err, null, 2));
-        onAddressDescription("");
+        console.log(JSON.stringify(err, null, 2));
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPosition]);
 
   return (
@@ -95,9 +64,18 @@ export const LocationSelectionMap = (props: {
       ref={mvRef}
       className="h-full w-full"
       provider={PROVIDER_GOOGLE}
-      onMapReady={() => {
-        setMapReady(true);
-      }}
+      initialCamera={
+        userLocationOnce
+          ? defaultCameraForPosition({
+              lat: userLocationOnce.coords.latitude,
+              lng: userLocationOnce.coords.longitude,
+            })
+          : undefined
+      }
+      onStartShouldSetResponderCapture={() => true}
+      onStartShouldSetResponder={() => true}
+      onMoveShouldSetResponder={() => true}
+      onMoveShouldSetResponderCapture={() => true}
       zoomControlEnabled={false}
       pitchEnabled={false}
       toolbarEnabled={false}
@@ -138,13 +116,15 @@ export const LocationSelectionMap = (props: {
             }
       }
     >
-      {selectedPosition && (
+      {selectedPosition && !isCoordZeroZero(selectedPosition) && (
         <Marker
           coordinate={{
             latitude: selectedPosition.lat,
             longitude: selectedPosition.lng,
           }}
-        />
+        >
+          <EventMapMarker vibeRating={0} />
+        </Marker>
       )}
     </MapView>
   );

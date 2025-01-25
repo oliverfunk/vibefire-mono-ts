@@ -1,6 +1,13 @@
+import "!/global.css";
+
 import { useEffect, type ReactNode } from "react";
-import { StatusBar } from "react-native";
+import { StatusBar, View } from "react-native";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
 import * as Linking from "expo-linking";
+import * as Notifications from "expo-notifications";
 import {
   Stack,
   useGlobalSearchParams,
@@ -16,14 +23,17 @@ import {
 
 import { useRegisterPushToken } from "!/hooks/useRegisterPushToken";
 
-import AppProviders, { routingInstrumentation } from "!/providers";
-
-import "!/global.css";
-
-import * as Notifications from "expo-notifications";
-
-import { EventMap } from "!/c/event/EventMap";
+import { GeoQueryMap } from "!/features/geo-query/GeoQueryMap";
+import { VfActionButton } from "!/features/vf-action-button";
+import { BottomPanel } from "!/components/bottom-panel/BottomPanel";
 import { NoTopContainer } from "!/c/misc/NoTopContainer";
+import AppProviders, { navigationIntegration } from "!/providers";
+
+// strict warning messages coming from tod picker/carousel
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 Notifications.setNotificationHandler({
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -35,6 +45,12 @@ Notifications.setNotificationHandler({
 });
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
 
 const PostProviders = (props: { children: ReactNode }) => {
   const { children } = props;
@@ -48,8 +64,8 @@ const PostProviders = (props: { children: ReactNode }) => {
   const navContRef = useNavigationContainerRef();
 
   useEffect(() => {
-    if (navContRef) {
-      routingInstrumentation.registerNavigationContainer(navContRef);
+    if (navContRef?.current) {
+      navigationIntegration.registerNavigationContainer(navContRef);
     }
   }, [navContRef]);
 
@@ -65,49 +81,52 @@ const PostProviders = (props: { children: ReactNode }) => {
     }
   }, [deeplinkURL]);
 
-  useEffect(() => {
-    console.log("routing pathname", pathname);
-    console.log("routing params", JSON.stringify(params, null, 2));
-  }, [pathname, params]);
+  // useEffect(() => {
+  //   console.log("routing pathname", pathname);
+  //   console.log("routing params", JSON.stringify(params, null, 2));
+  // }, [pathname, params]);
 
   return children;
 };
 
-const RootLayout = () => {
+export default function HomeLayout() {
   const [fontsLoaded, fontsError] = useFonts({
     Inter_500Medium,
     Inter_700Bold,
   });
 
   useEffect(() => {
-    void (async () => {
-      if (fontsLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    })();
-  }, [fontsLoaded]);
+    if (fontsLoaded || fontsError) {
+      SplashScreen.hide();
+    }
+  }, [fontsLoaded, fontsError]);
 
   if (fontsError) console.warn(fontsError);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontsError) {
     return null;
   }
 
   return (
     <AppProviders>
       <PostProviders>
-        <StatusBar barStyle={"dark-content"} />
+        <StatusBar barStyle={"light-content"} />
         <NoTopContainer>
-          <EventMap />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          />
+          <GeoQueryMap />
+          {/* Cannot dyn. set the bottom's, 2*handle height + 10 for ios, +15 for and */}
+
+          <VfActionButton />
+
+          <BottomPanel>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "black" },
+              }}
+            />
+          </BottomPanel>
         </NoTopContainer>
       </PostProviders>
     </AppProviders>
   );
-};
-
-export default RootLayout;
+}

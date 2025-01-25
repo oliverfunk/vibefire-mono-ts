@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -12,46 +14,49 @@ type Bindings = {
   CF_IMAGES_API_KEY: string;
   CLERK_PEM: string;
   CLERK_SECRET_KEY: string;
-  FAUNA_SECRET: string;
+  FAUNA_ROLE_KEY: string;
   SUPABASE_SECRET: string;
   GOOGLE_MAPS_API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-app.use("*", timing());
+app.use(timing());
 
-app.onError((err, c) => {
-  console.error(JSON.stringify(err, null, 2));
-  if (err instanceof HTTPException) {
-    // Get the custom response
-    return err.getResponse();
-  }
-  return c.text("internal error", 500);
-});
+// app.onError((err, c) => {
+//   console.error(JSON.stringify(err, null, 2));
+//   if (err instanceof HTTPException) {
+//     // Get the custom response
+//     return err.getResponse();
+//   }
+//   return c.text("internal error!", 500);
+// });
 
-app.all(`${BASEPATH_TRPC}/*`, (c, next) => {
-  const trpcHandler = trpcServer({
+app.all(
+  `${BASEPATH_TRPC}/*`,
+  trpcServer({
     router: trpcRouter,
     onError({ error }) {
       console.error(error);
     },
-    createContext: async (opts) =>
-      await createContext({
+    createContext: (opts, c) =>
+      createContext({
         ...opts,
         env: {
-          cfAccountId: c.env.CF_ACCOUNT_ID,
-          cfImagesApiKey: c.env.CF_IMAGES_API_KEY,
-          clerkPemString: c.env.CLERK_PEM,
-          clerkSecretKey: c.env.CLERK_SECRET_KEY,
-          faunaClientKey: c.env.FAUNA_SECRET,
-          supabaseClientKey: c.env.SUPABASE_SECRET,
-          googleMapsApiKey: c.env.GOOGLE_MAPS_API_KEY,
+          FAUNA_ROLE_KEY: c.env.FAUNA_ROLE_KEY,
+
+          CLERK_PEM_STRING: c.env.CLERK_PEM_STRING,
+          CLERK_SECRET_KEY: c.env.CLERK_SECRET_KEY,
+          CLERK_PUBLISHABLE_KEY: c.env.CLERK_PUBLISHABLE_KEY,
+
+          GOOGLE_MAPS_API_KEY: c.env.GOOGLE_MAPS_API_KEY,
+
+          CF_ACCOUNT_ID: c.env.CF_ACCOUNT_ID,
+          CF_IMAGES_API_KEY: c.env.CF_IMAGES_API_KEY,
         },
       }),
-  });
-  return trpcHandler(c, next);
-});
+  }),
+);
 
 app.route(BASEPATH_REST, restRouter);
 

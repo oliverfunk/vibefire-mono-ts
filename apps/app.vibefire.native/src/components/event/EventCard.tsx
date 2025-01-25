@@ -1,101 +1,58 @@
 import { Pressable, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome } from "@expo/vector-icons";
-import { type DateTime } from "luxon";
+import { FontAwesome6 } from "@expo/vector-icons";
 
-import { type VibefireEventT } from "@vibefire/models";
-import { organisationProfileImagePath } from "@vibefire/utils";
+import {
+  type TModelVibefireEvent,
+  type TModelVibefireOwnership,
+} from "@vibefire/models";
+import { type PartialDeep } from "@vibefire/utils";
 
-import { IconButton } from "!/c/button/IconButton";
-import { StandardImage } from "!/c/image/StandardImage";
 import { VibefireImage } from "!/c/image/VibefireImage";
+import { OrganiserBarView } from "!/c/OrganiserBarView";
 
-type EventCardProps = {
-  state?: VibefireEventT["state"];
-  published: VibefireEventT["published"];
-  eventInfo: {
-    title: string;
-    organiserId: string;
-    organiserName: string;
-    organiserType: VibefireEventT["organiserType"];
-    addressDescription?: string;
-    timeStart?: DateTime;
-    timeEnd?: DateTime;
-    bannerImgKey?: string;
-  };
+import { EventInfoAddressDescBar, EventInfoTimesBar } from "./EventInfoBars";
+
+export const EventCard = (props: {
+  event: PartialDeep<TModelVibefireEvent>;
   onPress: () => void;
-  onCrossPress?: () => void;
-  showStatusBanner?: boolean;
-};
-
-export const EventCard = ({
-  state,
-  published,
-  eventInfo: event,
-  onPress,
-  onCrossPress,
-  showStatusBanner = false,
-}: EventCardProps) => {
+  showStatus?: boolean;
+}) => {
+  const { event, onPress, showStatus = false } = props;
   return (
-    <Pressable className="relative mb-[20px] items-center" onPress={onPress}>
+    <Pressable
+      className="relative items-center overflow-hidden rounded-2xl bg-black"
+      onPress={onPress}
+    >
       <VibefireImage
-        imgIdKey={event.bannerImgKey}
-        rounded={true}
+        imgIdKey={event?.images?.bannerImgKeys?.[0]}
         alt="Event Banner"
       />
 
-      {showStatusBanner && state && (
-        <View className="absolute top-[50%] w-full flex-row items-center justify-center bg-black/50 py-5">
-          <Text className="text-2xl font-bold text-white">
-            {state == "draft"
-              ? "Draft"
-              : state === "ready"
-                ? published
-                  ? "Published"
-                  : "Ready to publish"
-                : "Archived"}
-          </Text>
-        </View>
-      )}
-
+      {/* top */}
       <LinearGradient
-        className="absolute left-0 top-0 w-full flex-row items-center rounded-t-xl p-2"
-        colors={["rgba(50, 40, 40, 1)", "rgba(0,0,0,0)"]}
+        className="absolute left-0 top-0 w-full flex-row p-4"
+        colors={["rgba(0, 0, 0, 1)", "rgba(0,0,0,0)"]}
         locations={[0, 1]}
       >
-        {event.organiserType === "group" ? (
-          <StandardImage
-            cn="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white"
-            contentFit="cover"
-            source={organisationProfileImagePath(event.organiserId)}
-            alt="Event Organizer Profile Picture"
+        <View className="flex-1">
+          <OrganiserBarView
+            ownerRef={event.ownerRef as TModelVibefireOwnership}
+            showLeaveJoin={false}
+            showThreeDots={false}
           />
-        ) : (
-          <View className="h-10 w-10 flex-none items-center justify-center rounded-full border-2 border-white bg-black/80">
-            <Text className="text-lg text-white">
-              {event.organiserName.at(0)!.toUpperCase()}
-              {"."}
-            </Text>
-          </View>
-        )}
-        <Text className="ml-2 text-lg text-white">{event.organiserName}</Text>
+        </View>
+        {showStatus &&
+          (event.state === 1 ? (
+            <FontAwesome6 name="eye" size={15} color="white" />
+          ) : (
+            <FontAwesome6 name="eye-slash" size={15} color="red" />
+          ))}
       </LinearGradient>
 
-      {onCrossPress && (
-        <View className="absolute right-[2%] top-[2%]">
-          <IconButton
-            onPress={() => {
-              onCrossPress();
-            }}
-            cn="bg-black/80"
-          >
-            <FontAwesome name="close" size={15} color="white" />
-          </IconButton>
-        </View>
-      )}
-
+      {/* bottom */}
       <LinearGradient
-        className="absolute bottom-[-20px] left-0 w-full rounded-b-xl p-2 pt-4"
+        className="absolute bottom-0 left-0 w-full flex-col space-y-0 p-4"
         colors={["rgba(0,0,0,0)", "rgba(0,0,0,1)"]}
         locations={[0, 0.8]}
       >
@@ -104,28 +61,18 @@ export const EventCard = ({
           ellipsizeMode="tail"
           className="text-2xl font-bold text-white"
         >
-          {event.title}
+          {event.name}
         </Text>
-
-        <View className="flex-row">
-          <Text className="text-base text-yellow-400">
-            {event.timeStart
-              ? event.timeStart.toFormat("LLL d, T")
-              : "<Start Time>"}
-          </Text>
-          {event.timeEnd && (
-            <>
-              <Text className="text-base text-white"> - </Text>
-              <Text className="text-base text-yellow-400">
-                {event.timeEnd.toFormat("LLL d, T")}
-              </Text>
-            </>
-          )}
-        </View>
-
-        <Text className="text-base text-white">
-          {event.addressDescription ?? "<Address>"}
-        </Text>
+        <EventInfoTimesBar
+          event={event}
+          iconSize={15}
+          noStartTimeText="(start time)"
+        />
+        <EventInfoAddressDescBar
+          event={event}
+          iconSize={15}
+          noAddressDescText="(location)"
+        />
       </LinearGradient>
     </Pressable>
   );

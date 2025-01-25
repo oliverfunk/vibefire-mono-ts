@@ -1,4 +1,4 @@
-import { type VibefireEventT } from "@vibefire/models";
+import { type TModelVibefireEvent } from "@vibefire/models";
 
 const encodeQueryParameters = (params: { [key: string]: string }) => {
   return Object.entries(params)
@@ -9,20 +9,29 @@ const encodeQueryParameters = (params: { [key: string]: string }) => {
     .join("&");
 };
 
-export const vibefireEventShareURL = (linkId: string) => {
-  return `https://vifr.io/event/${linkId}`;
-};
-
-export const vibefireEventShareLocalURL = (linkId: string) => {
-  return `vifr:///event/${linkId}`;
+export const vibefireEventShareURL = (
+  eventId: string,
+  memberShareCode?: string,
+  asLocal: boolean = false,
+) => {
+  const queryParams = new URLSearchParams({
+    e: eventId,
+  });
+  if (memberShareCode) {
+    queryParams.append("s", memberShareCode);
+  }
+  if (asLocal) {
+    return `vifr:///?${queryParams.toString()}`;
+  }
+  return `https://vifr.io/?${queryParams.toString()}`;
 };
 
 export const uberClientRequestToEventLocationURL = (
   uberClientID: string,
-  event: VibefireEventT,
+  location: TModelVibefireEvent["location"],
 ) => {
-  const { lat, lng } = event.location.position;
-  const { addressDescription } = event.location;
+  const { lat, lng } = location.position;
+  const { addressDescription } = location;
   const queryParams = new URLSearchParams({
     client_id: uberClientID,
     action: "setPickup",
@@ -35,9 +44,10 @@ export const uberClientRequestToEventLocationURL = (
   return url;
 };
 
-export const googleMapsOpenEventLocationURL = (event: VibefireEventT) => {
-  const { lat, lng } = event.location.position;
-  const { addressDescription } = event.location;
+export const googleMapsOpenEventLocationURL = (
+  location: TModelVibefireEvent["location"],
+) => {
+  const { lat, lng } = location.position;
   const queryParams = encodeQueryParameters({
     api: "1",
     query: `${lat},${lng}`,
@@ -46,9 +56,11 @@ export const googleMapsOpenEventLocationURL = (event: VibefireEventT) => {
   return url;
 };
 
-export const appleMapsOpenEventLocationURL = (event: VibefireEventT) => {
-  const { lat, lng } = event.location.position;
-  const { addressDescription } = event.location;
+export const appleMapsOpenEventLocationURL = (
+  location: TModelVibefireEvent["location"],
+) => {
+  const { lat, lng } = location.position;
+  const { addressDescription } = location;
   const queryParams = encodeQueryParameters({
     ll: `${lat},${lng}`,
     q: `${addressDescription}`,

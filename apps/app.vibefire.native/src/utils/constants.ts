@@ -1,12 +1,21 @@
-import { type CoordT } from "@vibefire/models";
+import { type Camera } from "react-native-maps";
 
-export const defaultCameraForPosition = (position: CoordT) => {
+import { type CoordT } from "@vibefire/models";
+import { zoomLevelToAltitude } from "@vibefire/utils";
+
+export const INITIAL_ZOOM_LEVEL = 16;
+
+export const defaultCameraForPosition = (
+  position: CoordT,
+  zoomLevel?: number,
+): Camera => {
   return {
     center: {
       latitude: position.lat,
       longitude: position.lng,
     },
-    zoom: 16,
+    altitude: zoomLevelToAltitude(zoomLevel ?? INITIAL_ZOOM_LEVEL),
+    zoom: zoomLevel ?? INITIAL_ZOOM_LEVEL,
     heading: 0,
     pitch: 0,
   };

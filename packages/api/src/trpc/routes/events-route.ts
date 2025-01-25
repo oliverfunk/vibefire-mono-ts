@@ -1,284 +1,365 @@
-import { Type as t } from "@sinclair/typebox";
-import { type PartialDeep } from "type-fest";
-
+import { getUFEventsManager } from "@vibefire/managers/userfacing";
 import {
   CoordSchema,
-  MapQuerySchema,
-  VibefireEventSchema,
-  type VibefireEventManagementT,
-  type VibefireEventT,
+  ModelDatePeriodString,
+  ModelEventUpdate,
+  ModelVibefireAccess,
+  tb,
+  tbValidator,
+  type Pageable,
+  type TModelVibefireEvent,
+  type TModelVibefireMembership,
 } from "@vibefire/models";
-import { tbValidator } from "@vibefire/utils";
+import { type PartialDeep } from "@vibefire/utils";
 
 import {
   authedProcedure,
   publicProcedure,
   router,
 } from "!api/trpc/trpc-router";
+import { wrapManagerReturn, type ApiResponse } from "!api/utils";
 
 export const eventsRouter = router({
-  positionAddressInfo: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          position: CoordSchema,
+  // todo: listUserHighlightsToday
+
+  listSelfAllManage: authedProcedure
+    .input(tbValidator(tb.Object({ pageLimit: tb.Optional(tb.Number()) })))
+    .query(({ ctx, input }) =>
+      wrapManagerReturn<Pageable<PartialDeep<TModelVibefireEvent>>>(() => {
+        return getUFEventsManager().eventsUserIsPartOf({
+          userAid: ctx.auth.userId,
+          scope: "manager",
+          pageLimit: input.pageLimit,
+        });
+      }),
+    ),
+
+  listGroupAll: authedProcedure
+    .input(tbValidator(tb.Object({ groupId: tb.String() })))
+    // .output(
+    //   (value) => value as ApiReturn<Pageable<PartialDeep<TModelVibefireEvent>>>,
+    // )
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().eventsOwnedByGroup({
+          userAid: ctx.auth.userId,
+          groupId: input.groupId,
+          scope: "all",
         }),
       ),
-    )
-    .output((value) => value as string)
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.googleMapsManager.getBestStreetAddressFromPosition(
-        input.position,
-      );
-    }),
-  eventsByUser: authedProcedure
+    ),
+
+  listGroupPublished: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as PartialDeep<VibefireEventT>[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventsByUser(ctx.auth, input.organisationId);
-    }),
-  eventForEdit: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          linkId: t.String(),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as Partial<VibefireEventT>)
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventForEdit(
-        ctx.auth,
-        input.linkId,
-        input.organisationId,
-      );
-    }),
-  eventAllInfoForManagement: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          linkId: t.String(),
-          organisationId: t.Optional(t.String()),
+        tb.Object({
+          groupId: tb.String(),
         }),
       ),
     )
     .output(
       (value) =>
-        value as {
-          event: VibefireEventT;
-          eventManagement: VibefireEventManagementT;
-        },
+        value as ApiResponse<Pageable<PartialDeep<TModelVibefireEvent>>>,
     )
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventAllInfoForManagement(
-        ctx.auth,
-        input.linkId,
-        input.organisationId,
-      );
-    }),
-  eventForExternalView: publicProcedure
+    .query(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().eventsOwnedByGroup({
+          userAid: ctx.auth.userId ?? undefined,
+          groupId: input.groupId,
+          scope: "published",
+        }),
+      ),
+    ),
+
+  viewPublished: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          linkId: t.String(),
+        tb.Object({
+          eventId: tb.String(),
+          shareCode: tb.Optional(tb.String()),
         }),
       ),
     )
-    .output((value) => value as VibefireEventT)
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.publishedEventForExternalView(
-        ctx.auth.userId ?? "anon",
-        input.linkId,
-      );
-    }),
-  createEvent: authedProcedure
+    .query(({ ctx, input }) =>
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(() =>
+        getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId ?? undefined,
+          eventId: input.eventId,
+          scope: "published",
+          shareCode: input.shareCode,
+        }),
+      ),
+    ),
+
+  viewManage: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          title: t.String(),
-          organisationId: t.Optional(t.String()),
+        tb.Object({
+          eventId: tb.String(),
         }),
       ),
     )
-    .output((value) => value as { linkId: string })
+    .query(({ ctx, input }) =>
+      wrapManagerReturn<{
+        event: PartialDeep<TModelVibefireEvent>;
+        membership: TModelVibefireMembership;
+      }>(() =>
+        getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          scope: "manage",
+        }),
+      ),
+    ),
+
+  createForSelf: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          name: tb.String(),
+          accessType: ModelVibefireAccess.properties.type,
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(async () => {
+        const eventId = (
+          await getUFEventsManager().createNewEvent({
+            userAid: ctx.auth.userId,
+            name: input.name,
+            accessType: input.accessType,
+          })
+        ).unwrap();
+        // if (input.fromPreviousEventId) {
+        //   eventId = (
+        //     await getUFEventsManager().createEventFromPrevious({
+        //       userAid: ctx.auth.userId,
+        //       previousEventId: input.fromPreviousEventId,
+        //     })
+        //   ).unwrap();
+        // } else {
+        //   eventId =
+        // }
+        return await getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId,
+          eventId,
+          scope: "manage",
+        });
+      }),
+    ),
+
+  createForGroup: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          name: tb.String(),
+          groupId: tb.String(),
+          accessType: ModelVibefireAccess.properties.type,
+          fromPreviousEventId: tb.Optional(tb.String()),
+        }),
+      ),
+    )
+    // .output((value) => value as ApiResponse<TModelVibefireEvent>)
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(async () => {
+        let eventId: string;
+        if (input.fromPreviousEventId) {
+          eventId = (
+            await getUFEventsManager().createEventFromPrevious({
+              userAid: ctx.auth.userId,
+              forGroupId: input.groupId,
+              previousEventId: input.fromPreviousEventId,
+            })
+          ).unwrap();
+        } else {
+          eventId = (
+            await getUFEventsManager().createNewEvent({
+              userAid: ctx.auth.userId,
+              forGroupId: input.groupId,
+              name: input.name,
+              accessType: input.accessType,
+            })
+          ).unwrap();
+        }
+        return await getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId,
+          eventId,
+          scope: "manage",
+        });
+      }),
+    ),
+
+  createFromPrevious: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          fromPreviousEventId: tb.String(),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn<{
+        event: TModelVibefireEvent;
+        membership: TModelVibefireMembership | null;
+      }>(async () => {
+        const eventId = (
+          await getUFEventsManager().createEventFromPrevious({
+            userAid: ctx.auth.userId,
+            previousEventId: input.fromPreviousEventId,
+          })
+        ).unwrap();
+        return await getUFEventsManager().viewEvent({
+          userAid: ctx.auth.userId,
+          eventId,
+          scope: "manage",
+        });
+      }),
+    ),
+
+  update: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Partial(ModelEventUpdate),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn<TModelVibefireEvent>(() =>
+        getUFEventsManager().updateEvent({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          update: input.update,
+        }),
+      ),
+    ),
+
+  updateVisibility: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Union([tb.Literal("hide"), tb.Literal("publish")]),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().updateEventVisibility({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          update: input.update,
+        }),
+      ),
+    ),
+
+  updateAccess: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventId: tb.String(),
+          update: tb.Union([tb.Literal("open"), tb.Literal("invite")]),
+        }),
+      ),
+    )
+    .mutation(({ ctx, input }) =>
+      wrapManagerReturn(() =>
+        getUFEventsManager().updateEventAccess({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+          update: input.update,
+        }),
+      ),
+    ),
+
+  // updateLinkId: authedProcedure
+  //   .input(
+  //     tbValidator(
+  //       tb.Object({
+  //         eventId: tb.String(),
+  //         update: tb.Union([tb.Literal("remove"), tb.Literal("regenerate")]),
+  //       }),
+  //     ),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     return await ctx.eventsManager.up({
+  //       userAid: ctx.auth.userId,
+  //       eventId: input.eventId,
+  //       update: input.update,
+  //     });
+  //   }),
+
+  delete: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          eventId: tb.String(),
+        }),
+      ),
+    )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventCreate(
-        ctx.auth,
-        input.title,
-        input.organisationId,
-      );
+      return await getUFEventsManager().deleteEvent({
+        userAid: ctx.auth.userId,
+        eventId: input.eventId,
+      });
     }),
-  createEventFromPrevious: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .output((value) => value as { linkId: string })
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventCreateFromPrevious(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
-    }),
-  deleteEvent: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventDelete(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
-    }),
-  updateEvent: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
 
-          title: t.Optional(t.String()),
-          description: t.Optional(t.String()),
-          tags: t.Optional(t.Array(t.String())),
-
-          position: t.Optional(CoordSchema),
-          addressDescription: t.Optional(t.String()),
-
-          timeStartIsoNTZ: t.Optional(t.String()),
-          timeEndIsoNTZ: t.Optional(t.Union([t.String(), t.Null()])),
-
-          bannerImageId: t.Optional(t.String()),
-          additionalImageIds: t.Optional(t.Array(t.String())),
-
-          timeline: t.Optional(
-            t.Array(
-              t.Object({
-                id: t.String(),
-                timeIsoNTZ: t.String(),
-                message: t.String(),
-              }),
-            ),
-          ),
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await ctx.fauna.eventUpdate(
-        ctx.auth,
-        input.eventId,
-        {
-          ...input,
-        },
-        input.timeline,
-        input.organisationId,
-      );
-    }),
   createImageUploadLink: authedProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
+        tb.Object({
+          eventId: tb.String(),
         }),
       ),
     )
-    .output(
-      (value) =>
-        value as {
-          id: string;
-          uploadURL: string;
-        },
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.generateEventImageUploadLink(
-        ctx.auth,
-        input.eventId,
-        input.organisationId,
-      );
-    }),
-  setPublished: authedProcedure
+    // .output(
+    //   (value) =>
+    //     value as {
+    //       id: string;
+    //       uploadURL: string;
+    //     },
+    // )
+    .mutation(async ({ ctx, input }) =>
+      wrapManagerReturn<{
+        id: string;
+        uploadURL: string;
+      }>(() =>
+        getUFEventsManager().generateEventImageLink({
+          userAid: ctx.auth.userId,
+          eventId: input.eventId,
+        }),
+      ),
+    ),
+
+  queryGeoPeriods: publicProcedure
     .input(
       tbValidator(
-        t.Object({
-          eventId: t.String(),
+        tb.Object({
+          northEast: CoordSchema,
+          southWest: CoordSchema,
+          fromDate: ModelDatePeriodString,
+          toDate: tb.Optional(ModelDatePeriodString),
         }),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetPublished(ctx.auth, input.eventId);
-    }),
-  setUnpublished: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
+    .query(({ ctx, input }) =>
+      wrapManagerReturn<TModelVibefireEvent[]>(() =>
+        getUFEventsManager().queryEventsInGeoPeriods({
+          userAid: ctx.auth.userId ?? undefined,
+          query: {
+            northEast: input.northEast,
+            southWest: input.southWest,
+            zoomLevel: 0,
+            datePeriod: parseInt(input.fromDate),
+          },
         }),
       ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetUnpublished(ctx.auth, input.eventId);
-    }),
-  setVisibility: authedProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          eventId: t.String(),
-          organisationId: t.Optional(t.String()),
-          visibility: VibefireEventSchema.properties.visibility,
-        }),
-      ),
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.fauna.eventSetVisibility(
-        ctx.auth,
-        input.eventId,
-        input.visibility,
-        input.organisationId,
-      );
-    }),
-  starredOwnedEvents: publicProcedure
-    .input(
-      tbValidator(
-        t.Object({
-          onDateIsoNTZ: t.String(),
-          isUpcoming: t.Boolean(),
-        }),
-      ),
-    )
-    .output((value) => value as VibefireEventT[])
-    .query(async ({ ctx, input }) => {
-      if (!ctx.auth.userId) {
-        return [];
-      }
-      const res = await ctx.fauna.eventsFromStarredOwnedInPeriodForUser(
-        ctx.auth,
-        input.onDateIsoNTZ,
-        input.isUpcoming,
-      );
-      return res;
-    }),
-  mapPositionDatePublicEvents: publicProcedure
-    .input(tbValidator(MapQuerySchema))
-    .output((value) => value as VibefireEventT[])
-    .query(async ({ ctx, input }) => {
-      return await ctx.fauna.eventsFromMapQuery(ctx.auth, input);
-    }),
+    ),
 });

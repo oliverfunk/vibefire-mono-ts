@@ -3,8 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "!managers/*": ["./src/*"],
+      "!models/*": ["../../packages/models/src/*"],
+      "!utils/*": ["../../packages/utils/src/*"],
+      "!services/*": ["../../packages/services/src/*"]
     }
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/errors.ts"]
 }
