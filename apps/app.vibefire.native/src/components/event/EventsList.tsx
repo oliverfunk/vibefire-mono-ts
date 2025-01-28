@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { type BottomSheetFlashListProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetScrollable/BottomSheetFlashList";
 import { type ListRenderItemInfo } from "@shopify/flash-list";
 
@@ -8,8 +9,12 @@ import { type PartialDeep } from "@vibefire/utils";
 
 import { useSortedEvents } from "!/hooks/useSortedByTime";
 
+import { TextB } from "!/c/atomic/text";
+import { BContC } from "!/c/atomic/view";
+import { PillTouchableOpacity } from "!/c/button/PillTouchableOpacity";
 import { SimpleList } from "!/c/list/SimpleList";
 import { FlashListViewSheet } from "!/c/misc/sheet-utils";
+import { navCreateEvent } from "!/nav";
 
 import { EventCard } from "./EventCard";
 import { EventChip } from "./EventChip";
@@ -28,20 +33,29 @@ const useEventCardRenderer = (
         }}
       />
     ),
-    [onEventPress],
+    [onEventPress, showState],
   );
 };
 
 const useNoEventsText = (noEventsMessage?: string) => {
+  const router = useRouter();
   return useMemo(() => {
     return (
-      <View className="items-center justify-center rounded-xl bg-black py-[50%]">
+      <BContC className="py-[30%]">
         <Text className="text-center text-lg font-bold text-white">
           {noEventsMessage ? noEventsMessage : "No events here yet"}
         </Text>
-      </View>
+        <PillTouchableOpacity
+          className="self-center"
+          onPress={() => {
+            navCreateEvent(router);
+          }}
+        >
+          <TextB>Create one now 🔥</TextB>
+        </PillTouchableOpacity>
+      </BContC>
     );
-  }, [noEventsMessage]);
+  }, [noEventsMessage, router]);
 };
 
 const useNoEventsTextSmall = (noEventsMessage?: string) => {

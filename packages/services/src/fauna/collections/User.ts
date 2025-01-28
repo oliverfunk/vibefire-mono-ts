@@ -67,7 +67,7 @@ export class FaunaUserRepository {
       this.faunaClient,
       fql`
         let user = ${this.withAid(userAid).query}
-        user?.update(pushToken: ${token})
+        user?.update({pushToken: ${token}})
       `,
     );
   };
@@ -77,7 +77,7 @@ export class FaunaUserRepository {
       this.faunaClient,
       fql`
       let user = ${this.withAid(userAid).query}
-      user?.update(pushToken: null)
+      user?.update({pushToken: null})
     `,
     );
   };

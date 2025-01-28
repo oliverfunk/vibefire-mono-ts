@@ -18,7 +18,10 @@ import { userAtom } from "!/atoms";
 
 const allowsNotifications = async () => {
   const settings = await Notifications.getPermissionsAsync();
-  return settings.granted;
+  return (
+    settings.granted ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+  );
 };
 
 const requestNotificationsPermissions = async () => {
@@ -30,7 +33,10 @@ const requestNotificationsPermissions = async () => {
       allowProvisional: true,
     },
   });
-  return settings.granted;
+  return (
+    settings.granted ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+  );
 };
 
 const getExpoPushNotificationToken = async () => {
@@ -62,7 +68,7 @@ const getExpoPushNotificationToken = async () => {
 
 export const useRegisterPushToken = () => {
   const [user] = useAtom(userAtom);
-  const [tokenChecked, setTokenChecked] = useState(false);
+  const [tokenCheckStarted, setTokenCheckStarted] = useState(false);
 
   const registerUserTokenMut = trpc.user.registerToken.useMutation();
   const unregisterUserTokenMut = trpc.user.unregisterToken.useMutation();
@@ -71,9 +77,10 @@ export const useRegisterPushToken = () => {
     if (user.state !== "authenticated") {
       return;
     }
-    if (tokenChecked) {
+    if (tokenCheckStarted) {
       return;
     }
+    setTokenCheckStarted(true);
 
     const tokenFlow = async () => {
       if (user.userInfo.pushToken) {
@@ -92,7 +99,6 @@ export const useRegisterPushToken = () => {
           await registerUserTokenMut.mutateAsync({ token: expoPushToken });
         }
       }
-      setTokenChecked(true);
     };
 
     tokenFlow().catch((error) => {
@@ -102,5 +108,10 @@ export const useRegisterPushToken = () => {
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registerUserTokenMut, tokenChecked, unregisterUserTokenMut, user.state]);
+  }, [
+    registerUserTokenMut,
+    tokenCheckStarted,
+    unregisterUserTokenMut,
+    user.state,
+  ]);
 };

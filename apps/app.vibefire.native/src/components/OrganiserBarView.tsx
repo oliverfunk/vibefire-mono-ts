@@ -15,7 +15,7 @@ import {
   type TModelVibefireOwnership,
 } from "@vibefire/models";
 
-import { TextB, TextL } from "./atomic/text";
+import { TextL } from "./atomic/text";
 
 const ThreeDotsMenuOption = (props: {
   label: string;
@@ -83,7 +83,7 @@ const ThreeDotsModalMenu = (props: ThreeDotsModalMenuProps) => {
           onPress={() => setMenuVisible(false)}
         >
           <View
-            className="absolute overflow-hidden rounded-md bg-white"
+            className="absolute overflow-hidden rounded-md border-2 border-orange-400 bg-white"
             style={{ top: dropdownTop, right: dropdownRight }}
           >
             {managedByUser ? (
@@ -104,7 +104,7 @@ const ThreeDotsModalMenu = (props: ThreeDotsModalMenuProps) => {
             ) : (
               <>
                 <ThreeDotsMenuOption
-                  label="Hide"
+                  label="Hide event"
                   icon={
                     <MaterialCommunityIcons
                       name="eye-off"

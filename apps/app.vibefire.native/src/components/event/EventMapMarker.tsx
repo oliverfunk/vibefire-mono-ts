@@ -1,43 +1,53 @@
+import { useState } from "react";
+import { Marker } from "react-native-maps";
+
 import { type TModelVibefireEvent } from "@vibefire/models";
 
 import { PlatformSelect } from "!/c/misc/PlatformSelect";
 import { VibefireIconImage } from "!/c/misc/VibefireIconImage";
 
 export const EventMapMarker = (props: {
+  eventId: string;
   vibeRating?: TModelVibefireEvent["map"]["vibe"];
+  markerPosition: TModelVibefireEvent["location"]["position"];
+  onPress?: () => void;
 }) => {
-  const { vibeRating } = props;
+  const { eventId, vibeRating, markerPosition, onPress } = props;
+
+  const [tracksViewChanges, setTracksViewChanges] = useState(true);
 
   return (
-    <PlatformSelect
-      android={
-        <VibefireIconImage variant="map-marker-neutral" scaleFactor={0.06} />
-      }
-      ios={
-        <VibefireIconImage variant="map-marker-neutral" scaleFactor={0.06} />
-      }
-    />
+    <Marker
+      key={eventId}
+      identifier={eventId}
+      tracksViewChanges={tracksViewChanges}
+      centerOffset={{ x: 0, y: -((750 * 0.06) / 2) }}
+      coordinate={{
+        latitude: markerPosition.lat,
+        longitude: markerPosition.lng,
+      }}
+      onPress={onPress}
+    >
+      <PlatformSelect
+        android={
+          <VibefireIconImage
+            variant="map-marker-neutral"
+            scaleFactor={0.06}
+            onLoad={() => {
+              setTracksViewChanges(false);
+            }}
+          />
+        }
+        ios={
+          <VibefireIconImage
+            variant="map-marker-neutral"
+            scaleFactor={0.06}
+            onLoad={() => {
+              setTracksViewChanges(false);
+            }}
+          />
+        }
+      />
+    </Marker>
   );
-  // switch (vibeRating) {
-  //   case 2:
-  //     return (
-  //       <VibefireIconImage variant="map-marker-neutral" scaleFactor={0.06} />
-  //     );
-  //   case 1:
-  //     return (
-  //       <VibefireIconImage variant="mapmarker-neutral" scaleFactor={0.06} />
-  //     );
-  //   case 0:
-  //     return (
-  //       <VibefireIconImage variant="mapmarker-neutral" scaleFactor={0.06} />
-  //     );
-  //   case -1:
-  //     return (
-  //       <VibefireIconImage variant="mapmarker-neutral" scaleFactor={0.06} />
-  //     );
-  //   case -2:
-  //     return (
-  //       <VibefireIconImage variant="mapmarker-neutral" scaleFactor={0.06} />
-  //     );
-  // }
 };

@@ -1,23 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
+import { isCoordZeroZero } from "@vibefire/utils";
 
 import { defaultCameraForPosition } from "!/utils/constants";
 import { trpc } from "!/api/trpc-client";
 import { useUserLocationWithMapCameraSetter } from "!/hooks/useMapCameraUserLocationSetter";
 
 import { EventMapMarker } from "!/c/event/EventMapMarker";
-import { isCoordZeroZero } from "!utils/general";
 
 export const LocationSelectionMap = (props: {
+  eventId: string;
   initialPosition?: CoordT;
   onPositionSelected?: (position: CoordT) => void;
   onAddressDescription?: (addressDescription: string) => void;
   onPress?: () => void;
 }) => {
-  const { initialPosition, onPositionSelected, onAddressDescription, onPress } =
-    props;
+  const {
+    eventId,
+    initialPosition,
+    onPositionSelected,
+    onAddressDescription,
+    onPress,
+  } = props;
 
   const mvRef = useRef<MapView>(null);
 
@@ -72,6 +78,7 @@ export const LocationSelectionMap = (props: {
             })
           : undefined
       }
+      // trying to get two finger zooming to work on android :(
       onStartShouldSetResponderCapture={() => true}
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
@@ -117,14 +124,11 @@ export const LocationSelectionMap = (props: {
       }
     >
       {selectedPosition && !isCoordZeroZero(selectedPosition) && (
-        <Marker
-          coordinate={{
-            latitude: selectedPosition.lat,
-            longitude: selectedPosition.lng,
-          }}
-        >
-          <EventMapMarker vibeRating={0} />
-        </Marker>
+        <EventMapMarker
+          eventId={eventId}
+          markerPosition={selectedPosition}
+          vibeRating={0}
+        />
       )}
     </MapView>
   );

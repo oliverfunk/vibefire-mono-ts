@@ -42,10 +42,6 @@ export const OpenInMapsModalMenu = (
   const setSelectedDate = useSetAtom(selectedDateDTAtom);
   const [menuVisible, setMenuVisible] = useState(false);
 
-  const openDropdown = (): void => {
-    setMenuVisible(true);
-  };
-
   const onOpenInGoogleMaps = useCallback(async () => {
     if (!location) {
       return;
@@ -90,38 +86,37 @@ export const OpenInMapsModalMenu = (
   return (
     <Pressable
       onPress={() => {
-        menuVisible ? setMenuVisible(false) : openDropdown();
+        setMenuVisible(!menuVisible);
       }}
       disabled={disabled}
     >
       <Modal visible={menuVisible} transparent animationType="fade">
-        <Pressable
-          className="h-full w-full items-center justify-center bg-black/50 p-4"
-          onPress={() => setMenuVisible(false)}
-        >
-          <View className="flex-col space-y-4 overflow-hidden rounded bg-white p-4">
-            <TextL className="font-bold text-black">Open in maps</TextL>
-            <TextB className="text-black ">
-              {"Open the event's location in another app"}
-            </TextB>
-            <ContC className="items-end">
-              <TouchableOpacity onPress={onOpenInGoogleMaps}>
-                <TextB className="font-bold text-black">Google Maps</TextB>
-              </TouchableOpacity>
-              {Platform.OS === "ios" && (
-                <TouchableOpacity onPress={onOpenInAppleMaps}>
-                  <TextB className="font-bold text-black">Apple Maps</TextB>
+        <Pressable onPress={() => setMenuVisible(false)}>
+          <View className="ios:justify-center h-full w-full items-center bg-black/50 p-4">
+            <View className="android:mt-[100%] space-y-4 overflow-hidden rounded bg-white p-4">
+              <TextL className="font-bold text-black">Open in maps</TextL>
+              <TextB className="text-black ">
+                {"Open the event's location in another app"}
+              </TextB>
+              <ContC className="items-end">
+                <TouchableOpacity onPress={onOpenInGoogleMaps}>
+                  <TextB className="font-bold text-black">Google Maps</TextB>
                 </TouchableOpacity>
-              )}
-            </ContC>
-            <TextB className="text-black ">
-              {"Or go to the event's time and location on the event map"}
-            </TextB>
-            <ContC className="items-end">
-              <TouchableOpacity onPress={onOpenInEventMap}>
-                <TextB className="font-bold text-black">Event map</TextB>
-              </TouchableOpacity>
-            </ContC>
+                {Platform.OS === "ios" && (
+                  <TouchableOpacity onPress={onOpenInAppleMaps}>
+                    <TextB className="font-bold text-black">Apple Maps</TextB>
+                  </TouchableOpacity>
+                )}
+              </ContC>
+              <TextB className="text-black ">
+                {"Or go to the event's time and location on the event map"}
+              </TextB>
+              <ContC className="items-end">
+                <TouchableOpacity onPress={onOpenInEventMap}>
+                  <TextB className="font-bold text-black">Event map</TextB>
+                </TouchableOpacity>
+              </ContC>
+            </View>
           </View>
         </Pressable>
       </Modal>
@@ -167,6 +162,7 @@ export const EventActionsBar = (
   return (
     <View className="flex-row justify-around" {...props}>
       <OpenInMapsModalMenu
+        key={"EventActionBar OpenInMapsModalMenu"}
         location={location as TModelVibefireEvent["location"]}
         times={times}
         disabled={disabled}

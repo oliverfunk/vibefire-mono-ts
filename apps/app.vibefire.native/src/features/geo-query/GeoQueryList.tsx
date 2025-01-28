@@ -1,9 +1,13 @@
-import { View } from "react-native";
+import { View, type ViewProps } from "react-native";
 import { useRouter } from "expo-router";
+import { FontAwesome6 } from "@expo/vector-icons";
 import { useAtom } from "jotai";
 
 import { mapDisplayableEventsAtom } from "@vibefire/shared-state";
 
+import { TextB } from "!/components/atomic/text";
+import { ContR } from "!/components/atomic/view";
+import { PillTouchableOpacity } from "!/components/button/PillTouchableOpacity";
 import {
   EventCardFlashListViewSheet,
   EventsSimpleListCardView,
@@ -14,7 +18,25 @@ import {
 } from "!/components/layouts/SheetScrollViewGradientVF";
 import { useItemSeparator } from "!/components/misc/ItemSeparator";
 import { VibefireLogoName } from "!/components/VibefireBottomLogo";
-import { navViewEvent } from "!/nav";
+import { navProfile, navViewEvent } from "!/nav";
+
+const TopProfileButton = (props: ViewProps) => {
+  const router = useRouter();
+  return (
+    <View {...props}>
+      <PillTouchableOpacity
+        className="flex-row items-center space-x-1 self-end bg-black"
+        onPress={() => {
+          navProfile(router);
+        }}
+      >
+        <FontAwesome6 name="user-circle" size={17} color="white" />
+        <TextB>Profile</TextB>
+        <FontAwesome6 name="chevron-right" size={15} color="white" />
+      </PillTouchableOpacity>
+    </View>
+  );
+};
 
 export const GeoQueryListSheet = () => {
   const [mapDisplayableEvents] = useAtom(mapDisplayableEventsAtom);
@@ -25,33 +47,39 @@ export const GeoQueryListSheet = () => {
   if (mapDisplayableEvents.length <= 3) {
     return (
       <SheetScrollViewGradientVF>
-        <EventsSimpleListCardView
-          showStatus={false}
-          events={mapDisplayableEvents}
-          limit={4}
-          onItemPress={(event) => {
-            navViewEvent(router, event.id!);
-          }}
-          ItemSeparatorComponent={itemSep}
-        />
+        <TopProfileButton />
+        <View>
+          <EventsSimpleListCardView
+            showStatus={false}
+            events={mapDisplayableEvents}
+            limit={4}
+            onItemPress={(event) => {
+              navViewEvent(router, event.id!);
+            }}
+            ItemSeparatorComponent={itemSep}
+          />
+        </View>
       </SheetScrollViewGradientVF>
     );
   }
 
   return (
     <SheetScrollViewGradient>
-      <EventCardFlashListViewSheet
-        events={mapDisplayableEvents}
-        ItemSeparatorComponent={itemSep}
-        ListFooterComponent={
-          <View className="pt-4">
-            <VibefireLogoName />
-          </View>
-        }
-        onEventPress={(event) => {
-          navViewEvent(router, event.id!);
-        }}
-      />
+      <TopProfileButton />
+      <View>
+        <EventCardFlashListViewSheet
+          events={mapDisplayableEvents}
+          ItemSeparatorComponent={itemSep}
+          ListFooterComponent={
+            <View className="pt-4">
+              <VibefireLogoName />
+            </View>
+          }
+          onEventPress={(event) => {
+            navViewEvent(router, event.id!);
+          }}
+        />
+      </View>
     </SheetScrollViewGradient>
   );
 };

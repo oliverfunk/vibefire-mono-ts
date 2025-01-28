@@ -56,7 +56,6 @@ const ViewEventSheet = (props: {
   const hideEventMut = trpc.user.hideEvent.useMutation({});
   const joinAccessMut = trpc.access.joinAccess.useMutation();
   const leaveAccessMut = trpc.access.leaveAccess.useMutation();
-
   // muts
 
   const onShareEvent = useShareEventLink(event.id, membership?.shareCode);
@@ -97,7 +96,7 @@ const ViewEventSheet = (props: {
           membership={membership}
           onBlockAndReportOrganiserPress={() => {
             blockAndReportOrganiserMut.mutate({
-              ownershipRefId: event.accessRef.ownerRef.id,
+              ownershipId: event.accessRef.ownerRef.id,
             });
             navHomeWithCollapse(router);
           }}
@@ -118,14 +117,14 @@ const ViewEventSheet = (props: {
           leaveJoinDisabled={managedByUser}
           leaveJoinLoading={joinAccessMut.isPending || leaveAccessMut.isPending}
           onJoinPress={async () => {
-            const joinRes = await joinAccessMut.mutateAsync({
+            await joinAccessMut.mutateAsync({
               accessId: event.accessRef.id,
               shareCode,
             });
             refreshEvent();
           }}
           onLeavePress={async () => {
-            const leavRes = await leaveAccessMut.mutateAsync({
+            await leaveAccessMut.mutateAsync({
               accessId: event.accessRef.id,
             });
             refreshEvent();

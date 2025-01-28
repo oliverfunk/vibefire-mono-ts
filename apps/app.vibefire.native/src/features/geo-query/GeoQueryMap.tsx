@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import MapView, {
-  Marker,
-  PROVIDER_GOOGLE,
-  type Region,
-} from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, type Region } from "react-native-maps";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
@@ -127,21 +123,17 @@ export const GeoQueryMap = () => {
       onRegionChangeComplete={onMapRegionChange}
       moveOnMarkerPress={false}
       rotateEnabled={false}
+      onMapLoaded={() => {}}
       // cameraZoomRange={{}}
       maxZoomLevel={20}
       minZoomLevel={3}
     >
       {displayEvents.map((event, _index) => (
-        <Marker
-          key={`${event.id}`}
-          identifier={event.id}
-          coordinate={{
-            latitude: event.location.position.lat,
-            longitude: event.location.position.lng,
-          }}
-          // 750 is marker height, 0.06 is the scale
-          // for apple maps only
-          centerOffset={{ x: 0, y: -((750 * 0.06) / 2) }}
+        <EventMapMarker
+          key={event.id}
+          eventId={event.id}
+          markerPosition={event.location.position}
+          vibeRating={event.map.vibe ?? 0}
           onPress={() => {
             navViewEvent(router, event.id);
             mvRef.current?.animateCamera({
@@ -151,9 +143,7 @@ export const GeoQueryMap = () => {
               },
             });
           }}
-        >
-          <EventMapMarker vibeRating={event.map.vibe ?? 0} />
-        </Marker>
+        />
       ))}
     </MapView>
   );

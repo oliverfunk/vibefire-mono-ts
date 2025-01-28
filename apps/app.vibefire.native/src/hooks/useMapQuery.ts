@@ -13,6 +13,8 @@ import { toDateStr } from "@vibefire/utils";
 
 import { trpc } from "!/api/trpc-client";
 
+import { userAtom } from "!/atoms";
+
 const useGeoPeriodQuery = () => {
   const [mapPos] = useAtom(mapPositionInfoAtom);
   const [selectedDateDT] = useAtom(selectedDateDTAtom);
@@ -42,6 +44,8 @@ const useGeoPeriodQuery = () => {
 export const useMapDisplayableEvents = () => {
   const { mapQuery, mapPos } = useGeoPeriodQuery();
 
+  const [user] = useAtom(userAtom);
+
   const setMapDisplayEventsInfo = useSetAtom(mapDisplayableEventsInfoAtom);
   const [mapDisplayableEvents, setMapDisplayableEvents] = useAtom(
     mapDisplayableEventsAtom,
@@ -65,6 +69,16 @@ export const useMapDisplayableEvents = () => {
       const d = mapQuery.data;
       if (d.ok && mapPos) {
         const visible = d.value.filter((e) => {
+          if (user.state === "authenticated") {
+            if (user.userInfo.hiddenEvents.includes(e.id)) {
+              return false;
+            }
+            if (
+              user.userInfo.blockedOrganisers.includes(e.accessRef.ownerRef.id)
+            ) {
+              return false;
+            }
+          }
           const expansionFactor = 1.1;
           return (
             e.location.position.lat >= mapPos.southWest.lat &&

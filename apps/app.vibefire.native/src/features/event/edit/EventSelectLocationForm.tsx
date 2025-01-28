@@ -31,6 +31,7 @@ export const EventSelectLocationForm = (props: {
       </LinearRedOrangeContainer>
       <View className="h-2/3">
         <LocationSelectionMap
+          eventId={event.id!}
           initialPosition={event.location?.position as CoordT | undefined}
           onPositionSelected={async (position) => {
             await setFieldValue("location.position", position);

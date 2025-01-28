@@ -48,8 +48,9 @@ const VibefireIconImageVariantConfig = (variant: VibefireIconImageVarient) => {
 export const VibefireIconImage = (props: {
   variant: VibefireIconImageVarient;
   scaleFactor?: number;
+  onLoad?: () => void;
 }) => {
-  const { variant, scaleFactor = 1 } = props;
+  const { variant, scaleFactor = 1, onLoad } = props;
   const { width, height, imp } = VibefireIconImageVariantConfig(variant);
   return (
     <ImageBackground
@@ -58,6 +59,8 @@ export const VibefireIconImage = (props: {
       alt=""
       style={{ width: width * scaleFactor, height: height * scaleFactor }}
       source={imp}
+      transition={0}
+      onLoad={onLoad}
     />
   );
 };

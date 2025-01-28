@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { Pressable, View } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { View } from "react-native";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 import { type CoordT } from "@vibefire/models";
 
@@ -53,16 +53,12 @@ export const LocationDisplayMap = (props: {
         minZoomLevel={3}
       >
         {markerPosition && (
-          <Marker
-            key={eventId}
-            identifier={eventId}
-            coordinate={{
-              latitude: markerPosition.lat,
-              longitude: markerPosition.lng,
-            }}
-          >
-            <EventMapMarker vibeRating={0} />
-          </Marker>
+          <EventMapMarker
+            eventId={eventId}
+            markerPosition={markerPosition}
+            vibeRating={0}
+            onPress={onPress}
+          />
         )}
       </MapView>
     </View>
