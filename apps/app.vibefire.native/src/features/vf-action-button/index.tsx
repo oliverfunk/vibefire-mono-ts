@@ -6,7 +6,6 @@ import {
   Pressable,
   View,
 } from "react-native";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useAtom } from "jotai";
@@ -22,8 +21,6 @@ import { navCreateEvent, navProfile } from "!/nav";
 import { DatePickerButton } from "./DatePickerButton";
 import { TimeOfDayPicker } from "./TimeOfDayPicker";
 
-// https://docs.swmansion.com/react-native-reanimated/examples/floatingactionbutton
-
 const ACTION_BUTTON_OFFSET = 60;
 const ACTION_BUTTON_INITAL_OFFSET = 70;
 
@@ -36,12 +33,12 @@ const FloatingActionBar = (props: { isExpandedState: boolean }) => {
   }
 
   return (
-    <Animated.View entering={FadeIn} className="items-center justify-center">
+    <View className="items-center justify-center">
       <View className="flex-row items-center justify-center space-x-2 rounded-full bg-black px-3 py-2 pl-5">
         <DatePickerButton />
         <TimeOfDayPicker pickerWidth={max([width / 3, 150])!} />
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -59,8 +56,7 @@ const FloatingActionButton = (props: {
   }
 
   return (
-    <Animated.View
-      entering={FadeIn}
+    <View
       style={{
         transform: [
           {
@@ -84,7 +80,7 @@ const FloatingActionButton = (props: {
           {icon}
         </View>
       </Pressable>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -101,7 +97,7 @@ export const VfActionButton = () => {
 
   return (
     <View className="android:bottom-[55] ios:bottom-[90] absolute right-2 z-0">
-      <Modal visible={isExpandedState} transparent>
+      <Modal visible={isExpandedState} transparent animationType="fade">
         <Pressable className="h-full w-full" onPress={handlePress}>
           {/* Replicate the button position and style in the modal */}
           <View className="android:bottom-[55] ios:bottom-[90] absolute right-2 w-full flex-col items-end">
@@ -110,23 +106,14 @@ export const VfActionButton = () => {
 
               <Pressable onPress={handlePress} className="h-16 w-16">
                 {isExpandedState && (
-                  <Animated.View key={"outFade"} entering={FadeIn}>
-                    <LinearRedOrangeView
-                      // style={{
-                      //   elevation: 3, // Shadow for Android
-                      //   shadowColor: "#000", // Shadow for iOS
-                      //   shadowOffset: { width: 0, height: 2 },
-                      //   shadowOpacity: 0.8,
-                      //   shadowRadius: 2,
-                      // }}
-                      className="h-full w-full items-center justify-center rounded-full pt-1"
-                    >
+                  <View>
+                    <LinearRedOrangeView className="h-full w-full items-center justify-center rounded-full pt-1">
                       <VibefireIconImage
                         variant="logo-vf-black"
                         scaleFactor={0.06}
                       />
                     </LinearRedOrangeView>
-                  </Animated.View>
+                  </View>
                 )}
               </Pressable>
             </View>

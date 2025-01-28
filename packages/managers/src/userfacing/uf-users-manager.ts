@@ -9,6 +9,7 @@ import { getClerkService, type ClerkService } from "@vibefire/services/clerk";
 import { resourceLocator, trimAndCropText } from "@vibefire/utils";
 
 import { getReposManager, type ReposManager } from "!managers/repos-manager";
+import { managerReturn } from "!managers/utils";
 
 export const ufUsersManagerSymbol = Symbol("ufUsersManagerSymbol");
 export const getUFUsersManager = () =>
@@ -23,17 +24,17 @@ export class UFUsersManager {
   ) {}
 
   async createNewUser(
-    aid: string,
+    userAid: string,
     firstName: string | undefined,
     primaryEmail: string | undefined,
     primaryPhone: string | undefined,
     birthdayISO: string | undefined,
   ) {
-    if (!aid) {
+    if (!userAid) {
       throw new Error("aid is required");
     }
 
-    const maybeUser = await this.repos.user.withAid(aid).result;
+    const maybeUser = await this.repos.user.withAid(userAid).result;
     if (maybeUser) {
       return { id: maybeUser.id };
     }
@@ -65,7 +66,7 @@ export class UFUsersManager {
 
     const u = newVibefireUser({
       ownershipRef,
-      aid,
+      aid: userAid,
       name: firstName,
       email: primaryEmail,
       phoneNumber: primaryPhone,
@@ -118,42 +119,27 @@ export class UFUsersManager {
     await this.repos.user.delete(userAid).result;
   }
 
-  //   async setStarEventForUser(
-  //     userAc: ClerkSignedInAuthContext,
-  //     eventId: string,
-  //     starIt: boolean,
-  //   ) {
-  //     if (starIt) {
-  //       await starEvent(this.faunaClient, userAc.userId, eventId);
-  //     } else {
-  //       await unstarEvent(this.faunaClient, userAc.userId, eventId);
-  //     }
-  //   }
+  hideEventForUser(userAid: string, eventId: string) {
+    return managerReturn(async () => {
+      await this.repos.user.hideEvent(userAid, eventId).result;
+    });
+  }
 
-  //   async hideEventForUser(userAc: ClerkSignedInAuthContext, eventId: string) {
-  //     await hideEvent(this.faunaClient, userAc.userId, eventId);
-  //   }
+  hideOwnerForUser(userAid: string, ownershipId: string) {
+    return managerReturn(async () => {
+      await this.repos.user.hideOwner(userAid, ownershipId).result;
+    });
+  }
 
-  //   async blockOrganiserForUser(
-  //     userAc: ClerkSignedInAuthContext,
-  //     organiserId: string,
-  //   ) {
-  //     if (organiserId === userAc.userId) {
-  //       throw new Error("Cannot block yourself");
-  //     }
-  //     await blockOrganiser(this.faunaClient, userAc.userId, organiserId);
-  //   }
+  userRegisterPushToken(userAid: string, token: string) {
+    return managerReturn(async () => {
+      await this.repos.user.setUserPushToken(userAid, token).result;
+    });
+  }
 
-  //   async userRegisterPushToken(
-  //     userAc: ClerkSignedInAuthContext,
-  //     token: string,
-  //   ): Promise<void> {
-  //     await setUserPushToken(this.faunaClient, userAc.userId, token);
-  //   }
-
-  //   async userUnregisterPushToken(
-  //     userAc: ClerkSignedInAuthContext,
-  //   ): Promise<void> {
-  //     await clearUserPushToken(this.faunaClient, userAc.userId);
-  //   }
+  async userUnregisterPushToken(userAid: string) {
+    return managerReturn(async () => {
+      await this.repos.user.clearUserPushToken(userAid).result;
+    });
+  }
 }

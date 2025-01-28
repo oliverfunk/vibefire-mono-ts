@@ -4,7 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "dev": "bun run src/index.ts"
+    "dev": "bunx tsx src/index.ts"
   },
   "dependencies": {
     "@vibefire/managers": "0.1.0",

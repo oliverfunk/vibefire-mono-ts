@@ -6,31 +6,9 @@ import {
   publicProcedure,
   router,
 } from "!api/trpc/trpc-router.js";
-
-// These are public becuase you can view an event without being logged in
-// not the best
-// todo: idk how to fix it but should be fixed
+import { wrapApiReturn } from "!api/utils";
 
 export const userRouter = router({
-  // starEvent: publicProcedure
-  //   .input(
-  //     tbValidator(
-  //       tb.Object({
-  //         eventId: tb.String(),
-  //         starIt: tb.Boolean(),
-  //       }),
-  //     ),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     if (!ctx.auth.userId) {
-  //       return;
-  //     }
-  //     return await getUFUsersManager().setStarEventForUser(
-  //       ctx.auth,
-  //       input.eventId,
-  //       input.starIt,
-  //     );
-  //   }),
   hideEvent: publicProcedure
     .input(
       tbValidator(
@@ -39,38 +17,69 @@ export const userRouter = router({
         }),
       ),
     )
-    .mutation(({ ctx, input }) => {
-      if (!ctx.auth.userId) {
-        return;
-      }
-      return true;
-    }),
+    .mutation(({ ctx, input }) =>
+      wrapApiReturn(async () => {
+        if (!ctx.auth.userId) {
+          return;
+        }
+        (
+          await getUFUsersManager().hideEventForUser(
+            ctx.auth.userId,
+            input.eventId,
+          )
+        ).unwrap();
+      }),
+    ),
   blockAndReportOrganiser: publicProcedure
     .input(
       tbValidator(
         tb.Object({
-          ownershipRefId: tb.String(),
+          ownershipId: tb.String(),
         }),
       ),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(({ ctx, input }) =>
+      wrapApiReturn(async () => {
+        if (!ctx.auth.userId) {
+          return;
+        }
+        (
+          await getUFUsersManager().hideOwnerForUser(
+            ctx.auth.userId,
+            input.ownershipId,
+          )
+        ).unwrap();
+      }),
+    ),
+  registerToken: authedProcedure
+    .input(
+      tbValidator(
+        tb.Object({
+          token: tb.String(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) =>
+      wrapApiReturn(async () => {
+        if (!ctx.auth.userId) {
+          return;
+        }
+        (
+          await getUFUsersManager().userRegisterPushToken(
+            ctx.auth.userId,
+            input.token,
+          )
+        ).unwrap();
+      }),
+    ),
+  unregisterToken: authedProcedure.mutation(async ({ ctx }) => {
+    return wrapApiReturn(async () => {
       if (!ctx.auth.userId) {
         return;
       }
-      return true;
-    }),
-  // registerToken: authedProcedure
-  //   .input(
-  //     tbValidator(
-  //       tb.Object({
-  //         token: tb.String(),
-  //       }),
-  //     ),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     return await ctx.fauna.userRegisterPushToken(ctx.auth, input.token);
-  //   }),
-  // unregisterToken: authedProcedure.mutation(async ({ ctx }) => {
-  //   return await ctx.fauna.userUnregisterPushToken(ctx.auth);
-  // }),
+      (
+        await getUFUsersManager().userUnregisterPushToken(ctx.auth.userId)
+      ).unwrap();
+    });
+  }),
 });

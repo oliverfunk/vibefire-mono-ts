@@ -172,7 +172,7 @@ export const UploadableVibefireImage = (
         }}
       >
         <FontAwesome6 name="image" size={60} color="white" />
-        <Text className="text-center text-lg text-white">
+        <Text className="pt-4 text-center text-xl text-white">
           (tap to choose an image)
         </Text>
       </Pressable>

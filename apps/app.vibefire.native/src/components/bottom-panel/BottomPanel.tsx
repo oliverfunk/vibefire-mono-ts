@@ -33,6 +33,7 @@ export const BottomPanel = (props: { children?: React.ReactNode }) => {
       backdropComponent={BottomPanelBackdrop}
       enablePanDownToClose={false}
       enableDynamicSizing={false}
+      overDragResistanceFactor={10}
       snapPoints={[HANDLE_HEIGHT, "90%"]}
       bottomInset={insets.bottom}
       onChange={setBottomSheetIndex}
@@ -40,6 +41,8 @@ export const BottomPanel = (props: { children?: React.ReactNode }) => {
         backgroundColor: "#000000",
       }}
       handleComponent={HandleWithNavigation}
+      activeOffsetX={[-10, 10]}
+      activeOffsetY={[-10, 10]}
     >
       {children}
     </BottomSheet>

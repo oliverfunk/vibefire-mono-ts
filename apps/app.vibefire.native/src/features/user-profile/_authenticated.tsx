@@ -53,6 +53,7 @@ const EventsListSuspense = withSuspenseErrorBoundary(
         <EventsSimpleListChipView
           events={events}
           limit={5}
+          latestFirst={true}
           noEventsMessage="Create your first event"
           onItemPress={(e) => {
             navEditEvent(router, e.id!);

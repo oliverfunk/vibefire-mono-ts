@@ -62,7 +62,7 @@ type EventsListProps = {
   listTitle?: string;
   noEventsMessage?: string;
   showStatusBanner?: boolean;
-  sortAsc?: boolean;
+  latestFirst?: boolean;
   showStatus?: boolean;
 };
 
@@ -78,11 +78,11 @@ export const EventCardFlashListViewSheet = (
     onEventPress,
     listTitle,
     noEventsMessage,
-    sortAsc = true,
+    latestFirst = true,
     showStatus = false,
   } = props;
 
-  const sortedEvents = useSortedEvents(events, { sortAsc });
+  const sortedEvents = useSortedEvents(events, { sortAsc: !latestFirst });
 
   const renderItem = useEventCardRenderer(onEventPress, showStatus);
   const NoEventsText = useNoEventsText(noEventsMessage);

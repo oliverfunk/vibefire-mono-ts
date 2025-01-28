@@ -41,6 +41,7 @@ export const ManagedByUserSheet = () => {
         </BContN>
         <EventsSimpleListCardView
           showStatus={true}
+          latestFirst={true}
           events={events}
           limit={4}
           onItemPress={(event) => {
@@ -60,6 +61,7 @@ export const ManagedByUserSheet = () => {
       <View>
         <EventCardFlashListViewSheet
           events={events}
+          latestFirst={true}
           ItemSeparatorComponent={itemSep}
           showStatus={true}
           onEventPress={(event) => {

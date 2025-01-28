@@ -3,11 +3,11 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 
 import { trpc } from "!/api/trpc-client";
 
-import { userAuthStateAtom, userInfoAtom } from "!/atoms";
+import { userAtom } from "!/atoms";
 
 // TODO: this should be refactored
 // to be called when the user logs in
@@ -35,7 +35,6 @@ const requestNotificationsPermissions = async () => {
 
 const getExpoPushNotificationToken = async () => {
   if (!Device.isDevice) {
-    console.log("Must use physical device for Push Notifications");
     return undefined;
   }
 
@@ -44,7 +43,6 @@ const getExpoPushNotificationToken = async () => {
     allows = await requestNotificationsPermissions();
   }
   if (!allows) {
-    console.log("Insufficient permission for push notifications!");
     return null;
   }
 
@@ -62,18 +60,15 @@ const getExpoPushNotificationToken = async () => {
   return token;
 };
 
-const userPushTokenAtom = atom((get) => get(userInfoAtom)?.pushToken);
-
 export const useRegisterPushToken = () => {
-  const [userAuthState] = useAtomValue(userAuthStateAtom);
-  const [userPushToken] = useAtom(userPushTokenAtom);
+  const [user] = useAtom(userAtom);
   const [tokenChecked, setTokenChecked] = useState(false);
 
   const registerUserTokenMut = trpc.user.registerToken.useMutation();
   const unregisterUserTokenMut = trpc.user.unregisterToken.useMutation();
 
   useEffect(() => {
-    if (userAuthState !== "authenticated") {
+    if (user.state !== "authenticated") {
       return;
     }
     if (tokenChecked) {
@@ -81,11 +76,12 @@ export const useRegisterPushToken = () => {
     }
 
     const tokenFlow = async () => {
-      if (userPushToken) {
+      if (user.userInfo.pushToken) {
         const allows = await allowsNotifications();
         const isDevice = Device.isDevice;
         if (!allows && isDevice) {
           // if it's on an emulator, don't unregister
+          console.log("unregistering user push notification token");
           await unregisterUserTokenMut.mutateAsync();
         }
       } else {
@@ -106,5 +102,5 @@ export const useRegisterPushToken = () => {
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userPushToken]);
+  }, [registerUserTokenMut, tokenChecked, unregisterUserTokenMut, user.state]);
 };

@@ -1,7 +1,7 @@
 import "!/global.css";
 
 import { useEffect, type ReactNode } from "react";
-import { StatusBar, View } from "react-native";
+import { StatusBar } from "react-native";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,

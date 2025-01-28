@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -45,10 +44,9 @@ const ViewEventSheet = (props: {
   event: TModelVibefireEvent;
   membership?: TModelVibefireMembership;
   shareCode?: string;
+  refreshEvent: () => void;
 }) => {
-  const { event: eventIn, membership, shareCode } = props;
-
-  const event = useMemo(() => eventIn, [eventIn]);
+  const { event, membership, shareCode, refreshEvent } = props;
 
   const router = useRouter();
 
@@ -58,21 +56,17 @@ const ViewEventSheet = (props: {
   const hideEventMut = trpc.user.hideEvent.useMutation({});
   const joinAccessMut = trpc.access.joinAccess.useMutation();
   const leaveAccessMut = trpc.access.leaveAccess.useMutation();
-  const userMembershipQ = trpc.access.userMembership.useQuery({
-    accessId: event.accessRef.id,
-  });
+
   // muts
 
   const onShareEvent = useShareEventLink(event.id, membership?.shareCode);
 
   const { width, height } = useWindowDimensions();
 
-  const userMembership =
-    (userMembershipQ.data?.ok && userMembershipQ.data.value) || membership;
-
   const bannerImgKeys = event.images.bannerImgKeys;
   const details = event.details;
-  const managedByUser = userMembership?.roleType === "manager";
+  const managedByUser =
+    membership?.roleType === "manager" || membership?.roleType === "owner";
 
   return (
     <ScrollViewSheet>
@@ -100,7 +94,7 @@ const ViewEventSheet = (props: {
       <View className="flex-col space-y-4 bg-black p-4">
         <OrganiserBarView
           ownerRef={event.accessRef.ownerRef}
-          membership={userMembership}
+          membership={membership}
           onBlockAndReportOrganiserPress={() => {
             blockAndReportOrganiserMut.mutate({
               ownershipRefId: event.accessRef.ownerRef.id,
@@ -124,17 +118,17 @@ const ViewEventSheet = (props: {
           leaveJoinDisabled={managedByUser}
           leaveJoinLoading={joinAccessMut.isPending || leaveAccessMut.isPending}
           onJoinPress={async () => {
-            await joinAccessMut.mutateAsync({
+            const joinRes = await joinAccessMut.mutateAsync({
               accessId: event.accessRef.id,
               shareCode,
             });
-            await userMembershipQ.refetch();
+            refreshEvent();
           }}
           onLeavePress={async () => {
-            await leaveAccessMut.mutateAsync({
+            const leavRes = await leaveAccessMut.mutateAsync({
               accessId: event.accessRef.id,
             });
-            await userMembershipQ.refetch();
+            refreshEvent();
           }}
         />
         <EventActionsBar
@@ -148,22 +142,6 @@ const ViewEventSheet = (props: {
         />
         <AccessShareabilityText accessRef={event.accessRef} />
       </View>
-      {/* {!selectedDateDT.hasSame(
-          ntzToDateTime(event.times.ntzStart),
-          "day",
-        ) && (
-          <View className="items-center pt-2">
-            <TouchableOpacity
-              className="flex-col items-center justify-between rounded-lg bg-white px-4 py-2"
-              onPress={onGoToEvent}
-            >
-              <FontAwesome5 name="clock" size={20} color="black" />
-              <Text className="text-sm text-black">
-                Go to event time and place
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )} */}
 
       {/* infos */}
       <LinearRedOrangeView className="flex-col p-0.5">
@@ -223,7 +201,7 @@ export const ViewEventPreviewSheet = withSuspenseErrorBoundarySheet(
   (props: ViewEventProps) => {
     const { eventId } = props;
 
-    const [viewManage] = trpc.events.viewManage.useSuspenseQuery(
+    const [viewManage, viewManageCtl] = trpc.events.viewManage.useSuspenseQuery(
       {
         eventId,
       },
@@ -241,6 +219,9 @@ export const ViewEventPreviewSheet = withSuspenseErrorBoundarySheet(
     return (
       <ViewEventSheet
         event={event}
+        refreshEvent={async () => {
+          await viewManageCtl.refetch();
+        }}
         membership={membership ?? undefined}
         shareCode={props.shareCode}
       />
@@ -252,15 +233,16 @@ export const ViewEventPublishedSheet = withSuspenseErrorBoundarySheet(
   (props: ViewEventProps) => {
     const { eventId, shareCode } = props;
 
-    const [viewPublished] = trpc.events.viewPublished.useSuspenseQuery(
-      {
-        eventId,
-        shareCode,
-      },
-      {
-        gcTime: 1000,
-      },
-    );
+    const [viewPublished, viewPublishedCtl] =
+      trpc.events.viewPublished.useSuspenseQuery(
+        {
+          eventId,
+          shareCode,
+        },
+        {
+          gcTime: 1000,
+        },
+      );
 
     if (!viewPublished.ok) {
       if (viewPublished.error.code === "not_published") {
@@ -276,6 +258,9 @@ export const ViewEventPublishedSheet = withSuspenseErrorBoundarySheet(
         event={event}
         membership={membership ?? undefined}
         shareCode={props.shareCode}
+        refreshEvent={async () => {
+          await viewPublishedCtl.refetch();
+        }}
       />
     );
   },

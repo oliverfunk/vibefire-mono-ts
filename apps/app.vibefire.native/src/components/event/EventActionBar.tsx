@@ -142,6 +142,7 @@ export const EventActionsBar = (
   const {
     onShareEvent,
     location,
+    times,
     disabled = false,
     hideShareButton = false,
   } = props;
@@ -167,6 +168,7 @@ export const EventActionsBar = (
     <View className="flex-row justify-around" {...props}>
       <OpenInMapsModalMenu
         location={location as TModelVibefireEvent["location"]}
+        times={times}
         disabled={disabled}
       >
         <View className="flex-col items-center justify-between">
