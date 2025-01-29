@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import MapView, { PROVIDER_GOOGLE, type Region } from "react-native-maps";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
@@ -94,6 +94,25 @@ export const GeoQueryMap = () => {
   );
 
   const displayEvents = useMapDisplayableEvents();
+  const displayEventMarkers = useMemo(() => {
+    return displayEvents.map((event) => (
+      <EventMapMarker
+        key={event.id}
+        eventId={event.id}
+        markerPosition={event.location.position}
+        vibeRating={event.map.vibe ?? 0}
+        onPress={() => {
+          navViewEvent(router, event.id);
+          mvRef.current?.animateCamera({
+            center: {
+              latitude: event.location.position.lat,
+              longitude: event.location.position.lng,
+            },
+          });
+        }}
+      />
+    ));
+  }, [displayEvents, router]);
 
   return (
     <MapView
@@ -128,23 +147,7 @@ export const GeoQueryMap = () => {
       maxZoomLevel={20}
       minZoomLevel={3}
     >
-      {displayEvents.map((event, _index) => (
-        <EventMapMarker
-          key={event.id}
-          eventId={event.id}
-          markerPosition={event.location.position}
-          vibeRating={event.map.vibe ?? 0}
-          onPress={() => {
-            navViewEvent(router, event.id);
-            mvRef.current?.animateCamera({
-              center: {
-                latitude: event.location.position.lat,
-                longitude: event.location.position.lng,
-              },
-            });
-          }}
-        />
-      ))}
+      {displayEventMarkers}
     </MapView>
   );
 };
