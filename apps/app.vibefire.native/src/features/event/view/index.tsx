@@ -8,6 +8,7 @@ import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useSetAtom } from "jotai";
 
 import {
   type TModelVibefireEvent,
@@ -36,6 +37,7 @@ import {
 } from "!/components/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/components/misc/SuspenseWithError";
 import { OrganiserBarView } from "!/components/OrganiserBarView";
+import { userSessionRetryAtom } from "!/atoms";
 import { navEditEvent, navHomeWithCollapse } from "!/nav";
 
 import { EventDetailWidgetView } from "./EventDetailWidgetView";
@@ -57,6 +59,8 @@ const ViewEventSheet = (props: {
   const joinAccessMut = trpc.access.joinAccess.useMutation();
   const leaveAccessMut = trpc.access.leaveAccess.useMutation();
   // muts
+
+  const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   const onShareEvent = useShareEventLink(event.id, membership?.shareCode);
 
@@ -94,16 +98,18 @@ const ViewEventSheet = (props: {
         <OrganiserBarView
           ownerRef={event.accessRef.ownerRef}
           membership={membership}
-          onBlockAndReportOrganiserPress={() => {
-            blockAndReportOrganiserMut.mutate({
+          onBlockAndReportOrganiserPress={async () => {
+            await blockAndReportOrganiserMut.mutateAsync({
               ownershipId: event.accessRef.ownerRef.id,
             });
+            setUserSessionRetry((prev) => !prev);
             navHomeWithCollapse(router);
           }}
-          onHidePress={() => {
-            hideEventMut.mutate({
+          onHidePress={async () => {
+            await hideEventMut.mutateAsync({
               eventId: event.id,
             });
+            setUserSessionRetry((prev) => !prev);
             navHomeWithCollapse(router);
           }}
           onOrganiserPress={() => {
