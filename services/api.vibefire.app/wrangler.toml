@@ -5,6 +5,9 @@ workers_dev = false
 
 routes = [{ pattern = "api.vibefire.app", custom_domain = true }]
 
+[observability.logs]
+enabled = true
+
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"

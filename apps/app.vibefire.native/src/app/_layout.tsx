@@ -15,6 +15,7 @@ import {
   usePathname,
 } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as Updates from "expo-updates";
 import {
   Inter_500Medium,
   Inter_700Bold,
@@ -80,6 +81,26 @@ const PostProviders = (props: { children: ReactNode }) => {
       );
     }
   }, [deeplinkURL]);
+
+  const { currentlyRunning, isUpdateAvailable, isUpdatePending } =
+    Updates.useUpdates();
+
+  useEffect(() => {
+    if (isUpdatePending) {
+      // Update has successfully downloaded; apply it now
+      Updates.reloadAsync().catch((err) => {
+        console.error("Failed to apply update", err);
+      });
+    }
+  }, [isUpdatePending]);
+
+  // If true, we show the button to download and run the update
+  const showDownloadButton = isUpdateAvailable;
+
+  // Show whether or not we are running embedded code or an update
+  const runTypeMessage = currentlyRunning.isEmbeddedLaunch
+    ? "This app is running from built-in code"
+    : "This app is running an update";
 
   // useEffect(() => {
   //   console.log("routing pathname", pathname);

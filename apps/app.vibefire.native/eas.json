@@ -12,7 +12,8 @@
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "***REMOVED***",
         "EXPO_PUBLIC_CF_IMAGES_ACC_HASH": "***REMOVED***",
         "EXPO_PUBLIC_UBER_CLIENT_ID": "***REMOVED***"
-      }
+      },
+      "channel": "base"
     },
     "development": {
       "extends": "base",
