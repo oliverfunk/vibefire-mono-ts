@@ -34,8 +34,12 @@ export const navigationIntegration = Sentry.reactNavigationIntegration({
 
 Sentry.init({
   enabled: !__DEV__,
-  dsn: "https://959cd563f46e2574f10469f5b03e8d6e@o4506169650315264.ingest.sentry.io/4506169652412416",
-  integrations: [navigationIntegration],
+  dsn: "https://959cd563f46e2574f10469f5b03e8d6e@o4506169650315264.ingest.us.sentry.io/4506169652412416",
+  _experiments: {
+    replaysOnErrorSampleRate: __DEV__ ? 0 : 1.0,
+    replaysSessionSampleRate: __DEV__ ? 0 : 1.0,
+  },
+  integrations: [Sentry.mobileReplayIntegration({}), navigationIntegration],
   enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
 });
 
@@ -137,7 +141,7 @@ const TrpcProvider = (props: { children: ReactNode }) => {
 const ClerkAuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
 
-  const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string;
   if (!clerkKey) {
     throw new Error("Missing Clerk publishable key");
   }

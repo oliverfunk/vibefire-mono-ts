@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { useAuth, useOAuth, type UseOAuthFlowParams } from "@clerk/clerk-expo";
-import { useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 
 import { useWarmUpBrowser } from "!/hooks/useWarmUpBrowser";
 
@@ -20,7 +20,7 @@ export const AuthButton = (props: {
 }) => {
   useWarmUpBrowser();
 
-  const setUser = useSetAtom(userAtom);
+  const [user, setUser] = useAtom(userAtom);
 
   const { signOut } = useAuth();
 
@@ -34,6 +34,8 @@ export const AuthButton = (props: {
   );
 
   const onPress = useCallback(async () => {
+    const anonId =
+      user.state === "unauthenticated" ? user.anonId : "oauth-error-none";
     try {
       setUser({ state: "loading" });
 
@@ -49,8 +51,9 @@ export const AuthButton = (props: {
     } catch (err) {
       console.error("OAuth error", err);
     }
-    setUser({ state: "unauthenticated", anonId: crypto.randomUUID() });
-  }, [oauthRedirectUrl, setUser, signOut, startOAuthFlow]);
+    setUser({ state: "unauthenticated", anonId });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [oauthRedirectUrl, setUser, signOut, startOAuthFlow, user.state]);
 
   return (
     <TouchableOpacity

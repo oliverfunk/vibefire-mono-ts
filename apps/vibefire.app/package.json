@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "update": "pnpm update",
-    "update-latest": "pnpm update --latest"
+    "lint": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "2.0.3",

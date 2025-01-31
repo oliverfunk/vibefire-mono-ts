@@ -1,8 +1,11 @@
 import Constants from "expo-constants";
 
 export const trpcApiUrl = () => {
-  const env = process.env.EXPO_PUBLIC_ENVIRONMENT;
+  const env = process.env.EXPO_PUBLIC_ENVIRONMENT as string;
   console.log("env", env);
+  if (__DEV__) {
+    console.log("Running in dev mode");
+  }
   return "https://api.vibefire.app";
   if (env !== "local") {
     return "https://api.vibefire.app";
@@ -18,6 +21,6 @@ export const trpcApiUrl = () => {
 
 export const imgUrl = (imagePath?: string) => {
   if (!imagePath) return undefined;
-  const accHash = process.env.EXPO_PUBLIC_CF_IMAGES_ACC_HASH;
+  const accHash = process.env.EXPO_PUBLIC_CF_IMAGES_ACC_HASH as string;
   return `https://vibefire.app/cdn-cgi/imagedelivery/${accHash}/${imagePath}`;
 };
