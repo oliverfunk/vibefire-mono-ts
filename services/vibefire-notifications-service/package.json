@@ -1,0 +1,16 @@
+{
+  "name": "vibefire-notifications-service",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify"
+  },
+  "dependencies": {
+    "hono": "^4.6.20",
+    "@vibefire/managers": "0.1.0",
+    "@vibefire/utils": "0.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250129.0",
+    "wrangler": "^3.107.2"
+  }
+}

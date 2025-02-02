@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "!api/*": ["../../packages/api/src/*"],
+      "!models/*": ["../../packages/models/src/*"],
+      "!managers/*": ["../../packages/managers/src/*"],
+      "!utils/*": ["../../packages/utils/src/*"],
+      "!services/*": ["../../packages/services/src/*"]
+    },
+    "lib": ["ESNext"],
+    "types": ["@cloudflare/workers-types/2023-07-01"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  }
+}

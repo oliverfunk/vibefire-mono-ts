@@ -1,65 +1,57 @@
-export type VibefireNotificationsClient = {
-  accessToken: string;
-  endpoint?: string;
-};
+import { resourceLocator } from "@vibefire/utils";
 
-const serviceEndpoint = "https://webhooks.vibefire.app/eMFLssyIDapK";
+import { VibefireNotificationsClient } from "./client";
 
-type MessageType = "notification/check" | "notification/send";
+export const vibefireNotificationsServiceSymbol = Symbol(
+  "vibefireNotificationsServiceSymbol",
+);
 
-const connector = async (
-  c: VibefireNotificationsClient,
-  route: string,
-  type: MessageType,
-  payload: Record<string, string>,
-) => {
-  if (route[0] !== "/") {
-    throw new Error("Route must start with /");
-  }
-  const ep = c.endpoint || serviceEndpoint;
-  return fetch(ep + route, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Vibefire-Webhooks-Access-Token": c.accessToken,
+export const getVibefireNotificationsService = (options?: {
+  authToken: string;
+}) =>
+  resourceLocator().bindResource<VibefireNotificationsService>(
+    vibefireNotificationsServiceSymbol,
+    (ctx) => {
+      const vibefireNotificationsConfig = options || ctx.vibefireNotifications;
+      if (!vibefireNotificationsConfig) {
+        throw new Error("vibefireNotifications config is missing");
+      }
+      const client = new VibefireNotificationsClient(
+        vibefireNotificationsConfig.authToken,
+      );
+      return new VibefireNotificationsService(client);
     },
-    body: JSON.stringify({
-      type,
-      data: payload,
-    }),
-  });
-};
-
-export const sendUserNotification = async (
-  c: VibefireNotificationsClient,
-  userAid: string,
-  content: {
-    title: string;
-    body: string;
-    toEventLinkId?: string;
-  },
-) => {
-  const response = await connector(
-    c,
-    `/send/user/${userAid}`,
-    "notification/send",
-    content,
   );
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-};
+export class VibefireNotificationsService {
+  constructor(private readonly client: VibefireNotificationsClient) {}
 
-export const checkNotification = async (
-  c: VibefireNotificationsClient,
-  notificationId: string,
-) => {
-  const response = await connector(c, `/check`, "notification/check", {
-    notificationId,
-  });
+  async sendUserNotification(
+    userAid: string,
+    content: {
+      title: string;
+      body: string;
+      toEventLinkId?: string;
+    },
+  ) {
+    const response = await this.client.sendUserNotification(userAid, content);
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   }
-};
+
+  async checkNotification(notificationId: string) {
+    const response = await this.client.checkNotification(notificationId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  }
+}

@@ -18,4 +18,10 @@ export type LocatorContext = {
   webhooks?: {
     clerkValidationSecret?: string;
   };
+  expo?: {
+    expoAccessToken: string;
+  };
+  vibefireNotifications?: {
+    authToken: string;
+  };
 };

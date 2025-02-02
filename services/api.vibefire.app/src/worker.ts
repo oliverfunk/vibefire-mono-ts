@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { timing } from "hono/timing";
 
 import { BASEPATH_REST, BASEPATH_TRPC } from "@vibefire/api/basepaths";
@@ -22,15 +21,6 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.use(timing());
-
-// app.onError((err, c) => {
-//   console.error(JSON.stringify(err, null, 2));
-//   if (err instanceof HTTPException) {
-//     // Get the custom response
-//     return err.getResponse();
-//   }
-//   return c.text("internal error!", 500);
-// });
 
 app.all(
   `${BASEPATH_TRPC}/*`,
