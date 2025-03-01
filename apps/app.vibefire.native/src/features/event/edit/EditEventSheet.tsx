@@ -230,7 +230,7 @@ export const EditEventSheet = withSuspenseErrorBoundarySheet(
               <View className="h-16" />
 
               {/* form btns */}
-              <View className="absolute bottom-0 w-full flex-row items-end justify-evenly bg-black/90 py-2">
+              <View className="absolute bottom-0 w-full flex-row justify-evenly bg-black/90 py-2">
                 <View className="flex-1" />
                 <TouchableOpacity
                   disabled={!isActive}

@@ -8,7 +8,7 @@ import Toast from "react-native-toast-message";
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 
 import {
   type TModelVibefireEvent,
@@ -37,8 +37,8 @@ import {
 } from "!/components/misc/sheet-utils";
 import { withSuspenseErrorBoundarySheet } from "!/components/misc/SuspenseWithError";
 import { OrganiserBarView } from "!/components/OrganiserBarView";
-import { userSessionRetryAtom } from "!/atoms";
-import { navEditEvent, navHomeWithCollapse } from "!/nav";
+import { userAtom, userSessionRetryAtom } from "!/atoms";
+import { navEditEvent, navHomeWithCollapse, navProfile } from "!/nav";
 
 import { EventDetailWidgetView } from "./EventDetailWidgetView";
 
@@ -60,6 +60,7 @@ const ViewEventSheet = (props: {
   const leaveAccessMut = trpc.access.leaveAccess.useMutation();
   // muts
 
+  const [user] = useAtom(userAtom);
   const setUserSessionRetry = useSetAtom(userSessionRetryAtom);
 
   const onShareEvent = useShareEventLink(event.id, membership?.shareCode);
@@ -99,6 +100,10 @@ const ViewEventSheet = (props: {
           ownerRef={event.accessRef.ownerRef}
           membership={membership}
           onBlockAndReportOrganiserPress={async () => {
+            if (user.state !== "authenticated") {
+              navProfile(router);
+              return;
+            }
             await blockAndReportOrganiserMut.mutateAsync({
               ownershipId: event.accessRef.ownerRef.id,
             });
@@ -106,6 +111,10 @@ const ViewEventSheet = (props: {
             navHomeWithCollapse(router);
           }}
           onHidePress={async () => {
+            if (user.state !== "authenticated") {
+              navProfile(router);
+              return;
+            }
             await hideEventMut.mutateAsync({
               eventId: event.id,
             });
@@ -123,6 +132,10 @@ const ViewEventSheet = (props: {
           leaveJoinDisabled={managedByUser}
           leaveJoinLoading={joinAccessMut.isPending || leaveAccessMut.isPending}
           onJoinPress={async () => {
+            if (user.state !== "authenticated") {
+              navProfile(router);
+              return;
+            }
             await joinAccessMut.mutateAsync({
               accessId: event.accessRef.id,
               shareCode,
