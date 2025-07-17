@@ -26,7 +26,7 @@ curl -X POST \
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
-  -H "X-Vibefire-Notifications-Auth-Token: ***REMOVED***" \
+  -H "X-Vibefire-Notifications-Auth-Token: <token>" \
   -d '{"title":"big remote", "body": "hello"}' \
   https://webhooks.vibefire.app/eMFLssyIDapK/send/user/user_2s7OHOnEPV9JrIst823Iz1yESLg
 ```

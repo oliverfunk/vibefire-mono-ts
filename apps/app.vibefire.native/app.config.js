@@ -25,7 +25,7 @@ const expoConfig = ({ config }) => ({
     supportsTablet: true,
     associatedDomains: ["applinks:vifr.io"],
     icon: "./assets/app-icon/app-icon-ios.png",
-    config: { googleMapsApiKey: "***REMOVED***" },
+    config: { googleMapsApiKey: "<token>" },
     entitlements: {
       "com.apple.developer.applesignin": ["Default"],
     },
@@ -52,7 +52,7 @@ const expoConfig = ({ config }) => ({
     googleServicesFile: "./google-services.json",
     config: {
       googleMaps: {
-        apiKey: "***REMOVED***",
+        apiKey: "<token>",
       },
     },
     adaptiveIcon: {

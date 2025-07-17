@@ -9,9 +9,9 @@
       "node": "20.9.0",
       "bun": "1.1.26",
       "env": {
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "***REMOVED***",
-        "EXPO_PUBLIC_CF_IMAGES_ACC_HASH": "***REMOVED***",
-        "EXPO_PUBLIC_UBER_CLIENT_ID": "***REMOVED***"
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "<token>",
+        "EXPO_PUBLIC_CF_IMAGES_ACC_HASH": "<token>",
+        "EXPO_PUBLIC_UBER_CLIENT_ID": "<token>"
       },
       "channel": "base"
     },
