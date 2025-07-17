@@ -70,9 +70,7 @@ Vibefire taught me a lot about modern app architecture, mobile UX, and global-fi
 
 Here’s what the app looks like:
 
-![Discover Events](docs/assets/imgs/iPhone/storeimg-ios-A-discev.png)
-![Discover Events 2](docs/assets/imgs/iPhone/storeimg-ios-B-discev.png)
-![Event Details](docs/assets/imgs/iPhone/storeimg-ios-C-evdetails.png)
-![Event Details 2](docs/assets/imgs/iPhone/storeimg-ios-D-evdetails.png)
-![Create Event](docs/assets/imgs/iPhone/storeimg-ios-E-createev.png)
-![Main Events](docs/assets/imgs/iPhone/storeimg-ios-F-manev.png)
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img width="1604" src="docs/assets/imgs/iPhone/storeimg-ios-A-discev.png"> |  <img width="1604" src="docs/assets/imgs/iPhone/storeimg-ios-B-discev.png"> | <img width="1604" src="docs/assets/imgs/iPhone/storeimg-ios-C-evdetails.png"> |
+| <img width="1604" src="docs/assets/imgs/iPhone/storeimg-ios-D-evdetails.png">  |  <img width="1604" src="docs/assets/imgs/iPhone/storeimg-ios-E-createev.png">|<img width="1604" src="docs/assets/imgs/iPhone/storeimg-ios-F-manev.png">|
