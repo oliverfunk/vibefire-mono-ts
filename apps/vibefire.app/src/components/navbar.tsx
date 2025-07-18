@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import VibefireIcon from "~/public/Icon_Circle_wOutline.svg";
+import VibefireIcon from "~/public/icons/logo-vf-white.svg";
 
 interface NavbarProps {
   active: "none" | "support" | "privacy" | "terms" | "faq";
@@ -11,12 +11,12 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ active }) => {
   return (
     <header className="sticky top-0 z-10 mx-auto flex w-full flex-wrap items-center justify-between gap-y-1 bg-black bg-opacity-90 px-8 py-5 text-white drop-shadow-[0_3px_3px_rgba(0,255,255,0.25)]">
-      <Link href="/" className="m-1 inline-flex  items-center">
+      <Link href="/" className="m-1 inline-flex items-center">
         <Image
           priority={true}
           src={VibefireIcon}
           alt={"Vibefire Icon"}
-          className="w-10"
+          className="w-7"
         />
         <h1 className="pl-2 text-xl font-bold">{"Vibefire"}</h1>
       </Link>
