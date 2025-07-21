@@ -14,22 +14,21 @@
 
 ## 🚀 Why I Built It
 
-While travelling, I often found it hard to discover interesting local events—unless they were obvious tourist attractions, wellknown ticketed events or scheduled group meetups. I wanted a way to see what was popular with locals, discover hidden gems and find spontaneous events.
+While travelling, I often found it difficult to find what was happening in an area, unless it was an obvious tourist attraction, a well-known ticketed event or a scheduled group meetup. I wanted a way to see what was popular with locals, discover hidden gems and find spontaneous events.
 
-Vibefire is my answer to that: an event heatmap that lets you tap into the local vibe. Hence the name.
+So, I built Vibefire, an event heatmap that shows you what was popular in an area.
 
-I also wanted the app to be:
+I wanted the app to be:
+ - Globally scalable
+ - Free to use, unless someone wanted to promote their event
 
-- Globally scalable
-- Free to use, unless someone wants to promote their event
-
-To support that, I chose lightweight, serverless tools that scale easily and cost very little to run.
+To achieve that, I chose lightweight serverless tools that could scale easily and run at a low cost.
 
 ---
 
 ## 📁 Project Structure
 
-The repo is organized into three main folders:
+The repo is organised into three main folders:
 
 - **apps/** contains client/user-facing applications and tools.
 - **packages/** contains shared code, API, business logic, and integrations.
